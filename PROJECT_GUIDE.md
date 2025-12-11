@@ -235,10 +235,9 @@ final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) {
 
 8. 문의 / 담당자
 
-FE Lead: 홍길동
+FE Lead: 홍순기, 딜런
 
-BE Lead: 김철수
+BE Lead: 심현수
 
-디자인: 박영희
+디자인: 박지선
 
-기획: 이민지
