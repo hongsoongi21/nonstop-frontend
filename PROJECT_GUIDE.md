@@ -1,4 +1,4 @@
-# 📘 Uzbekistan Everytime App — 개발 가이드 문서
+# 📘 Nonstop — 개발 가이드 문서
 
 ---
 
@@ -12,17 +12,18 @@
 
 ## ✔ 코드 스타일
 - Dart 공식 스타일 가이드 준수
-- 파일명(예): `snake_case`
-- 클래스명(예): `PascalCase`
-- 메서드 및 변수명(예): `camelCase`
-- 위젯은 반드시(예) `build` 함수 최소화 (리팩토링 적극 수행)
+- 파일명: `snake_case`
+- 클래스명: `PascalCase`
+- 메서드 및 변수명: `camelCase`
+- 위젯은 반드시 `build` 함수 최소화 (리팩토링 적극 수행)
 - UI, 로직, 상태 관리 분리 원칙
 
 ## ✔ 상태관리
 - 전역 및 화면 단위 상태관리는 **Riverpod** 사용
-- 비즈니스 로직은 StateNotifier(Presentation Layer)에만 존재
+- 동기적이고 간단한 상태는 `StateNotifier` 사용
+- 비동기 통신 등 복잡한 로직은 `AsyncNotifier` 사용을 권장
 - Domain Layer에는 상태(state) 보관 금지
-- StreamProvider는 주로 WebSocket 기반 채팅에서 사용
+- `StreamProvider`는 주로 WebSocket 기반 실시간 통신에 사용
 
 ## ✔ 아키텍처 원칙
 - Feature 기반 구조(기능 단위)
@@ -33,7 +34,7 @@
 
 ## ✔ API 통신 규칙
 - Dio 사용
-- Base API Client는 core/network/dio_client.dart에서 일괄 관리
+- Base API Client는 `core/network/dio_client.dart`에서 일괄 관리
 - Interceptor 사용: JWT 자동 주입, 응답 에러 처리
 
 ## ✔ 예외 처리 규칙
@@ -50,7 +51,7 @@ Presentation ←→ Domain ←→ Data
 
 ### 🔹 Presentation Layer
 - UI 화면 (Screens)
-- Provider(StateNotifier, Provider 등)
+- Provider(StateNotifier, AsyncNotifier 등)
 - 화면 전환(Navigation)
 - 사용자 입력 처리
 - 로딩/에러 상태 관리
@@ -80,39 +81,40 @@ Presentation ←→ Domain ←→ Data
 # 📌 3. 폴더 구조 및 각 폴더의 목적
 
 ## 📁 **전체 구조**
+```
 lib/
 ├─ core/
-│ ├─ constants/
-│ ├─ errors/
-│ ├─ network/
-│ ├─ utils/
-│ ├─ widgets/
-│ └─ theme/
+│  ├─ constants/
+│  ├─ errors/
+│  ├─ network/
+│  ├─ utils/
+│  ├─ widgets/
+│  └─ theme/
 │
 ├─ features/
-│ ├─ auth/
-│ │ ├─ data/
-│ │ │ ├─ api/
-│ │ │ ├─ dto/
-│ │ │ ├─ models/
-│ │ │ └─ repository_impl/
-│ │ ├─ domain/
-│ │ │ ├─ entities/
-│ │ │ ├─ repository/
-│ │ │ └─ usecases/
-│ │ └─ presentation/
-│ │    ├─ providers/
-│ │    ├─ screens/
-│ │    └─ widgets/
-│ │
-│ ├─ board/
-│ ├─ chat/
-│ ├─ friends/
-│ └─ timetable/
+│  ├─ auth/
+│  │  ├─ data/
+│  │  │  ├─ api/
+│  │  │  ├─ dto/
+│  │  │  ├─ models/
+│  │  │  └─ repository_impl/
+│  │  ├─ domain/
+│  │  │  ├─ entities/
+│  │  │  ├─ repository/
+│  │  │  └─ usecases/
+│  │  └─ presentation/
+│  │     ├─ providers/
+│  │     ├─ screens/
+│  │     └─ widgets/
+│  │
+│  ├─ board/
+│  ├─ chat/
+│  ├─ friends/
+│  └─ timetable/
 │
 ├─ app.dart
 └─ main.dart
-
+```
 
 ---
 
@@ -150,7 +152,7 @@ lib/
 
 ### ✨ **Conventional Commits 규칙 적용**
 
-<type>: <short summary>
+`<type>: <short summary>`
 
 [body - optional]
 [footer - optional]
@@ -172,6 +174,7 @@ lib/
 
 ### ✔ 커밋 예시
 
+```
 feat(auth): 회원가입 usecase 및 repository 연결
 
 fix(board): 게시판 목록 페이지네이션 오류 수정
@@ -179,21 +182,21 @@ fix(board): 게시판 목록 페이지네이션 오류 수정
 docs: 프로젝트 아키텍처 설명 추가
 
 refactor(chat): WebSocket provider 구조 개선
-
+```
 
 ---
 
 # 📌 5. 브랜치 전략
 
 ### ✔ Git Flow 간단 버전
-
+```
 main
 └─ dev
-├─ feature/auth
-├─ feature/chat
-├─ feature/board
-└─ feature/timetable
-
+   ├─ feature/auth
+   ├─ feature/chat
+   ├─ feature/board
+   └─ feature/timetable
+```
 
 ### 브랜치 규칙
 - `prod`: 배포 버전
@@ -206,17 +209,20 @@ main
 # 📌 6. 프로젝트 실행 규칙
 
 ### ✔ FE(Flutter)
-
+```
 flutter clean
 flutter pub get
 flutter run
-
+```
 
 ### ✔ 환경 변수(.env)
-- API_BASE_URL
-- WS_BASE_URL
-- JWT_SECRET (필요 시)
-- Firebase 옵션(푸시 알림)
+- `.env.example` 파일을 복사하여 `.env` 파일을 생성한 후, 아래 변수들을 자신의 환경에 맞게 설정합니다.
+- `.env` 파일은 Git에 포함되지 않도록 `.gitignore`에 등록해야 합니다.
+
+- `API_BASE_URL`
+- `WS_BASE_URL`
+- `JWT_SECRET` (필요 시)
+- `Firebase` 옵션(푸시 알림)
 
 ---
 
@@ -224,17 +230,48 @@ flutter run
 
 ### Riverpod Provider 예시
 
+**StateNotifierProvider (동기 상태 관리)**
 ```dart
-final loginProvider = StateNotifierProvider<LoginNotifier, LoginState>((ref) {
-  final usecase = ref.watch(loginUseCaseProvider);
-  return LoginNotifier(usecase);
+final counterProvider = StateNotifierProvider<Counter, int>((ref) {
+  return Counter();
 });
 
-8. 문의 / 담당자
+class Counter extends StateNotifier<int> {
+  Counter() : super(0);
+  void increment() => state++;
+}
+```
 
-FE Lead: 홍순기, 딜런
+**AsyncNotifierProvider (비동기 데이터 처리)**
+```dart
+// 1. Provider 정의
+final authRepositoryProvider = Provider((ref) => AuthRepository());
 
-BE Lead: 심현수
+// 2. AsyncNotifier 정의
+class AuthNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {
+    // 초기화 로직 (필요 시)
+  }
 
-디자인: 박지선
+  Future<void> login(String email, String password) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).login(email, password),
+    );
+  }
+}
 
+// 3. NotifierProvider 정의
+final authProvider = AsyncNotifierProvider<AuthNotifier, void>(() {
+  return AuthNotifier();
+});
+```
+
+---
+
+# 📌 8. 문의 / 담당자
+
+- **FE Lead**: 홍순기, 딜런
+- **BE Lead**: 심현수
+- **디자인**: 박지선
