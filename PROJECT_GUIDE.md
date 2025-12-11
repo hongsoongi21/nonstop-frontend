@@ -48,9 +48,6 @@
 
 Presentation ←→ Domain ←→ Data
 
-markdown
-코드 복사
-
 ### 🔹 Presentation Layer
 - UI 화면 (Screens)
 - Provider(StateNotifier, Provider 등)
@@ -104,9 +101,9 @@ lib/
 │ │ │ ├─ repository/
 │ │ │ └─ usecases/
 │ │ └─ presentation/
-│ │ ├─ providers/
-│ │ ├─ screens/
-│ │ └─ widgets/
+│ │    ├─ providers/
+│ │    ├─ screens/
+│ │    └─ widgets/
 │ │
 │ ├─ board/
 │ ├─ chat/
