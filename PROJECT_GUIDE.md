@@ -191,7 +191,7 @@ refactor(chat): WebSocket provider 구조 개선
 ### ✔ Git Flow 간단 버전
 
 main
-└─ develop
+└─ dev
 ├─ feature/auth
 ├─ feature/chat
 ├─ feature/board
@@ -199,8 +199,8 @@ main
 
 
 ### 브랜치 규칙
-- `main`: 배포 버전
-- `develop`: 개발 통합 브랜치
+- `prod`: 배포 버전
+- `dev`: 개발 통합 브랜치
 - `feature/*`: 기능 단위 개발 브랜치
 - 머지 전 PR 필수
 
