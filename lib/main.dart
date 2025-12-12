@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nonstop/core/utils/logger.dart';
 
 void main() {
+  initLogger();
   runApp(const MyApp());
 }
 

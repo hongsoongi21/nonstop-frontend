@@ -1,0 +1,90 @@
+import 'package:logging/logging.dart';
+import 'dart:developer';
+
+
+final loggers = Logger('loggers');
+
+void initLogger() {
+  final Map<Level, String> levelStringMap = {
+    Level.INFO: 'LOG',
+    Level.FINE: 'RESULT',
+    Level.WARNING: 'WARNING',
+    Level.SEVERE: 'ERROR',
+    Level.CONFIG: 'DIO',
+  };
+  final Map<Level, String> levelColorTagMap = {
+    Level.INFO: '\x1B[32m', //녹색
+    Level.FINE: '\x1B[4m', //녹색
+    Level.WARNING: '\x1B[33m', // 노란색
+    Level.SEVERE: '\x1B[31m', // 빨간색
+    Level.CONFIG: '\x1b[36m', // 파란색
+  };
+  const String resetTag = '\x1B[0m'; // 재설정
+
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    log('${levelColorTagMap[record.level]!}'
+        '[${levelStringMap[record.level]}] ${record.time}: ${record.message}${record.error == null ? '' : '\n: ${record.error}'}${record.stackTrace == null ? '' : '\n--- Start of Stack Trace ---\n${record.stackTrace}--- End of Stack Trace ---'}$resetTag');
+  });
+}
+
+void dioLog([
+  String? message,
+  Object? data,
+]) {
+  var str = message.toString();
+
+  loggers.config(str, data);
+}
+
+void dioErrLog([
+  String? message,
+  Object? e,
+  StackTrace? stackTrace,
+]) {
+  var str = message.toString();
+
+  loggers.severe(str, e, stackTrace);
+}
+
+void infoLog(
+  dynamic message, [
+  res,
+  String? prefix,
+  dynamic stackTrace,
+]) {
+  var str = message.toString();
+
+  loggers.info(
+      '${prefix != null ? [prefix.toUpperCase()] : ''}$str', res, stackTrace);
+}
+
+void resultLog(
+  dynamic message, [
+  res,
+  dynamic stackTrace,
+]) {
+  var str = message.toString();
+
+  loggers.fine(str, res, stackTrace);
+}
+
+void warnLog(
+  String? message, [
+  Object? e,
+  StackTrace? stackTrace,
+]) {
+  var str = message.toString();
+
+  loggers.warning(str, e, stackTrace);
+}
+
+void errLog([
+  String? message,
+  Object? e,
+  StackTrace? stackTrace,
+]) {
+  var str = '[FAIL]: $message';
+
+  loggers.severe(str, e, stackTrace ?? StackTrace.current);
+}
