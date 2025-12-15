@@ -18,6 +18,24 @@
 - 위젯은 반드시 `build` 함수 최소화 (리팩토링 적극 수행)
 - UI, 로직, 상태 관리 분리 원칙
 
+## ✔ 다국어 지원 (Localization)
+- 본 프로젝트는 영어, 러시아어, 우즈베키스탄어를 기본으로 지원합니다.
+- UI에 표시되는 모든 텍스트는 하드코딩을 금지하고, 아래의 l10n 규칙을 따라야 합니다.
+- **설정 파일**: 프로젝트 루트의 `l10n.yaml` 파일이 다국어 지원 설정을 관리합니다.
+  - `arb-dir`: 번역 파일(.arb)이 위치할 디렉토리입니다. (`lib/core/l10n`)
+  - `template-arb-file`: 기본 언어 템플릿 파일입니다. (`app_en.arb`)
+- **텍스트 추가/수정 절차**:
+  1. `lib/core/l10n/app_en.arb` 파일에 새로운 텍스트 키(key)와 값(value)을 추가합니다.
+  2. 다른 언어 파일들(`app_ru.arb`, `app_uz.arb` 등)에도 동일한 키와 번역된 값을 추가합니다.
+  3. 터미널에서 `flutter pub get` 명령을 실행하여 `app_localizations.dart` 파일을 자동으로 업데이트합니다. (또는 `flutter gen-l10n`)
+- **UI 적용 예시**:
+  ```dart
+  import 'package:nonstop/core/l10n/app_localizations.dart';
+
+  // BuildContext가 있는 위젯 내부에서
+  Text(AppLocalizations.of(context)!.helloWorld);
+  ```
+
 ## ✔ 상태관리
 - 전역 및 화면 단위 상태관리는 **Riverpod** 사용
 - 동기적이고 간단한 상태는 `StateNotifier` 사용
@@ -86,6 +104,7 @@ lib/
 ├─ core/
 │  ├─ constants/
 │  ├─ errors/
+│  ├─ l10n/
 │  ├─ network/
 │  ├─ utils/
 │  ├─ widgets/
@@ -114,6 +133,8 @@ lib/
 │
 ├─ app.dart
 └─ main.dart
+
+l10n.yaml
 ```
 
 ---
@@ -124,6 +145,7 @@ lib/
 |------|------|
 | `core/constants/` | 앱 전역에서 사용하는 상수, 라우트 정의, API 엔드포인트 등 |
 | `core/errors/` | 공통 에러 핸들링, 예외 타입 정의 |
+| `core/l10n/` | 다국어 지원(Localization)을 위한 텍스트 리소스(.arb 파일) 관리 |
 | `core/network/` | Dio client, Interceptor, API 공통 설정 |
 | `core/utils/` | 날짜 변환, 문자열 처리 등 유틸 함수 |
 | `core/widgets/` | 모든 Feature에서 재사용할 공용 위젯 |
@@ -214,6 +236,7 @@ flutter clean
 flutter pub get
 flutter run
 ```
+- `flutter pub get` 실행 시, 의존성 패키지 설치와 더불어 다국어 지원 코드(`app_localizations.dart`)가 자동으로 생성/업데이트 됩니다.
 
 ### ✔ 환경 변수(.env)
 - `.env.example` 파일을 복사하여 `.env` 파일을 생성한 후, 아래 변수들을 자신의 환경에 맞게 설정합니다.
