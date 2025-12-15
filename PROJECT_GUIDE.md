@@ -291,10 +291,238 @@ final authProvider = AsyncNotifierProvider<AuthNotifier, void>(() {
 });
 ```
 
+
+
 ---
 
-# 📌 8. 문의 / 담당자
+
+
+# 📌 8. 주요 의존성 패키지
+
+
+
+본 프로젝트는 개발 효율성, 안정성, 성능을 높이기 위해 다음의 주요 의존성 패키지들을 사용합니다.
+
+
+
+### ✔ **`freezed` & `json_serializable`**
+
+- **역할**: 불변(immutable) 데이터 클래스와 JSON 직렬화/역직렬화 코드를 자동으로 생성합니다.
+
+- **필요성**:
+
+    - API 응답(JSON)을 Dart 객체(Model/DTO)로 변환하는 반복적인 작업을 자동화합니다.
+
+    - `copyWith`, `toString`, `==` 등 보일러플레이트 코드를 자동으로 구현하여 생산성을 높입니다.
+
+    - 불변 객체를 사용함으로써 상태 관리의 예측 가능성과 안정성을 높입니다.
+
+- **활용 방안**:
+
+    - `Domain` 레이어의 `Entity`와 `Data` 레이어의 `DTO`/`Model`을 정의하는 데 사용합니다.
+
+    - 터미널에서 `flutter pub run build_runner build` 명령을 실행하여 코드를 생성합니다.
+
+- **예시 (`freezed` 클래스 정의)**:
+
+  ```dart
+
+  import 'package:freezed_annotation/freezed_annotation.dart';
+
+
+
+  part 'user_model.freezed.dart';
+
+  part 'user_model.g.dart';
+
+
+
+  @freezed
+
+  class UserModel with _$UserModel {
+
+    const factory UserModel({
+
+      required int id,
+
+      required String name,
+
+      required String email,
+
+    }) = _UserModel;
+
+
+
+    factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+
+  }
+
+  ```
+
+
+
+### ✔ **`get_it`**
+
+- **역할**: 서비스 로케이터(Service Locator) 패턴을 구현하여 의존성 주입(DI)을 쉽게 하도록 돕습니다.
+
+- **필요성**:
+
+    - `Repository`, `DataSource` 등 핵심 로직 객체들의 생명주기를 관리하고, 중앙에서 쉽게 접근할 수 있게 합니다.
+
+    - 코드의 결합도를 낮추어 모듈화 및 테스트 용이성을 향상시킵니다.
+
+    - Riverpod `Provider` 내부에서 직접 객체를 생성하는 대신, `get_it`으로 등록된 인스턴스를 가져와 사용함으로써 코드를 더 깔끔하게 유지할 수 있습니다.
+
+- **활용 방안**:
+
+    - 앱 시작 시점에 필요한 서비스(Repository 등)들을 미리 등록해 둡니다.
+
+    - `Provider`나 `ViewModel` 등에서 등록된 서비스를 가져와 사용합니다.
+
+- **예시 (서비스 등록 및 사용)**:
+
+  ```dart
+
+  // 1. 서비스 로케이터 인스턴스 생성
+
+  final sl = GetIt.instance;
+
+
+
+  // 2. 앱 시작 시 서비스 등록
+
+  void setupLocator() {
+
+    sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
+
+  }
+
+
+
+  // 3. Provider 등에서 사용
+
+  final authRepositoryProvider = Provider((ref) => sl<AuthRepository>());
+
+  ```
+
+
+
+### ✔ **`go_router`**
+
+- **역할**: Flutter 팀에서 공식 지원하는 URL 기반의 선언적 라우팅 패키지입니다.
+
+- **필요성**:
+
+    - Feature 기반의 복잡한 앱 구조에서 페이지 네비게이션을 체계적으로 관리할 수 있습니다.
+
+    - URL을 통해 특정 페이지로 직접 이동하는 딥링킹(Deep Linking) 구현이 용이합니다.
+
+    - 각 라우트에 이름을 부여하고 파라미터를 전달하는 과정이 직관적입니다.
+
+- **활용 방안**:
+
+    - 앱의 전체적인 라우팅 규칙을 한 파일에서 정의하고 관리합니다.
+
+- **예시 (라우터 설정)**:
+
+  ```dart
+
+  final router = GoRouter(
+
+    initialLocation: '/splash',
+
+    routes: [
+
+      GoRoute(
+
+        path: '/splash',
+
+        builder: (context, state) => const SplashScreen(),
+
+      ),
+
+      GoRoute(
+
+        path: '/board/:id',
+
+        builder: (context, state) {
+
+          final id = state.pathParameters['id']!;
+
+          return BoardDetailScreen(boardId: id);
+
+        },
+
+      ),
+
+    ],
+
+  );
+
+
+
+  // MaterialApp.router에 설정
+
+  // return MaterialApp.router(routerConfig: router);
+
+  ```
+
+
+
+### ✔ **`cached_network_image`**
+
+- **역할**: 네트워크 이미지를 불러오고 기기에 캐싱(caching)합니다.
+
+- **필요성**:
+
+    - 게시판의 썸네일, 사용자 프로필 사진 등 반복적으로 사용되는 이미지를 매번 새로 다운로드하지 않아 성능을 최적화하고 데이터 사용량을 절약합니다.
+
+    - 이미지를 불러오는 동안 로딩 인디케이터(placeholder)나 에러 위젯을 쉽게 표시할 수 있습니다.
+
+- **활용 방안**:
+
+    - `Image.network` 대신 `CachedNetworkImage` 위젯을 사용합니다.
+
+- **예시**:
+
+  ```dart
+
+  CachedNetworkImage(
+
+    imageUrl: "http://example.com/image.jpg",
+
+    placeholder: (context, url) => CircularProgressIndicator(),
+
+    errorWidget: (context, url, error) => Icon(Icons.error),
+
+  ),
+
+  ```
+
+
+
+### ✔ **`dio` & `flutter_secure_storage`**
+
+- **`dio` 역할**: 강력하고 유연한 기능을 제공하는 HTTP 클라이언트입니다.
+
+- **`flutter_secure_storage` 역할**: JWT 토큰, 로그인 정보 등 민감한 데이터를 암호화하여 안전하게 로컬에 저장합니다.
+
+- **필요성 및 활용 방안**:
+
+    - `dio`의 `Interceptor`를 사용하여 모든 API 요청 헤더에 `flutter_secure_storage`에 저장된 JWT 토큰을 자동으로 추가하는 로직을 구현합니다.
+
+    - 이를 통해 인증이 필요한 API를 간편하게 호출할 수 있습니다.
+
+
+
+
+
+# 📌 9. 문의 / 담당자
+
+
 
 - **FE Lead**: 홍순기, 딜런
+
 - **BE Lead**: 심현수
+
 - **디자인**: 박지선
