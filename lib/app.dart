@@ -1,43 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/l10n/app_localizations.dart';
+import 'package:nonstop/core/router/app_router.dart';
+import 'package:nonstop/core/theme/app_theme.dart';
 
-import 'core/theme/app_theme.dart';
-import 'core/router/app_router.dart';
-
-/// Root application widget
-/// Configures the app with routing, theming, and state management
-class App extends ConsumerWidget {
+class App extends StatelessWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Nonstop',
-
-      // Localization
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-
-      // Theming
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
-
-      // Routing
+      theme: AppTheme.darkTheme,
       routerConfig: router,
-
-      // Debug configuration
-      debugShowCheckedModeBanner: false,
-      debugShowMaterialGrid: false,
-
-      // Error handling
-      builder: (context, child) {
-        // Add global error handling here if needed
-        return child ?? const SizedBox.shrink();
-      },
     );
   }
 }
