@@ -1,5 +1,6 @@
-/// String utility extensions
 import 'dart:convert';
+
+/// String utility extensions
 
 extension StringExtensions on String {
   /// Capitalize first letter
@@ -58,10 +59,10 @@ extension StringExtensions on String {
   String get extractLetters => replaceAll(RegExp(r'[^a-zA-Z]'), '');
 
   /// Check if string is null or empty
-  bool get isNullOrEmpty => this == null || isEmpty;
+  bool get isNullOrEmpty => isEmpty;
 
   /// Check if string is null or contains only whitespace
-  bool get isNullOrBlank => this == null || trim().isEmpty;
+  bool get isNullOrBlank => trim().isEmpty;
 
   /// Safe substring with bounds checking
   String safeSubstring(int start, [int? end]) {

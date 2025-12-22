@@ -4,18 +4,8 @@ import 'package:go_router/go_router.dart';
 /// BuildContext extensions for navigation, theming, and common utilities
 extension ContextExtensions on BuildContext {
   // Navigation
-  void goTo(
-    String route, {
-    Map<String, String>? pathParameters,
-    Map<String, dynamic>? queryParameters,
-    Object? extra,
-  }) {
-    GoRouter.of(this).go(
-      route,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
+  void goTo(String route, {Object? extra}) {
+    GoRouter.of(this).go(route, extra: extra);
   }
 
   void goNamed(
@@ -26,66 +16,26 @@ extension ContextExtensions on BuildContext {
   }) {
     GoRouter.of(this).goNamed(
       name,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
+      pathParameters: pathParameters ?? {},
+      queryParameters: queryParameters ?? {},
       extra: extra,
     );
   }
 
-  void push(
-    String route, {
-    Map<String, String>? pathParameters,
-    Map<String, dynamic>? queryParameters,
-    Object? extra,
-  }) {
-    GoRouter.of(this).push(
-      route,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
+  void push(String route, {Object? extra}) {
+    GoRouter.of(this).push(route, extra: extra);
   }
 
-  void pushNamed(
-    String name, {
-    Map<String, String>? pathParameters,
-    Map<String, dynamic>? queryParameters,
-    Object? extra,
-  }) {
-    GoRouter.of(this).pushNamed(
-      name,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
+  void pushNamed(String name, {Object? extra}) {
+    GoRouter.of(this).pushNamed(name, extra: extra);
   }
 
-  void replace(
-    String route, {
-    Map<String, String>? pathParameters,
-    Map<String, dynamic>? queryParameters,
-    Object? extra,
-  }) {
-    GoRouter.of(this).replace(
-      route,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
+  void replace(String route, {Object? extra}) {
+    GoRouter.of(this).replace(route, extra: extra);
   }
 
-  void replaceNamed(
-    String name, {
-    Map<String, String>? pathParameters,
-    Map<String, dynamic>? queryParameters,
-    Object? extra,
-  }) {
-    GoRouter.of(this).replaceNamed(
-      name,
-      pathParameters: pathParameters,
-      queryParameters: queryParameters,
-      extra: extra,
-    );
+  void replaceNamed(String name, {Object? extra}) {
+    GoRouter.of(this).replaceNamed(name, extra: extra);
   }
 
   void pop<T extends Object?>([T? result]) {
@@ -109,7 +59,7 @@ extension ContextExtensions on BuildContext {
   ThemeData get theme => Theme.of(this);
   TextTheme get textTheme => theme.textTheme;
   ColorScheme get colorScheme => theme.colorScheme;
-  AppBarTheme get appBarTheme => theme.appBarTheme;
+  AppBarThemeData get appBarTheme => theme.appBarTheme;
 
   // Text styles shortcuts
   TextStyle? get headline1 => textTheme.displayLarge;
@@ -168,7 +118,7 @@ extension ContextExtensions on BuildContext {
       barrierDismissible: barrierDismissible,
       barrierLabel: '',
       transitionDuration: const Duration(milliseconds: 200),
-      pageBuilder: (_, __, ___) => child,
+      pageBuilder: (context, animation, secondaryAnimation) => child,
     );
   }
 
@@ -183,7 +133,6 @@ extension ContextExtensions on BuildContext {
     String? helpText,
   }) {
     return showDatePicker(
-      context: this,
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
@@ -202,7 +151,6 @@ extension ContextExtensions on BuildContext {
     String? helpText,
   }) {
     return showTimePicker(
-      context: this,
       initialTime: initialTime,
       cancelText: cancelText,
       confirmText: confirmText,
@@ -239,7 +187,9 @@ extension ContextExtensions on BuildContext {
   bool get invertColors => MediaQuery.invertColorsOf(this);
   bool get disableAnimations => MediaQuery.disableAnimationsOf(this);
   bool get boldText => MediaQuery.boldTextOf(this);
-  double get textScaleFactor => MediaQuery.textScaleFactorOf(this);
+  double get textScaleFactor => MediaQuery.textScalerOf(
+    this,
+  ).textScaleFactor; // ignore: deprecated_member_use
 
   // Safe area
   EdgeInsets get safeAreaPadding => MediaQuery.paddingOf(this);

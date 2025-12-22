@@ -21,12 +21,10 @@ class AppTheme {
         secondary: AppColors.secondary,
         secondaryContainer: AppColors.secondaryLight,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
         onPrimary: AppColors.textOnPrimary,
         onSecondary: AppColors.textOnSecondary,
         onSurface: AppColors.textPrimary,
-        onBackground: AppColors.textPrimary,
         onError: Colors.white,
       ),
 
@@ -226,8 +224,8 @@ class AppTheme {
       // Progress indicator theme
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: AppColors.primary,
-        linearTrackColor: AppColors.primaryLight.withOpacity(0.3),
-        circularTrackColor: AppColors.primaryLight.withOpacity(0.3),
+        linearTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
+        circularTrackColor: AppColors.primaryLight.withValues(alpha: 0.3),
       ),
 
       // Icon theme

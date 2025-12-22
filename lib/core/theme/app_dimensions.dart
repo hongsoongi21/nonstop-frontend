@@ -1,7 +1,7 @@
-/// Application dimensions system
-/// Centralizes screen sizes, breakpoints, and responsive values
 import 'package:flutter/material.dart';
 
+/// Application dimensions system
+/// Centralizes screen sizes, breakpoints, and responsive values
 class AppDimensions {
   // Screen breakpoints (Material Design 3)
   static const double breakpointXs = 600; // Small tablet

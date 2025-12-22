@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
+
 /// Application spacing system
 /// Centralizes all spacing values used throughout the app
-import 'package:flutter/material.dart';
 
 class AppSpacing {
   // Base spacing units (4px grid system)

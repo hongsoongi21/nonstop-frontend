@@ -189,7 +189,6 @@ extension DateTimeExtensions on DateTime {
   /// Get week number of the year (ISO 8601)
   int get weekNumber {
     final firstDayOfYear = DateTime(year, 1, 1);
-    final daysSinceFirstDay = difference(firstDayOfYear).inDays;
     final firstMonday = firstDayOfYear.add(
       Duration(days: (8 - firstDayOfYear.weekday) % 7),
     );
