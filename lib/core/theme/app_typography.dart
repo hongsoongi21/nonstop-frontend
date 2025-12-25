@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 /// Centralizes all text styles used throughout the app
 class AppTypography {
   // Font family
-  static const String fontFamily =
-      'Roboto'; // Default, can be changed to Pretendard
+  static const String fontFamily = 'Pretendard';
 
   // Headline styles
   static const TextStyle headline1 = TextStyle(

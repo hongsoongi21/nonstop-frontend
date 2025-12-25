@@ -5,6 +5,7 @@ class Routes {
   static const String splash = '/splash';
   static const String login = '/login';
   static const String register = '/register';
+  static const String onboarding = '/onboarding';
   static const String forgotPassword = '/forgot-password';
 
   // 🏠 Main Navigation
@@ -13,6 +14,7 @@ class Routes {
   static const String chat = '/chat';
   static const String friends = '/friends';
   static const String timetable = '/timetable';
+  static const String profile = '/profile';
   static const String settings = '/settings';
 
   // 📄 Detail Screens (with parameters)
