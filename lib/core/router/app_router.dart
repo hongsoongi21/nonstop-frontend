@@ -20,10 +20,10 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: authState.isAuthenticated ? Routes.home : Routes.login,
-    refreshListenable: authState, // Will be updated when we implement proper auth
     redirect: (context, state) {
       final isAuthenticated = authState.isAuthenticated;
-      final isGoingToAuth = state.uri.toString() == Routes.login ||
+      final isGoingToAuth =
+          state.uri.toString() == Routes.login ||
           state.uri.toString() == Routes.register ||
           state.uri.toString() == Routes.forgotPassword;
 

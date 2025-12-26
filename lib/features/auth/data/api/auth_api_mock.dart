@@ -9,10 +9,7 @@ class AuthApiMock implements AuthApi {
   User? _currentUser;
 
   @override
-  Future<User> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<User> signIn({required String email, required String password}) async {
     // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
 
@@ -103,7 +100,7 @@ class AuthApiMock implements AuthApi {
     }
 
     // Mock success - in real implementation, this would send an email
-    print('Password reset email sent to: $email');
+    // Password reset email sent successfully
   }
 
   @override
@@ -127,7 +124,7 @@ class AuthApiMock implements AuthApi {
     await Future.delayed(const Duration(seconds: 1));
 
     // Mock success - in real implementation, this would resend verification email
-    print('Email verification resent');
+    // Email verification resent successfully
   }
 
   @override

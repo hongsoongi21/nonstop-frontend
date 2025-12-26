@@ -1,13 +1,11 @@
 /// Custom exceptions for the application
+library;
 
 class ServerException implements Exception {
   final String message;
   final int statusCode;
 
-  const ServerException({
-    required this.message,
-    required this.statusCode,
-  });
+  const ServerException({required this.message, required this.statusCode});
 
   @override
   String toString() => 'ServerException: $message (Status: $statusCode)';
@@ -26,10 +24,7 @@ class ValidationException implements Exception {
   final String message;
   final Map<String, String> errors;
 
-  const ValidationException({
-    required this.message,
-    this.errors = const {},
-  });
+  const ValidationException({required this.message, this.errors = const {}});
 
   @override
   String toString() => 'ValidationException: $message';

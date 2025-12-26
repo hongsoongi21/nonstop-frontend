@@ -15,13 +15,13 @@ _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
       university: json['university'] as String?,
       major: json['major'] as String?,
       bio: json['bio'] as String?,
-      isEmailVerified: json['is_email_verified'] as bool? ?? false,
-      createdAt: json['created_at'] == null
+      isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+      createdAt: json['createdAt'] == null
           ? null
-          : DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] == null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
           ? null
-          : DateTime.parse(json['updated_at'] as String),
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
@@ -33,7 +33,7 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
       'university': instance.university,
       'major': instance.major,
       'bio': instance.bio,
-      'is_email_verified': instance.isEmailVerified,
-      'created_at': instance.createdAt?.toIso8601String(),
-      'updated_at': instance.updatedAt?.toIso8601String(),
+      'isEmailVerified': instance.isEmailVerified,
+      'createdAt': instance.createdAt?.toIso8601String(),
+      'updatedAt': instance.updatedAt?.toIso8601String(),
     };

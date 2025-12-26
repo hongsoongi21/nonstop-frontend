@@ -14,21 +14,18 @@ class AppAnimations {
 
   /// Fade in animation
   static Widget fadeIn({
-    required Widget child,
     Duration duration = normal,
     Curve curve = easeOut,
     double startOpacity = 0.0,
     double endOpacity = 1.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: startOpacity, end: endOpacity),
       duration: duration,
       curve: curve,
       builder: (context, opacity, child) {
-        return Opacity(
-          opacity: opacity,
-          child: child,
-        );
+        return Opacity(opacity: opacity, child: child);
       },
       child: child,
     );
@@ -36,21 +33,18 @@ class AppAnimations {
 
   /// Scale animation
   static Widget scaleIn({
-    required Widget child,
     Duration duration = normal,
     Curve curve = easeOut,
     double startScale = 0.8,
     double endScale = 1.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: startScale, end: endScale),
       duration: duration,
       curve: curve,
       builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          child: child,
-        );
+        return Transform.scale(scale: scale, child: child);
       },
       child: child,
     );
@@ -58,20 +52,17 @@ class AppAnimations {
 
   /// Slide in from bottom animation
   static Widget slideInFromBottom({
-    required Widget child,
     Duration duration = normal,
     Curve curve = easeOut,
     double startOffset = 50.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: startOffset, end: 0.0),
       duration: duration,
       curve: curve,
       builder: (context, offset, child) {
-        return Transform.translate(
-          offset: Offset(0, offset),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(0, offset), child: child);
       },
       child: child,
     );
@@ -79,20 +70,17 @@ class AppAnimations {
 
   /// Slide in from right animation
   static Widget slideInFromRight({
-    required Widget child,
     Duration duration = normal,
     Curve curve = easeOut,
     double startOffset = 50.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: startOffset, end: 0.0),
       duration: duration,
       curve: curve,
       builder: (context, offset, child) {
-        return Transform.translate(
-          offset: Offset(offset, 0),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(offset, 0), child: child);
       },
       child: child,
     );
@@ -100,12 +88,12 @@ class AppAnimations {
 
   /// Combined fade and slide animation
   static Widget fadeSlideIn({
-    required Widget child,
     Duration duration = normal,
     Curve curve = easeOut,
     double startOpacity = 0.0,
     double endOpacity = 1.0,
     double startOffset = 30.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -126,20 +114,17 @@ class AppAnimations {
 
   /// Pulse animation for attention-grabbing elements
   static Widget pulse({
-    required Widget child,
     Duration duration = const Duration(milliseconds: 1500),
     double startScale = 1.0,
     double endScale = 1.1,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: startScale, end: endScale),
       duration: duration,
       curve: Curves.easeInOut,
       builder: (context, scale, child) {
-        return Transform.scale(
-          scale: scale,
-          child: child,
-        );
+        return Transform.scale(scale: scale, child: child);
       },
       child: child,
     );
@@ -147,10 +132,10 @@ class AppAnimations {
 
   /// Shimmer loading effect
   static Widget shimmer({
-    required Widget child,
     Duration duration = const Duration(milliseconds: 1500),
     Color? baseColor,
     Color? highlightColor,
+    required Widget child,
   }) {
     return _ShimmerAnimation(
       child: child,
@@ -162,19 +147,16 @@ class AppAnimations {
 
   /// Bounce animation for playful interactions
   static Widget bounce({
-    required Widget child,
     Duration duration = const Duration(milliseconds: 800),
     double bounceHeight = 20.0,
+    required Widget child,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: bounceHeight, end: 0.0),
       duration: duration,
       curve: bounceOut,
       builder: (context, offset, child) {
-        return Transform.translate(
-          offset: Offset(0, offset),
-          child: child,
-        );
+        return Transform.translate(offset: Offset(0, offset), child: child);
       },
       child: child,
     );
@@ -183,16 +165,16 @@ class AppAnimations {
 
 /// Shimmer animation widget
 class _ShimmerAnimation extends StatefulWidget {
-  final Widget child;
   final Duration duration;
   final Color baseColor;
   final Color highlightColor;
+  final Widget child;
 
   const _ShimmerAnimation({
-    required this.child,
     required this.duration,
     required this.baseColor,
     required this.highlightColor,
+    required this.child,
   });
 
   @override
@@ -207,17 +189,13 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    )..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
 
-    _animation = Tween<double>(begin: -1.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _animation = Tween<double>(
+      begin: -1.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -241,14 +219,10 @@ class _ShimmerAnimationState extends State<_ShimmerAnimation>
                 widget.highlightColor,
                 widget.baseColor,
               ],
-              stops: [
-                0.0,
-                _animation.value,
-                1.0,
-              ],
+              stops: [0.0, _animation.value, 1.0],
             ).createShader(bounds);
           },
-          child: widget.child,
+          child: child,
         );
       },
       child: widget.child,
@@ -301,12 +275,7 @@ class AppHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return enabled
-        ? Hero(
-            tag: tag,
-            child: child,
-          )
-        : child;
+    return enabled ? Hero(tag: tag, child: child) : child;
   }
 }
 
@@ -315,27 +284,23 @@ class AppPageRoute<T> extends MaterialPageRoute<T> {
   final PageTransition transition;
 
   AppPageRoute({
-    required WidgetBuilder builder,
-    RouteSettings? settings,
+    required super.builder,
+    super.settings,
     this.transition = PageTransition.fade,
-    bool maintainState = true,
-    bool fullscreenDialog = false,
-  }) : super(
-          builder: builder,
-          settings: settings,
-          maintainState: maintainState,
-          fullscreenDialog: fullscreenDialog,
-        );
+    super.maintainState = true,
+    super.fullscreenDialog = false,
+  });
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     switch (transition) {
       case PageTransition.fade:
-        return FadeTransition(
-          opacity: animation,
-          child: child,
-        );
+        return FadeTransition(opacity: animation, child: child);
 
       case PageTransition.slideUp:
         return SlideTransition(
@@ -356,10 +321,7 @@ class AppPageRoute<T> extends MaterialPageRoute<T> {
         );
 
       case PageTransition.scale:
-        return ScaleTransition(
-          scale: animation,
-          child: child,
-        );
+        return ScaleTransition(scale: animation, child: child);
 
       case PageTransition.none:
         return child;
@@ -368,10 +330,4 @@ class AppPageRoute<T> extends MaterialPageRoute<T> {
 }
 
 /// Page transition types
-enum PageTransition {
-  fade,
-  slideUp,
-  slideLeft,
-  scale,
-  none,
-}
+enum PageTransition { fade, slideUp, slideLeft, scale, none }

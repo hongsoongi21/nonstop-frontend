@@ -28,11 +28,8 @@ mixin _$UserDto {
   String? get university => throw _privateConstructorUsedError;
   String? get major => throw _privateConstructorUsedError;
   String? get bio => throw _privateConstructorUsedError;
-  @JsonKey(name: 'is_email_verified')
   bool get isEmailVerified => throw _privateConstructorUsedError;
-  @JsonKey(name: 'created_at')
   DateTime? get createdAt => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updated_at')
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
   /// Serializes this UserDto to a JSON map.
@@ -57,9 +54,9 @@ abstract class $UserDtoCopyWith<$Res> {
     String? university,
     String? major,
     String? bio,
-    @JsonKey(name: 'is_email_verified') bool isEmailVerified,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    bool isEmailVerified,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -153,9 +150,9 @@ abstract class _$$UserDtoImplCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
     String? university,
     String? major,
     String? bio,
-    @JsonKey(name: 'is_email_verified') bool isEmailVerified,
-    @JsonKey(name: 'created_at') DateTime? createdAt,
-    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    bool isEmailVerified,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   });
 }
 
@@ -242,9 +239,9 @@ class _$UserDtoImpl extends _UserDto {
     this.university,
     this.major,
     this.bio,
-    @JsonKey(name: 'is_email_verified') this.isEmailVerified = false,
-    @JsonKey(name: 'created_at') this.createdAt,
-    @JsonKey(name: 'updated_at') this.updatedAt,
+    this.isEmailVerified = false,
+    this.createdAt,
+    this.updatedAt,
   }) : super._();
 
   factory _$UserDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -265,13 +262,11 @@ class _$UserDtoImpl extends _UserDto {
   @override
   final String? bio;
   @override
-  @JsonKey(name: 'is_email_verified')
+  @JsonKey()
   final bool isEmailVerified;
   @override
-  @JsonKey(name: 'created_at')
   final DateTime? createdAt;
   @override
-  @JsonKey(name: 'updated_at')
   final DateTime? updatedAt;
 
   @override
@@ -341,9 +336,9 @@ abstract class _UserDto extends UserDto {
     final String? university,
     final String? major,
     final String? bio,
-    @JsonKey(name: 'is_email_verified') final bool isEmailVerified,
-    @JsonKey(name: 'created_at') final DateTime? createdAt,
-    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+    final bool isEmailVerified,
+    final DateTime? createdAt,
+    final DateTime? updatedAt,
   }) = _$UserDtoImpl;
   const _UserDto._() : super._();
 
@@ -364,13 +359,10 @@ abstract class _UserDto extends UserDto {
   @override
   String? get bio;
   @override
-  @JsonKey(name: 'is_email_verified')
   bool get isEmailVerified;
   @override
-  @JsonKey(name: 'created_at')
   DateTime? get createdAt;
   @override
-  @JsonKey(name: 'updated_at')
   DateTime? get updatedAt;
 
   /// Create a copy of UserDto

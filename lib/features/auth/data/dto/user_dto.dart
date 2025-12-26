@@ -15,18 +15,15 @@ class UserDto with _$UserDto {
     String? university,
     String? major,
     String? bio,
-    @JsonKey(name: 'is_email_verified')
-    @Default(false)
-    bool isEmailVerified,
-    @JsonKey(name: 'created_at')
+    @Default(false) bool isEmailVerified,
     DateTime? createdAt,
-    @JsonKey(name: 'updated_at')
     DateTime? updatedAt,
   }) = _UserDto;
 
   const UserDto._();
 
-  factory UserDto.fromJson(Map<String, dynamic> json) => _$UserDtoFromJson(json);
+  factory UserDto.fromJson(Map<String, dynamic> json) =>
+      _$UserDtoFromJson(json);
 
   /// Convert DTO to domain entity
   User toDomain() {
