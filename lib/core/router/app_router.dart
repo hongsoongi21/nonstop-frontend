@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
+import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
@@ -15,12 +16,29 @@ import 'package:nonstop/shared/components/main_scaffold.dart';
 
 /// Main router with authentication guard and bottom navigation
 final routerProvider = Provider<GoRouter>((ref) {
-  // TODO: Add auth state checking
-  // final authState = ref.watch(authProvider);
+  final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation:
-        Routes.login, // TODO: Change to Routes.splash when auth is ready
+    initialLocation: authState.isAuthenticated ? Routes.home : Routes.login,
+    refreshListenable: authState, // Will be updated when we implement proper auth
+    redirect: (context, state) {
+      final isAuthenticated = authState.isAuthenticated;
+      final isGoingToAuth = state.uri.toString() == Routes.login ||
+          state.uri.toString() == Routes.register ||
+          state.uri.toString() == Routes.forgotPassword;
+
+      // If not authenticated and trying to access protected route, redirect to login
+      if (!isAuthenticated && !isGoingToAuth) {
+        return Routes.login;
+      }
+
+      // If authenticated and on auth screen, redirect to home
+      if (isAuthenticated && isGoingToAuth) {
+        return Routes.home;
+      }
+
+      return null;
+    },
     routes: [
       // Auth routes
       GoRoute(
