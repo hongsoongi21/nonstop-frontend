@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/mock/mock_data.dart';
-import '../../../../../core/theme/app_colors.dart';
-import '../../../../../core/theme/app_spacing.dart';
-import '../../../../../core/theme/app_typography.dart';
-import '../../../../../shared/components/main_scaffold.dart';
-import '../../../../../shared/components/post_card.dart';
+import 'package:go_router/go_router.dart';
 
-class BoardScreen extends StatefulWidget {
+import '../../../../core/constants/routes.dart';
+import '../../../../core/mock/mock_data.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/app_states.dart';
+import '../../../../shared/components/main_scaffold.dart';
+import '../../../../shared/components/post_card.dart';
+import '../providers/board_provider.dart';
+
+class BoardScreen extends ConsumerStatefulWidget {
   const BoardScreen({super.key});
 
   @override
-  State<BoardScreen> createState() => _BoardScreenState();
+  ConsumerState<BoardScreen> createState() => _BoardScreenState();
 }
 
-class _BoardScreenState extends State<BoardScreen>
+class _BoardScreenState extends ConsumerState<BoardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  PostCategory _selectedCategory = PostCategory.free;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _tabController.addListener(() {
-      setState(() {
-        _selectedCategory = PostCategory.values[_tabController.index];
-      });
+      final category = PostCategory.values[_tabController.index];
+      ref.read(boardProvider.notifier).changeCategory(category);
     });
   }
 
@@ -38,13 +42,16 @@ class _BoardScreenState extends State<BoardScreen>
 
   @override
   Widget build(BuildContext context) {
-    final filteredPosts = MockData.getPostsByCategory(_selectedCategory);
+    final boardState = ref.watch(boardProvider);
+    final filteredPosts = boardState.filteredPosts;
+    final isLoading = boardState.isLoading;
+    final error = boardState.error;
 
     return AppScaffold(
       title: 'Board',
       actions: [
         IconButton(
-          onPressed: () {}, // TODO: Navigate to create post
+          onPressed: () => context.go(Routes.boardCreatePath()),
           icon: const Icon(Icons.add),
           tooltip: 'Create Post',
         ),
@@ -55,7 +62,7 @@ class _BoardScreenState extends State<BoardScreen>
         ),
       ],
       floatingActionButton: AppFab(
-        onPressed: () {}, // TODO: Navigate to create post
+        onPressed: () => context.go(Routes.boardCreatePath()),
         icon: Icons.edit,
         tooltip: 'New Post',
       ),
@@ -92,33 +99,79 @@ class _BoardScreenState extends State<BoardScreen>
             ),
           ),
 
+          // Error message
+          if (error != null)
+            Container(
+              margin: EdgeInsets.only(bottom: AppSpacing.md),
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      error,
+                      style: AppTypography.body2.copyWith(color: AppColors.error),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => ref.read(boardProvider.notifier).clearError(),
+                    icon: Icon(Icons.close, color: AppColors.error, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+              ),
+            ),
+
           // Posts list
           Expanded(
-            child: filteredPosts.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: filteredPosts.length,
-                    itemBuilder: (context, index) {
-                      final post = filteredPosts[index];
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: AppSpacing.md),
-                        child: PostCard(
-                          post: post,
-                          onTap: () {}, // TODO: Navigate to post details
-                          onLike: () {}, // TODO: Handle like
-                          onComment: () {}, // TODO: Navigate to comments
-                        ),
-                      );
-                    },
-                  ),
+            child: AppRefreshIndicator(
+              onRefresh: () => ref.read(boardProvider.notifier).refreshPosts(),
+              child: filteredPosts.isEmpty && !isLoading
+                  ? _buildEmptyState(boardState.selectedCategory)
+                  : ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: isLoading ? 0 : filteredPosts.length,
+                      itemBuilder: (context, index) {
+                        final post = filteredPosts[index];
+                        final likesCount = boardState.getPostLikes(post.id);
+
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: AppSpacing.md),
+                          child: PostCard(
+                            post: post.copyWith(likes: likesCount),
+                            onTap: () {
+                              // TODO: Navigate to post details
+                            },
+                            onLike: () => ref.read(boardProvider.notifier).toggleLike(post.id),
+                            onComment: () {
+                              // Simulate adding a comment
+                              ref.read(boardProvider.notifier).addComment(
+                                post.id,
+                                'This is a sample comment!',
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Comment added!')),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(PostCategory selectedCategory) {
     final categoryNames = {
       PostCategory.free: 'Erkin',
       PostCategory.secret: 'Sirli',
@@ -155,7 +208,7 @@ class _BoardScreenState extends State<BoardScreen>
             SizedBox(height: AppSpacing.lg),
 
             Text(
-              'No ${categoryNames[_selectedCategory]} posts yet',
+              'No ${categoryNames[selectedCategory]} posts yet',
               style: AppTypography.headline6.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -165,7 +218,7 @@ class _BoardScreenState extends State<BoardScreen>
             SizedBox(height: AppSpacing.sm),
 
             Text(
-              categoryDescriptions[_selectedCategory]!,
+              categoryDescriptions[selectedCategory]!,
               style: AppTypography.body2.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -175,7 +228,7 @@ class _BoardScreenState extends State<BoardScreen>
             SizedBox(height: AppSpacing.xl),
 
             AppFab(
-              onPressed: () {}, // TODO: Navigate to create post
+              onPressed: () => context.go(Routes.boardCreatePath()),
               icon: Icons.add,
               tooltip: 'Create First Post',
             ),

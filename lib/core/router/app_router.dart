@@ -9,7 +9,9 @@ import 'package:nonstop/features/auth/presentation/screens/email_verification_sc
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
+import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
@@ -81,6 +83,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.board,
                 builder: (context, state) => const BoardScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    builder: (context, state) => const CreatePostScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -91,6 +99,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.timetable,
                 builder: (context, state) => const TimetableScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'create',
+                    builder: (context, state) => const CreateEventScreen(),
+                  ),
+                ],
               ),
             ],
           ),

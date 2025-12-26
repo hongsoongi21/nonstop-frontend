@@ -20,30 +20,49 @@ class NetworkException implements Exception {
   String toString() => 'NetworkException: $message';
 }
 
-class ValidationException implements Exception {
+class ApiException implements Exception {
   final String message;
+
+  const ApiException(this.message);
+
+  @override
+  String toString() => 'ApiException: $message';
+}
+
+class ValidationException extends ApiException {
   final Map<String, String> errors;
 
-  const ValidationException({required this.message, this.errors = const {}});
+  const ValidationException({required String message, this.errors = const {}})
+    : super(message);
 
   @override
   String toString() => 'ValidationException: $message';
 }
 
-class AuthenticationException implements Exception {
-  final String message;
-
-  const AuthenticationException(this.message);
+class AuthenticationException extends ApiException {
+  const AuthenticationException(String message) : super(message);
 
   @override
   String toString() => 'AuthenticationException: $message';
 }
 
-class AuthorizationException implements Exception {
-  final String message;
-
-  const AuthorizationException(this.message);
+class AuthorizationException extends ApiException {
+  const AuthorizationException(String message) : super(message);
 
   @override
   String toString() => 'AuthorizationException: $message';
+}
+
+class NotFoundException extends ApiException {
+  const NotFoundException(String message) : super(message);
+
+  @override
+  String toString() => 'NotFoundException: $message';
+}
+
+class TimeoutException extends ApiException {
+  const TimeoutException(String message) : super(message);
+
+  @override
+  String toString() => 'TimeoutException: $message';
 }

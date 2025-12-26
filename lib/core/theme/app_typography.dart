@@ -152,6 +152,20 @@ class AppTypography {
     return style.copyWith(fontSize: (style.fontSize ?? 14) * clampedScale);
   }
 
+  // Material 3 aliases for easier access
+  static TextStyle get bodyLarge => body1;
+  static TextStyle get bodyMedium => body2;
+  static TextStyle get bodySmall => caption;
+  static TextStyle get labelLarge => button;
+  static TextStyle get labelMedium => subtitle2;
+  static TextStyle get labelSmall => overline;
+  static TextStyle get headlineLarge => headline1;
+  static TextStyle get headlineMedium => headline2;
+  static TextStyle get headlineSmall => headline3;
+  static TextStyle get titleLarge => headline4;
+  static TextStyle get titleMedium => headline5;
+  static TextStyle get titleSmall => headline6;
+
   // Material 3 text theme factory
   static TextTheme material3TextTheme({
     Color? displayColor,

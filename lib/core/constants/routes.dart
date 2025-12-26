@@ -19,8 +19,12 @@ class Routes {
 
   // 📄 Detail Screens (with parameters)
   static const String boardDetail = '/board/:id';
+  static const String boardCreate = '/board/create';
+  static const String boardSearch = '/board/search';
   static const String chatRoom = '/chat/:roomId';
   static const String userProfile = '/profile/:userId';
+  static const String timetableCreate = '/timetable/create';
+  static const String timetableEvent = '/timetable/event/:id';
 
   // 🔍 Query parameters
   static const String search = '/search?query=:query';
@@ -28,7 +32,12 @@ class Routes {
 
   // 🛠️ Path Builders
   static String boardDetailPath(String id) => '/board/$id';
+  static String boardCreatePath() => '/board/create';
+  static String boardSearchPath() => '/board/search';
   static String chatRoomPath(String roomId) => '/chat/$roomId';
   static String userProfilePath(String userId) => '/profile/$userId';
+  static String timetableCreatePath() => '/timetable/create';
+  static String timetableEventPath(String eventId) =>
+      '/timetable/event/$eventId';
   static String searchPath(String query) => '/search?query=$query';
 }

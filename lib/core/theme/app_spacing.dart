@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class AppSpacing {
   // Base spacing units (4px grid system)
+  static const double xxs = 2.0;
   static const double xs = 4.0;
   static const double sm = 8.0;
   static const double md = 16.0;
@@ -87,6 +88,7 @@ class AppSpacing {
 
 extension SpacingExtension on num {
   // Convert numbers to spacing values
+  double get xxs => this * AppSpacing.xxs;
   double get xs => this * AppSpacing.xs;
   double get sm => this * AppSpacing.sm;
   double get md => this * AppSpacing.md;

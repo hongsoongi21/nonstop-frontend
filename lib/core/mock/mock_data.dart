@@ -509,6 +509,36 @@ class Post {
       return 'Just now';
     }
   }
+
+  Post copyWith({
+    String? id,
+    PostCategory? category,
+    String? title,
+    String? content,
+    String? author,
+    String? authorId,
+    String? authorAvatar,
+    int? likes,
+    int? comments,
+    DateTime? timestamp,
+    bool? isAnonymous,
+    List<String>? tags,
+  }) {
+    return Post(
+      id: id ?? this.id,
+      category: category ?? this.category,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      author: author ?? this.author,
+      authorId: authorId ?? this.authorId,
+      authorAvatar: authorAvatar ?? this.authorAvatar,
+      likes: likes ?? this.likes,
+      comments: comments ?? this.comments,
+      timestamp: timestamp ?? this.timestamp,
+      isAnonymous: isAnonymous ?? this.isAnonymous,
+      tags: tags ?? this.tags,
+    );
+  }
 }
 
 class Message {
