@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/entities/profile_stats.dart' as domain;
 import '../../domain/entities/user_profile.dart';
 
 /// Profile statistics widget showing user activity and achievements
 class ProfileStats extends StatelessWidget {
   final UserProfile profile;
-  final ProfileStats stats;
+  final domain.ProfileStats stats;
 
   const ProfileStats({super.key, required this.profile, required this.stats});
 
@@ -70,7 +71,7 @@ class ProfileStats extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '75/100',
+                      '${stats.overallScore}/${stats.activityLevel.minScore + 100}',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -79,7 +80,12 @@ class ProfileStats extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.xxs),
                 LinearProgressIndicator(
-                  value: 0.75,
+                  value:
+                      stats.overallScore /
+                      (stats.activityLevel.minScore + 100).clamp(
+                        1,
+                        double.infinity,
+                      ),
                   backgroundColor: AppColors.surfaceSecondary,
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.primary,
@@ -87,7 +93,7 @@ class ProfileStats extends StatelessWidget {
                 ),
                 SizedBox(height: AppSpacing.xxs),
                 Text(
-                  'Siz faol foydalanuvchisiz!',
+                  stats.activityLevel.description,
                   style: AppTypography.bodySmall.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -103,7 +109,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.post_add,
-                    value: '12',
+                    value: '${stats.totalPosts}',
                     label: 'Postlar',
                     color: AppColors.primary,
                   ),
@@ -111,7 +117,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.thumb_up,
-                    value: '45',
+                    value: '${stats.totalLikesReceived}',
                     label: 'Layklar',
                     color: AppColors.success,
                   ),
@@ -119,7 +125,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.comment,
-                    value: '23',
+                    value: '${stats.totalCommentsReceived}',
                     label: 'Izohlar',
                     color: AppColors.warning,
                   ),
@@ -135,7 +141,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.calendar_today,
-                    value: '30',
+                    value: '${stats.daysActive}',
                     label: 'Faol kunlar',
                     color: AppColors.info,
                   ),
@@ -143,7 +149,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.trending_up,
-                    value: '7',
+                    value: '${stats.longestLoginStreak}',
                     label: 'Eng uzun ketma-ket',
                     color: AppColors.secondary,
                   ),
@@ -151,7 +157,7 @@ class ProfileStats extends StatelessWidget {
                 Expanded(
                   child: _StatItem(
                     icon: Icons.access_time,
-                    value: '2.3x',
+                    value: '${stats.postsPerDay.toStringAsFixed(1)}x',
                     label: 'O\'rtacha',
                     color: AppColors.universityRed,
                   ),
@@ -164,19 +170,37 @@ class ProfileStats extends StatelessWidget {
               margin: EdgeInsets.only(top: AppSpacing.md),
               padding: EdgeInsets.all(AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
+                color: stats.isActiveRecently
+                    ? AppColors.success.withOpacity(0.1)
+                    : AppColors.warning.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.success.withOpacity(0.3)),
+                border: Border.all(
+                  color: stats.isActiveRecently
+                      ? AppColors.success.withOpacity(0.3)
+                      : AppColors.warning.withOpacity(0.3),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 20),
+                  Icon(
+                    stats.isActiveRecently
+                        ? Icons.check_circle
+                        : Icons.schedule,
+                    color: stats.isActiveRecently
+                        ? AppColors.success
+                        : AppColors.warning,
+                    size: 20,
+                  ),
                   SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Siz faol foydalanuvchisiz! Davom eting!',
+                      stats.isActiveRecently
+                          ? 'Siz faol foydalanuvchisiz! Davom eting!'
+                          : 'Oxirgi haftada faol emassiz. Qaytib keling!',
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.success,
+                        color: stats.isActiveRecently
+                            ? AppColors.success
+                            : AppColors.warning,
                       ),
                     ),
                   ),
