@@ -6,6 +6,7 @@ import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
 import 'package:nonstop/features/auth/presentation/screens/login_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen.dart';
+import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
@@ -50,7 +51,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.register,
-        builder: (context, state) => const SignupScreen(),
+        builder: (context, state) => const SignupScreenV1(), // Using V1 for development
       ),
       GoRoute(
         path: Routes.forgotPassword,

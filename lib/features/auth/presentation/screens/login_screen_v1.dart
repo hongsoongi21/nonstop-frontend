@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
 import '../widgets/gradient_button.dart';
+import '../widgets/language_selector.dart';
 
 class LoginScreenV1 extends ConsumerStatefulWidget {
   const LoginScreenV1({super.key});
@@ -39,21 +41,21 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
       if (mounted) {
-        context.go('/home');
+        context.go(Routes.home);
       }
     }
   }
 
   Future<void> _handleGoogleLogin() async {
-    // TODO: Implement Google login
+    // TODO: Google 로그인 구현 필요
   }
 
   void _handleForgotPassword() {
-    // TODO: Navigate to forgot password screen
+    // TODO: 비밀번호 찾기 화면으로 이동 필요
   }
 
   void _handleSignup() {
-    context.go('/signup');
+    context.go(Routes.register);
   }
 
   @override
@@ -85,87 +87,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Language selector
-                  Container(
-                    width: 233.w,
-                    height: 43.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      border: Border.all(
-                        color: const Color(0xFFE0E0E0),
-                        width: 1.w,
-                      ),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            // TODO: Change language to Uzbek
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'UZ',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF111827),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 1.w,
-                          height: 20.h,
-                          color: const Color(0xFFE0E0E0),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // TODO: Change language to Russian
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'RU',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF111827),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          width: 1.w,
-                          height: 20.h,
-                          color: const Color(0xFFE0E0E0),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // TODO: Change language to English
-                          },
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'EN',
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(0xFF111827),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const LanguageSelector(),
 
                   SizedBox(height: 16.h),
 
