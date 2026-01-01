@@ -103,85 +103,84 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
         child: Column(
           children: [
             Expanded(
-              child: SingleChildScrollView(
+              child: ListView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Category Selection
-                    _buildCategorySelector(),
+                children: [
+                  // Category Selection
+                  _buildCategorySelector(),
 
-                    const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
 
-                    // Title Field
-                    AppTextField(
-                      controller: _titleController,
-                      labelText: 'Title',
-                      hintText: 'Write a clear, engaging title...',
-                      maxLines: 2,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter a title';
-                        }
-                        if (value.trim().length < 5) {
-                          return 'Title must be at least 5 characters';
-                        }
-                        return null;
-                      },
-                    ),
+                  // Title Field
+                  AppTextField(
+                    controller: _titleController,
+                    labelText: 'Title',
+                    hintText: 'Write a clear, engaging title...',
+                    maxLines: 2,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter a title';
+                      }
+                      if (value.trim().length < 5) {
+                        return 'Title must be at least 5 characters';
+                      }
+                      return null;
+                    },
+                  ),
 
-                    const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
 
-                    // Content Field
-                    AppTextField(
-                      controller: _contentController,
-                      labelText: 'Content',
-                      hintText:
-                          'Share your thoughts, ask questions, or describe what you\'re selling...',
-                      maxLines: 8,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter some content';
-                        }
-                        if (value.trim().length < 10) {
-                          return 'Content must be at least 10 characters';
-                        }
-                        return null;
-                      },
-                    ),
+                  // Content Field
+                  AppTextField(
+                    controller: _contentController,
+                    labelText: 'Content',
+                    hintText:
+                        'Share your thoughts, ask questions, or describe what you\'re selling...',
+                    maxLines: 8,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter some content';
+                      }
+                      if (value.trim().length < 10) {
+                        return 'Content must be at least 10 characters';
+                      }
+                      return null;
+                    },
+                  ),
 
-                    const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
 
-                    // Tags Section
-                    _buildTagsSection(),
+                  // Tags Section
+                  _buildTagsSection(),
 
-                    const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
 
-                    // Anonymous Toggle
-                    _buildAnonymousToggle(),
+                  // Anonymous Toggle
+                  _buildAnonymousToggle(),
 
-                    const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.lg),
 
-                    // Category Info
-                    _buildCategoryInfo(),
-                  ],
-                ),
+                  // Category Info
+                  _buildCategoryInfo(),
+
+                  const SizedBox(height: AppSpacing.xl),
+                ],
               ),
             ),
 
             // Bottom Actions
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                    width: 1,
+            IntrinsicHeight(
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  border: Border(
+                    top: BorderSide(
+                      color: Theme.of(context).dividerColor,
+                      width: 1,
+                    ),
                   ),
                 ),
-              ),
-              child: SafeArea(
                 child: Row(
                   children: [
                     Expanded(
