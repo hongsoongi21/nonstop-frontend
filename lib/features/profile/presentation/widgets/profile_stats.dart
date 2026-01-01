@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/entities/profile_stats.dart' as domain;
 import '../../domain/entities/user_profile.dart';
 
 /// Profile statistics widget showing user activity and achievements
 class ProfileStats extends StatelessWidget {
   final UserProfile profile;
-  final ProfileStats stats;
+  final domain.ProfileStats stats;
 
   const ProfileStats({super.key, required this.profile, required this.stats});
 

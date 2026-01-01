@@ -311,7 +311,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
 
                             // Signup Text
                             Container(
-                              constraints: BoxConstraints(maxWidth: 275.w),
+                              width: 275.w,
                               alignment: Alignment.center,
                               child: RichText(
                                 textAlign: TextAlign.center,
