@@ -38,6 +38,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
 
     await ref.read(authProvider.notifier).signIn(email, password);
 
+    // Check if widget is still mounted before accessing ref
+    if (!mounted) return;
+
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
       if (mounted) {
