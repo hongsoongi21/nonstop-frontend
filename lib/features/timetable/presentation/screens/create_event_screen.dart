@@ -31,7 +31,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   DateTime _startDate = DateTime.now();
   TimeOfDay _startTime = TimeOfDay.now();
   DateTime _endDate = DateTime.now();
-  TimeOfDay _endTime = TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
+  TimeOfDay _endTime = TimeOfDay.now().replacing(
+    hour: TimeOfDay.now().hour + 1,
+  );
   bool _isAllDay = false;
   final List<String> _tags = [];
   int? _selectedColor;
@@ -113,7 +115,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   _isAllDay = value;
                 });
               },
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
             ),
 
             if (!_isAllDay) ...[
@@ -300,9 +302,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           suffixIcon: const Icon(Icons.calendar_today),
         ),
         child: Text(
@@ -331,9 +331,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           suffixIcon: const Icon(Icons.access_time),
         ),
         child: Text(
@@ -387,11 +385,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   : null,
             ),
             child: isSelected
-                ? const Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 20,
-                  )
+                ? const Icon(Icons.check, color: Colors.white, size: 20)
                 : null,
           ),
         );
@@ -470,8 +464,19 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     DateTime endDateTime;
 
     if (_isAllDay) {
-      startDateTime = DateTime(_startDate.year, _startDate.month, _startDate.day);
-      endDateTime = DateTime(_startDate.year, _startDate.month, _startDate.day, 23, 59, 59);
+      startDateTime = DateTime(
+        _startDate.year,
+        _startDate.month,
+        _startDate.day,
+      );
+      endDateTime = DateTime(
+        _startDate.year,
+        _startDate.month,
+        _startDate.day,
+        23,
+        59,
+        59,
+      );
     } else {
       startDateTime = DateTime(
         _startDate.year,
@@ -490,9 +495,14 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     }
 
     // Validate that end time is after start time
-    if (endDateTime.isBefore(startDateTime) || endDateTime.isAtSameMomentAs(startDateTime)) {
+    if (endDateTime.isBefore(startDateTime) ||
+        endDateTime.isAtSameMomentAs(startDateTime)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tugash vaqti boshlanish vaqtidan keyin bo\'lishi kerak')),
+        const SnackBar(
+          content: Text(
+            'Tugash vaqti boshlanish vaqtidan keyin bo\'lishi kerak',
+          ),
+        ),
       );
       return;
     }
@@ -505,7 +515,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       endTime: endDateTime,
       type: _selectedType,
       userId: '1', // Current user ID
-      location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
+      location: _locationController.text.trim().isEmpty
+          ? null
+          : _locationController.text.trim(),
       color: _selectedColor,
       isAllDay: _isAllDay,
       tags: _tags.isEmpty ? null : List.from(_tags),

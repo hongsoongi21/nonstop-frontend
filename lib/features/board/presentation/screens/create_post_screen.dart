@@ -55,8 +55,12 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
       author: _isAnonymous ? 'Anonymous' : 'Current User', // Would be from auth
-      authorId: _isAnonymous ? 'anon_${DateTime.now().millisecondsSinceEpoch}' : 'current_user',
-      authorAvatar: _isAnonymous ? null : 'https://via.placeholder.com/40x40/2563EB/FFFFFF?text=YU',
+      authorId: _isAnonymous
+          ? 'anon_${DateTime.now().millisecondsSinceEpoch}'
+          : 'current_user',
+      authorAvatar: _isAnonymous
+          ? null
+          : 'https://via.placeholder.com/40x40/2563EB/FFFFFF?text=YU',
       likes: 0,
       comments: 0,
       timestamp: DateTime.now(),
@@ -132,7 +136,8 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                     AppTextField(
                       controller: _contentController,
                       labelText: 'Content',
-                      hintText: 'Share your thoughts, ask questions, or describe what you\'re selling...',
+                      hintText:
+                          'Share your thoughts, ask questions, or describe what you\'re selling...',
                       maxLines: 8,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -233,7 +238,9 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 }
               },
               backgroundColor: Theme.of(context).colorScheme.surface,
-              selectedColor: Color(_getCategoryColor(category)).withValues(alpha: 0.1),
+              selectedColor: Color(
+                _getCategoryColor(category),
+              ).withValues(alpha: 0.1),
               checkmarkColor: Color(_getCategoryColor(category)),
               labelStyle: AppTypography.body2.copyWith(
                 color: isSelected
@@ -313,15 +320,19 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           Wrap(
             spacing: AppSpacing.xs,
             runSpacing: AppSpacing.xs,
-            children: _tags.map((tag) => Chip(
-              label: Text('#$tag'),
-              deleteIcon: const Icon(Icons.close, size: 16),
-              onDeleted: () => _removeTag(tag),
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              labelStyle: AppTypography.caption.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            )).toList(),
+            children: _tags
+                .map(
+                  (tag) => Chip(
+                    label: Text('#$tag'),
+                    deleteIcon: const Icon(Icons.close, size: 16),
+                    onDeleted: () => _removeTag(tag),
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    labelStyle: AppTypography.caption.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ],
@@ -334,9 +345,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(
-          color: Theme.of(context).dividerColor,
-        ),
+        border: Border.all(color: Theme.of(context).dividerColor),
       ),
       child: Row(
         children: [
@@ -372,7 +381,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 _isAnonymous = value;
               });
             },
-            activeColor: Theme.of(context).colorScheme.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),
@@ -385,10 +394,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Color(_getCategoryColor(_selectedCategory)).withValues(alpha: 0.05),
+        color: Color(
+          _getCategoryColor(_selectedCategory),
+        ).withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         border: Border.all(
-          color: Color(_getCategoryColor(_selectedCategory)).withValues(alpha: 0.2),
+          color: Color(
+            _getCategoryColor(_selectedCategory),
+          ).withValues(alpha: 0.2),
         ),
       ),
       child: Row(

@@ -138,10 +138,10 @@ class AppAnimations {
     required Widget child,
   }) {
     return _ShimmerAnimation(
-      child: child,
       duration: duration,
       baseColor: baseColor ?? Colors.grey[300]!,
       highlightColor: highlightColor ?? Colors.grey[100]!,
+      child: child,
     );
   }
 
