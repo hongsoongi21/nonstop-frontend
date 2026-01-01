@@ -184,7 +184,7 @@ class AppButton extends StatelessWidget {
       children.add(const SizedBox(width: AppSpacing.sm));
     }
 
-    children.add(Text(text));
+    children.add(Flexible(child: Text(text)));
 
     if (trailingIcon != null) {
       children.add(const SizedBox(width: AppSpacing.sm));
