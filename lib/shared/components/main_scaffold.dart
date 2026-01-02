@@ -53,7 +53,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       leading:
           leading ??
-          (showBackButton
+          (showBackButton && Navigator.of(context).canPop()
               ? IconButton(
                   onPressed: () => context.pop(),
                   icon: const Icon(Icons.arrow_back),
