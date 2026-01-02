@@ -60,7 +60,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           : 'current_user',
       authorAvatar: _isAnonymous
           ? null
-          : 'https://via.placeholder.com/40x40/2563EB/FFFFFF?text=YU',
+          : 'https://picsum.photos/seed/you/40/40',
       likes: 0,
       comments: 0,
       timestamp: DateTime.now(),

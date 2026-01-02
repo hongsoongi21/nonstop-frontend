@@ -11,28 +11,28 @@ class MockData {
       name: 'Tashkent State University of Economics',
       shortName: 'TSUE',
       color: AppColors.primary.toARGB32(),
-      logoUrl: 'https://via.placeholder.com/100x100/2563EB/FFFFFF?text=TSUE',
+      logoUrl: 'https://picsum.photos/seed/tsue/100/100',
     ),
     University(
       id: '2',
       name: 'National University of Uzbekistan',
       shortName: 'NUUz',
       color: AppColors.universityRed.toARGB32(),
-      logoUrl: 'https://via.placeholder.com/100x100/E11D48/FFFFFF?text=NUUz',
+      logoUrl: 'https://picsum.photos/seed/nuuz/100/100',
     ),
     University(
       id: '3',
       name: 'Inha University in Tashkent',
       shortName: 'IUT',
       color: AppColors.universityGreen.toARGB32(),
-      logoUrl: 'https://via.placeholder.com/100x100/059669/FFFFFF?text=IUT',
+      logoUrl: 'https://picsum.photos/seed/iut/100/100',
     ),
     University(
       id: '4',
       name: 'Tashkent University of Information Technologies',
       shortName: 'TUIT',
       color: AppColors.universityPurple.toARGB32(),
-      logoUrl: 'https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=TUIT',
+      logoUrl: 'https://picsum.photos/seed/tuit/100/100',
     ),
   ];
 
@@ -43,7 +43,7 @@ class MockData {
       name: 'Azizbek Rahimov',
       email: 'azizbek@example.com',
       universityId: '1',
-      avatarUrl: 'https://via.placeholder.com/100x100/2563EB/FFFFFF?text=AR',
+      avatarUrl: 'https://picsum.photos/seed/ar/100/100',
       major: 'Computer Science',
       year: 3,
       isOnline: true,
@@ -53,7 +53,7 @@ class MockData {
       name: 'Malika Karimova',
       email: 'malika@example.com',
       universityId: '2',
-      avatarUrl: 'https://via.placeholder.com/100x100/E11D48/FFFFFF?text=MK',
+      avatarUrl: 'https://picsum.photos/seed/mk/100/100',
       major: 'Business Administration',
       year: 2,
       isOnline: false,
@@ -63,7 +63,7 @@ class MockData {
       name: 'Jasurbek Tursunov',
       email: 'jasurbek@example.com',
       universityId: '3',
-      avatarUrl: 'https://via.placeholder.com/100x100/059669/FFFFFF?text=JT',
+      avatarUrl: 'https://picsum.photos/seed/jt/100/100',
       major: 'Economics',
       year: 4,
       isOnline: true,
@@ -73,7 +73,7 @@ class MockData {
       name: 'Nilufar Abdullayeva',
       email: 'nilufar@example.com',
       universityId: '1',
-      avatarUrl: 'https://via.placeholder.com/100x100/2563EB/FFFFFF?text=NA',
+      avatarUrl: 'https://picsum.photos/seed/na/100/100',
       major: 'Mathematics',
       year: 3,
       isOnline: true,
@@ -94,7 +94,8 @@ class MockData {
       color: AppColors.courseColors[0].toARGB32(),
       credits: 3,
       universityId: '1',
-      description: 'Fundamental data structures and algorithm design principles.',
+      description:
+          'Fundamental data structures and algorithm design principles.',
     ),
     Course(
       id: '2',
@@ -160,10 +161,11 @@ class MockData {
       id: '1',
       category: PostCategory.free,
       title: 'Best study spots in Tashkent?',
-      content: 'Hey everyone! I\'m looking for good places to study near TSUE. Any recommendations for quiet cafes or libraries?',
+      content:
+          'Hey everyone! I\'m looking for good places to study near TSUE. Any recommendations for quiet cafes or libraries?',
       author: 'Azizbek Rahimov',
       authorId: '1',
-      authorAvatar: 'https://via.placeholder.com/40x40/2563EB/FFFFFF?text=AR',
+      authorAvatar: 'https://picsum.photos/seed/ar40/40/40',
       likes: 12,
       comments: 8,
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
@@ -174,10 +176,11 @@ class MockData {
       id: '2',
       category: PostCategory.question,
       title: 'CS201 Assignment Help',
-      content: 'Struggling with the graph algorithms problem. Anyone willing to explain BFS vs DFS?',
+      content:
+          'Struggling with the graph algorithms problem. Anyone willing to explain BFS vs DFS?',
       author: 'Anonymous',
       authorId: 'anon_1',
-      authorAvatar: 'https://via.placeholder.com/40x40/6B7280/FFFFFF?text=?',
+      authorAvatar: 'https://picsum.photos/seed/anon1/40/40',
       likes: 5,
       comments: 15,
       timestamp: DateTime.now().subtract(const Duration(hours: 4)),
@@ -188,10 +191,11 @@ class MockData {
       id: '3',
       category: PostCategory.market,
       title: 'Selling Calculus Textbook',
-      content: 'Stewart Calculus 8th edition, barely used. Selling for 50,000 UZS. Pick up at TSUE.',
+      content:
+          'Stewart Calculus 8th edition, barely used. Selling for 50,000 UZS. Pick up at TSUE.',
       author: 'Malika Karimova',
       authorId: '2',
-      authorAvatar: 'https://via.placeholder.com/40x40/E11D48/FFFFFF?text=MK',
+      authorAvatar: 'https://picsum.photos/seed/mk40/40/40',
       likes: 3,
       comments: 2,
       timestamp: DateTime.now().subtract(const Duration(hours: 6)),
@@ -202,10 +206,11 @@ class MockData {
       id: '4',
       category: PostCategory.secret,
       title: 'Secret: Best professor ratings',
-      content: 'Don\'t tell anyone, but Dr. Ahmadjon\'s lectures are actually recorded and available online...',
+      content:
+          'Don\'t tell anyone, but Dr. Ahmadjon\'s lectures are actually recorded and available online...',
       author: 'Anonymous',
       authorId: 'anon_2',
-      authorAvatar: 'https://via.placeholder.com/40x40/6B7280/FFFFFF?text=?',
+      authorAvatar: 'https://picsum.photos/seed/anon2/40/40',
       likes: 28,
       comments: 12,
       timestamp: DateTime.now().subtract(const Duration(hours: 8)),
@@ -216,10 +221,11 @@ class MockData {
       id: '5',
       category: PostCategory.free,
       title: 'Group study session this weekend',
-      content: 'Planning a group study for midterms. Topics: Data Structures and Algorithms. Saturday 2 PM at Central Library.',
+      content:
+          'Planning a group study for midterms. Topics: Data Structures and Algorithms. Saturday 2 PM at Central Library.',
       author: 'Jasurbek Tursunov',
       authorId: '3',
-      authorAvatar: 'https://via.placeholder.com/40x40/059669/FFFFFF?text=JT',
+      authorAvatar: 'https://picsum.photos/seed/jt40/40/40',
       likes: 18,
       comments: 6,
       timestamp: DateTime.now().subtract(const Duration(hours: 12)),
@@ -288,7 +294,7 @@ class MockData {
       name: 'Plov (Pilaf)',
       price: '25,000',
       category: CafeteriaCategory.food,
-      imageUrl: 'https://via.placeholder.com/200x150/10B981/FFFFFF?text=Plov',
+      imageUrl: 'https://picsum.photos/seed/plov/200/150',
       description: 'Traditional Uzbek rice dish with meat and carrots',
     ),
     CafeteriaItem(
@@ -296,7 +302,7 @@ class MockData {
       name: 'Green Tea',
       price: '5,000',
       category: CafeteriaCategory.drink,
-      imageUrl: 'https://via.placeholder.com/200x150/059669/FFFFFF?text=Tea',
+      imageUrl: 'https://picsum.photos/seed/tea/200/150',
       description: 'Fresh green tea',
     ),
     CafeteriaItem(
@@ -304,7 +310,7 @@ class MockData {
       name: 'Beshbarmak',
       price: '30,000',
       category: CafeteriaCategory.food,
-      imageUrl: 'https://via.placeholder.com/200x150/F59E0B/FFFFFF?text=Beshbarmak',
+      imageUrl: 'https://picsum.photos/seed/beshbarmak/200/150',
       description: 'Kazakh meat and noodle dish',
     ),
     CafeteriaItem(
@@ -312,7 +318,7 @@ class MockData {
       name: 'Kompot',
       price: '8,000',
       category: CafeteriaCategory.drink,
-      imageUrl: 'https://via.placeholder.com/200x150/3B82F6/FFFFFF?text=Kompot',
+      imageUrl: 'https://picsum.photos/seed/kompot/200/150',
       description: 'Fruit drink made from dried fruits',
     ),
   ];
@@ -413,7 +419,13 @@ class Course {
     final courseDate = now.add(Duration(days: daysToAdd));
     final hour = startTime.toInt();
     final minute = ((startTime - hour) * 60).toInt();
-    return DateTime(courseDate.year, courseDate.month, courseDate.day, hour, minute);
+    return DateTime(
+      courseDate.year,
+      courseDate.month,
+      courseDate.day,
+      hour,
+      minute,
+    );
   }
 
   DateTime get endDateTime {
@@ -421,24 +433,29 @@ class Course {
   }
 
   String get dayName {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
     return days[day - 1];
   }
 
   String get timeRange {
-    final start = '${startTime.toInt()}:${((startTime - startTime.toInt()) * 60).toInt().toString().padLeft(2, '0')}';
+    final start =
+        '${startTime.toInt()}:${((startTime - startTime.toInt()) * 60).toInt().toString().padLeft(2, '0')}';
     final endTime = startTime + duration;
-    final end = '${endTime.toInt()}:${((endTime - endTime.toInt()) * 60).toInt().toString().padLeft(2, '0')}';
+    final end =
+        '${endTime.toInt()}:${((endTime - endTime.toInt()) * 60).toInt().toString().padLeft(2, '0')}';
     return '$start - $end';
   }
 }
 
-enum PostCategory {
-  free,
-  secret,
-  question,
-  market,
-}
+enum PostCategory { free, secret, question, market }
 
 class Post {
   final String id;
@@ -602,14 +619,12 @@ class Conversation {
   }
 
   String get conversationAvatar {
-    return otherParticipant.avatarUrl ?? 'https://via.placeholder.com/40x40/6B7280/FFFFFF?text=?';
+    return otherParticipant.avatarUrl ??
+        'https://picsum.photos/seed/default/40/40';
   }
 }
 
-enum CafeteriaCategory {
-  food,
-  drink,
-}
+enum CafeteriaCategory { food, drink }
 
 class CafeteriaItem {
   final String id;
