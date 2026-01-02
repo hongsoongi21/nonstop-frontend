@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../shared/components/glass_container.dart';
 import '../../domain/entities/event.dart';
 import '../providers/timetable_provider.dart';
 import '../widgets/calendar_grid.dart';
@@ -20,8 +21,12 @@ class TimetableScreen extends ConsumerWidget {
     final notifier = ref.read(timetableProvider.notifier);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('Dars jadvali'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             onPressed: () => _showCreateEventDialog(context, ref),
@@ -35,42 +40,60 @@ class TimetableScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Calendar header with navigation
-          Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: CalendarHeader(
-              viewType: state.viewType,
-              focusedDate: state.focusedDate,
-              onPrevious: () => notifier.navigatePrevious(),
-              onNext: () => notifier.navigateNext(),
-              onToday: () => notifier.navigateToToday(),
-            ),
+      body: Container(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.background,
+              AppColors.primary.withValues(alpha: 0.05),
+              AppColors.secondary.withValues(alpha: 0.1),
+            ],
           ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Calendar header with navigation
+              Padding(
+                padding: EdgeInsets.all(AppSpacing.md),
+                child: CalendarHeader(
+                  viewType: state.viewType,
+                  focusedDate: state.focusedDate,
+                  onPrevious: () => notifier.navigatePrevious(),
+                  onNext: () => notifier.navigateNext(),
+                  onToday: () => notifier.navigateToToday(),
+                ),
+              ),
 
-          // View type selector
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            child: ViewTypeSelector(
-              selectedViewType: state.viewType,
-              onViewTypeChanged: (viewType) => notifier.changeViewType(viewType),
-            ),
+              // View type selector
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: ViewTypeSelector(
+                  selectedViewType: state.viewType,
+                  onViewTypeChanged: (viewType) => notifier.changeViewType(viewType),
+                ),
+              ),
+
+              SizedBox(height: AppSpacing.md),
+
+              // Calendar content based on view type
+              Expanded(
+                child: _buildCalendarView(context, ref, state, notifier),
+              ),
+
+              // Selected date events (when not in schedule view)
+              if (state.viewType != CalendarViewType.schedule) ...[
+                SizedBox(height: AppSpacing.md),
+                _buildSelectedDateEvents(context, ref, state),
+              ],
+            ],
           ),
-
-          SizedBox(height: AppSpacing.md),
-
-          // Calendar content based on view type
-          Expanded(
-            child: _buildCalendarView(context, ref, state, notifier),
-          ),
-
-          // Selected date events (when not in schedule view)
-          if (state.viewType != CalendarViewType.schedule) ...[
-            SizedBox(height: AppSpacing.md),
-            _buildSelectedDateEvents(context, ref, state),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -240,67 +263,71 @@ class TimetableScreen extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
-          Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: Row(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      child: GlassContainer(
+        borderColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
               children: [
                 Text(
                   'Tanlangan kun tadbirlari',
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
                 ),
                 const Spacer(),
-                Text(
-                  '${dayEvents.length} ta',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${dayEvents.length} ta',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
 
-          // Events list
-          Flexible(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-              itemCount: dayEvents.length,
-              itemBuilder: (context, index) {
-                final event = dayEvents[index];
-                return SizedBox(
-                  width: 200,
-                  child: EventCard(
-                    event: event,
-                    compact: true,
-                    onTap: () => _showEventDetails(context, event),
-                  ),
-                );
-              },
+            SizedBox(height: AppSpacing.md),
+
+            // Events list
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: dayEvents.length,
+                itemBuilder: (context, index) {
+                  final event = dayEvents[index];
+                  return Padding(
+                    padding: EdgeInsets.only(right: AppSpacing.sm),
+                    child: SizedBox(
+                      width: 200,
+                      child: EventCard(
+                        event: event,
+                        compact: true,
+                        onTap: () => _showEventDetails(context, event),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-
-          SizedBox(height: AppSpacing.md),
-        ],
+          ],
+        ),
       ),
     );
   }

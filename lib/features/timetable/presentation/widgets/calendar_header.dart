@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/components/glass_container.dart';
 import '../providers/timetable_provider.dart';
 
 /// Header widget for calendar views with navigation controls
@@ -25,19 +26,8 @@ class CalendarHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return GlassContainer(
+      borderColor: Colors.transparent,
       child: Row(
         children: [
           // Navigation buttons
@@ -63,7 +53,7 @@ class CalendarHeader extends StatelessWidget {
               _getDateTitle(),
               style: AppTypography.headlineSmall.copyWith(
                 color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.center,
             ),
@@ -72,23 +62,23 @@ class CalendarHeader extends StatelessWidget {
           SizedBox(width: AppSpacing.md),
 
           // Today button
-          TextButton(
-            onPressed: onToday,
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
-              backgroundColor: AppColors.primary.withOpacity(0.1),
-              foregroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
             ),
-            child: Text(
-              'Today',
-              style: AppTypography.labelMedium.copyWith(
-                fontWeight: FontWeight.w600,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: InkWell(
+              onTap: onToday,
+              child: Text(
+                'Today',
+                style: AppTypography.labelMedium.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.primary,
+                ),
               ),
             ),
           ),
@@ -131,16 +121,16 @@ class _NavigationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
-          color: AppColors.surfaceSecondary,
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
           icon,
-          size: 20,
+          size: 22,
           color: AppColors.textPrimary,
         ),
       ),
@@ -162,10 +152,10 @@ class ViewTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(AppSpacing.xxs),
+      padding: EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surfaceSecondary,
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -173,21 +163,28 @@ class ViewTypeSelector extends StatelessWidget {
           final isSelected = viewType == selectedViewType;
           return InkWell(
             onTap: () => onViewTypeChanged(viewType),
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(8),
             child: Container(
               padding: EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xxs,
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
               ),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: isSelected ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ] : null,
               ),
               child: Text(
                 _getViewTypeLabel(viewType),
                 style: AppTypography.labelSmall.copyWith(
-                  color: isSelected ? AppColors.surface : AppColors.textPrimary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 ),
               ),
             ),
