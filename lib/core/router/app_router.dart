@@ -12,6 +12,7 @@ import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
@@ -95,6 +96,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreateEventScreen(),
+                  ),
+                  GoRoute(
+                    path: 'gpa-calculator',
+                    builder: (context, state) => const GpaCalculatorScreen(),
                   ),
                 ],
               ),

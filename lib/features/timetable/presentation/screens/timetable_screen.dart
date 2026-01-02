@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/constants/routes.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/components/glass_container.dart';
-import '../../domain/entities/event.dart';
 import '../providers/timetable_provider.dart';
+import '../providers/gpa_provider.dart';
 import '../widgets/weekly_time_grid.dart';
 
 /// Main timetable screen with calendar views
@@ -109,7 +110,7 @@ class TimetableScreen extends ConsumerWidget {
               SizedBox(height: AppSpacing.md),
 
               // GPA Calculator section (like everytime app)
-              _buildGPACalculator(context),
+              _buildGPACalculator(context, ref),
 
               SizedBox(height: AppSpacing.md),
             ],
@@ -119,28 +120,59 @@ class TimetableScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildGPACalculator(BuildContext context) {
+  Widget _buildGPACalculator(BuildContext context, WidgetRef ref) {
+    final gpaState = ref.watch(gpaProvider);
+    final hasCourses = gpaState.courses.isNotEmpty;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: GlassContainer(
-        borderColor: Colors.transparent,
-        child: Row(
-          children: [
-            Text(
-              'Calculator',
-              style: AppTypography.titleMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
+      child: GestureDetector(
+        onTap: () => context.go(Routes.gpaCalculator),
+        child: GlassContainer(
+          borderColor: Colors.transparent,
+          child: Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Grade Calculator',
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    hasCourses 
+                      ? 'Current GPA: ${gpaState.totalGpa.toStringAsFixed(2)} (${gpaState.totalCredits.toStringAsFixed(0)} credits)'
+                      : 'Calculate your GPA',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                // TODO: Navigate to GPA calculator
-              },
-              icon: Icon(Icons.edit_outlined, color: AppColors.textSecondary),
-            ),
-          ],
+              Spacer(),
+              if (hasCourses)
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    gpaState.totalGpa.toStringAsFixed(2),
+                    style: AppTypography.titleSmall.copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              else
+                Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
+            ],
+          ),
         ),
       ),
     );
