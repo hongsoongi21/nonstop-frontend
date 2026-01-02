@@ -47,6 +47,9 @@ abstract class AuthRepository {
   /// Delete user account
   Future<Either<Failure, Unit>> deleteAccount();
 
+  /// Get current access token
+  Future<Either<Failure, String?>> getAccessToken();
+
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;
 }

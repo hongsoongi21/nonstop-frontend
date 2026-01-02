@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/env_config.dart';
 import '../config/app_config.dart';
 import '../utils/logger.dart';
+
+final dioClientProvider = Provider<DioClient>((ref) {
+  return DioClient();
+});
 
 /// HTTP client using Dio with interceptors for authentication and logging
 class DioClient {

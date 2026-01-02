@@ -14,6 +14,7 @@ import 'package:nonstop/features/timetable/presentation/screens/timetable_screen
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
+import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
@@ -112,6 +113,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.chat,
                 builder: (context, state) => const ChatScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':roomId',
+                    builder: (context, state) {
+                      final roomId = int.tryParse(state.pathParameters['roomId'] ?? '') ?? 0;
+                      return ChatRoomScreen(roomId: roomId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
