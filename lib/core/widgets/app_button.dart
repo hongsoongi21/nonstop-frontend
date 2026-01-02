@@ -63,8 +63,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (_isDisabled) return AppColors.primary.withValues(alpha: 0.5);
-            if (states.contains(WidgetState.pressed))
+            if (states.contains(WidgetState.pressed)) {
               return AppColors.primaryDark;
+            }
             return AppColors.primary;
           }),
           foregroundColor: WidgetStateProperty.all(AppColors.textOnPrimary),
@@ -77,8 +78,9 @@ class AppButton extends StatelessWidget {
             return AppColors.surface;
           }),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (_isDisabled)
+            if (_isDisabled) {
               return AppColors.textSecondary.withValues(alpha: 0.5);
+            }
             return AppColors.textPrimary;
           }),
           side: WidgetStateProperty.all(
@@ -107,8 +109,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (_isDisabled)
+            if (_isDisabled) {
               return AppColors.textSecondary.withValues(alpha: 0.5);
+            }
             return AppColors.textSecondary;
           }),
           elevation: WidgetStateProperty.all(0),
@@ -118,8 +121,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (_isDisabled) return AppColors.error.withValues(alpha: 0.5);
-            if (states.contains(WidgetState.pressed))
+            if (states.contains(WidgetState.pressed)) {
               return AppColors.error.withValues(alpha: 0.8);
+            }
             return AppColors.error;
           }),
           foregroundColor: WidgetStateProperty.all(Colors.white),

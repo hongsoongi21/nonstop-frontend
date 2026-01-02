@@ -161,7 +161,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF7C3BEE).withValues(alpha: 0.059),
+                            color: const Color(
+                              0xFF7C3BEE,
+                            ).withValues(alpha: 0.059),
                             offset: Offset(0, 8.h),
                             blurRadius: 15.r,
                             spreadRadius: 0,
@@ -221,8 +223,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your email';
                                   }
-                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                      .hasMatch(value)) {
+                                  if (!RegExp(
+                                    r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                  ).hasMatch(value)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -347,13 +350,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       decoration: BoxDecoration(
         color: const Color(0xFFE9F0FE),
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(
-          color: const Color(0xFFFFFFFF),
-          width: 1.w,
-        ),
+        border: Border.all(color: const Color(0xFFFFFFFF), width: 1.w),
       ),
       child: DropdownButtonFormField<String>(
-        value: _selectedUniversity,
+        initialValue: _selectedUniversity,
         decoration: InputDecoration(
           hintText: 'Select University',
           hintStyle: TextStyle(
@@ -379,10 +379,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             size: 24.sp,
           ),
         ),
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: Colors.black87,
-        ),
+        style: TextStyle(fontSize: 14.sp, color: Colors.black87),
         dropdownColor: const Color(0xFFE9F0FE),
         isExpanded: true,
         items: _universities.map((String university) {
@@ -390,10 +387,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             value: university,
             child: Text(
               university,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 14.sp, color: Colors.black87),
               overflow: TextOverflow.ellipsis,
             ),
           );
@@ -413,10 +407,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-          width: 1.w,
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.w),
       ),
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -456,11 +447,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           SizedBox(height: 8.h),
 
           // Divider
-          Divider(
-            color: const Color(0xFFE5E7EB),
-            thickness: 1.h,
-            height: 1.h,
-          ),
+          Divider(color: const Color(0xFFE5E7EB), thickness: 1.h, height: 1.h),
 
           SizedBox(height: 12.h),
 
