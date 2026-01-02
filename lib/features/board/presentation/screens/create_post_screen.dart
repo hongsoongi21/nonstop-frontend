@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../providers/board_provider.dart';
 
@@ -98,54 +99,79 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Create Post',
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                children: [
+      backgroundColor: Colors.transparent,
+      padding: EdgeInsets.zero,
+      body: Container(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.background,
+              AppColors.primary.withValues(alpha: 0.05),
+              AppColors.secondary.withValues(alpha: 0.1),
+            ],
+          ),
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  children: [
                   // Category Selection
                   _buildCategorySelector(),
 
                   const SizedBox(height: AppSpacing.lg),
 
                   // Title Field
-                  AppTextField(
-                    controller: _titleController,
-                    labelText: 'Title',
-                    hintText: 'Write a clear, engaging title...',
-                    maxLines: 2,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a title';
-                      }
-                      if (value.trim().length < 5) {
-                        return 'Title must be at least 5 characters';
-                      }
-                      return null;
-                    },
+                  GlassContainer(
+                    borderColor: Colors.transparent,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: AppTextField(
+                      controller: _titleController,
+                      labelText: 'Title',
+                      hintText: 'Write a clear, engaging title...',
+                      maxLines: 2,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a title';
+                        }
+                        if (value.trim().length < 5) {
+                          return 'Title must be at least 5 characters';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: AppSpacing.lg),
 
                   // Content Field
-                  AppTextField(
-                    controller: _contentController,
-                    labelText: 'Content',
-                    hintText:
-                        'Share your thoughts, ask questions, or describe what you\'re selling...',
-                    maxLines: 8,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter some content';
-                      }
-                      if (value.trim().length < 10) {
-                        return 'Content must be at least 10 characters';
-                      }
-                      return null;
-                    },
+                  GlassContainer(
+                    borderColor: Colors.transparent,
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: AppTextField(
+                      controller: _contentController,
+                      labelText: 'Content',
+                      hintText:
+                          'Share your thoughts, ask questions, or describe what you\'re selling...',
+                      maxLines: 8,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter some content';
+                        }
+                        if (value.trim().length < 10) {
+                          return 'Content must be at least 10 characters';
+                        }
+                        return null;
+                      },
+                    ),
                   ),
 
                   const SizedBox(height: AppSpacing.lg),
@@ -169,18 +195,12 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
             ),
 
             // Bottom Actions
-            IntrinsicHeight(
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  border: Border(
-                    top: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 1,
-                    ),
-                  ),
-                ),
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: GlassContainer(
+                borderColor: Colors.transparent,
+                blur: 15,
+                opacity: 0.8,
                 child: Row(
                   children: [
                     Expanded(
@@ -203,154 +223,191 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 ),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCategorySelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Category',
-          style: AppTypography.body2.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
+    return GlassContainer(
+      borderColor: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Category',
+            style: AppTypography.body2.copyWith(
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.md),
-        Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: PostCategory.values.map((category) {
-            final isSelected = category == _selectedCategory;
-            return FilterChip(
-              label: Text(_getCategoryDisplayName(category)),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() {
-                    _selectedCategory = category;
-                  });
-                }
-              },
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              selectedColor: Color(
-                _getCategoryColor(category),
-              ).withValues(alpha: 0.1),
-              checkmarkColor: Color(_getCategoryColor(category)),
-              labelStyle: AppTypography.body2.copyWith(
-                color: isSelected
-                    ? Color(_getCategoryColor(category))
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                side: BorderSide(
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: PostCategory.values.map((category) {
+              final isSelected = category == _selectedCategory;
+              return FilterChip(
+                label: Text(_getCategoryDisplayName(category)),
+                selected: isSelected,
+                onSelected: (selected) {
+                  if (selected) {
+                    setState(() {
+                      _selectedCategory = category;
+                    });
+                  }
+                },
+                backgroundColor: Colors.white.withOpacity(0.5),
+                selectedColor: Color(
+                  _getCategoryColor(category),
+                ).withValues(alpha: 0.15),
+                checkmarkColor: Color(_getCategoryColor(category)),
+                labelStyle: AppTypography.body2.copyWith(
                   color: isSelected
                       ? Color(_getCategoryColor(category))
-                      : Theme.of(context).colorScheme.outline,
+                      : AppColors.textSecondary,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  side: BorderSide(
+                    color: isSelected
+                        ? Color(_getCategoryColor(category))
+                        : AppColors.border,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildTagsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Tags',
-              style: AppTypography.body2.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface,
+    return GlassContainer(
+      borderColor: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Tags',
+                style: AppTypography.body2.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.xs),
-            Text(
-              '(Optional)',
-              style: AppTypography.caption.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                '(Optional)',
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
             ),
-          ],
-        ),
-        const SizedBox(height: AppSpacing.sm),
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _tagController,
-                decoration: InputDecoration(
-                  hintText: 'Add a tag...',
-                  hintStyle: AppTypography.body2.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.sm,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _tagController,
+                    decoration: InputDecoration(
+                      hintText: 'Add a tag...',
+                      hintStyle: AppTypography.body2.copyWith(
+                        color: AppColors.textHint,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                    ),
+                    style: AppTypography.body2,
+                    onSubmitted: _addTag,
                   ),
                 ),
-                style: AppTypography.body2,
-                onSubmitted: _addTag,
-              ),
+                IconButton(
+                  onPressed: () => _addTag(_tagController.text),
+                  icon: Icon(
+                    Icons.add_circle,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
             ),
-            IconButton(
-              onPressed: () => _addTag(_tagController.text),
-              icon: Icon(
-                Icons.add,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+          ),
+          if (_tags.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.xs,
+              runSpacing: AppSpacing.xs,
+              children: _tags
+                  .map(
+                    (tag) => Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm + 2,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                        border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '#$tag',
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.primary.withOpacity(0.8),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: () => _removeTag(tag),
+                            child: Icon(
+                              Icons.close,
+                              size: 14,
+                              color: AppColors.primary.withOpacity(0.6),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
             ),
           ],
-        ),
-        if (_tags.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Wrap(
-            spacing: AppSpacing.xs,
-            runSpacing: AppSpacing.xs,
-            children: _tags
-                .map(
-                  (tag) => Chip(
-                    label: Text('#$tag'),
-                    deleteIcon: const Icon(Icons.close, size: 16),
-                    onDeleted: () => _removeTag(tag),
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    labelStyle: AppTypography.caption.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
         ],
-      ],
+      ),
     );
   }
 
   Widget _buildAnonymousToggle() {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: Theme.of(context).dividerColor),
-      ),
+    return GlassContainer(
+      borderColor: Colors.transparent,
       child: Row(
         children: [
           Icon(
             Icons.visibility_off_outlined,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: AppColors.textSecondary,
+            size: 24,
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -360,14 +417,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 Text(
                   'Post Anonymously',
                   style: AppTypography.body2.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   'Hide your identity from other users',
                   style: AppTypography.caption.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -380,7 +437,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 _isAnonymous = value;
               });
             },
-            activeThumbColor: Theme.of(context).colorScheme.primary,
+            activeColor: AppColors.primary,
           ),
         ],
       ),
@@ -390,25 +447,23 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   Widget _buildCategoryInfo() {
     final categoryInfo = _getCategoryInfo(_selectedCategory);
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: Color(
-          _getCategoryColor(_selectedCategory),
-        ).withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(
-          color: Color(
-            _getCategoryColor(_selectedCategory),
-          ).withValues(alpha: 0.2),
-        ),
-      ),
+    return GlassContainer(
+      color: Color(_getCategoryColor(_selectedCategory)),
+      opacity: 0.08,
+      borderColor: Color(_getCategoryColor(_selectedCategory)).withOpacity(0.3),
       child: Row(
         children: [
-          Icon(
-            categoryInfo['icon'] as IconData,
-            color: Color(_getCategoryColor(_selectedCategory)),
-            size: 24,
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: Color(_getCategoryColor(_selectedCategory)).withOpacity(0.15),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+            ),
+            child: Icon(
+              categoryInfo['icon'] as IconData,
+              color: Color(_getCategoryColor(_selectedCategory)),
+              size: 24,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -418,14 +473,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 Text(
                   categoryInfo['title'] as String,
                   style: AppTypography.body2.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 Text(
                   categoryInfo['description'] as String,
                   style: AppTypography.caption.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
