@@ -44,24 +44,23 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
       padding: EdgeInsets.zero, // Allow background to be edge-to-edge
       extendBody: true, // Background behind bottom nav
       extendBodyBehindAppBar: true, // Background behind status bar
-      body: Stack(
-        children: [
-          // Background Gradient
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.background,
-                    AppColors.primary.withValues(alpha: 0.05),
-                    AppColors.secondary.withValues(alpha: 0.1),
-                  ],
-                ),
-              ),
-            ),
+      body: Container(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
+        ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              AppColors.background,
+              AppColors.primary.withValues(alpha: 0.05),
+              AppColors.secondary.withValues(alpha: 0.1),
+            ],
           ),
+        ),
+        child: Stack(
+          children: [
 
           // Main Content
           SafeArea(
@@ -132,21 +131,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                   ),
                               ],
                             ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  _getCategoryIcon(category),
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  _getCategoryName(category),
-                                  style: AppTypography.button.copyWith(
-                                    color: isSelected ? Colors.white : AppColors.textSecondary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            child: Text(
+                              _getCategoryName(category),
+                              style: AppTypography.button.copyWith(
+                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -249,7 +239,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -264,19 +255,6 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         return 'Savol';
       case PostCategory.market:
         return 'Bozor';
-    }
-  }
-
-  String _getCategoryIcon(PostCategory category) {
-    switch (category) {
-      case PostCategory.free:
-        return '🗣️';
-      case PostCategory.secret:
-        return '🔒';
-      case PostCategory.question:
-        return '❓';
-      case PostCategory.market:
-        return '🛒';
     }
   }
 

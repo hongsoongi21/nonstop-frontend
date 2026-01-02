@@ -11,32 +11,29 @@ import '../theme/app_typography.dart';
 class AppBottomNavigationBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const AppBottomNavigationBar({
-    super.key,
-    required this.navigationShell,
-  });
+  const AppBottomNavigationBar({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+      margin: const EdgeInsets.only(left: 4, right: 4, bottom: 16),
       decoration: BoxDecoration(
-        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white).withOpacity(0.8),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.5),
-          width: 1,
-        ),
+        color:
+            (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+                    Colors.white)
+                .withOpacity(0.8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: BottomNavigationBar(
@@ -142,7 +139,8 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? Theme.of(context).appBarTheme.backgroundColor;
+    final bgColor =
+        backgroundColor ?? Theme.of(context).appBarTheme.backgroundColor;
 
     return AppBar(
       title: title != null
@@ -161,7 +159,8 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
       centerTitle: centerTitle,
       actions: actions,
-      leading: leading ??
+      leading:
+          leading ??
           (showBackButton
               ? IconButton(
                   onPressed: () => context.pop(),
@@ -200,10 +199,7 @@ class AppTabBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
+          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
       ),
       child: TabBar(
@@ -220,9 +216,7 @@ class AppTabBar extends StatelessWidget {
         indicatorSize: TabBarIndicatorSize.label,
         labelColor: Theme.of(context).colorScheme.primary,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        labelStyle: AppTypography.button.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: AppTypography.button.copyWith(fontWeight: FontWeight.w600),
         unselectedLabelStyle: AppTypography.button,
         onTap: onTap,
         tabs: tabs.map((tab) => Tab(text: tab)).toList(),
@@ -258,8 +252,10 @@ class AppFAB extends StatelessWidget {
       return FloatingActionButton.extended(
         onPressed: onPressed,
         tooltip: tooltip,
-        backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
-        foregroundColor: foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).colorScheme.primary,
+        foregroundColor:
+            foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -267,9 +263,7 @@ class AppFAB extends StatelessWidget {
         icon: Icon(icon),
         label: Text(
           label!,
-          style: AppTypography.button.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.button.copyWith(fontWeight: FontWeight.w600),
         ),
       );
     }
@@ -278,7 +272,8 @@ class AppFAB extends StatelessWidget {
       onPressed: onPressed,
       tooltip: tooltip,
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
-      foregroundColor: foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
+      foregroundColor:
+          foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
       elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
