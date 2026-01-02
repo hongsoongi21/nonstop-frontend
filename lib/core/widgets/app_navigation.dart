@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,65 +19,72 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        color: (Theme.of(context).bottomNavigationBarTheme.backgroundColor ?? Colors.white).withOpacity(0.8),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.5),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: AppTypography.caption.copyWith(
-          fontWeight: FontWeight.w600,
-          fontSize: 11,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: BottomNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textSecondary,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            selectedLabelStyle: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+            ),
+            unselectedLabelStyle: AppTypography.caption.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+            ),
+            items: [
+              _buildNavItem(
+                icon: Icons.people_alt_outlined,
+                activeIcon: Icons.people_alt,
+                label: 'Board',
+                isActive: navigationShell.currentIndex == 0,
+              ),
+              _buildNavItem(
+                icon: Icons.calendar_month_outlined,
+                activeIcon: Icons.calendar_month,
+                label: 'Timetable',
+                isActive: navigationShell.currentIndex == 1,
+              ),
+              _buildNavItem(
+                icon: Icons.chat_bubble_outline,
+                activeIcon: Icons.chat_bubble,
+                label: 'Chat',
+                isActive: navigationShell.currentIndex == 2,
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profile',
+                isActive: navigationShell.currentIndex == 3,
+              ),
+            ],
+          ),
         ),
-        unselectedLabelStyle: AppTypography.caption.copyWith(
-          fontSize: 11,
-        ),
-        items: [
-          _buildNavItem(
-            icon: Icons.home_outlined,
-            activeIcon: Icons.home,
-            label: 'Home',
-            isActive: navigationShell.currentIndex == 0,
-          ),
-          _buildNavItem(
-            icon: Icons.forum_outlined,
-            activeIcon: Icons.forum,
-            label: 'Board',
-            isActive: navigationShell.currentIndex == 1,
-          ),
-          _buildNavItem(
-            icon: Icons.schedule_outlined,
-            activeIcon: Icons.schedule,
-            label: 'Timetable',
-            isActive: navigationShell.currentIndex == 2,
-          ),
-          _buildNavItem(
-            icon: Icons.chat_outlined,
-            activeIcon: Icons.chat,
-            label: 'Chat',
-            isActive: navigationShell.currentIndex == 3,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            activeIcon: Icons.person,
-            label: 'Profile',
-            isActive: navigationShell.currentIndex == 4,
-          ),
-        ],
       ),
     );
   }

@@ -104,6 +104,9 @@ class AppScaffold extends StatelessWidget {
   final bool showBackButton;
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
+  final EdgeInsetsGeometry? padding;
+  final bool extendBody;
+  final bool extendBodyBehindAppBar;
 
   const AppScaffold({
     super.key,
@@ -115,12 +118,17 @@ class AppScaffold extends StatelessWidget {
     this.showBackButton = true,
     this.bottomNavigationBar,
     this.backgroundColor,
+    this.padding,
+    this.extendBody = false,
+    this.extendBodyBehindAppBar = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColor,
+      extendBody: extendBody,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
       appBar: showAppBar && title != null
           ? AppAppBar(
               title: title!,
@@ -129,7 +137,12 @@ class AppScaffold extends StatelessWidget {
             )
           : null,
       body: SafeArea(
-        child: Padding(padding: EdgeInsets.all(AppSpacing.md), child: body),
+        top: !extendBodyBehindAppBar,
+        bottom: !extendBody,
+        child: Padding(
+          padding: padding ?? EdgeInsets.all(AppSpacing.md),
+          child: body,
+        ),
       ),
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,

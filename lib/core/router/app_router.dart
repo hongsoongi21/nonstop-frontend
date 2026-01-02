@@ -21,7 +21,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: authState.isAuthenticated ? Routes.home : Routes.login,
+    initialLocation: authState.isAuthenticated ? Routes.board : Routes.login,
     redirect: (context, state) {
       final isAuthenticated = authState.isAuthenticated;
       final isGoingToAuth =
@@ -34,9 +34,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return Routes.login;
       }
 
-      // If authenticated and on auth screen, redirect to home
+      // If authenticated and on auth screen, redirect to board
       if (isAuthenticated && isGoingToAuth) {
-        return Routes.home;
+        return Routes.board;
       }
 
       return null;
@@ -69,16 +69,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MainScaffold(navigationShell: navigationShell);
         },
         branches: [
-          // Home/Dashboard
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.home,
-                builder: (context, state) => const HomeScreen(),
-              ),
-            ],
-          ),
-
           // Board
           StatefulShellBranch(
             routes: [
@@ -131,6 +121,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      // Hidden/Standalone Routes
+      GoRoute(
+        path: Routes.home,
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
