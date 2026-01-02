@@ -16,6 +16,7 @@ class AppButton extends StatelessWidget {
   final IconData? trailingIcon;
   final double? width;
   final EdgeInsetsGeometry? padding;
+  final bool useGradient; // Added this
 
   const AppButton({
     super.key,
@@ -29,12 +30,42 @@ class AppButton extends StatelessWidget {
     this.trailingIcon,
     this.width,
     this.padding,
+    this.useGradient = true, // Default to true
   });
 
   bool get _isDisabled => isDisabled || isLoading || onPressed == null;
 
   @override
   Widget build(BuildContext context) {
+    if (variant == ButtonVariant.primary && useGradient && !_isDisabled) {
+      return Container(
+        width: width,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: AppColors.brandGradient,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF7C3BEE).withValues(alpha: 0.2),
+              offset: const Offset(0, 4),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: _getButtonStyle(context).copyWith(
+            backgroundColor: WidgetStateProperty.all(Colors.transparent),
+            shadowColor: WidgetStateProperty.all(Colors.transparent),
+          ),
+          child: _buildContent(),
+        ),
+      );
+    }
+
     final buttonStyle = _getButtonStyle(context);
 
     return SizedBox(

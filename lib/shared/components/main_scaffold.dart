@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/app_navigation.dart';
+import 'app_background.dart';
 
 /// Main scaffold with bottom navigation for the app
 class MainScaffold extends StatelessWidget {
@@ -15,7 +16,7 @@ class MainScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: navigationShell,
+      body: AppBackground(child: navigationShell),
       bottomNavigationBar: AppBottomNavigationBar(
         navigationShell: navigationShell,
       ),
@@ -105,6 +106,7 @@ class AppScaffold extends StatelessWidget {
   final bool showBackButton;
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
+  final bool useGradient;
   final EdgeInsetsGeometry? padding;
   final bool extendBody;
   final bool extendBodyBehindAppBar;
@@ -119,6 +121,7 @@ class AppScaffold extends StatelessWidget {
     this.showBackButton = true,
     this.bottomNavigationBar,
     this.backgroundColor,
+    this.useGradient = true,
     this.padding,
     this.extendBody = false,
     this.extendBodyBehindAppBar = false,
@@ -126,8 +129,21 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget content = SafeArea(
+      top: !extendBodyBehindAppBar,
+      bottom: !extendBody,
+      child: Padding(
+        padding: padding ?? EdgeInsets.all(AppSpacing.md),
+        child: body,
+      ),
+    );
+
+    if (useGradient && backgroundColor == null) {
+      content = AppBackground(child: content);
+    }
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? (useGradient ? Colors.transparent : null),
       extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       appBar: showAppBar && title != null
@@ -137,14 +153,7 @@ class AppScaffold extends StatelessWidget {
               showBackButton: showBackButton,
             )
           : null,
-      body: SafeArea(
-        top: !extendBodyBehindAppBar,
-        bottom: !extendBody,
-        child: Padding(
-          padding: padding ?? EdgeInsets.all(AppSpacing.md),
-          child: body,
-        ),
-      ),
+      body: content,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
     );

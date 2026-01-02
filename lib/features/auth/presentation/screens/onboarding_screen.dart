@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/shared/components/main_scaffold.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Onboarding')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return AppScaffold(
+      title: 'Onboarding',
+      showBackButton: false,
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -21,6 +22,7 @@ class OnboardingScreen extends StatelessWidget {
             const Text(
               'Please select your university and major to continue.',
               style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             const TextField(

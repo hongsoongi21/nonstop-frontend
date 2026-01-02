@@ -26,15 +26,11 @@ class TimetableScreen extends ConsumerWidget {
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
         ),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.background,
-              AppColors.primary.withValues(alpha: 0.05),
-              AppColors.secondary.withValues(alpha: 0.1),
-            ],
+            colors: AppColors.backgroundGradient,
           ),
         ),
         child: SafeArea(

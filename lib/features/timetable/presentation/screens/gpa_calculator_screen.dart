@@ -7,6 +7,7 @@ import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/timetable/domain/entities/gpa_course.dart';
 import 'package:nonstop/features/timetable/presentation/providers/gpa_provider.dart';
 import 'package:nonstop/features/timetable/presentation/providers/timetable_provider.dart';
+import 'package:nonstop/shared/components/app_background.dart';
 import 'package:nonstop/shared/components/glass_container.dart';
 
 class GpaCalculatorScreen extends ConsumerStatefulWidget {
@@ -25,7 +26,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     final notifier = ref.read(gpaProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -80,69 +81,100 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          children: [
-            // GPA Summary Card
-            _buildSummaryCard(gpaState),
-            
-            SizedBox(height: AppSpacing.lg),
-            
-            // Course List Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-              child: Row(
-                children: [
-                  Text(
-                    'Courses',
-                    style: AppTypography.titleSmall.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textSecondary,
+      body: AppBackground(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            children: [
+              // GPA Summary Card
+              _buildSummaryCard(gpaState),
+              
+              SizedBox(height: AppSpacing.lg),
+              
+              // Course List Header
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                child: Row(
+                  children: [
+                    Text(
+                      'Courses',
+                      style: AppTypography.titleSmall.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ),
-                  Spacer(),
-                  TextButton.icon(
-                    onPressed: () => _showAddCourseDialog(context, ref),
-                    icon: Icon(Icons.add, size: 16),
-                    label: Text('Add Course'),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size(0, 0),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    Spacer(),
+                    TextButton.icon(
+                      onPressed: () => _showAddCourseDialog(context, ref),
+                      icon: Icon(Icons.add, size: 16),
+                      label: Text('Add Course'),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size(0, 0),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            
-            SizedBox(height: AppSpacing.sm),
-            
-            // Course List
-            if (gpaState.courses.isEmpty)
-              _buildEmptyState()
-            else
-              ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: gpaState.courses.length,
-                separatorBuilder: (context, index) => SizedBox(height: AppSpacing.sm),
-                itemBuilder: (context, index) {
-                  final course = gpaState.courses[index];
-                  return _buildCourseItem(context, ref, course);
-                },
+                  ],
+                ),
               ),
               
-            SizedBox(height: 100), // Bottom padding
-          ],
+              SizedBox(height: AppSpacing.sm),
+              
+              // Course List
+              if (gpaState.courses.isEmpty)
+                _buildEmptyState()
+              else
+                ListView.separated(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: gpaState.courses.length,
+                  separatorBuilder: (context, index) => SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final course = gpaState.courses[index];
+                    return _buildCourseItem(context, ref, course);
+                  },
+                ),
+                
+              SizedBox(height: 100), // Bottom padding
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddCourseDialog(context, ref),
-        backgroundColor: AppColors.primary,
-        icon: Icon(Icons.add),
-        label: Text('Add Course'),
+      floatingActionButton: GestureDetector(
+        onTap: () => _showAddCourseDialog(context, ref),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: AppColors.brandGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF7C3BEE).withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.add, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(
+                'Add Course',
+                style: AppTypography.button.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

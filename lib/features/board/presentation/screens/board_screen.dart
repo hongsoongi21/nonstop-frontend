@@ -48,15 +48,11 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
         ),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.background,
-              AppColors.primary.withValues(alpha: 0.05),
-              AppColors.secondary.withValues(alpha: 0.1),
-            ],
+            colors: AppColors.backgroundGradient,
           ),
         ),
         child: Stack(
@@ -85,18 +81,15 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.primary,
-                                AppColors.primary.withOpacity(0.85),
-                              ],
+                            gradient: const LinearGradient(
+                              colors: AppColors.brandGradient,
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.25),
+                                color: const Color(0xFF7C3BEE).withValues(alpha: 0.25),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),
@@ -104,8 +97,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.edit_square, size: 18, color: Colors.white),
-                              SizedBox(width: 8),
+                              const Icon(Icons.edit_square, size: 18, color: Colors.white),
+                              const SizedBox(width: 8),
                               Text(
                                 'Write',
                                 style: AppTypography.button.copyWith(

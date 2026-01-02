@@ -59,22 +59,33 @@ class WeekCalendarHeader extends StatelessWidget {
           SizedBox(width: AppSpacing.md),
 
           // Today button
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: InkWell(
-              onTap: onToday,
+          GestureDetector(
+            onTap: onToday,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: AppColors.brandGradient,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7C3BEE).withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
               child: Text(
                 'Today',
                 style: AppTypography.labelMedium.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.primary,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -113,7 +124,7 @@ class _NavigationButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
