@@ -166,19 +166,23 @@ class PostCard extends StatelessWidget {
               runSpacing: AppSpacing.xs,
               children: post.tags.map((tag) => Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: 4,
+                  horizontal: AppSpacing.sm + 2,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.surface.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+                  color: AppColors.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   '#$tag',
                   style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
+                    color: AppColors.primary.withOpacity(0.8),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 11,
                   ),
                 ),
               )).toList(),

@@ -80,22 +80,41 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      GlassContainer(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        borderRadius: BorderRadius.circular(12),
+                      GestureDetector(
                         onTap: () => context.go(Routes.boardCreatePath()),
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit_square, size: 18, color: AppColors.primary),
-                            SizedBox(width: 8),
-                            Text(
-                              'Write',
-                              style: AppTypography.button.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppColors.primary,
+                                AppColors.primary.withOpacity(0.85),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ],
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.25),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit_square, size: 18, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                'Write',
+                                style: AppTypography.button.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -151,12 +170,14 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   child: GlassContainer(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     borderRadius: BorderRadius.circular(12),
+                    opacity: 0.5,
+                    blur: 15,
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search posts...',
-                        hintStyle: AppTypography.body2.copyWith(color: AppColors.textHint),
-                        icon: Icon(Icons.search, color: AppColors.textHint),
+                        hintStyle: AppTypography.body2.copyWith(color: AppColors.textSecondary),
+                        icon: Icon(Icons.search, color: AppColors.textSecondary),
                         border: InputBorder.none,
                         contentPadding: EdgeInsets.zero,
                       ),

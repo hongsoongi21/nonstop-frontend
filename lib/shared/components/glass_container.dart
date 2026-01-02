@@ -23,7 +23,7 @@ class GlassContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.blur = 10.0,
-    this.opacity = 0.2,
+    this.opacity = 0.7,
     this.color = Colors.white,
     this.borderColor,
     this.onTap,
@@ -41,13 +41,18 @@ class GlassContainer extends StatelessWidget {
         color: color.withValues(alpha: opacity),
         borderRadius: borderR,
         border: Border.all(
-          color: borderColor ?? Colors.white.withValues(alpha: 0.2),
-          width: 1,
+          color: borderColor ?? Colors.white.withValues(alpha: 0.4),
+          width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 16,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],

@@ -76,7 +76,7 @@ class AppColors {
   ];
 
   // Board post category colors
-  static const Color boardFree = Color(0xFF10B981); // Erkin - Green
+  static const Color boardFree = Color(0xFF06B6D4); // Erkin - Cyan (aligned with brand)
   static const Color boardSecret = Color(0xFF8B5CF6); // Sirli - Purple
   static const Color boardQuestion = Color(0xFF3B82F6); // Savol - Blue
   static const Color boardMarket = Color(0xFFF59E0B); // Bozor - Yellow
