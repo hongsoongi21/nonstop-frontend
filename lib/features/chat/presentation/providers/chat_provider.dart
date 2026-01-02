@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/core/errors/failures.dart';
-import 'package:nonstop/core/network/dio_client.dart';
 import 'package:nonstop/core/network/stomp_service.dart';
 import 'package:nonstop/features/auth/data/repository_impl/auth_repository_impl.dart';
 import 'package:nonstop/features/auth/data/api/auth_api_mock.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
+import 'package:nonstop/features/chat/data/api/chat_api_mock.dart';
 import 'package:nonstop/features/chat/data/repository_impl/chat_repository_impl.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
@@ -18,8 +18,8 @@ final stompServiceProvider = Provider<StompService>((ref) {
 });
 
 final chatApiProvider = Provider<ChatApi>((ref) {
-  final dioClient = ref.read(dioClientProvider);
-  return ChatApi(dioClient);
+  // Use Mock for design and development phase
+  return ChatApiMock();
 });
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
