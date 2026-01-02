@@ -47,13 +47,18 @@ class AppBottomNavigationBar extends StatelessWidget {
             unselectedItemColor: AppColors.textSecondary,
             showSelectedLabels: true,
             showUnselectedLabels: true,
+            selectedFontSize: 10,
+            unselectedFontSize: 10,
+            iconSize: 24,
             selectedLabelStyle: AppTypography.caption.copyWith(
               fontWeight: FontWeight.w700,
               fontSize: 10,
+              height: 1.2,
             ),
             unselectedLabelStyle: AppTypography.caption.copyWith(
               fontSize: 10,
               fontWeight: FontWeight.w500,
+              height: 1.2,
             ),
             items: [
               _buildNavItem(
@@ -94,15 +99,18 @@ class AppBottomNavigationBar extends StatelessWidget {
     required bool isActive,
   }) {
     return BottomNavigationBarItem(
-      icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        transitionBuilder: (child, animation) {
-          return ScaleTransition(scale: animation, child: child);
-        },
-        child: Icon(
-          isActive ? activeIcon : icon,
-          key: ValueKey(isActive),
-          size: 24,
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(scale: animation, child: child);
+          },
+          child: Icon(
+            isActive ? activeIcon : icon,
+            key: ValueKey(isActive),
+            size: 24,
+          ),
         ),
       ),
       label: label,
