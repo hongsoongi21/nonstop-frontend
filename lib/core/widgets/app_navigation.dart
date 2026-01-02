@@ -16,7 +16,8 @@ class AppBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 4, right: 4, bottom: 16),
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      constraints: const BoxConstraints(maxWidth: 500),
       decoration: BoxDecoration(
         color:
             (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
