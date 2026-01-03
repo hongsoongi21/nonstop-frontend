@@ -130,7 +130,6 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
                         // Title
                         Container(
                           width: 275.w,
-                          height: 38.h,
                           alignment: Alignment.center,
                           child: Text(
                             'Xush Kelibsiz!',
@@ -146,9 +145,10 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1> {
                           ),
                         ),
 
+                        SizedBox(height: 8.h), // Added this for explicit spacing
+
                         Container(
                           width: 275.w,
-                          height: 39.h,
                           alignment: Alignment.center,
                           child: Text(
                             'Davom etish uchun tizimga kiring',
