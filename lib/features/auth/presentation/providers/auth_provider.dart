@@ -1,7 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../data/api/auth_api.dart';
+import '../../data/api/auth_api_impl.dart';
+import '../../data/repository_impl/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
+import '../../domain/repository/auth_repository.dart';
+import '../../domain/usecases/sign_in_usecase.dart';
+import '../../domain/usecases/sign_up_usecase.dart';
+
+/// Provider for AuthApi
+final authApiProvider = Provider<AuthApi>((ref) {
+  // Use DioClient to create AuthApiImpl
+  final dioClient = DioClient(); // In a real app, this might be another provider
+  return AuthApiImpl(dioClient);
+});
+
+/// Provider for AuthRepository
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final api = ref.watch(authApiProvider);
+  return AuthRepositoryImpl(api);
+});
+
+/// Provider for SignInUseCase
+final signInUseCaseProvider = Provider<SignInUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return SignInUseCase(repository);
+});
+
+/// Provider for SignUpUseCase
+final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return SignUpUseCase(repository);
+});
 
 /// Auth state that represents the current authentication status
 class AuthState {
@@ -34,145 +66,91 @@ class AuthState {
   bool get hasError => failure != null;
 }
 
-/// Auth notifier that manages authentication state
+/// 인증 상태를 관리하는 Notifier입니다.
+/// 로그인, 회원가입, 로그아웃 등 모든 인증 관련 상태 변화를 담당합니다.
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState()) {
-    // Initialize auth state
+  final SignInUseCase _signInUseCase;
+  final SignUpUseCase _signUpUseCase;
+  final AuthRepository _authRepository;
+
+  AuthNotifier({
+    required SignInUseCase signInUseCase,
+    required SignUpUseCase signUpUseCase,
+    required AuthRepository authRepository,
+  })  : _signInUseCase = signInUseCase,
+        _signUpUseCase = signUpUseCase,
+        _authRepository = authRepository,
+        super(const AuthState()) {
+    // 앱 시작 시 현재 로그인된 사용자가 있는지 초기화합니다.
     _initializeAuth();
   }
 
-  /// Create a mock implementation for development
-  factory AuthNotifier._createMock() {
-    return AuthNotifier();
-  }
-
-  /// Initialize authentication state on app start
+  /// 앱 구동 시 로컬 저장소의 토큰을 확인하여 자동 로그인 정보를 가져옵니다.
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
-
-    // TODO: Implement get current user logic
-    // For now, we'll just set loading to false
-    state = state.copyWith(isLoading: false);
+    final result = await _authRepository.getCurrentUser();
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false),
+      (user) => state = state.copyWith(isLoading: false, user: user),
+    );
   }
 
-  /// Sign in with email and password
+  /// 이메일과 비밀번호로 로그인을 수행합니다.
   Future<void> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, failure: null);
-
-    // Mock implementation for development
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (email.isEmpty || password.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Email and password are required'),
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Password must be at least 6 characters'),
-      );
-      return;
-    }
-
-    // Create mock user
-    final user = User(
-      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
-      email: email,
-      fullName: 'Mock User',
-      university: 'Mock University',
-      major: 'Computer Science',
-      isEmailVerified: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+    final result = await _signInUseCase(SignInParams(email: email, password: password));
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) => state = state.copyWith(isLoading: false, user: user),
     );
-
-    state = state.copyWith(isLoading: false, user: user, failure: null);
   }
 
-  /// Sign up with user details
+  /// 새로운 사용자를 등록합니다.
+  /// 회원가입 성공 시 자동으로 로그인이 진행되어 user 상태가 업데이트됩니다.
   Future<void> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
-
-    // Mock implementation for development
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Email, password, and full name are required'),
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Password must be at least 6 characters'),
-      );
-      return;
-    }
-
-    // Create mock user
-    final user = User(
-      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
+    final result = await _signUpUseCase(SignUpParams(
       email: email,
-      fullName: fullName,
-      university: university ?? 'Not specified',
-      major: major ?? 'Not specified',
-      isEmailVerified: false, // New users need email verification
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      password: password,
+      nickname: nickname,
+      universityId: universityId,
+      majorId: majorId,
+    ));
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) => state = state.copyWith(isLoading: false, user: user),
     );
-
-    state = state.copyWith(isLoading: false, user: user, failure: null);
   }
 
-  /// Sign out current user
+  /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.
   Future<void> signOut() async {
-    state = state.copyWith(isLoading: true, failure: null);
-
-    // Mock implementation for development
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    state = const AuthState(); // Reset to initial state
+    state = state.copyWith(isLoading: true);
+    await _authRepository.signOut();
+    state = const AuthState();
   }
 
-  /// Clear any current error
+  /// 발생한 에러 상태를 초기화합니다.
   void clearError() {
     state = state.copyWith(failure: null);
   }
-
-  /// Reset auth state (useful for testing or manual state management)
-  void reset() {
-    state = const AuthState();
-  }
 }
 
-/// Auth provider - temporary implementation for development
+/// Auth provider
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  // TODO: Replace with proper dependency injection
-  // For now, create a basic implementation
-  return AuthNotifier._createMock();
+  return AuthNotifier(
+    signInUseCase: ref.watch(signInUseCaseProvider),
+    signUpUseCase: ref.watch(signUpUseCaseProvider),
+    authRepository: ref.watch(authRepositoryProvider),
+  );
 });
 
-/// Auth state stream provider (alternative approach using streams)
-/// TODO: Implement when repository is properly set up
-// final authStateProvider = StreamProvider<User?>((ref) {
-//   final repository = ref.watch(authRepositoryProvider);
-//   return repository.authStateChanges;
-// });
-
-/// Convenience providers for common auth state checks
+/// Convenience providers
 final isAuthenticatedProvider = Provider<bool>((ref) {
   return ref.watch(authProvider).isAuthenticated;
 });

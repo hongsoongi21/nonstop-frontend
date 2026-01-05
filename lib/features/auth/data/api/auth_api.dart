@@ -12,9 +12,7 @@ abstract class AuthApi {
   Future<User> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
   });
 
   /// Sign out current user
@@ -32,11 +30,17 @@ abstract class AuthApi {
   /// Resend email verification
   Future<void> resendEmailVerification();
 
+  /// Check if email is available
+  Future<void> checkEmailDuplicate(String email);
+
+  /// Check if nickname is available
+  Future<void> checkNicknameDuplicate(String nickname);
+
   /// Update user profile
   Future<User> updateProfile({
-    String? fullName,
-    String? university,
-    String? major,
+    String? nickname,
+    int? universityId,
+    int? majorId,
     String? bio,
     String? avatarUrl,
   });

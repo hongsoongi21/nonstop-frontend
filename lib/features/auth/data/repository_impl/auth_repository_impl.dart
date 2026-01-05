@@ -35,17 +35,13 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
   }) async {
     try {
       final user = await _authApi.signUp(
         email: email,
         password: password,
-        fullName: fullName,
-        university: university,
-        major: major,
+        nickname: nickname,
       );
       return Right(user);
     } on ServerException catch (e) {
@@ -134,18 +130,42 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> checkEmailDuplicate(String email) async {
+    try {
+      await _authApi.checkEmailDuplicate(email);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> checkNicknameDuplicate(String nickname) async {
+    try {
+      await _authApi.checkNicknameDuplicate(nickname);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, User>> updateProfile({
-    String? fullName,
-    String? university,
-    String? major,
+    String? nickname,
+    int? universityId,
+    int? majorId,
     String? bio,
     String? avatarUrl,
   }) async {
     try {
       final user = await _authApi.updateProfile(
-        fullName: fullName,
-        university: university,
-        major: major,
+        nickname: nickname,
+        universityId: universityId,
+        majorId: majorId,
         bio: bio,
         avatarUrl: avatarUrl,
       );

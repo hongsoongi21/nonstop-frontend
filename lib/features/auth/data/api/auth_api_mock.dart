@@ -26,9 +26,10 @@ class AuthApiMock implements AuthApi {
     _currentUser = User(
       id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
       email: email,
+      nickname: email.split('@').first,
       fullName: 'Mock User',
-      university: 'Mock University',
-      major: 'Computer Science',
+      universityId: 1,
+      majorId: 101,
       isEmailVerified: true,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -42,16 +43,14 @@ class AuthApiMock implements AuthApi {
   Future<User> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
   }) async {
     // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
 
     // Mock validation
-    if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
-      throw Exception('Email, password, and full name are required');
+    if (email.isEmpty || password.isEmpty || nickname.isEmpty) {
+      throw Exception('Email, password, and nickname are required');
     }
 
     if (password.length < 6) {
@@ -62,10 +61,9 @@ class AuthApiMock implements AuthApi {
     _currentUser = User(
       id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
       email: email,
-      fullName: fullName,
-      university: university ?? 'Not specified',
-      major: major ?? 'Not specified',
-      isEmailVerified: false, // New users need email verification
+      nickname: nickname,
+      universityId: null,
+      isEmailVerified: false,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
     );
@@ -76,42 +74,25 @@ class AuthApiMock implements AuthApi {
 
   @override
   Future<void> signOut() async {
-    // Simulate API delay
     await Future.delayed(const Duration(milliseconds: 500));
-
     _currentUser = null;
     _authStateController.add(null);
   }
 
   @override
   Future<User?> getCurrentUser() async {
-    // Simulate API delay
     await Future.delayed(const Duration(milliseconds: 300));
     return _currentUser;
   }
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
-
-    if (email.isEmpty) {
-      throw Exception('Email is required');
-    }
-
-    // Mock success - in real implementation, this would send an email
-    // Password reset email sent successfully
   }
 
   @override
   Future<void> verifyEmail(String code) async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
-
-    if (code != '123456') {
-      throw Exception('Invalid verification code');
-    }
-
     if (_currentUser != null) {
       _currentUser = _currentUser!.copyWith(isEmailVerified: true);
       _authStateController.add(_currentUser);
@@ -120,22 +101,33 @@ class AuthApiMock implements AuthApi {
 
   @override
   Future<void> resendEmailVerification() async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
+  }
 
-    // Mock success - in real implementation, this would resend verification email
-    // Email verification resent successfully
+  @override
+  Future<void> checkEmailDuplicate(String email) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (email == 'taken@example.com') {
+      throw Exception('Email already exists');
+    }
+  }
+
+  @override
+  Future<void> checkNicknameDuplicate(String nickname) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (nickname == 'taken') {
+      throw Exception('Nickname already exists');
+    }
   }
 
   @override
   Future<User> updateProfile({
-    String? fullName,
-    String? university,
-    String? major,
+    String? nickname,
+    int? universityId,
+    int? majorId,
     String? bio,
     String? avatarUrl,
   }) async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
 
     if (_currentUser == null) {
@@ -143,9 +135,9 @@ class AuthApiMock implements AuthApi {
     }
 
     _currentUser = _currentUser!.copyWith(
-      fullName: fullName ?? _currentUser!.fullName,
-      university: university ?? _currentUser!.university,
-      major: major ?? _currentUser!.major,
+      nickname: nickname ?? _currentUser!.nickname,
+      universityId: universityId ?? _currentUser!.universityId,
+      majorId: majorId ?? _currentUser!.majorId,
       bio: bio ?? _currentUser!.bio,
       avatarUrl: avatarUrl ?? _currentUser!.avatarUrl,
       updatedAt: DateTime.now(),
@@ -157,9 +149,7 @@ class AuthApiMock implements AuthApi {
 
   @override
   Future<void> deleteAccount() async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
-
     _currentUser = null;
     _authStateController.add(null);
   }
@@ -167,7 +157,6 @@ class AuthApiMock implements AuthApi {
   @override
   Stream<User?> get authStateChanges => _authStateController.stream;
 
-  /// Clean up resources
   void dispose() {
     _authStateController.close();
   }

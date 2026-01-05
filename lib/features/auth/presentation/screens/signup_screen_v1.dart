@@ -7,6 +7,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/entities/university.dart';
+import '../providers/auth_provider.dart';
+import '../providers/university_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/language_selector.dart';
@@ -25,23 +28,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  String? _selectedUniversity;
+  int? _selectedUniversityId;
   bool _allAgreed = false;
   bool _termsAgreed = false;
   bool _privacyAgreed = false;
   bool _marketingAgreed = false;
-
-  // TODO: 실제 대학교 목록 API로 교체 필요
-  final List<String> _universities = [
-    'Tashkent State University of Economics',
-    'National University of Uzbekistan',
-    'Westminster International University in Tashkent',
-    'Inha University in Tashkent',
-    'Turin Polytechnic University in Tashkent',
-    'Management Development Institute of Singapore in Tashkent',
-    'Tashkent University of Information Technologies',
-    'Tashkent State Technical University',
-  ];
 
   @override
   void dispose() {
@@ -68,7 +59,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   }
 
   void _handleViewPolicy(String policyType) {
-    // TODO: 정책 상세 화면으로 이동 필요
+    // TODO: 정책 상세 화면으로 이동 로직 구현 필요
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$policyType 정책 보기 - 구현 예정'),
@@ -78,9 +69,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   }
 
   Future<void> _handleSignup() async {
+    // 1. 클라이언트 측 유효성 검사 (입력 형식 등)
     if (!_formKey.currentState!.validate()) return;
 
-    // Check required policies
+    // 2. 필수 약관 동의 여부 확인
     if (!_termsAgreed || !_privacyAgreed) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -92,8 +84,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // Check university selection
-    if (_selectedUniversity == null) {
+    // 3. 대학교 선택 여부 확인
+    if (_selectedUniversityId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Universitetni tanlang'),
@@ -104,13 +96,30 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // TODO: 회원가입 API 호출 필요
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('회원가입 기능 - 구현 예정'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    // 4. 회원가입 프로세스 실행
+    // TODO: 백엔드 대학교 DB가 준비되면 _selectedUniversityId를 전달하도록 수정 필요
+    // 현재는 백엔드 DB 제약 조건 에러를 방지하기 위해 임시로 universityId를 null로 보냅니다.
+    await ref.read(authProvider.notifier).signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          nickname: _nicknameController.text.trim(),
+          universityId: null, // 임시로 null 전송
+        );
+
+    // 5. 실행 결과에 따른 처리
+    final authState = ref.read(authProvider);
+    if (authState.hasError) {
+      // 실패 시 에러 메시지 노출 (이미 가입된 이메일 등)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authState.failure?.message ?? '회원가입 실패'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } else if (authState.isAuthenticated) {
+      // 성공 시 홈 화면으로 이동
+      context.go(Routes.home);
+    }
   }
 
   void _handleLogin() {
@@ -119,6 +128,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
   @override
   Widget build(BuildContext context) {
+    // 로딩 상태 및 대학 목록 데이터를 Watch 합니다.
+    final isLoading = ref.watch(isLoadingProvider);
+    final universitiesAsync = ref.watch(universitiesProvider);
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -132,167 +145,179 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: 40.h,
-                left: 16.w,
-                right: 16.w,
-                bottom: 40.h,
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Language selector
-                    const LanguageSelector(),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 40.h,
+                    left: 16.w,
+                    right: 16.w,
+                    bottom: 40.h,
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // 언어 선택기
+                        const LanguageSelector(),
 
-                    SizedBox(height: 16.h),
+                        SizedBox(height: 16.h),
 
-                    // Main signup form container
-                    Container(
-                      width: 343.w,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFFFFF),
-                        borderRadius: BorderRadius.circular(40.r),
-                        border: Border.all(
-                          color: const Color(0xFFFFFFFF),
-                          width: 1.w,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF7C3BEE).withValues(alpha: 0.059),
-                            offset: Offset(0, 8.h),
-                            blurRadius: 15.r,
-                            spreadRadius: 0,
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          top: 25.h,
-                          bottom: 40.h,
-                          left: 24.w,
-                          right: 24.w,
-                        ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              SizedBox(height: 15.h),
-
-                              // Title
-                              _buildHeader(),
-
-                              SizedBox(height: 30.h),
-
-                              // Nickname Input
-                              CustomAuthTextField(
-                                controller: _nicknameController,
-                                hintText: 'Nickname',
-                                prefixIcon: Icons.person_outline,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your nickname';
-                                  }
-                                  if (value.length < 2 || value.length > 20) {
-                                    return 'Nickname must be 2-20 characters';
-                                  }
-                                  return null;
-                                },
+                        // 메인 회원가입 폼 컨테이너
+                        Container(
+                          width: 343.w,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFFFFF),
+                            borderRadius: BorderRadius.circular(40.r),
+                            border: Border.all(
+                              color: const Color(0xFFFFFFFF),
+                              width: 1.w,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF7C3BEE).withValues(alpha: 0.059),
+                                offset: Offset(0, 8.h),
+                                blurRadius: 15.r,
+                                spreadRadius: 0,
                               ),
-
-                              SizedBox(height: 20.h),
-
-                              // University Dropdown
-                              _buildUniversityDropdown(),
-
-                              SizedBox(height: 20.h),
-
-                              // Email Input
-                              CustomAuthTextField(
-                                controller: _emailController,
-                                hintText: 'Email',
-                                prefixIcon: Icons.email_outlined,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
-                                  }
-                                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                      .hasMatch(value)) {
-                                    return 'Please enter a valid email';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              SizedBox(height: 20.h),
-
-                              // Password Input
-                              CustomAuthTextField(
-                                controller: _passwordController,
-                                hintText: 'Password',
-                                prefixIcon: Icons.lock_outline,
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your password';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'Password must be at least 6 characters';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              SizedBox(height: 20.h),
-
-                              // Confirm Password Input
-                              CustomAuthTextField(
-                                controller: _confirmPasswordController,
-                                hintText: 'Confirm Password',
-                                prefixIcon: Icons.lock_outline,
-                                obscureText: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please confirm your password';
-                                  }
-                                  if (value != _passwordController.text) {
-                                    return 'Passwords do not match';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              SizedBox(height: 24.h),
-
-                              // Policy Agreement Section
-                              _buildPolicyAgreementSection(),
-
-                              SizedBox(height: 24.h),
-
-                              // Signup Button
-                              GradientButton(
-                                text: "Ro'yxatdan o'tish",
-                                onPressed: _handleSignup,
-                              ),
-
-                              SizedBox(height: 24.h),
-
-                              // Login Link
-                              _buildLoginLink(),
                             ],
                           ),
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: 25.h,
+                              bottom: 40.h,
+                              left: 24.w,
+                              right: 24.w,
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  SizedBox(height: 15.h),
+
+                                  // 헤더 타이틀
+                                  _buildHeader(),
+
+                                  SizedBox(height: 30.h),
+
+                                  // 닉네임 입력 필드
+                                  CustomAuthTextField(
+                                    controller: _nicknameController,
+                                    hintText: 'Nickname',
+                                    prefixIcon: Icons.person_outline,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your nickname';
+                                      }
+                                      if (value.length < 2 || value.length > 20) {
+                                        return 'Nickname must be 2-20 characters';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  SizedBox(height: 20.h),
+
+                                  // 대학교 선택 드롭다운 (Async 데이터를 사용하여 빌드)
+                                  _buildUniversityDropdown(universitiesAsync),
+
+                                  SizedBox(height: 20.h),
+
+                                  // 이메일 입력 필드
+                                  CustomAuthTextField(
+                                    controller: _emailController,
+                                    hintText: 'Email',
+                                    prefixIcon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your email';
+                                      }
+                                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                          .hasMatch(value)) {
+                                        return 'Please enter a valid email';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  SizedBox(height: 20.h),
+
+                                  // 비밀번호 입력 필드
+                                  CustomAuthTextField(
+                                    controller: _passwordController,
+                                    hintText: 'Password',
+                                    prefixIcon: Icons.lock_outline,
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your password';
+                                      }
+                                      if (value.length < 8) {
+                                        return 'Password must be at least 8 characters';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  SizedBox(height: 20.h),
+
+                                  // 비밀번호 확인 필드
+                                  CustomAuthTextField(
+                                    controller: _confirmPasswordController,
+                                    hintText: 'Confirm Password',
+                                    prefixIcon: Icons.lock_outline,
+                                    obscureText: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please confirm your password';
+                                      }
+                                      if (value != _passwordController.text) {
+                                        return 'Passwords do not match';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+
+                                  SizedBox(height: 24.h),
+
+                                  // 약관 동의 섹션
+                                  _buildPolicyAgreementSection(),
+
+                                  SizedBox(height: 24.h),
+
+                                  // 가입하기 버튼
+                                  GradientButton(
+                                    text: "Ro'yxatdan o'tish",
+                                    onPressed: isLoading ? null : _handleSignup,
+                                  ),
+
+                                  SizedBox(height: 24.h),
+
+                                  // 로그인 링크
+                                  _buildLoginLink(),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              // API 통신 중 로딩 인디케이터 표시
+              if (isLoading)
+                Container(
+                  color: Colors.black26,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+            ],
           ),
         ),
       ),
@@ -340,7 +365,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     );
   }
 
-  Widget _buildUniversityDropdown() {
+  Widget _buildUniversityDropdown(AsyncValue<List<University>> universitiesAsync) {
     return Container(
       width: 275.w,
       height: 55.h,
@@ -352,57 +377,63 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           width: 1.w,
         ),
       ),
-      child: DropdownButtonFormField<String>(
-        value: _selectedUniversity,
-        decoration: InputDecoration(
-          hintText: 'Select University',
-          hintStyle: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.black.withValues(alpha: 0.5),
-          ),
-          prefixIcon: Icon(
-            Icons.school_outlined,
-            color: const Color(0xFF7C3BEE),
-            size: 20.sp,
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
-        ),
-        icon: Padding(
-          padding: EdgeInsets.only(right: 12.w),
-          child: Icon(
-            Icons.arrow_drop_down,
-            color: const Color(0xFF7C3BEE),
-            size: 24.sp,
-          ),
-        ),
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: Colors.black87,
-        ),
-        dropdownColor: const Color(0xFFE9F0FE),
-        isExpanded: true,
-        items: _universities.map((String university) {
-          return DropdownMenuItem<String>(
-            value: university,
-            child: Text(
-              university,
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.black87,
-              ),
-              overflow: TextOverflow.ellipsis,
+      child: universitiesAsync.when(
+        data: (universities) => DropdownButtonFormField<int>(
+          value: _selectedUniversityId,
+          decoration: InputDecoration(
+            hintText: 'Select University',
+            hintStyle: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.black.withValues(alpha: 0.5),
             ),
-          );
-        }).toList(),
-        onChanged: (String? value) {
-          setState(() {
-            _selectedUniversity = value;
-          });
-        },
+            prefixIcon: Icon(
+              Icons.school_outlined,
+              color: const Color(0xFF7C3BEE),
+              size: 20.sp,
+            ),
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 16.h,
+            ),
+          ),
+          icon: Padding(
+            padding: EdgeInsets.only(right: 12.w),
+            child: Icon(
+              Icons.arrow_drop_down,
+              color: const Color(0xFF7C3BEE),
+              size: 24.sp,
+            ),
+          ),
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.black87,
+          ),
+          dropdownColor: const Color(0xFFE9F0FE),
+          isExpanded: true,
+          items: universities.map((University university) {
+            return DropdownMenuItem<int>(
+              value: university.id,
+              child: Text(
+                university.name,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.black87,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+          }).toList(),
+          onChanged: (int? value) {
+            setState(() {
+              _selectedUniversityId = value;
+            });
+          },
+        ),
+        loading: () => const Center(
+            child: CircularProgressIndicator(strokeWidth: 2)),
+        error: (err, stack) =>
+            const Center(child: Icon(Icons.error_outline, color: Colors.red)),
       ),
     );
   }

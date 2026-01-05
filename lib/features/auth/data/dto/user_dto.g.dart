@@ -10,10 +10,13 @@ _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
     _$UserDtoImpl(
       id: json['id'] as String,
       email: json['email'] as String,
-      fullName: json['fullName'] as String,
+      nickname: json['nickname'] as String,
+      fullName: json['fullName'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
       university: json['university'] as String?,
+      universityId: (json['universityId'] as num?)?.toInt(),
       major: json['major'] as String?,
+      majorId: (json['majorId'] as num?)?.toInt(),
       bio: json['bio'] as String?,
       isEmailVerified: json['isEmailVerified'] as bool? ?? false,
       createdAt: json['createdAt'] == null
@@ -28,10 +31,13 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'email': instance.email,
+      'nickname': instance.nickname,
       'fullName': instance.fullName,
       'avatarUrl': instance.avatarUrl,
       'university': instance.university,
+      'universityId': instance.universityId,
       'major': instance.major,
+      'majorId': instance.majorId,
       'bio': instance.bio,
       'isEmailVerified': instance.isEmailVerified,
       'createdAt': instance.createdAt?.toIso8601String(),

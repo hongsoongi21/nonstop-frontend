@@ -7,10 +7,13 @@ class User with _$User {
   const factory User({
     required String id,
     required String email,
-    required String fullName,
+    required String nickname,
+    String? fullName,
     String? avatarUrl,
     String? university,
+    int? universityId,
     String? major,
+    int? majorId,
     String? bio,
     @Default(false) bool isEmailVerified,
     DateTime? createdAt,
@@ -20,20 +23,21 @@ class User with _$User {
   const User._();
 
   /// Check if user has completed profile setup
-  bool get isProfileComplete => fullName.isNotEmpty && university != null;
+  bool get isProfileComplete => nickname.isNotEmpty && universityId != null;
 
-  /// Get user's display name (fallback to email if name is empty)
-  String get displayName => fullName.isNotEmpty ? fullName : email.split('@').first;
+  /// Get user's display name (fallback to email if nickname is empty)
+  String get displayName => nickname.isNotEmpty ? nickname : email.split('@').first;
 
   /// Get user's initials for avatar fallback
   String get initials {
-    if (fullName.isEmpty) return email.substring(0, 1).toUpperCase();
+    final name = nickname.isNotEmpty ? nickname : fullName ?? '';
+    if (name.isEmpty) return email.substring(0, 1).toUpperCase();
 
-    final nameParts = fullName.split(' ');
+    final nameParts = name.trim().split(' ');
     if (nameParts.length >= 2) {
       return '${nameParts[0][0]}${nameParts[1][0]}'.toUpperCase();
     }
-    return fullName.substring(0, min(2, fullName.length)).toUpperCase();
+    return name.substring(0, min(2, name.length)).toUpperCase();
   }
 }
 

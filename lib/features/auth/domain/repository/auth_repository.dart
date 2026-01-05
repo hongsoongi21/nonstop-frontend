@@ -15,9 +15,7 @@ abstract class AuthRepository {
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
   });
 
   /// Sign out current user
@@ -35,11 +33,17 @@ abstract class AuthRepository {
   /// Resend email verification
   Future<Either<Failure, Unit>> resendEmailVerification();
 
+  /// Check if email is available
+  Future<Either<Failure, Unit>> checkEmailDuplicate(String email);
+
+  /// Check if nickname is available
+  Future<Either<Failure, Unit>> checkNicknameDuplicate(String nickname);
+
   /// Update user profile
   Future<Either<Failure, User>> updateProfile({
-    String? fullName,
-    String? university,
-    String? major,
+    String? nickname,
+    int? universityId,
+    int? majorId,
     String? bio,
     String? avatarUrl,
   });
