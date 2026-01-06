@@ -28,7 +28,7 @@ class UserDto with _$UserDto {
   factory UserDto.fromJson(Map<String, dynamic> json) =>
       _$UserDtoFromJson(json);
 
-  /// Convert DTO to domain entity
+  /// DTO를 도메인 엔티티로 변환
   User toDomain() {
     return User(
       id: id,
@@ -47,7 +47,7 @@ class UserDto with _$UserDto {
     );
   }
 
-  /// Create DTO from domain entity
+  /// 도메인 엔티티를 DTO로 변환
   factory UserDto.fromDomain(User user) {
     return UserDto(
       id: user.id,

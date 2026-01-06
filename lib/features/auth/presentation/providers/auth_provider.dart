@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../data/api/auth_api.dart';
 import '../../data/api/auth_api_impl.dart';
 import '../../data/repository_impl/auth_repository_impl.dart';
@@ -10,32 +11,39 @@ import '../../domain/repository/auth_repository.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
 
-/// Provider for AuthApi
-final authApiProvider = Provider<AuthApi>((ref) {
-  // Use DioClient to create AuthApiImpl
-  final dioClient = DioClient(); // In a real app, this might be another provider
-  return AuthApiImpl(dioClient);
+/// DioClient 제공자
+final dioClientProvider = Provider<DioClient>((ref) {
+  final secureStorage = ref.watch(secureStorageServiceProvider);
+  return DioClient(secureStorage);
 });
 
-/// Provider for AuthRepository
+/// AuthApi 제공자
+final authApiProvider = Provider<AuthApi>((ref) {
+  // 제공자로부터 DioClient 사용
+  final dioClient = ref.watch(dioClientProvider);
+  final secureStorage = ref.watch(secureStorageServiceProvider);
+  return AuthApiImpl(dioClient, secureStorage);
+});
+
+/// AuthRepository 제공자
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final api = ref.watch(authApiProvider);
   return AuthRepositoryImpl(api);
 });
 
-/// Provider for SignInUseCase
+/// SignInUseCase 제공자
 final signInUseCaseProvider = Provider<SignInUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return SignInUseCase(repository);
 });
 
-/// Provider for SignUpUseCase
+/// SignUpUseCase 제공자
 final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return SignUpUseCase(repository);
 });
 
-/// Auth state that represents the current authentication status
+/// 현재 인증 상태를 나타내는 클래스
 class AuthState {
   final bool isLoading;
   final User? user;
@@ -59,10 +67,10 @@ class AuthState {
     );
   }
 
-  /// Check if user is authenticated
+  /// 사용자가 인증되었는지 확인
   bool get isAuthenticated => user != null;
 
-  /// Check if there's an error
+  /// 에러 발생 여부 확인
   bool get hasError => failure != null;
 }
 
@@ -141,7 +149,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-/// Auth provider
+/// Auth 제공자
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     signInUseCase: ref.watch(signInUseCaseProvider),
@@ -150,7 +158,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   );
 });
 
-/// Convenience providers
+/// 편의성 제공자들
 final isAuthenticatedProvider = Provider<bool>((ref) {
   return ref.watch(authProvider).isAuthenticated;
 });

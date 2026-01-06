@@ -6,6 +6,7 @@ part 'user_profile_dto.freezed.dart';
 part 'user_profile_dto.g.dart';
 
 /// DTO for UserProfile entity - handles API serialization/deserialization
+/// DTO for UserProfile entity - handles API serialization/deserialization
 @freezed
 class UserProfileDto with _$UserProfileDto {
   const factory UserProfileDto({

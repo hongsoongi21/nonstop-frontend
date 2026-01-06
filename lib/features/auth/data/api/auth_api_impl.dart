@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart';
@@ -11,9 +12,10 @@ import 'auth_api.dart';
 
 class AuthApiImpl implements AuthApi {
   final DioClient _dioClient;
+  final SecureStorageService _secureStorageService;
   final _authStateController = StreamController<User?>.broadcast();
 
-  AuthApiImpl(this._dioClient);
+  AuthApiImpl(this._dioClient, this._secureStorageService);
 
   @override
   Future<User> signIn({required String email, required String password}) async {
@@ -27,9 +29,11 @@ class AuthApiImpl implements AuthApi {
       if (apiResponse['success'] == true) {
         final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
         
-        // 로그인 성공 시 획득한 Access Token을 DioClient 헤더에 설정합니다.
-        // 이후 모든 API 요청에 Authorization: Bearer <token>이 자동으로 포함됩니다.
-        _dioClient.updateAuthToken(tokenData.accessToken);
+        // 보안 저장소에 토큰 저장
+        await _secureStorageService.saveAccessToken(tokenData.accessToken);
+        if (tokenData.refreshToken != null) {
+          await _secureStorageService.saveRefreshToken(tokenData.refreshToken!);
+        }
         
         // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
         return await _fetchAndEmitUserInfo();
@@ -78,13 +82,12 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<void> signOut() async {
     try {
-      // We might need to send a request to the server to invalidate the refresh token
-      // For now, just clear local auth
-      _dioClient.clearAuth();
+      // 로컬 인증 정보 삭제
+      await _secureStorageService.deleteAllTokens();
       _authStateController.add(null);
     } catch (e) {
-      // Even if server call fails, we should clear local state
-      _dioClient.clearAuth();
+      // 서버 호출 실패 시에도 로컬 상태는 삭제해야 함
+      await _secureStorageService.deleteAllTokens();
       _authStateController.add(null);
     }
   }
@@ -100,17 +103,17 @@ class AuthApiImpl implements AuthApi {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    // Implement based on backend API when available
+    // 백엔드 API 제공 시 구현
   }
 
   @override
   Future<void> verifyEmail(String code) async {
-    // Implement based on backend API when available
+    // 백엔드 API 제공 시 구현
   }
 
   @override
   Future<void> resendEmailVerification() async {
-    // Implement based on backend API when available
+    // 백엔드 API 제공 시 구현
   }
 
   @override
@@ -124,7 +127,7 @@ class AuthApiImpl implements AuthApi {
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] != true) {
         throw ServerException(
-          message: apiResponse['message'] ?? 'Email already exists',
+          message: apiResponse['message'] ?? '이미 존재하는 이메일입니다',
           statusCode: 409, // Conflict
         );
       }
@@ -144,7 +147,7 @@ class AuthApiImpl implements AuthApi {
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] != true) {
         throw ServerException(
-          message: apiResponse['message'] ?? 'Nickname already exists',
+          message: apiResponse['message'] ?? '이미 존재하는 닉네임입니다',
           statusCode: 409,
         );
       }
@@ -177,7 +180,7 @@ class AuthApiImpl implements AuthApi {
         return await _fetchAndEmitUserInfo();
       } else {
         throw ServerException(
-          message: apiResponse['message'] ?? 'Update profile failed',
+          message: apiResponse['message'] ?? '프로필 업데이트 실패',
           statusCode: response.statusCode ?? 500,
         );
       }
@@ -193,11 +196,11 @@ class AuthApiImpl implements AuthApi {
       
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
-        _dioClient.clearAuth();
+        await _secureStorageService.deleteAllTokens();
         _authStateController.add(null);
       } else {
         throw ServerException(
-          message: apiResponse['message'] ?? 'Delete account failed',
+          message: apiResponse['message'] ?? '계정 삭제 실패',
           statusCode: response.statusCode ?? 500,
         );
       }
@@ -221,7 +224,7 @@ class AuthApiImpl implements AuthApi {
         return user;
       } else {
         throw ServerException(
-          message: apiResponse['message'] ?? 'Failed to fetch user info',
+          message: apiResponse['message'] ?? '사용자 정보 조회 실패',
           statusCode: response.statusCode ?? 500,
         );
       }
@@ -235,12 +238,12 @@ class AuthApiImpl implements AuthApi {
       final data = e.response?.data;
       if (data is Map<String, dynamic>) {
         return ServerException(
-          message: data['message'] ?? 'Server error',
+          message: data['message'] ?? '서버 오류가 발생했습니다',
           statusCode: e.response?.statusCode ?? 500,
         );
       }
       return ServerException(
-        message: e.message ?? 'Server error',
+        message: e.message ?? '서버 오류가 발생했습니다',
         statusCode: e.response?.statusCode ?? 500,
       );
     }

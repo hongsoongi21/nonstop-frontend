@@ -3,28 +3,27 @@ import 'package:flutter/foundation.dart';
 
 import '../config/env_config.dart';
 import '../config/app_config.dart';
+import '../storage/secure_storage_service.dart';
 import '../utils/logger.dart';
 
-/// HTTP client using Dio with interceptors for authentication and logging
+/// 인증 및 로깅을 위한 인터셉터가 포함된 Dio 기반 HTTP 클라이언트
 class DioClient {
   late final Dio _dio;
+  final SecureStorageService _secureStorageService;
 
-  DioClient() {
+  DioClient(this._secureStorageService) {
     _dio = Dio(_createBaseOptions());
 
-    // Add interceptors
+    // 인터셉터 추가
     _dio.interceptors.addAll([
-      _AuthInterceptor(),
+      _AuthInterceptor(_secureStorageService),
       _LoggingInterceptor(),
       _ErrorInterceptor(),
     ]);
 
-    // Add certificate pinning in production
+    // 운영 환경에서 SSL 인증서 고정(Pinning) 추가
     if (EnvConfig.isProduction) {
-      // TODO: Add SSL certificate pinning
-      // _dio.httpClientAdapter = HttpClientAdapter()..onHttpClientCreate = (client) {
-      //   // Configure certificate pinning
-      // };
+      // TODO: SSL 인증서 고정 로직 추가
     }
   }
 
@@ -37,15 +36,12 @@ class DioClient {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        // TODO: Add version headers
-        // 'X-App-Version': AppConfig.appVersion,
-        // 'X-Platform': Platform.operatingSystem,
       },
       validateStatus: (status) => status != null && status < 500,
     );
   }
 
-  /// GET request
+  /// GET 요청
   Future<Response<T>> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
@@ -62,7 +58,7 @@ class DioClient {
     );
   }
 
-  /// POST request
+  /// POST 요청
   Future<Response<T>> post<T>(
     String path, {
     dynamic data,
@@ -83,7 +79,7 @@ class DioClient {
     );
   }
 
-  /// PUT request
+  /// PUT 요청
   Future<Response<T>> put<T>(
     String path, {
     dynamic data,
@@ -104,7 +100,7 @@ class DioClient {
     );
   }
 
-  /// PATCH request
+  /// PATCH 요청
   Future<Response<T>> patch<T>(
     String path, {
     dynamic data,
@@ -125,7 +121,7 @@ class DioClient {
     );
   }
 
-  /// DELETE request
+  /// DELETE 요청
   Future<Response<T>> delete<T>(
     String path, {
     dynamic data,
@@ -142,7 +138,7 @@ class DioClient {
     );
   }
 
-  /// Download file
+  /// 파일 다운로드
   Future<Response> download(
     String urlPath,
     String savePath, {
@@ -167,52 +163,42 @@ class DioClient {
     );
   }
 
-  /// Update authentication token
-  void updateAuthToken(String? token) {
-    if (token != null) {
-      _dio.options.headers['Authorization'] = 'Bearer $token';
-    } else {
-      _dio.options.headers.remove('Authorization');
-    }
-  }
-
-  /// Clear authentication
-  void clearAuth() {
-    _dio.options.headers.remove('Authorization');
-  }
-
-  /// Get the underlying Dio instance (for advanced usage)
+  /// 기본 Dio 인스턴스 반환 (고급 사용 용도)
   Dio get dio => _dio;
 }
 
-/// Authentication interceptor
+/// 인증 인터셉터
 class _AuthInterceptor extends Interceptor {
+  final SecureStorageService _secureStorageService;
+
+  _AuthInterceptor(this._secureStorageService);
+
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: Add JWT token injection from secure storage
-    // final token = await SecureStorage.getToken();
-    // if (token != null) {
-    //   options.headers['Authorization'] = 'Bearer $token';
-    // }
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // 보안 저장소에서 JWT 토큰을 가져와 헤더에 주입
+    final token = await _secureStorageService.getAccessToken();
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
 
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // Handle token refresh on 401
+    // 401 에러 시 토큰 갱신 처리
     if (err.response?.statusCode == 401) {
-      // TODO: Implement token refresh logic
-      // - Try to refresh token
-      // - Retry original request if refresh successful
-      // - Logout user if refresh fails
+      // TODO: 토큰 갱신 로직 구현
+      // - 토큰 갱신 시도
+      // - 갱신 성공 시 원래 요청 재시도
+      // - 갱신 실패 시 로그아웃 처리
     }
 
     super.onError(err, handler);
   }
 }
 
-/// Logging interceptor
+/// 로깅 인터셉터
 class _LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -258,11 +244,11 @@ class _LoggingInterceptor extends Interceptor {
   }
 }
 
-/// Error interceptor for standardization
+/// 에러 표준화를 위한 인터셉터
 class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // Standardize error format
+    // 에러 형식 표준화
     final errorData = {
       'message': err.message ?? 'Unknown error',
       'statusCode': err.response?.statusCode,
@@ -270,7 +256,7 @@ class _ErrorInterceptor extends Interceptor {
       'type': err.type.toString(),
     };
 
-    // Create standardized response
+    // 표준화된 응답 생성
     final standardizedResponse = Response(
       requestOptions: err.requestOptions,
       statusCode: err.response?.statusCode ?? 500,
@@ -278,7 +264,7 @@ class _ErrorInterceptor extends Interceptor {
       data: errorData,
     );
 
-    // Replace the error with standardized response
+    // 표준화된 응답으로 에러 교체
     final standardizedError = DioException(
       requestOptions: err.requestOptions,
       response: standardizedResponse,

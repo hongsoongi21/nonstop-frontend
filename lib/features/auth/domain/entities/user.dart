@@ -22,13 +22,13 @@ class User with _$User {
 
   const User._();
 
-  /// Check if user has completed profile setup
+  /// 프로필 설정이 완료되었는지 확인
   bool get isProfileComplete => nickname.isNotEmpty && universityId != null;
 
-  /// Get user's display name (fallback to email if nickname is empty)
+  /// 표시할 이름 (닉네임이 없으면 이메일 앞부분 사용)
   String get displayName => nickname.isNotEmpty ? nickname : email.split('@').first;
 
-  /// Get user's initials for avatar fallback
+  /// 아바타용 이니셜 추출
   String get initials {
     final name = nickname.isNotEmpty ? nickname : fullName ?? '';
     if (name.isEmpty) return email.substring(0, 1).toUpperCase();
