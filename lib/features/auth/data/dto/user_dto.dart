@@ -8,17 +8,18 @@ part 'user_dto.g.dart';
 @freezed
 class UserDto with _$UserDto {
   const factory UserDto({
-    required String id,
+    // 백엔드의 숫자형 ID를 문자열로 안전하게 받기 위해 dynamic으로 설정 후 toDomain에서 처리
+    required dynamic id,
     required String email,
     required String nickname,
     String? fullName,
-    String? avatarUrl,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? university,
     int? universityId,
     String? major,
     int? majorId,
-    String? bio,
-    @Default(false) bool isEmailVerified,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'isVerified') @Default(false) bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _UserDto;
@@ -31,7 +32,7 @@ class UserDto with _$UserDto {
   /// DTO를 도메인 엔티티로 변환
   User toDomain() {
     return User(
-      id: id,
+      id: id?.toString() ?? '',
       email: email,
       nickname: nickname,
       fullName: fullName,

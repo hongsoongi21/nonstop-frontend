@@ -21,20 +21,23 @@ UserProfileDto _$UserProfileDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserProfileDto {
-  String get id => throw _privateConstructorUsedError;
-  String get userId => throw _privateConstructorUsedError;
+  dynamic get id => throw _privateConstructorUsedError;
+  dynamic get userId => throw _privateConstructorUsedError;
   String get fullName => throw _privateConstructorUsedError;
   String? get displayName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'introduction')
   String? get bio => throw _privateConstructorUsedError;
+  @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get coverImageUrl => throw _privateConstructorUsedError;
   DateTime? get dateOfBirth => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   String? get website => throw _privateConstructorUsedError;
-  String? get universityId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'universityId')
+  dynamic get universityId => throw _privateConstructorUsedError;
   String? get major => throw _privateConstructorUsedError;
   int? get year => throw _privateConstructorUsedError;
   double? get gpa => throw _privateConstructorUsedError;
@@ -67,20 +70,20 @@ abstract class $UserProfileDtoCopyWith<$Res> {
   ) = _$UserProfileDtoCopyWithImpl<$Res, UserProfileDto>;
   @useResult
   $Res call({
-    String id,
-    String userId,
+    dynamic id,
+    dynamic userId,
     String fullName,
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    @JsonKey(name: 'universityId') dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -112,8 +115,8 @@ class _$UserProfileDtoCopyWithImpl<$Res, $Val extends UserProfileDto>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
-    Object? userId = null,
+    Object? id = freezed,
+    Object? userId = freezed,
     Object? fullName = null,
     Object? displayName = freezed,
     Object? email = freezed,
@@ -142,14 +145,14 @@ class _$UserProfileDtoCopyWithImpl<$Res, $Val extends UserProfileDto>
   }) {
     return _then(
       _value.copyWith(
-            id: null == id
+            id: freezed == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
-                      as String,
-            userId: null == userId
+                      as dynamic,
+            userId: freezed == userId
                 ? _value.userId
                 : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as dynamic,
             fullName: null == fullName
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
@@ -197,7 +200,7 @@ class _$UserProfileDtoCopyWithImpl<$Res, $Val extends UserProfileDto>
             universityId: freezed == universityId
                 ? _value.universityId
                 : universityId // ignore: cast_nullable_to_non_nullable
-                      as String?,
+                      as dynamic,
             major: freezed == major
                 ? _value.major
                 : major // ignore: cast_nullable_to_non_nullable
@@ -266,20 +269,20 @@ abstract class _$$UserProfileDtoImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    String id,
-    String userId,
+    dynamic id,
+    dynamic userId,
     String fullName,
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    @JsonKey(name: 'universityId') dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -310,8 +313,8 @@ class __$$UserProfileDtoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
-    Object? userId = null,
+    Object? id = freezed,
+    Object? userId = freezed,
     Object? fullName = null,
     Object? displayName = freezed,
     Object? email = freezed,
@@ -340,14 +343,14 @@ class __$$UserProfileDtoImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$UserProfileDtoImpl(
-        id: null == id
+        id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
-                  as String,
-        userId: null == userId
+                  as dynamic,
+        userId: freezed == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as dynamic,
         fullName: null == fullName
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
@@ -395,7 +398,7 @@ class __$$UserProfileDtoImplCopyWithImpl<$Res>
         universityId: freezed == universityId
             ? _value.universityId
             : universityId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as dynamic,
         major: freezed == major
             ? _value.major
             : major // ignore: cast_nullable_to_non_nullable
@@ -463,14 +466,14 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
     this.displayName,
     this.email,
     this.phoneNumber,
-    this.bio,
-    this.avatarUrl,
+    @JsonKey(name: 'introduction') this.bio,
+    @JsonKey(name: 'profileImageUrl') this.avatarUrl,
     this.coverImageUrl,
     this.dateOfBirth,
     this.gender,
     this.location,
     this.website,
-    this.universityId,
+    @JsonKey(name: 'universityId') this.universityId,
     this.major,
     this.year,
     this.gpa,
@@ -490,9 +493,9 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
       _$$UserProfileDtoImplFromJson(json);
 
   @override
-  final String id;
+  final dynamic id;
   @override
-  final String userId;
+  final dynamic userId;
   @override
   final String fullName;
   @override
@@ -502,8 +505,10 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
   @override
   final String? phoneNumber;
   @override
+  @JsonKey(name: 'introduction')
   final String? bio;
   @override
+  @JsonKey(name: 'profileImageUrl')
   final String? avatarUrl;
   @override
   final String? coverImageUrl;
@@ -516,7 +521,8 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
   @override
   final String? website;
   @override
-  final String? universityId;
+  @JsonKey(name: 'universityId')
+  final dynamic universityId;
   @override
   final String? major;
   @override
@@ -554,8 +560,8 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserProfileDtoImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.userId, userId) || other.userId == userId) &&
+            const DeepCollectionEquality().equals(other.id, id) &&
+            const DeepCollectionEquality().equals(other.userId, userId) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
             (identical(other.displayName, displayName) ||
@@ -574,8 +580,10 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.website, website) || other.website == website) &&
-            (identical(other.universityId, universityId) ||
-                other.universityId == universityId) &&
+            const DeepCollectionEquality().equals(
+              other.universityId,
+              universityId,
+            ) &&
             (identical(other.major, major) || other.major == major) &&
             (identical(other.year, year) || other.year == year) &&
             (identical(other.gpa, gpa) || other.gpa == gpa) &&
@@ -604,8 +612,8 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
   @override
   int get hashCode => Object.hashAll([
     runtimeType,
-    id,
-    userId,
+    const DeepCollectionEquality().hash(id),
+    const DeepCollectionEquality().hash(userId),
     fullName,
     displayName,
     email,
@@ -617,7 +625,7 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
     gender,
     location,
     website,
-    universityId,
+    const DeepCollectionEquality().hash(universityId),
     major,
     year,
     gpa,
@@ -652,20 +660,20 @@ class _$UserProfileDtoImpl extends _UserProfileDto {
 
 abstract class _UserProfileDto extends UserProfileDto {
   const factory _UserProfileDto({
-    required final String id,
-    required final String userId,
+    required final dynamic id,
+    required final dynamic userId,
     required final String fullName,
     final String? displayName,
     final String? email,
     final String? phoneNumber,
-    final String? bio,
-    final String? avatarUrl,
+    @JsonKey(name: 'introduction') final String? bio,
+    @JsonKey(name: 'profileImageUrl') final String? avatarUrl,
     final String? coverImageUrl,
     final DateTime? dateOfBirth,
     final String? gender,
     final String? location,
     final String? website,
-    final String? universityId,
+    @JsonKey(name: 'universityId') final dynamic universityId,
     final String? major,
     final int? year,
     final double? gpa,
@@ -686,9 +694,9 @@ abstract class _UserProfileDto extends UserProfileDto {
       _$UserProfileDtoImpl.fromJson;
 
   @override
-  String get id;
+  dynamic get id;
   @override
-  String get userId;
+  dynamic get userId;
   @override
   String get fullName;
   @override
@@ -698,8 +706,10 @@ abstract class _UserProfileDto extends UserProfileDto {
   @override
   String? get phoneNumber;
   @override
+  @JsonKey(name: 'introduction')
   String? get bio;
   @override
+  @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl;
   @override
   String? get coverImageUrl;
@@ -712,7 +722,8 @@ abstract class _UserProfileDto extends UserProfileDto {
   @override
   String? get website;
   @override
-  String? get universityId;
+  @JsonKey(name: 'universityId')
+  dynamic get universityId;
   @override
   String? get major;
   @override
@@ -758,14 +769,16 @@ mixin _$UpdateUserProfileDto {
   String? get displayName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
+  @JsonKey(name: 'introduction')
   String? get bio => throw _privateConstructorUsedError;
+  @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get coverImageUrl => throw _privateConstructorUsedError;
   DateTime? get dateOfBirth => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   String? get location => throw _privateConstructorUsedError;
   String? get website => throw _privateConstructorUsedError;
-  String? get universityId => throw _privateConstructorUsedError;
+  dynamic get universityId => throw _privateConstructorUsedError;
   String? get major => throw _privateConstructorUsedError;
   int? get year => throw _privateConstructorUsedError;
   double? get gpa => throw _privateConstructorUsedError;
@@ -799,14 +812,14 @@ abstract class $UpdateUserProfileDtoCopyWith<$Res> {
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -910,7 +923,7 @@ class _$UpdateUserProfileDtoCopyWithImpl<
             universityId: freezed == universityId
                 ? _value.universityId
                 : universityId // ignore: cast_nullable_to_non_nullable
-                      as String?,
+                      as dynamic,
             major: freezed == major
                 ? _value.major
                 : major // ignore: cast_nullable_to_non_nullable
@@ -971,14 +984,14 @@ abstract class _$$UpdateUserProfileDtoImplCopyWith<$Res>
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -1078,7 +1091,7 @@ class __$$UpdateUserProfileDtoImplCopyWithImpl<$Res>
         universityId: freezed == universityId
             ? _value.universityId
             : universityId // ignore: cast_nullable_to_non_nullable
-                  as String?,
+                  as dynamic,
         major: freezed == major
             ? _value.major
             : major // ignore: cast_nullable_to_non_nullable
@@ -1132,8 +1145,8 @@ class _$UpdateUserProfileDtoImpl extends _UpdateUserProfileDto {
     this.displayName,
     this.email,
     this.phoneNumber,
-    this.bio,
-    this.avatarUrl,
+    @JsonKey(name: 'introduction') this.bio,
+    @JsonKey(name: 'profileImageUrl') this.avatarUrl,
     this.coverImageUrl,
     this.dateOfBirth,
     this.gender,
@@ -1164,8 +1177,10 @@ class _$UpdateUserProfileDtoImpl extends _UpdateUserProfileDto {
   @override
   final String? phoneNumber;
   @override
+  @JsonKey(name: 'introduction')
   final String? bio;
   @override
+  @JsonKey(name: 'profileImageUrl')
   final String? avatarUrl;
   @override
   final String? coverImageUrl;
@@ -1178,7 +1193,7 @@ class _$UpdateUserProfileDtoImpl extends _UpdateUserProfileDto {
   @override
   final String? website;
   @override
-  final String? universityId;
+  final dynamic universityId;
   @override
   final String? major;
   @override
@@ -1228,8 +1243,10 @@ class _$UpdateUserProfileDtoImpl extends _UpdateUserProfileDto {
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.website, website) || other.website == website) &&
-            (identical(other.universityId, universityId) ||
-                other.universityId == universityId) &&
+            const DeepCollectionEquality().equals(
+              other.universityId,
+              universityId,
+            ) &&
             (identical(other.major, major) || other.major == major) &&
             (identical(other.year, year) || other.year == year) &&
             (identical(other.gpa, gpa) || other.gpa == gpa) &&
@@ -1263,7 +1280,7 @@ class _$UpdateUserProfileDtoImpl extends _UpdateUserProfileDto {
     gender,
     location,
     website,
-    universityId,
+    const DeepCollectionEquality().hash(universityId),
     major,
     year,
     gpa,
@@ -1300,14 +1317,14 @@ abstract class _UpdateUserProfileDto extends UpdateUserProfileDto {
     final String? displayName,
     final String? email,
     final String? phoneNumber,
-    final String? bio,
-    final String? avatarUrl,
+    @JsonKey(name: 'introduction') final String? bio,
+    @JsonKey(name: 'profileImageUrl') final String? avatarUrl,
     final String? coverImageUrl,
     final DateTime? dateOfBirth,
     final String? gender,
     final String? location,
     final String? website,
-    final String? universityId,
+    final dynamic universityId,
     final String? major,
     final int? year,
     final double? gpa,
@@ -1333,8 +1350,10 @@ abstract class _UpdateUserProfileDto extends UpdateUserProfileDto {
   @override
   String? get phoneNumber;
   @override
+  @JsonKey(name: 'introduction')
   String? get bio;
   @override
+  @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl;
   @override
   String? get coverImageUrl;
@@ -1347,7 +1366,7 @@ abstract class _UpdateUserProfileDto extends UpdateUserProfileDto {
   @override
   String? get website;
   @override
-  String? get universityId;
+  dynamic get universityId;
   @override
   String? get major;
   @override
