@@ -39,3 +39,13 @@ class ProfileUpdateRequestDto with _$ProfileUpdateRequestDto {
   factory ProfileUpdateRequestDto.fromJson(Map<String, dynamic> json) =>
       _$ProfileUpdateRequestDtoFromJson(json);
 }
+
+@freezed
+class RefreshRequestDto with _$RefreshRequestDto {
+  const factory RefreshRequestDto({
+    required String refreshToken,
+  }) = _RefreshRequestDto;
+
+  factory RefreshRequestDto.fromJson(Map<String, dynamic> json) =>
+      _$RefreshRequestDtoFromJson(json);
+}

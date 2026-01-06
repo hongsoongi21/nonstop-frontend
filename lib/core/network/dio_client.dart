@@ -170,6 +170,7 @@ class DioClient {
 /// 인증 인터셉터
 class _AuthInterceptor extends Interceptor {
   final SecureStorageService _secureStorageService;
+  bool _isRefreshing = false;
 
   _AuthInterceptor(this._secureStorageService);
 
@@ -185,13 +186,48 @@ class _AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    // 401 에러 시 토큰 갱신 처리
-    if (err.response?.statusCode == 401) {
-      // TODO: 토큰 갱신 로직 구현
-      // - 토큰 갱신 시도
-      // - 갱신 성공 시 원래 요청 재시도
-      // - 갱신 실패 시 로그아웃 처리
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // 401 에러(인증 만료) 발생 시 토큰 갱신 시도
+    if (err.response?.statusCode == 401 && !_isRefreshing) {
+      final refreshToken = await _secureStorageService.getRefreshToken();
+
+      if (refreshToken != null) {
+        _isRefreshing = true;
+
+        try {
+          // 토큰 갱신 API 호출용 별도 Dio 인스턴스 생성 (무한 루프 방지)
+          final dio = Dio(BaseOptions(baseUrl: EnvConfig.apiBaseUrl));
+          final response = await dio.post(
+            '/api/v1/auth/refresh',
+            data: {'refreshToken': refreshToken},
+          );
+
+          final apiResponse = response.data as Map<String, dynamic>;
+          if (apiResponse['success'] == true) {
+            final data = apiResponse['data'];
+            final newAccessToken = data['accessToken'];
+            final newRefreshToken = data['refreshToken'];
+
+            // 새 토큰 저장
+            await _secureStorageService.saveAccessToken(newAccessToken);
+            if (newRefreshToken != null) {
+              await _secureStorageService.saveRefreshToken(newRefreshToken);
+            }
+
+            // 원래 실패했던 요청 재시도
+            final options = err.requestOptions;
+            options.headers['Authorization'] = 'Bearer $newAccessToken';
+            
+            final retryResponse = await dio.fetch(options);
+            return handler.resolve(retryResponse);
+          }
+        } catch (e) {
+          // 리프레시 실패 시 로그아웃 처리 유도 (토큰 삭제)
+          await _secureStorageService.deleteAllTokens();
+        } finally {
+          _isRefreshing = false;
+        }
+      }
     }
 
     super.onError(err, handler);

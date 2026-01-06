@@ -82,11 +82,18 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<void> signOut() async {
     try {
-      // 로컬 인증 정보 삭제
-      await _secureStorageService.deleteAllTokens();
-      _authStateController.add(null);
+      final refreshToken = await _secureStorageService.getRefreshToken();
+      if (refreshToken != null) {
+        // 서버에 로그아웃 요청 (Refresh Token 무효화)
+        await _dioClient.post(
+          '/api/v1/auth/logout',
+          data: RefreshRequestDto(refreshToken: refreshToken).toJson(),
+        );
+      }
     } catch (e) {
-      // 서버 호출 실패 시에도 로컬 상태는 삭제해야 함
+      // 서버 호출 실패 로그 (필요 시)
+    } finally {
+      // 서버 성공 여부와 관계없이 로컬 인증 정보 삭제
       await _secureStorageService.deleteAllTokens();
       _authStateController.add(null);
     }

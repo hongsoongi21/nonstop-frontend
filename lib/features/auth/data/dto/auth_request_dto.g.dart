@@ -52,3 +52,11 @@ Map<String, dynamic> _$$ProfileUpdateRequestDtoImplToJson(
   'introduction': instance.introduction,
   'preferredLanguage': instance.preferredLanguage,
 };
+
+_$RefreshRequestDtoImpl _$$RefreshRequestDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$RefreshRequestDtoImpl(refreshToken: json['refreshToken'] as String);
+
+Map<String, dynamic> _$$RefreshRequestDtoImplToJson(
+  _$RefreshRequestDtoImpl instance,
+) => <String, dynamic>{'refreshToken': instance.refreshToken};
