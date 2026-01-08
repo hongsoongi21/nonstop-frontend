@@ -187,14 +187,16 @@ class PostCard extends StatelessWidget {
 
           SizedBox(height: AppSpacing.lg),
 
-          // Footer Stats (Views, Likes, Comments)
+          // Footer Stats (Comments, Likes, Views)
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Views
+              // Comments
               _StatItem(
-                icon: Icons.remove_red_eye_outlined,
-                count: post.views,
+                icon: Icons.chat_bubble_outline,
+                count: post.comments,
                 color: AppColors.textSecondary,
+                onTap: onComment,
               ),
 
               SizedBox(width: AppSpacing.lg),
@@ -209,12 +211,11 @@ class PostCard extends StatelessWidget {
 
               SizedBox(width: AppSpacing.lg),
 
-              // Comments
+              // Views
               _StatItem(
-                icon: Icons.chat_bubble_outline,
-                count: post.comments,
+                icon: Icons.bar_chart, // Twitter uses bar chart for views
+                count: post.views,
                 color: AppColors.textSecondary,
-                onTap: onComment,
               ),
             ],
           ),
@@ -248,13 +249,13 @@ class _StatItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 20,
+              size: 18, // Slightly smaller for Twitter vibe
               color: color,
             ),
             SizedBox(width: 6),
             Text(
               '$count',
-              style: AppTypography.body2.copyWith(
+              style: AppTypography.caption.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),

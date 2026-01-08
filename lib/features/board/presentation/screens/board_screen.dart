@@ -231,9 +231,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
                                 child: PostCard(
                                   post: post.copyWith(likes: likesCount),
-                                  onTap: () {
-                                    // TODO: Navigate to post details
-                                  },
+                                  onTap: () => context.go(Routes.boardDetailPath(post.id)),
                                   onLike: () => ref.read(boardProvider.notifier).toggleLike(post.id),
                                   onComment: () {
                                     ref.read(boardProvider.notifier).addComment(

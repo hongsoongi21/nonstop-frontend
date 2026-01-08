@@ -10,6 +10,7 @@ import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dar
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
+import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
@@ -81,6 +82,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreatePostScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return BoardDetailScreen(boardId: id);
+                    },
                   ),
                 ],
               ),

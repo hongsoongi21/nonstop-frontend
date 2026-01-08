@@ -338,6 +338,38 @@ class MockData {
     ),
   ];
 
+  // Comments
+  static final List<Comment> comments = [
+    Comment(
+      id: '1',
+      postId: '1',
+      author: 'Sardor_21',
+      authorAvatar: 'https://picsum.photos/seed/sardor/40/40',
+      content: 'Try Cafe Mix on Amir Temur! Great coffee and fast wifi',
+      timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+      likes: 8,
+    ),
+    Comment(
+      id: '2',
+      postId: '1',
+      author: 'Jamshid_dev',
+      authorAvatar: 'https://picsum.photos/seed/jamshid/40/40',
+      content: 'Thanks! Will check it out',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
+      likes: 2,
+      parentId: '1',
+    ),
+    Comment(
+      id: '3',
+      postId: '1',
+      author: 'Nigora_student',
+      authorAvatar: 'https://picsum.photos/seed/nigora/40/40',
+      content: 'Coffee Land has student discounts!',
+      timestamp: DateTime.now().subtract(const Duration(hours: 2)),
+      likes: 15,
+    ),
+  ];
+
   // Helper methods
   static University getUniversityById(String id) {
     return universities.firstWhere((u) => u.id == id);
@@ -354,9 +386,55 @@ class MockData {
   static List<Post> getPostsByCategory(PostCategory category) {
     return posts.where((p) => p.category == category).toList();
   }
+  
+  static List<Comment> getCommentsByPostId(String postId) {
+    // Return top-level comments (no parent) for the post
+    // The UI handles fetching replies recursively if needed, or we just flat list them.
+    // For this simple mock, we'll return all and filter in UI or return nested structure.
+    // Let's return all for now.
+    return comments.where((c) => c.postId == postId).toList();
+  }
 }
 
 // Data Models
+class Comment {
+  final String id;
+  final String postId;
+  final String author;
+  final String? authorAvatar;
+  final String content;
+  final DateTime timestamp;
+  final int likes;
+  final String? parentId; // For nested replies
+
+  const Comment({
+    required this.id,
+    required this.postId,
+    required this.author,
+    this.authorAvatar,
+    required this.content,
+    required this.timestamp,
+    required this.likes,
+    this.parentId,
+  });
+
+  String get timeAgo {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
+    }
+  }
+}
+
+
 class University {
   final String id;
   final String name;
