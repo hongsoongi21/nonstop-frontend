@@ -233,15 +233,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                   post: post.copyWith(likes: likesCount),
                                   onTap: () => context.go(Routes.boardDetailPath(post.id)),
                                   onLike: () => ref.read(boardProvider.notifier).toggleLike(post.id),
-                                  onComment: () {
-                                    ref.read(boardProvider.notifier).addComment(
-                                          post.id,
-                                          'This is a sample comment!',
-                                        );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Comment added!')),
-                                    );
-                                  },
+                                  onComment: () => context.go(Routes.boardDetailPath(post.id)),
                                 ),
                               );
                             },

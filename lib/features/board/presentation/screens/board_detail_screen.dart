@@ -23,11 +23,13 @@ class BoardDetailScreen extends ConsumerStatefulWidget {
 
 class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
+  final FocusNode _commentFocusNode = FocusNode();
   bool _isAnonymous = false;
 
   @override
   void dispose() {
     _commentController.dispose();
+    _commentFocusNode.dispose();
     super.dispose();
   }
 
@@ -118,7 +120,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       children: [
                         _TwitterActionButton(
                           icon: Icons.chat_bubble_outline,
-                          onTap: () {},
+                          onTap: () => _commentFocusNode.requestFocus(),
                         ),
                         const SizedBox(width: AppSpacing.lg),
                         _TwitterActionButton(
@@ -286,6 +288,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     ),
                     child: TextField(
                       controller: _commentController,
+                      focusNode: _commentFocusNode,
                       decoration: const InputDecoration(
                         hintText: 'Reply...',
                         border: InputBorder.none,
