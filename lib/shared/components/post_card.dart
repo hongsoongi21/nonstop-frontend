@@ -33,85 +33,13 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with category and timestamp
+          // Header: Author Info & Time
           Row(
-            children: [
-              // Category badge
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: Color(post.categoryColor).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                ),
-                child: Text(
-                  post.categoryName,
-                  style: AppTypography.caption.copyWith(
-                    color: Color(post.categoryColor),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-
-              const Spacer(),
-
-              // Timestamp
-              Text(
-                post.timeAgo,
-                style: AppTypography.caption.copyWith(
-                  color: AppColors.textHint,
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: AppSpacing.sm),
-
-          // Title
-          Text(
-            post.title,
-            style: AppTypography.body1.copyWith(
-              fontWeight: FontWeight.w600,
-              height: 1.3,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-
-          SizedBox(height: AppSpacing.sm),
-
-          // Content preview
-          Text(
-            post.content,
-            style: AppTypography.body2.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.4,
-            ),
-            maxLines: showFullContent ? null : 3,
-            overflow: showFullContent ? null : TextOverflow.ellipsis,
-          ),
-
-          if (!showFullContent && post.content.length > 100) ...[
-            SizedBox(height: AppSpacing.xs),
-            Text(
-              'Read more...',
-              style: AppTypography.caption.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-
-          SizedBox(height: AppSpacing.md),
-
-          // Author info
-          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Avatar
               CircleAvatar(
-                radius: 16,
+                radius: 20,
                 backgroundImage: post.authorAvatar != null
                     ? NetworkImage(post.authorAvatar!)
                     : null,
@@ -121,108 +49,172 @@ class PostCard extends StatelessWidget {
                         post.author.isNotEmpty ? post.author[0].toUpperCase() : '?',
                         style: AppTypography.caption.copyWith(
                           color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
                         ),
                       )
                     : null,
               ),
 
-              SizedBox(width: AppSpacing.sm),
+              SizedBox(width: AppSpacing.md),
 
-              // Author name
+              // Name & Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            post.isAnonymous ? 'Anonymous' : post.author,
+                            style: AppTypography.body1.copyWith(
+                              fontWeight: FontWeight.w700,
+                              height: 1.2,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Text(
+                          '•',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textHint,
+                          ),
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Text(
+                          post.timeAgo,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textHint,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 2),
                     Text(
-                      post.author,
-                      style: AppTypography.body2.copyWith(
+                      post.university != null && post.major != null
+                          ? '${post.university} • ${post.major}'
+                          : 'Student', // Fallback
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (post.isAnonymous) ...[
-                      SizedBox(height: 2),
-                      Text(
-                        'Anonymous',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                    ],
                   ],
                 ),
+              ),
+
+              // Menu Icon
+              IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.more_vert,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
               ),
             ],
           ),
 
           SizedBox(height: AppSpacing.md),
 
-          // Tags
-          if (post.tags.isNotEmpty) ...[
-            Wrap(
-              spacing: AppSpacing.xs,
-              runSpacing: AppSpacing.xs,
-              children: post.tags.map((tag) => Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm + 2,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.15),
-                    width: 1,
-                  ),
-                ),
-                child: Text(
-                  '#$tag',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.primary.withOpacity(0.8),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11,
-                  ),
-                ),
-              )).toList(),
+          // Category Badge
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 6,
             ),
-            SizedBox(height: AppSpacing.md),
+            decoration: BoxDecoration(
+              color: Color(post.categoryColor).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+            ),
+            child: Text(
+              post.categoryName,
+              style: AppTypography.caption.copyWith(
+                color: Color(post.categoryColor),
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+            ),
+          ),
+
+          SizedBox(height: AppSpacing.md),
+
+          // Title
+          Text(
+            post.title,
+            style: AppTypography.headline6.copyWith(
+              fontWeight: FontWeight.w700,
+              height: 1.3,
+            ),
+          ),
+
+          SizedBox(height: AppSpacing.sm),
+
+          // Content
+          Text(
+            post.content,
+            style: AppTypography.body2.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.5,
+              fontSize: 15,
+            ),
+            maxLines: showFullContent ? null : 3,
+            overflow: showFullContent ? null : TextOverflow.ellipsis,
+          ),
+
+          if (!showFullContent && post.content.length > 100) ...[
+            SizedBox(height: AppSpacing.xs),
+            GestureDetector(
+               onTap: onTap, // Allow tapping "Read more" to open details
+               child: Text(
+                'Read more...',
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.textHint,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ],
 
-          // Actions
+          SizedBox(height: AppSpacing.lg),
+
+          // Footer Stats (Views, Likes, Comments)
           Row(
             children: [
-              // Like button
-              _ActionButton(
-                icon: Icons.favorite_border,
-                label: '${post.likes}',
-                onTap: onLike,
-                color: post.likes > 0 ? AppColors.error : AppColors.textSecondary,
+              // Views
+              _StatItem(
+                icon: Icons.remove_red_eye_outlined,
+                count: post.views,
+                color: AppColors.textSecondary,
               ),
 
               SizedBox(width: AppSpacing.lg),
 
-              // Comment button
-              _ActionButton(
-                icon: Icons.chat_bubble_outline,
-                label: '${post.comments}',
-                onTap: onComment,
-                color: AppColors.textSecondary,
+              // Likes
+              _StatItem(
+                icon: post.likes > 0 ? Icons.favorite : Icons.favorite_border,
+                count: post.likes,
+                color: post.likes > 0 ? AppColors.error : AppColors.textSecondary,
+                onTap: onLike,
               ),
 
-              const Spacer(),
+              SizedBox(width: AppSpacing.lg),
 
-              // Share button
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.share_outlined,
-                  size: 20,
-                  color: AppColors.textSecondary,
-                ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
+              // Comments
+              _StatItem(
+                icon: Icons.chat_bubble_outline,
+                count: post.comments,
+                color: AppColors.textSecondary,
+                onTap: onComment,
               ),
             ],
           ),
@@ -232,152 +224,17 @@ class PostCard extends StatelessWidget {
   }
 }
 
-/// Compact post card for list views
-class PostListCard extends StatelessWidget {
-  final Post post;
-  final VoidCallback? onTap;
-
-  const PostListCard({
-    super.key,
-    required this.post,
-    this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      width: double.infinity,
-      margin: EdgeInsets.only(bottom: AppSpacing.sm),
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-      onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Category indicator
-          Container(
-            width: 4,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Color(post.categoryColor),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
-          SizedBox(width: AppSpacing.md),
-
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and category
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        post.title,
-                        style: AppTypography.body2.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: AppSpacing.sm),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xs,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Color(post.categoryColor).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                      ),
-                      child: Text(
-                        post.categoryName,
-                        style: AppTypography.caption.copyWith(
-                          color: Color(post.categoryColor),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: AppSpacing.xs),
-
-                // Content preview
-                Text(
-                  post.content,
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-
-                SizedBox(height: AppSpacing.sm),
-
-                // Stats
-                Row(
-                  children: [
-                    Icon(
-                      Icons.favorite,
-                      size: 14,
-                      color: AppColors.error,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '${post.likes}',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    SizedBox(width: AppSpacing.md),
-                    Icon(
-                      Icons.chat_bubble,
-                      size: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      '${post.comments}',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      post.timeAgo,
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Action button for post interactions
-class _ActionButton extends StatelessWidget {
+class _StatItem extends StatelessWidget {
   final IconData icon;
-  final String label;
+  final int count;
+  final Color color;
   final VoidCallback? onTap;
-  final Color? color;
 
-  const _ActionButton({
+  const _StatItem({
     required this.icon,
-    required this.label,
+    required this.count,
+    required this.color,
     this.onTap,
-    this.color,
   });
 
   @override
@@ -386,22 +243,19 @@ class _ActionButton extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: 4,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         child: Row(
           children: [
             Icon(
               icon,
-              size: 18,
-              color: color ?? AppColors.textSecondary,
+              size: 20,
+              color: color,
             ),
-            SizedBox(width: AppSpacing.xs),
+            SizedBox(width: 6),
             Text(
-              label,
-              style: AppTypography.caption.copyWith(
-                color: color ?? AppColors.textSecondary,
+              '$count',
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),

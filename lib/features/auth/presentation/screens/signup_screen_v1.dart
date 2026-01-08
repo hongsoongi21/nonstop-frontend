@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../widgets/custom_auth_text_field.dart';
 import '../widgets/gradient_button.dart';
 import '../widgets/language_selector.dart';

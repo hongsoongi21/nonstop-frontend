@@ -166,11 +166,14 @@ class MockData {
       author: 'Azizbek Rahimov',
       authorId: '1',
       authorAvatar: 'https://picsum.photos/seed/ar40/40/40',
-      likes: 12,
-      comments: 8,
+      likes: 32,
+      comments: 18,
+      views: 245,
       timestamp: DateTime.now().subtract(const Duration(hours: 2)),
       isAnonymous: false,
       tags: ['study', 'tashkent', 'cafe'],
+      university: 'TSUE',
+      major: 'Computer Science',
     ),
     Post(
       id: '2',
@@ -183,9 +186,12 @@ class MockData {
       authorAvatar: 'https://picsum.photos/seed/anon1/40/40',
       likes: 5,
       comments: 15,
+      views: 120,
       timestamp: DateTime.now().subtract(const Duration(hours: 4)),
       isAnonymous: true,
       tags: ['cs201', 'algorithms', 'help'],
+      university: 'TUIT',
+      major: 'Software Engineering',
     ),
     Post(
       id: '3',
@@ -198,9 +204,12 @@ class MockData {
       authorAvatar: 'https://picsum.photos/seed/mk40/40/40',
       likes: 3,
       comments: 2,
+      views: 45,
       timestamp: DateTime.now().subtract(const Duration(hours: 6)),
       isAnonymous: false,
       tags: ['textbook', 'calculus', 'sale'],
+      university: 'NUUz',
+      major: 'Mathematics',
     ),
     Post(
       id: '4',
@@ -213,9 +222,12 @@ class MockData {
       authorAvatar: 'https://picsum.photos/seed/anon2/40/40',
       likes: 28,
       comments: 12,
+      views: 310,
       timestamp: DateTime.now().subtract(const Duration(hours: 8)),
       isAnonymous: true,
       tags: ['professor', 'secret', 'ratings'],
+      university: 'IUT',
+      major: 'Business',
     ),
     Post(
       id: '5',
@@ -228,9 +240,12 @@ class MockData {
       authorAvatar: 'https://picsum.photos/seed/jt40/40/40',
       likes: 18,
       comments: 6,
+      views: 156,
       timestamp: DateTime.now().subtract(const Duration(hours: 12)),
       isAnonymous: false,
       tags: ['study-group', 'midterms', 'algorithms'],
+      university: 'TSUE',
+      major: 'Economics',
     ),
   ];
 
@@ -467,9 +482,12 @@ class Post {
   final String? authorAvatar;
   final int likes;
   final int comments;
+  final int views;
   final DateTime timestamp;
   final bool isAnonymous;
   final List<String> tags;
+  final String? university;
+  final String? major;
 
   const Post({
     required this.id,
@@ -481,9 +499,12 @@ class Post {
     this.authorAvatar,
     required this.likes,
     required this.comments,
+    required this.views,
     required this.timestamp,
     required this.isAnonymous,
     required this.tags,
+    this.university,
+    this.major,
   });
 
   String get categoryName {
@@ -537,9 +558,12 @@ class Post {
     String? authorAvatar,
     int? likes,
     int? comments,
+    int? views,
     DateTime? timestamp,
     bool? isAnonymous,
     List<String>? tags,
+    String? university,
+    String? major,
   }) {
     return Post(
       id: id ?? this.id,
@@ -551,9 +575,12 @@ class Post {
       authorAvatar: authorAvatar ?? this.authorAvatar,
       likes: likes ?? this.likes,
       comments: comments ?? this.comments,
+      views: views ?? this.views,
       timestamp: timestamp ?? this.timestamp,
       isAnonymous: isAnonymous ?? this.isAnonymous,
       tags: tags ?? this.tags,
+      university: university ?? this.university,
+      major: major ?? this.major,
     );
   }
 }

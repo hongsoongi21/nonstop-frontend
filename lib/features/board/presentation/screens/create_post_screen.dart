@@ -64,6 +64,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           : 'https://picsum.photos/seed/you/40/40',
       likes: 0,
       comments: 0,
+      views: 0,
       timestamp: DateTime.now(),
       isAnonymous: _isAnonymous,
       tags: List.from(_tags),
@@ -124,105 +125,105 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 child: ListView(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   children: [
-                  // Category Selection
-                  _buildCategorySelector(),
+                    // Category Selection
+                    _buildCategorySelector(),
 
-                  const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
 
-                  // Title Field
-                  GlassContainer(
-                    borderColor: Colors.transparent,
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: AppTextField(
-                      controller: _titleController,
-                      labelText: 'Title',
-                      hintText: 'Write a clear, engaging title...',
-                      maxLines: 2,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter a title';
-                        }
-                        if (value.trim().length < 5) {
-                          return 'Title must be at least 5 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Content Field
-                  GlassContainer(
-                    borderColor: Colors.transparent,
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: AppTextField(
-                      controller: _contentController,
-                      labelText: 'Content',
-                      hintText:
-                          'Share your thoughts, ask questions, or describe what you\'re selling...',
-                      maxLines: 8,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter some content';
-                        }
-                        if (value.trim().length < 10) {
-                          return 'Content must be at least 10 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Tags Section
-                  _buildTagsSection(),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Anonymous Toggle
-                  _buildAnonymousToggle(),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Category Info
-                  _buildCategoryInfo(),
-
-                  const SizedBox(height: AppSpacing.xl),
-                ],
-              ),
-            ),
-
-            // Bottom Actions
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: GlassContainer(
-                borderColor: Colors.transparent,
-                blur: 15,
-                opacity: 0.8,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        text: 'Cancel',
-                        onPressed: () => context.pop(),
-                        variant: ButtonVariant.secondary,
+                    // Title Field
+                    GlassContainer(
+                      borderColor: Colors.transparent,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: AppTextField(
+                        controller: _titleController,
+                        labelText: 'Title',
+                        hintText: 'Write a clear, engaging title...',
+                        maxLines: 2,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a title';
+                          }
+                          if (value.trim().length < 5) {
+                            return 'Title must be at least 5 characters';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: AppButton(
-                        text: 'Post',
-                        onPressed: _isLoading ? null : _createPost,
-                        isLoading: _isLoading,
-                        variant: ButtonVariant.primary,
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Content Field
+                    GlassContainer(
+                      borderColor: Colors.transparent,
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: AppTextField(
+                        controller: _contentController,
+                        labelText: 'Content',
+                        hintText:
+                            'Share your thoughts, ask questions, or describe what you\'re selling...',
+                        maxLines: 8,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter some content';
+                          }
+                          if (value.trim().length < 10) {
+                            return 'Content must be at least 10 characters';
+                          }
+                          return null;
+                        },
                       ),
                     ),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Tags Section
+                    _buildTagsSection(),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Anonymous Toggle
+                    _buildAnonymousToggle(),
+
+                    const SizedBox(height: AppSpacing.lg),
+
+                    // Category Info
+                    _buildCategoryInfo(),
+
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
               ),
-            ),
+
+              // Bottom Actions
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: GlassContainer(
+                  borderColor: Colors.transparent,
+                  blur: 15,
+                  opacity: 0.8,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppButton(
+                          text: 'Cancel',
+                          onPressed: () => context.pop(),
+                          variant: ButtonVariant.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: AppButton(
+                          text: 'Post',
+                          onPressed: _isLoading ? null : _createPost,
+                          isLoading: _isLoading,
+                          variant: ButtonVariant.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -339,10 +340,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 ),
                 IconButton(
                   onPressed: () => _addTag(_tagController.text),
-                  icon: Icon(
-                    Icons.add_circle,
-                    color: AppColors.primary,
-                  ),
+                  icon: Icon(Icons.add_circle, color: AppColors.primary),
                 ),
               ],
             ),
@@ -361,7 +359,9 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusFull,
+                        ),
                         border: Border.all(
                           color: AppColors.primary.withValues(alpha: 0.15),
                           width: 1,
@@ -437,7 +437,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                 _isAnonymous = value;
               });
             },
-            activeColor: AppColors.primary,
+            activeThumbColor: AppColors.primary,
           ),
         ],
       ),
@@ -456,7 +456,9 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              color: Color(_getCategoryColor(_selectedCategory)).withOpacity(0.15),
+              color: Color(
+                _getCategoryColor(_selectedCategory),
+              ).withOpacity(0.15),
               borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
             ),
             child: Icon(
