@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../domain/entities/board.entity.dart';
@@ -23,6 +24,7 @@ class BoardRepositoryImpl implements BoardRepository {
       final result = await _dataSource.getCommunities();
       return Right(result);
     } catch (e) {
+      log('getCommunities error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -33,6 +35,7 @@ class BoardRepositoryImpl implements BoardRepository {
       final result = await _dataSource.getBoards(communityId);
       return Right(result);
     } catch (e) {
+      log('getBoards error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -51,6 +54,7 @@ class BoardRepositoryImpl implements BoardRepository {
       );
       return Right(result);
     } catch (e) {
+      log('getPosts error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -61,6 +65,7 @@ class BoardRepositoryImpl implements BoardRepository {
       final result = await _dataSource.getPostDetail(postId);
       return Right(result);
     } catch (e) {
+      log('getPostDetail error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -85,6 +90,7 @@ class BoardRepositoryImpl implements BoardRepository {
       );
       return Right(result);
     } catch (e) {
+      log('createPost error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -95,6 +101,7 @@ class BoardRepositoryImpl implements BoardRepository {
       await _dataSource.togglePostLike(postId);
       return const Right(null);
     } catch (e) {
+      log('togglePostLike error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -105,6 +112,7 @@ class BoardRepositoryImpl implements BoardRepository {
       final result = await _dataSource.getComments(postId);
       return Right(result);
     } catch (e) {
+      log('getComments error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
@@ -127,6 +135,7 @@ class BoardRepositoryImpl implements BoardRepository {
       );
       return Right(result);
     } catch (e) {
+      log('createComment error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }
