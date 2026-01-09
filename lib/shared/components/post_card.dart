@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:nonstop/shared/components/glass_container.dart';
 
-import '../../core/mock/mock_data.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../features/board/domain/entities/post.entity.dart';
+import '../../core/utils/date_utils.dart';
 
 /// Post card component for displaying board posts
 class PostCard extends StatelessWidget {
-  final Post post;
+  final PostEntity post;
   final VoidCallback? onTap;
   final VoidCallback? onLike;
   final VoidCallback? onComment;
@@ -40,20 +41,17 @@ class PostCard extends StatelessWidget {
               // Avatar
               CircleAvatar(
                 radius: 20,
-                backgroundImage: post.authorAvatar != null
-                    ? NetworkImage(post.authorAvatar!)
-                    : null,
                 backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                child: post.authorAvatar == null
-                    ? Text(
-                        post.author.isNotEmpty ? post.author[0].toUpperCase() : '?',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
-                      )
-                    : null,
+                child: Text(
+                  post.writerNickname.isNotEmpty
+                      ? post.writerNickname[0].toUpperCase()
+                      : '?',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
               ),
 
               SizedBox(width: AppSpacing.md),
@@ -67,7 +65,9 @@ class PostCard extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            post.isAnonymous ? 'Anonymous' : post.author,
+                            post.isWriterAnonymous
+                                ? 'Anonymous'
+                                : post.writerNickname,
                             style: AppTypography.body1.copyWith(
                               fontWeight: FontWeight.w700,
                               height: 1.2,
@@ -85,7 +85,7 @@ class PostCard extends StatelessWidget {
                         ),
                         SizedBox(width: AppSpacing.sm),
                         Text(
-                          post.timeAgo,
+                          timeAgo(post.createdAt),
                           style: AppTypography.caption.copyWith(
                             color: AppColors.textHint,
                             fontWeight: FontWeight.w500,
@@ -95,9 +95,7 @@ class PostCard extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      post.university != null && post.major != null
-                          ? '${post.university} • ${post.major}'
-                          : 'Student', // Fallback
+                      'Student', // Fallback as university/major might not be in PostDto.Response directly
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w500,
@@ -122,28 +120,6 @@ class PostCard extends StatelessWidget {
                 visualDensity: VisualDensity.compact,
               ),
             ],
-          ),
-
-          SizedBox(height: AppSpacing.md),
-
-          // Category Badge
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: Color(post.categoryColor).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-            ),
-            child: Text(
-              post.categoryName,
-              style: AppTypography.caption.copyWith(
-                color: Color(post.categoryColor),
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-            ),
           ),
 
           SizedBox(height: AppSpacing.md),
@@ -174,8 +150,8 @@ class PostCard extends StatelessWidget {
           if (!showFullContent && post.content.length > 100) ...[
             SizedBox(height: AppSpacing.xs),
             GestureDetector(
-               onTap: onTap, // Allow tapping "Read more" to open details
-               child: Text(
+              onTap: onTap, // Allow tapping "Read more" to open details
+              child: Text(
                 'Read more...',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.textHint,
@@ -194,7 +170,7 @@ class PostCard extends StatelessWidget {
               // Comments
               _StatItem(
                 icon: Icons.chat_bubble_outline,
-                count: post.comments,
+                count: post.commentCount,
                 color: AppColors.textSecondary,
                 onTap: onComment,
               ),
@@ -203,9 +179,9 @@ class PostCard extends StatelessWidget {
 
               // Likes
               _StatItem(
-                icon: post.likes > 0 ? Icons.favorite : Icons.favorite_border,
-                count: post.likes,
-                color: post.likes > 0 ? AppColors.error : AppColors.textSecondary,
+                icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
+                count: post.likeCount,
+                color: post.isLiked ? AppColors.error : AppColors.textSecondary,
                 onTap: onLike,
               ),
 
@@ -213,8 +189,8 @@ class PostCard extends StatelessWidget {
 
               // Views
               _StatItem(
-                icon: Icons.bar_chart, // Twitter uses bar chart for views
-                count: post.views,
+                icon: Icons.bar_chart,
+                count: post.viewCount.toInt(),
                 color: AppColors.textSecondary,
               ),
             ],
@@ -247,11 +223,7 @@ class _StatItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 18, // Slightly smaller for Twitter vibe
-              color: color,
-            ),
+            Icon(icon, size: 18, color: color),
             SizedBox(width: 6),
             Text(
               '$count',

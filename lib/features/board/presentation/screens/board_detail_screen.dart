@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nonstop/shared/components/glass_container.dart';
 
-import '../../../../core/mock/mock_data.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/components/post_card.dart'; // Reuse for header parts if possible, but might be easier to rebuild
+import '../../domain/entities/post.entity.dart';
+import '../../domain/entities/comment.entity.dart';
+import '../../../../core/utils/date_utils.dart';
+import '../providers/post_detail_provider.dart';
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
 
-  const BoardDetailScreen({
-    super.key,
-    required this.boardId,
-  });
+  const BoardDetailScreen({super.key, required this.boardId});
 
   @override
   ConsumerState<BoardDetailScreen> createState() => _BoardDetailScreenState();
@@ -25,6 +23,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
   final FocusNode _commentFocusNode = FocusNode();
   bool _isAnonymous = false;
+  int? _replyingToId;
 
   @override
   void dispose() {
@@ -35,13 +34,23 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // In a real app, use a provider to fetch/watch the specific post
-    final post = MockData.posts.firstWhere(
-      (p) => p.id == widget.boardId,
-      orElse: () => MockData.posts.first, // Fallback for dev
-    );
+    final postId = int.parse(widget.boardId);
+    final detailState = ref.watch(postDetailProvider(postId));
+    final post = detailState.post;
+    final comments = detailState.comments;
+    final isLoading = detailState.isLoading;
+    final error = detailState.error;
 
-    final comments = MockData.getCommentsByPostId(widget.boardId);
+    if (isLoading && post == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (post == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text(error ?? 'Post not found')),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,11 +83,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
                   const SizedBox(height: AppSpacing.md),
 
-                  // Category
-                  _buildCategoryPill(post),
-
-                  const SizedBox(height: AppSpacing.md),
-
                   // Title
                   Text(
                     post.title,
@@ -103,7 +107,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
                   // Stats Text
                   Text(
-                    '${post.views} views   ${post.likes} likes   ${post.comments} comments',
+                    '${post.viewCount} views   ${post.likeCount} likes   ${post.commentCount} comments',
                     style: AppTypography.body2.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -120,13 +124,20 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       children: [
                         _TwitterActionButton(
                           icon: Icons.chat_bubble_outline,
-                          onTap: () => _commentFocusNode.requestFocus(),
+                          onTap: () {
+                            setState(() => _replyingToId = null);
+                            _commentFocusNode.requestFocus();
+                          },
                         ),
                         const SizedBox(width: AppSpacing.lg),
                         _TwitterActionButton(
-                          icon: post.likes > 0 ? Icons.favorite : Icons.favorite_border,
-                          color: post.likes > 0 ? AppColors.error : null,
-                          onTap: () {},
+                          icon: post.isLiked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: post.isLiked ? AppColors.error : null,
+                          onTap: () => ref
+                              .read(postDetailProvider(postId).notifier)
+                              .toggleLike(),
                         ),
                         const SizedBox(width: AppSpacing.lg),
                         _TwitterActionButton(
@@ -150,36 +161,85 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   const SizedBox(height: AppSpacing.md),
 
                   // Comments List
-                  ...comments.map((comment) => _CommentItem(comment: comment)),
+                  if (comments.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text('No comments yet. Be the first!'),
+                      ),
+                    )
+                  else
+                    ..._buildCommentsList(comments, postId),
                 ],
               ),
             ),
           ),
 
           // Bottom Input Area
-          _buildInputArea(),
+          if (_replyingToId != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: AppColors.primary.withValues(alpha: 0.1),
+              child: Row(
+                children: [
+                  const Text('Replying to comment...'),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: () => setState(() => _replyingToId = null),
+                  ),
+                ],
+              ),
+            ),
+          _buildInputArea(postId),
         ],
       ),
     );
   }
 
-  Widget _buildPostHeader(Post post) {
+  List<Widget> _buildCommentsList(List<CommentEntity> comments, int postId) {
+    List<Widget> list = [];
+    for (var comment in comments) {
+      list.add(
+        _CommentItem(
+          comment: comment,
+          onReply: () {
+            setState(() => _replyingToId = comment.id);
+            _commentFocusNode.requestFocus();
+          },
+        ),
+      );
+      // Add nested replies
+      if (comment.replies.isNotEmpty) {
+        for (var reply in comment.replies) {
+          list.add(
+            _CommentItem(
+              comment: reply,
+              isReply: true,
+              onReply: () {
+                setState(() => _replyingToId = reply.id);
+                _commentFocusNode.requestFocus();
+              },
+            ),
+          );
+        }
+      }
+    }
+    return list;
+  }
+
+  Widget _buildPostHeader(PostEntity post) {
     return Row(
       children: [
         CircleAvatar(
           radius: 24,
-          backgroundImage: post.authorAvatar != null
-              ? NetworkImage(post.authorAvatar!)
-              : null,
           backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-          child: post.authorAvatar == null
-              ? Text(
-                  post.author.isNotEmpty ? post.author[0].toUpperCase() : '?',
-                  style: AppTypography.headline6.copyWith(
-                    color: AppColors.primary,
-                  ),
-                )
-              : null,
+          child: Text(
+            post.writerNickname.isNotEmpty
+                ? post.writerNickname[0].toUpperCase()
+                : '?',
+            style: AppTypography.headline6.copyWith(color: AppColors.primary),
+          ),
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
@@ -190,7 +250,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 children: [
                   Flexible(
                     child: Text(
-                      post.isAnonymous ? 'Anonymous' : post.author,
+                      post.isWriterAnonymous
+                          ? 'Anonymous'
+                          : post.writerNickname,
                       style: AppTypography.body1.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -200,7 +262,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '• ${post.timeAgo}',
+                    '• ${timeAgo(post.createdAt)}',
                     style: AppTypography.caption.copyWith(
                       color: AppColors.textHint,
                     ),
@@ -208,9 +270,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 ],
               ),
               Text(
-                post.university != null && post.major != null
-                    ? '${post.university} • ${post.major}'
-                    : 'Student',
+                'Student',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w500,
@@ -228,32 +288,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildCategoryPill(Post post) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Color(post.categoryColor).withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        post.categoryName, // e.g. "General" or mapped name
-        style: AppTypography.caption.copyWith(
-          color: Color(post.categoryColor),
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputArea() {
+  Widget _buildInputArea(int postId) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(
-            color: Colors.grey.withValues(alpha: 0.2),
-          ),
+          top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
       ),
       child: SafeArea(
@@ -266,7 +307,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 Switch(
                   value: _isAnonymous,
                   onChanged: (val) => setState(() => _isAnonymous = val),
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                 ),
                 Text(
                   'Post Anonymously',
@@ -309,9 +350,23 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                    icon: const Icon(
+                      Icons.send_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     onPressed: () {
-                      // Send comment logic
+                      if (_commentController.text.trim().isEmpty) return;
+                      ref
+                          .read(postDetailProvider(postId).notifier)
+                          .addComment(
+                            _commentController.text.trim(),
+                            upperCommentId: _replyingToId,
+                            isAnonymous: _isAnonymous,
+                          );
+                      _commentController.clear();
+                      setState(() => _replyingToId = null);
+                      _commentFocusNode.unfocus();
                     },
                   ),
                 ),
@@ -339,11 +394,7 @@ class _TwitterActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onTap,
-      icon: Icon(
-        icon,
-        size: 22,
-        color: color ?? AppColors.textSecondary,
-      ),
+      icon: Icon(icon, size: 22, color: color ?? AppColors.textSecondary),
       padding: const EdgeInsets.all(AppSpacing.sm),
       constraints: const BoxConstraints(),
       splashRadius: 24,
@@ -352,31 +403,31 @@ class _TwitterActionButton extends StatelessWidget {
 }
 
 class _CommentItem extends StatelessWidget {
-  final Comment comment;
+  final CommentEntity comment;
+  final bool isReply;
+  final VoidCallback? onReply;
 
-  const _CommentItem({required this.comment});
+  const _CommentItem({
+    required this.comment,
+    this.isReply = false,
+    this.onReply,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool isReply = comment.parentId != null;
-    
     return Padding(
-      padding: EdgeInsets.only(
-        left: isReply ? 40.0 : 0,
-        bottom: AppSpacing.lg,
-      ),
+      padding: EdgeInsets.only(left: isReply ? 40.0 : 0, bottom: AppSpacing.lg),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundImage: comment.authorAvatar != null
-                ? NetworkImage(comment.authorAvatar!)
-                : null,
             backgroundColor: Colors.grey[200],
-            child: comment.authorAvatar == null
-                ? Text(comment.author[0])
-                : null,
+            child: Text(
+              comment.writerNickname.isNotEmpty
+                  ? comment.writerNickname[0].toUpperCase()
+                  : '?',
+            ),
           ),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
@@ -393,16 +444,15 @@ class _CommentItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        comment.author,
+                        comment.isWriterAnonymous
+                            ? 'Anonymous'
+                            : comment.writerNickname,
                         style: AppTypography.body2.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        comment.content,
-                        style: AppTypography.body2,
-                      ),
+                      Text(comment.content, style: AppTypography.body2),
                     ],
                   ),
                 ),
@@ -410,27 +460,32 @@ class _CommentItem extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      comment.timeAgo,
+                      timeAgo(comment.createdAt),
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(width: 16),
                     Text(
-                      '${comment.likes} Likes',
+                      '${comment.likeCount} Likes',
                       style: AppTypography.caption.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textSecondary,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Text(
-                      'Reply',
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textSecondary,
+                    if (!isReply) ...[
+                      const SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: onReply,
+                        child: Text(
+                          'Reply',
+                          style: AppTypography.caption.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ],
