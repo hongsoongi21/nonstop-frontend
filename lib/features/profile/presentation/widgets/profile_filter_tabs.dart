@@ -4,14 +4,11 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import 'glass_container.dart';
 
-/// Filter tabs for profile content (grid, comments, bookmarks, favorites)
+/// Filter tabs for profile content (grid, comments)
 class ProfileFilterTabs extends StatefulWidget {
   final Function(int)? onTabChanged;
 
-  const ProfileFilterTabs({
-    super.key,
-    this.onTabChanged,
-  });
+  const ProfileFilterTabs({super.key, this.onTabChanged});
 
   @override
   State<ProfileFilterTabs> createState() => _ProfileFilterTabsState();
@@ -51,16 +48,16 @@ class _ProfileFilterTabsState extends State<ProfileFilterTabs> {
             isSelected: _selectedIndex == 1,
             onPressed: () => _onTabPressed(1),
           ),
-          _FilterTab(
-            icon: Icons.bookmark_border,
-            isSelected: _selectedIndex == 2,
-            onPressed: () => _onTabPressed(2),
-          ),
-          _FilterTab(
-            icon: Icons.favorite_border,
-            isSelected: _selectedIndex == 3,
-            onPressed: () => _onTabPressed(3),
-          ),
+          // _FilterTab(
+          //   icon: Icons.bookmark_border,
+          //   isSelected: _selectedIndex == 2,
+          //   onPressed: () => _onTabPressed(2),
+          // ),
+          // _FilterTab(
+          //   icon: Icons.favorite_border,
+          //   isSelected: _selectedIndex == 3,
+          //   onPressed: () => _onTabPressed(3),
+          // ),
         ],
       ),
     );

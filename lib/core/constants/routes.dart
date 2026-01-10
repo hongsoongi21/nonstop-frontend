@@ -6,7 +6,7 @@ class Routes {
   static const String login = '/login';
   static const String register = '/register';
   static const String onboarding = '/onboarding';
-  static const String forgotPassword = '/forgot-password';
+  // static const String forgotPassword = '/forgot-password';
 
   // 🏠 Main Navigation
   static const String home = '/home';
@@ -25,7 +25,7 @@ class Routes {
   static const String userProfile = '/profile/:userId';
   static const String timetableCreate = '/timetable/create';
   static const String timetableEvent = '/timetable/event/:id';
-  static const String gpaCalculator = '/timetable/gpa-calculator';
+  // static const String gpaCalculator = '/timetable/gpa-calculator';
 
   // 🔍 Query parameters
   static const String search = '/search?query=:query';

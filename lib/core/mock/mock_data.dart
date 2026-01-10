@@ -303,40 +303,40 @@ class MockData {
   ];
 
   // Cafeteria Items
-  static final List<CafeteriaItem> cafeteriaItems = [
-    CafeteriaItem(
-      id: '1',
-      name: 'Plov (Pilaf)',
-      price: '25,000',
-      category: CafeteriaCategory.food,
-      imageUrl: 'https://picsum.photos/seed/plov/200/150',
-      description: 'Traditional Uzbek rice dish with meat and carrots',
-    ),
-    CafeteriaItem(
-      id: '2',
-      name: 'Green Tea',
-      price: '5,000',
-      category: CafeteriaCategory.drink,
-      imageUrl: 'https://picsum.photos/seed/tea/200/150',
-      description: 'Fresh green tea',
-    ),
-    CafeteriaItem(
-      id: '3',
-      name: 'Beshbarmak',
-      price: '30,000',
-      category: CafeteriaCategory.food,
-      imageUrl: 'https://picsum.photos/seed/beshbarmak/200/150',
-      description: 'Kazakh meat and noodle dish',
-    ),
-    CafeteriaItem(
-      id: '4',
-      name: 'Kompot',
-      price: '8,000',
-      category: CafeteriaCategory.drink,
-      imageUrl: 'https://picsum.photos/seed/kompot/200/150',
-      description: 'Fruit drink made from dried fruits',
-    ),
-  ];
+  // static final List<CafeteriaItem> cafeteriaItems = [
+  //   CafeteriaItem(
+  //     id: '1',
+  //     name: 'Plov (Pilaf)',
+  //     price: '25,000',
+  //     category: CafeteriaCategory.food,
+  //     imageUrl: 'https://picsum.photos/seed/plov/200/150',
+  //     description: 'Traditional Uzbek rice dish with meat and carrots',
+  //   ),
+  //   CafeteriaItem(
+  //     id: '2',
+  //     name: 'Green Tea',
+  //     price: '5,000',
+  //     category: CafeteriaCategory.drink',
+  //     imageUrl: 'https://picsum.photos/seed/tea/200/150',
+  //     description: 'Fresh green tea',
+  //   ),
+  //   CafeteriaItem(
+  //     id: '3',
+  //     name: 'Beshbarmak',
+  //     price: '30,000',
+  //     category: CafeteriaCategory.food,
+  //     imageUrl: 'https://picsum.photos/seed/beshbarmak/200/150',
+  //     description: 'Kazakh meat and noodle dish',
+  //   ),
+  //   CafeteriaItem(
+  //     id: '4',
+  //     name: 'Kompot',
+  //     price: '8,000',
+  //     category: CafeteriaCategory.drink,
+  //     imageUrl: 'https://picsum.photos/seed/kompot/200/150',
+  //     description: 'Fruit drink made from dried fruits',
+  //   ),
+  // ];
 
   // Comments
   static final List<Comment> comments = [
@@ -386,7 +386,7 @@ class MockData {
   static List<Post> getPostsByCategory(PostCategory category) {
     return posts.where((p) => p.category == category).toList();
   }
-  
+
   static List<Comment> getCommentsByPostId(String postId) {
     // Return top-level comments (no parent) for the post
     // The UI handles fetching replies recursively if needed, or we just flat list them.
@@ -433,7 +433,6 @@ class Comment {
     }
   }
 }
-
 
 class University {
   final String id;
@@ -729,31 +728,31 @@ class Conversation {
   }
 }
 
-enum CafeteriaCategory { food, drink }
-
-class CafeteriaItem {
-  final String id;
-  final String name;
-  final String price;
-  final CafeteriaCategory category;
-  final String? imageUrl;
-  final String? description;
-
-  const CafeteriaItem({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.category,
-    this.imageUrl,
-    this.description,
-  });
-
-  String get categoryName {
-    switch (category) {
-      case CafeteriaCategory.food:
-        return 'Taom';
-      case CafeteriaCategory.drink:
-        return 'Ichimlik';
-    }
-  }
-}
+// enum CafeteriaCategory { food, drink }
+//
+// class CafeteriaItem {
+//   final String id;
+//   final String name;
+//   final String price;
+//   final CafeteriaCategory category;
+//   final String? imageUrl;
+//   final String? description;
+//
+//   const CafeteriaItem({
+//     required this.id,
+//     required this.name,
+//     required this.price,
+//     required this.category,
+//     this.imageUrl,
+//     this.description,
+//   });
+//
+//   String get categoryName {
+//     switch (category) {
+//       case CafeteriaCategory.food:
+//         return 'Taom';
+//       case CafeteriaCategory.drink:
+//         return 'Ichimlik';
+//     }
+//   }
+// }

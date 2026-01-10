@@ -5,7 +5,7 @@ import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
-import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
+// import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
@@ -13,7 +13,7 @@ import 'package:nonstop/features/board/presentation/screens/create_post_screen.d
 import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
-import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
+// import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
@@ -29,8 +29,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthenticated = authState.isAuthenticated;
       final isGoingToAuth =
           state.uri.toString() == Routes.login ||
-          state.uri.toString() == Routes.register ||
-          state.uri.toString() == Routes.forgotPassword;
+          state.uri.toString() == Routes.register;
 
       // If not authenticated and trying to access protected route, redirect to login
       if (!isAuthenticated && !isGoingToAuth) {
@@ -56,15 +55,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             const SignupScreenV1(), // Using V1 for development
       ),
-      GoRoute(
-        path: Routes.forgotPassword,
-        builder: (context, state) =>
-            const EmailVerificationScreen(), // TODO: Create forgot password screen
-      ),
+
       GoRoute(
         path: Routes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
+      // GoRoute(
+      //   path: Routes.forgotPassword,
+      //   builder: (context, state) =>
+      //       const EmailVerificationScreen(), // TODO: Create forgot password screen
+      // ),
 
       // Main app with bottom navigation
       StatefulShellRoute.indexedStack(
@@ -106,10 +106,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'create',
                     builder: (context, state) => const CreateEventScreen(),
                   ),
-                  GoRoute(
-                    path: 'gpa-calculator',
-                    builder: (context, state) => const GpaCalculatorScreen(),
-                  ),
+                  // GoRoute(
+                  //   path: 'gpa-calculator',
+                  //   builder: (context, state) => const GpaCalculatorScreen(),
+                  // ),
                 ],
               ),
             ],
@@ -125,7 +125,9 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: ':roomId',
                     builder: (context, state) {
-                      final roomId = int.tryParse(state.pathParameters['roomId'] ?? '') ?? 0;
+                      final roomId =
+                          int.tryParse(state.pathParameters['roomId'] ?? '') ??
+                          0;
                       return ChatRoomScreen(roomId: roomId);
                     },
                   ),

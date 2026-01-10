@@ -33,10 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       duration: const Duration(milliseconds: 1000),
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
     _animationController.forward();
   }
@@ -135,10 +132,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
-                colors: [
-                  AppColors.primary,
-                  AppColors.primaryLight,
-                ],
+                colors: [AppColors.primary, AppColors.primaryLight],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -258,19 +252,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                 iconColor: Colors.white,
                 onTap: () => context.go(Routes.chat),
               ),
-
-              const SizedBox(width: AppSpacing.md),
-
-              QuickActionCard(
-                title: 'Cafeteria',
-                subtitle: 'Order food',
-                icon: Icons.restaurant,
-                iconBackgroundColor: AppColors.universityGreen,
-                iconColor: Colors.white,
-                onTap: () {
-                  // TODO: Navigate to cafeteria
-                },
-              ),
+              // const SizedBox(width: AppSpacing.md),
+              //
+              // QuickActionCard(
+              //   title: 'Cafeteria',
+              //   subtitle: 'Order food',
+              //   icon: Icons.restaurant,
+              //   iconBackgroundColor: AppColors.universityGreen,
+              //   iconColor: Colors.white,
+              //   onTap: () {
+              //     // TODO: Navigate to cafeteria
+              //   },
+              // ),
             ],
           ),
         ),
@@ -319,18 +312,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   color: AppColors.primary,
                 ),
               ),
-
-              const SizedBox(width: AppSpacing.md),
-
-              Expanded(
-                child: StatsCard(
-                  title: 'Assignments',
-                  value: '2',
-                  subtitle: 'Due today',
-                  icon: Icons.assignment,
-                  color: AppColors.warning,
-                ),
-              ),
+              // const SizedBox(width: AppSpacing.md),
+              //
+              // Expanded(
+              //   child: StatsCard(
+              //     title: 'Assignments',
+              //     value: '2',
+              //     subtitle: 'Due today',
+              //     icon: Icons.assignment,
+              //     color: AppColors.warning,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -383,7 +375,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
               InfoCard(
                 title: 'Timetable updated',
-                subtitle: 'Your Computer Science class schedule has been updated',
+                subtitle:
+                    'Your Computer Science class schedule has been updated',
                 icon: Icons.schedule,
                 iconColor: AppColors.primary,
                 onTap: () => context.go(Routes.timetable),

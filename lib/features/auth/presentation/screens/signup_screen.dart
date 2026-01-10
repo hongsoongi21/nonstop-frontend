@@ -37,10 +37,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
       duration: const Duration(milliseconds: 800),
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ),
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
     _animationController.forward();
   }
@@ -69,7 +66,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
         ? _majorController.text.trim()
         : null;
 
-    await ref.read(authProvider.notifier).signUp(
+    await ref
+        .read(authProvider.notifier)
+        .signUp(
           email: email,
           password: password,
           fullName: fullName,
@@ -81,7 +80,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
       if (mounted) {
-        context.go('/email-verification');
+        // context.go('/email-verification');
+        context.go('/onboarding');
       }
     }
   }
@@ -159,7 +159,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                             if (value == null || value.isEmpty) {
                               return 'Please enter your email';
                             }
-                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                            if (!RegExp(
+                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                            ).hasMatch(value)) {
                               return 'Please enter a valid email';
                             }
                             return null;
@@ -219,7 +221,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                             padding: const EdgeInsets.all(AppSpacing.md),
                             decoration: BoxDecoration(
                               color: AppColors.error.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                              borderRadius: BorderRadius.circular(
+                                AppSpacing.radiusMd,
+                              ),
                               border: Border.all(
                                 color: AppColors.error.withValues(alpha: 0.3),
                               ),
@@ -234,7 +238,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                                 const SizedBox(width: AppSpacing.sm),
                                 Expanded(
                                   child: Text(
-                                    authState.failure?.message ?? 'An error occurred',
+                                    authState.failure?.message ??
+                                        'An error occurred',
                                     style: AppTypography.body2.copyWith(
                                       color: AppColors.error,
                                     ),
@@ -244,7 +249,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                             ),
                           ),
 
-                        if (authState.hasError) const SizedBox(height: AppSpacing.lg),
+                        if (authState.hasError)
+                          const SizedBox(height: AppSpacing.lg),
 
                         // Sign Up Button
                         AppButton(
@@ -266,11 +272,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.md,
+                              ),
                               child: Text(
                                 'or',
                                 style: AppTypography.caption.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -317,7 +327,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                             Text(
                               'Already have an account? ',
                               style: AppTypography.body2.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                             GestureDetector(
@@ -356,10 +368,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
           height: 80,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                AppColors.primary,
-                AppColors.primaryLight,
-              ],
+              colors: [AppColors.primary, AppColors.primaryLight],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -372,11 +381,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
               ),
             ],
           ),
-          child: const Icon(
-            Icons.school,
-            color: Colors.white,
-            size: 40,
-          ),
+          child: const Icon(Icons.school, color: Colors.white, size: 40),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
