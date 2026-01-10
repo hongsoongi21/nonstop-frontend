@@ -6,9 +6,9 @@ class EnvConfig {
   static const String _environmentKey = 'ENVIRONMENT';
 
   // Default values for development
-  static const String _defaultApiBaseUrl = 'https://api-staging.nonstop.app';
-  static const String _defaultWsBaseUrl = 'wss://api-staging.nonstop.app/ws';
-  static const String _defaultEnvironment = 'staging';
+  static const String _defaultApiBaseUrl = 'http://vmi.thjoin.co.kr:28080';
+  static const String _defaultWsBaseUrl = 'ws://vmi.thjoin.co.kr:28080/ws';
+  static const String _defaultEnvironment = 'development';
 
   /// API base URL
   static String get apiBaseUrl {
