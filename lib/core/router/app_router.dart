@@ -13,7 +13,8 @@ import 'package:nonstop/features/board/presentation/screens/create_post_screen.d
 import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
-// import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
+import 'package:nonstop/features/settings/presentation/screens/settings_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
@@ -106,10 +107,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'create',
                     builder: (context, state) => const CreateEventScreen(),
                   ),
-                  // GoRoute(
-                  //   path: 'gpa-calculator',
-                  //   builder: (context, state) => const GpaCalculatorScreen(),
-                  // ),
+                  GoRoute(
+                    path: 'gpa-calculator',
+                    builder: (context, state) => const GpaCalculatorScreen(),
+                  ),
                 ],
               ),
             ],
@@ -152,6 +153,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

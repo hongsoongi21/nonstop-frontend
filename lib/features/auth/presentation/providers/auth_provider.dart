@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/user.dart';
+import '../../domain/repository/auth_repository.dart';
+import '../../data/repository_impl/auth_repository_impl.dart';
+import '../../data/api/auth_api_impl.dart';
 
 /// Auth state that represents the current authentication status
 class AuthState {
@@ -36,61 +39,40 @@ class AuthState {
 
 /// Auth notifier that manages authentication state
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier() : super(const AuthState()) {
+  final AuthRepository _repository;
+
+  AuthNotifier(this._repository) : super(const AuthState()) {
     // Initialize auth state
     _initializeAuth();
-  }
-
-  /// Create a mock implementation for development
-  factory AuthNotifier._createMock() {
-    return AuthNotifier();
   }
 
   /// Initialize authentication state on app start
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
-
-    // TODO: Implement get current user logic
-    // For now, we'll just set loading to false
-    state = state.copyWith(isLoading: false);
+    
+    final result = await _repository.getCurrentUser();
+    
+    result.fold(
+      (failure) {
+         // If generic failure (e.g. no token), just set not authenticated
+         state = state.copyWith(isLoading: false, user: null, failure: null);
+      },
+      (user) {
+        state = state.copyWith(isLoading: false, user: user, failure: null);
+      },
+    );
   }
 
   /// Sign in with email and password
   Future<void> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, failure: null);
 
-    // Mock implementation for development
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (email.isEmpty || password.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Email and password are required'),
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Password must be at least 6 characters'),
-      );
-      return;
-    }
-
-    // Create mock user
-    final user = User(
-      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
-      email: email,
-      fullName: 'Mock User',
-      university: 'Mock University',
-      major: 'Computer Science',
-      isEmailVerified: true,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+    final result = await _repository.signIn(email: email, password: password);
+    
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) => state = state.copyWith(isLoading: false, user: user, failure: null),
     );
-
-    state = state.copyWith(isLoading: false, user: user, failure: null);
   }
 
   /// Sign up with user details
@@ -103,47 +85,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
 
-    // Mock implementation for development
-    await Future.delayed(const Duration(seconds: 1));
-
-    if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Email, password, and full name are required'),
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      state = state.copyWith(
-        isLoading: false,
-        failure: const ValidationFailure(message: 'Password must be at least 6 characters'),
-      );
-      return;
-    }
-
-    // Create mock user
-    final user = User(
-      id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
+    final result = await _repository.signUp(
       email: email,
+      password: password,
       fullName: fullName,
-      university: university ?? 'Not specified',
-      major: major ?? 'Not specified',
-      isEmailVerified: false, // New users need email verification
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      university: university,
+      major: major,
     );
-
-    state = state.copyWith(isLoading: false, user: user, failure: null);
+    
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) => state = state.copyWith(isLoading: false, user: user, failure: null),
+    );
   }
 
   /// Sign out current user
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true, failure: null);
-
-    // Mock implementation for development
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    
+    await _repository.signOut();
+    
     state = const AuthState(); // Reset to initial state
   }
 
@@ -151,26 +112,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void clearError() {
     state = state.copyWith(failure: null);
   }
-
-  /// Reset auth state (useful for testing or manual state management)
-  void reset() {
-    state = const AuthState();
-  }
 }
 
-/// Auth provider - temporary implementation for development
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  // TODO: Replace with proper dependency injection
-  // For now, create a basic implementation
-  return AuthNotifier._createMock();
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final authApi = ref.watch(authApiProvider);
+  return AuthRepositoryImpl(authApi);
 });
 
-/// Auth state stream provider (alternative approach using streams)
-/// TODO: Implement when repository is properly set up
-// final authStateProvider = StreamProvider<User?>((ref) {
-//   final repository = ref.watch(authRepositoryProvider);
-//   return repository.authStateChanges;
-// });
+final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return AuthNotifier(repository);
+});
 
 /// Convenience providers for common auth state checks
 final isAuthenticatedProvider = Provider<bool>((ref) {

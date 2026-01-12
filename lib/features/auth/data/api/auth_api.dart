@@ -44,6 +44,9 @@ abstract class AuthApi {
   /// Delete user account
   Future<void> deleteAccount();
 
+  /// Get current access token
+  Future<String?> getAccessToken();
+
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;
 }

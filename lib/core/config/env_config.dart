@@ -6,8 +6,8 @@ class EnvConfig {
   static const String _environmentKey = 'ENVIRONMENT';
 
   // Default values for development
-  static const String _defaultApiBaseUrl = 'http://vmi.thjoin.co.kr:28080';
-  static const String _defaultWsBaseUrl = 'ws://vmi.thjoin.co.kr:28080/ws';
+  static const String _defaultApiBaseUrl = 'http://vmi.thejoin.co.kr:28080';
+  static const String _defaultWsBaseUrl = 'ws://vmi.thejoin.co.kr:28080/ws';
   static const String _defaultEnvironment = 'development';
 
   /// API base URL

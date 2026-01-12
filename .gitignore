@@ -52,3 +52,6 @@ app.*.map.json
 .qodo
 .comate
 .roocode
+
+# Gemini clipboard
+.gemini-clipboard/

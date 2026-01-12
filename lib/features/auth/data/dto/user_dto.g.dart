@@ -8,14 +8,14 @@ part of 'user_dto.dart';
 
 _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
     _$UserDtoImpl(
-      id: json['id'] as String,
+      id: (json['id'] as num).toInt(),
       email: json['email'] as String,
-      fullName: json['fullName'] as String,
-      avatarUrl: json['avatarUrl'] as String?,
-      university: json['university'] as String?,
-      major: json['major'] as String?,
-      bio: json['bio'] as String?,
-      isEmailVerified: json['isEmailVerified'] as bool? ?? false,
+      fullName: json['nickname'] as String,
+      avatarUrl: json['profileImageUrl'] as String?,
+      universityId: (json['universityId'] as num?)?.toInt(),
+      majorId: (json['majorId'] as num?)?.toInt(),
+      bio: json['introduction'] as String?,
+      isEmailVerified: json['isVerified'] as bool? ?? false,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -28,12 +28,12 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'email': instance.email,
-      'fullName': instance.fullName,
-      'avatarUrl': instance.avatarUrl,
-      'university': instance.university,
-      'major': instance.major,
-      'bio': instance.bio,
-      'isEmailVerified': instance.isEmailVerified,
+      'nickname': instance.fullName,
+      'profileImageUrl': instance.avatarUrl,
+      'universityId': instance.universityId,
+      'majorId': instance.majorId,
+      'introduction': instance.bio,
+      'isVerified': instance.isEmailVerified,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

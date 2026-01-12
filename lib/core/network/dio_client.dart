@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/env_config.dart';
 import '../config/app_config.dart';
 import '../utils/logger.dart';
+import '../services/secure_storage_service.dart';
 
 final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient();
@@ -20,6 +21,7 @@ class DioClient {
     // Add interceptors
     _dio.interceptors.addAll([
       _AuthInterceptor(),
+      _ResponseCheckInterceptor(),
       _LoggingInterceptor(),
       _ErrorInterceptor(),
     ]);
@@ -192,13 +194,14 @@ class DioClient {
 
 /// Authentication interceptor
 class _AuthInterceptor extends Interceptor {
+  final _storage = SecureStorageService();
+
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // TODO: Add JWT token injection from secure storage
-    // final token = await SecureStorage.getToken();
-    // if (token != null) {
-    //   options.headers['Authorization'] = 'Bearer $token';
-    // }
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await _storage.getAccessToken();
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
 
     super.onRequest(options, handler);
   }
@@ -214,6 +217,33 @@ class _AuthInterceptor extends Interceptor {
     }
 
     super.onError(err, handler);
+  }
+}
+
+/// Response Check Interceptor to detect HTML responses
+class _ResponseCheckInterceptor extends Interceptor {
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final contentType = response.headers.value('content-type');
+    
+    // Check if the response content type indicates HTML
+    // Often happens when an API request is redirected to a login page (302 -> 200 OK HTML)
+    if (contentType != null && contentType.contains('text/html')) {
+       // Only reject if we expected JSON (default)
+       if (response.requestOptions.responseType == ResponseType.json) {
+         handler.reject(
+           DioException(
+             requestOptions: response.requestOptions,
+             response: response,
+             type: DioExceptionType.badResponse,
+             error: 'Received HTML response instead of JSON. This likely indicates an authentication issue (redirect to login).',
+           ),
+           true
+         );
+         return;
+       }
+    }
+    super.onResponse(response, handler);
   }
 }
 
@@ -241,7 +271,12 @@ class _LoggingInterceptor extends Interceptor {
       resultLog('✅ HTTP Response:', response.statusCode);
       resultLog('📥 URL:', response.requestOptions.uri.toString());
       if (response.data != null) {
-        resultLog('📦 Data:', response.data);
+        // Truncate long strings (like HTML) to avoid flooding logs
+        if (response.data is String && (response.data as String).length > 500) {
+           resultLog('📦 Data:', (response.data as String).substring(0, 500) + '... (truncated)');
+        } else {
+           resultLog('📦 Data:', response.data);
+        }
       }
     }
 

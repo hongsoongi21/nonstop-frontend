@@ -157,15 +157,16 @@ class AuthApiMock implements AuthApi {
 
   @override
   Future<void> deleteAccount() async {
-    // Simulate API delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    _currentUser = null;
-    _authStateController.add(null);
+    // Mock implementation
   }
 
   @override
-  Stream<User?> get authStateChanges => _authStateController.stream;
+  Future<String?> getAccessToken() async {
+    return 'mock_token';
+  }
+
+  @override
+  Stream<User?> get authStateChanges => Stream.empty();
 
   /// Clean up resources
   void dispose() {

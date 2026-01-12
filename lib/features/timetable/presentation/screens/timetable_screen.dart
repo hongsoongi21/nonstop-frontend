@@ -78,8 +78,11 @@ class TimetableScreen extends ConsumerWidget {
                       tooltip: 'Yangi tadbir qo\'shish',
                     ),
                     IconButton(
-                      onPressed: () => _showSearchDialog(context, ref),
-                      icon: Icon(Icons.settings_outlined, color: AppColors.textPrimary),
+                      onPressed: () => _showSettings(context, ref),
+                      icon: Icon(
+                        Icons.settings_outlined,
+                        color: AppColors.textPrimary,
+                      ),
                       tooltip: 'Sozlamalar',
                     ),
                     IconButton(
@@ -140,9 +143,9 @@ class TimetableScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    hasCourses 
-                      ? 'Current GPA: ${gpaState.totalGpa.toStringAsFixed(2)} (${gpaState.totalCredits.toStringAsFixed(0)} credits)'
-                      : 'Calculate your GPA',
+                    hasCourses
+                        ? 'Current GPA: ${gpaState.totalGpa.toStringAsFixed(2)} (${gpaState.totalCredits.toStringAsFixed(0)} credits)'
+                        : 'Calculate your GPA',
                     style: AppTypography.caption.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -166,7 +169,11 @@ class TimetableScreen extends ConsumerWidget {
                   ),
                 )
               else
-                Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
             ],
           ),
         ),
@@ -178,10 +185,7 @@ class TimetableScreen extends ConsumerWidget {
     context.go('/timetable/create');
   }
 
-  void _showSearchDialog(BuildContext context, WidgetRef ref) {
-    // TODO: Implement settings
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sozlamalar - tez orada!')),
-    );
+  void _showSettings(BuildContext context, WidgetRef ref) {
+    context.go(Routes.settings);
   }
 }
