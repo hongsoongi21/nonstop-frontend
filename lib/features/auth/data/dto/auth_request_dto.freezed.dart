@@ -196,6 +196,8 @@ mixin _$SignUpRequestDto {
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
+  int? get universityId => throw _privateConstructorUsedError;
+  int? get majorId => throw _privateConstructorUsedError;
 
   /// Serializes this SignUpRequestDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -214,7 +216,13 @@ abstract class $SignUpRequestDtoCopyWith<$Res> {
     $Res Function(SignUpRequestDto) then,
   ) = _$SignUpRequestDtoCopyWithImpl<$Res, SignUpRequestDto>;
   @useResult
-  $Res call({String email, String password, String nickname});
+  $Res call({
+    String email,
+    String password,
+    String nickname,
+    int? universityId,
+    int? majorId,
+  });
 }
 
 /// @nodoc
@@ -235,6 +243,8 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? universityId = freezed,
+    Object? majorId = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -250,6 +260,14 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
                       as String,
+            universityId: freezed == universityId
+                ? _value.universityId
+                : universityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            majorId: freezed == majorId
+                ? _value.majorId
+                : majorId // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -265,7 +283,13 @@ abstract class _$$SignUpRequestDtoImplCopyWith<$Res>
   ) = __$$SignUpRequestDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String email, String password, String nickname});
+  $Res call({
+    String email,
+    String password,
+    String nickname,
+    int? universityId,
+    int? majorId,
+  });
 }
 
 /// @nodoc
@@ -285,6 +309,8 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? universityId = freezed,
+    Object? majorId = freezed,
   }) {
     return _then(
       _$SignUpRequestDtoImpl(
@@ -300,6 +326,14 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
                   as String,
+        universityId: freezed == universityId
+            ? _value.universityId
+            : universityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        majorId: freezed == majorId
+            ? _value.majorId
+            : majorId // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -312,6 +346,8 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
     required this.email,
     required this.password,
     required this.nickname,
+    this.universityId,
+    this.majorId,
   });
 
   factory _$SignUpRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -323,10 +359,14 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
   final String password;
   @override
   final String nickname;
+  @override
+  final int? universityId;
+  @override
+  final int? majorId;
 
   @override
   String toString() {
-    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname)';
+    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname, universityId: $universityId, majorId: $majorId)';
   }
 
   @override
@@ -338,12 +378,22 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
             (identical(other.password, password) ||
                 other.password == password) &&
             (identical(other.nickname, nickname) ||
-                other.nickname == nickname));
+                other.nickname == nickname) &&
+            (identical(other.universityId, universityId) ||
+                other.universityId == universityId) &&
+            (identical(other.majorId, majorId) || other.majorId == majorId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, email, password, nickname);
+  int get hashCode => Object.hash(
+    runtimeType,
+    email,
+    password,
+    nickname,
+    universityId,
+    majorId,
+  );
 
   /// Create a copy of SignUpRequestDto
   /// with the given fields replaced by the non-null parameter values.
@@ -367,6 +417,8 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
     required final String email,
     required final String password,
     required final String nickname,
+    final int? universityId,
+    final int? majorId,
   }) = _$SignUpRequestDtoImpl;
 
   factory _SignUpRequestDto.fromJson(Map<String, dynamic> json) =
@@ -378,6 +430,10 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
   String get password;
   @override
   String get nickname;
+  @override
+  int? get universityId;
+  @override
+  int? get majorId;
 
   /// Create a copy of SignUpRequestDto
   /// with the given fields replaced by the non-null parameter values.

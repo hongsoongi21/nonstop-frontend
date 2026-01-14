@@ -36,12 +36,16 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
     try {
       final user = await _authApi.signUp(
         email: email,
         password: password,
         nickname: nickname,
+        universityId: universityId,
+        majorId: majorId,
       );
       return Right(user);
     } on ServerException catch (e) {

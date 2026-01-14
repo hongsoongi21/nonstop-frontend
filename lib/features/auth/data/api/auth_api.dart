@@ -13,6 +13,8 @@ abstract class AuthApi {
     required String email,
     required String password,
     required String nickname,
+    int? universityId,
+    int? majorId,
   });
 
   /// Sign out current user

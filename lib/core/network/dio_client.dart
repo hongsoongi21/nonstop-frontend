@@ -244,13 +244,13 @@ class _LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (!kReleaseMode) {
-      infoLog('🌐 HTTP Request:', options.uri.toString());
-      infoLog('📤 Method:', options.method);
+      debugPrint('🌐 HTTP Request: ${options.uri.toString()}');
+      debugPrint('📤 Method: ${options.method}');
       if (options.data != null) {
-        infoLog('📦 Data:', options.data);
+        debugPrint('📦 Data: ${options.data}');
       }
       if (options.queryParameters.isNotEmpty) {
-        infoLog('🔍 Query:', options.queryParameters);
+        debugPrint('🔍 Query: ${options.queryParameters}');
       }
     }
 
@@ -260,10 +260,10 @@ class _LoggingInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (!kReleaseMode) {
-      resultLog('✅ HTTP Response:', response.statusCode);
-      resultLog('📥 URL:', response.requestOptions.uri.toString());
+      debugPrint('✅ HTTP Response: ${response.statusCode}');
+      debugPrint('📥 URL: ${response.requestOptions.uri.toString()}');
       if (response.data != null) {
-        resultLog('📦 Data:', response.data);
+        debugPrint('📦 Data: ${response.data}');
       }
     }
 
@@ -273,11 +273,11 @@ class _LoggingInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (!kReleaseMode) {
-      errLog('❌ HTTP Error:', err.message);
-      errLog('🔗 URL:', err.requestOptions.uri.toString());
+      debugPrint('❌ HTTP Error: ${err.message}');
+      debugPrint('🔗 URL: ${err.requestOptions.uri.toString()}');
       if (err.response != null) {
-        errLog('📊 Status:', err.response!.statusCode);
-        errLog('📦 Data:', err.response!.data);
+        debugPrint('📊 Status: ${err.response!.statusCode}');
+        debugPrint('📦 Data: ${err.response!.data}');
       }
     }
 

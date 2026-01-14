@@ -44,32 +44,18 @@ class AuthApiMock implements AuthApi {
     required String email,
     required String password,
     required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
-    // Simulate API delay
-    await Future.delayed(const Duration(seconds: 1));
-
-    // Mock validation
-    if (email.isEmpty || password.isEmpty || nickname.isEmpty) {
-      throw Exception('Email, password, and nickname are required');
-    }
-
-    if (password.length < 6) {
-      throw Exception('Password must be at least 6 characters');
-    }
-
-    // Create mock user
-    _currentUser = User(
+    await Future.delayed(const Duration(seconds: 1)); // 네트워크 지연 시뮬레이션
+    
+    return User(
       id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
       email: email,
       nickname: nickname,
-      universityId: null,
-      isEmailVerified: false,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+      universityId: universityId,
+      majorId: majorId,
     );
-
-    _authStateController.add(_currentUser);
-    return _currentUser!;
   }
 
   @override

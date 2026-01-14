@@ -11,11 +11,13 @@ abstract class AuthRepository {
     required String password,
   });
 
-  /// Sign up with email, password, and user details
+  /// Signs up a new user with email, password, and nickname.
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
     required String nickname,
+    int? universityId,
+    int? majorId,
   });
 
   /// Sign out current user

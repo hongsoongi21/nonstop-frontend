@@ -12,10 +12,7 @@ import '../../../../shared/components/post_card.dart'; // Reuse for header parts
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
 
-  const BoardDetailScreen({
-    super.key,
-    required this.boardId,
-  });
+  const BoardDetailScreen({super.key, required this.boardId});
 
   @override
   ConsumerState<BoardDetailScreen> createState() => _BoardDetailScreenState();
@@ -122,7 +119,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                         ),
                         const SizedBox(width: AppSpacing.lg),
                         _TwitterActionButton(
-                          icon: post.likes > 0 ? Icons.favorite : Icons.favorite_border,
+                          icon: post.likes > 0
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                           color: post.likes > 0 ? AppColors.error : null,
                           onTap: () {},
                         ),
@@ -249,9 +248,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(
-            color: Colors.grey.withValues(alpha: 0.2),
-          ),
+          top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
         ),
       ),
       child: SafeArea(
@@ -264,7 +261,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 Switch(
                   value: _isAnonymous,
                   onChanged: (val) => setState(() => _isAnonymous = val),
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                 ),
                 Text(
                   'Post Anonymously',
@@ -306,7 +303,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+                    icon: const Icon(
+                      Icons.send_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                     onPressed: () {
                       // Send comment logic
                     },
@@ -336,11 +337,7 @@ class _TwitterActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: onTap,
-      icon: Icon(
-        icon,
-        size: 22,
-        color: color ?? AppColors.textSecondary,
-      ),
+      icon: Icon(icon, size: 22, color: color ?? AppColors.textSecondary),
       padding: const EdgeInsets.all(AppSpacing.sm),
       constraints: const BoxConstraints(),
       splashRadius: 24,
@@ -356,12 +353,9 @@ class _CommentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isReply = comment.parentId != null;
-    
+
     return Padding(
-      padding: EdgeInsets.only(
-        left: isReply ? 40.0 : 0,
-        bottom: AppSpacing.lg,
-      ),
+      padding: EdgeInsets.only(left: isReply ? 40.0 : 0, bottom: AppSpacing.lg),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -396,10 +390,7 @@ class _CommentItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        comment.content,
-                        style: AppTypography.body2,
-                      ),
+                      Text(comment.content, style: AppTypography.body2),
                     ],
                   ),
                 ),

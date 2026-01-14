@@ -32,7 +32,7 @@ class AuthApiImpl implements AuthApi {
         // 보안 저장소에 토큰 저장
         await _secureStorageService.saveAccessToken(tokenData.accessToken);
         if (tokenData.refreshToken != null) {
-          await _secureStorageService.saveRefreshToken(tokenData.refreshToken!);
+          await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
         }
         
         // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
@@ -53,6 +53,8 @@ class AuthApiImpl implements AuthApi {
     required String email,
     required String password,
     required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
     try {
       final response = await _dioClient.post(
@@ -61,6 +63,8 @@ class AuthApiImpl implements AuthApi {
           email: email,
           password: password,
           nickname: nickname,
+          universityId: universityId,
+          majorId: majorId,
         ).toJson(),
       );
 

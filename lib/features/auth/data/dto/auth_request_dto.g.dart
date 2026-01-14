@@ -23,6 +23,8 @@ _$SignUpRequestDtoImpl _$$SignUpRequestDtoImplFromJson(
   email: json['email'] as String,
   password: json['password'] as String,
   nickname: json['nickname'] as String,
+  universityId: (json['universityId'] as num?)?.toInt(),
+  majorId: (json['majorId'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$SignUpRequestDtoImplToJson(
@@ -31,6 +33,8 @@ Map<String, dynamic> _$$SignUpRequestDtoImplToJson(
   'email': instance.email,
   'password': instance.password,
   'nickname': instance.nickname,
+  'universityId': instance.universityId,
+  'majorId': instance.majorId,
 };
 
 _$ProfileUpdateRequestDtoImpl _$$ProfileUpdateRequestDtoImplFromJson(

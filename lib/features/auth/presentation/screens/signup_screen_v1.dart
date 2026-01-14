@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/university.dart';
 import '../providers/auth_provider.dart';
 import '../providers/university_provider.dart';
@@ -97,13 +96,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     }
 
     // 4. 회원가입 프로세스 실행
-    // TODO: 백엔드 대학교 DB가 준비되면 _selectedUniversityId를 전달하도록 수정 필요
-    // 현재는 백엔드 DB 제약 조건 에러를 방지하기 위해 임시로 universityId를 null로 보냅니다.
     await ref.read(authProvider.notifier).signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
           nickname: _nicknameController.text.trim(),
-          universityId: null, // 임시로 null 전송
+          universityId: _selectedUniversityId,
         );
 
     // 5. 실행 결과에 따른 처리
