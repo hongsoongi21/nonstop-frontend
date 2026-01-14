@@ -372,10 +372,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       decoration: BoxDecoration(
         color: const Color(0xFFE9F0FE),
         borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(
-          color: const Color(0xFFFFFFFF),
-          width: 1.w,
-        ),
+        border: Border.all(color: const Color(0xFFFFFFFF), width: 1.w),
       ),
       child: universitiesAsync.when(
         data: (universities) => DropdownButtonFormField<int>(
@@ -444,10 +441,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-          width: 1.w,
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.w),
       ),
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -487,11 +481,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           SizedBox(height: 8.h),
 
           // Divider
-          Divider(
-            color: const Color(0xFFE5E7EB),
-            thickness: 1.h,
-            height: 1.h,
-          ),
+          Divider(color: const Color(0xFFE5E7EB), thickness: 1.h, height: 1.h),
 
           SizedBox(height: 12.h),
 

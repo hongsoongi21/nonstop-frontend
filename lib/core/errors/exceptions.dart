@@ -40,28 +40,28 @@ class ValidationException extends ApiException {
 }
 
 class AuthenticationException extends ApiException {
-  const AuthenticationException(String message) : super(message);
+  const AuthenticationException(super.message);
 
   @override
   String toString() => 'AuthenticationException: $message';
 }
 
 class AuthorizationException extends ApiException {
-  const AuthorizationException(String message) : super(message);
+  const AuthorizationException(super.message);
 
   @override
   String toString() => 'AuthorizationException: $message';
 }
 
 class NotFoundException extends ApiException {
-  const NotFoundException(String message) : super(message);
+  const NotFoundException(super.message);
 
   @override
   String toString() => 'NotFoundException: $message';
 }
 
 class TimeoutException extends ApiException {
-  const TimeoutException(String message) : super(message);
+  const TimeoutException(super.message);
 
   @override
   String toString() => 'TimeoutException: $message';

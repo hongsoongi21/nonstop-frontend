@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,73 +11,83 @@ import '../theme/app_typography.dart';
 class AppBottomNavigationBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const AppBottomNavigationBar({
-    super.key,
-    required this.navigationShell,
-  });
+  const AppBottomNavigationBar({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      constraints: const BoxConstraints(maxWidth: 500),
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+        color:
+            (Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
+                    Colors.white)
+                .withOpacity(0.8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        currentIndex: navigationShell.currentIndex,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
-        unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedLabelStyle: AppTypography.caption.copyWith(
-          fontWeight: FontWeight.w600,
-          fontSize: 11,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: BottomNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textSecondary,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            selectedFontSize: 10,
+            unselectedFontSize: 10,
+            iconSize: 24,
+            selectedLabelStyle: AppTypography.caption.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+              height: 1.2,
+            ),
+            unselectedLabelStyle: AppTypography.caption.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              height: 1.2,
+            ),
+            items: [
+              _buildNavItem(
+                icon: Icons.people_alt_outlined,
+                activeIcon: Icons.people_alt,
+                label: 'Board',
+                isActive: navigationShell.currentIndex == 0,
+              ),
+              _buildNavItem(
+                icon: Icons.calendar_month_outlined,
+                activeIcon: Icons.calendar_month,
+                label: 'Timetable',
+                isActive: navigationShell.currentIndex == 1,
+              ),
+              _buildNavItem(
+                icon: Icons.chat_bubble_outline,
+                activeIcon: Icons.chat_bubble,
+                label: 'Chat',
+                isActive: navigationShell.currentIndex == 2,
+              ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profile',
+                isActive: navigationShell.currentIndex == 3,
+              ),
+            ],
+          ),
         ),
-        unselectedLabelStyle: AppTypography.caption.copyWith(
-          fontSize: 11,
-        ),
-        items: [
-          _buildNavItem(
-            icon: Icons.home_outlined,
-            activeIcon: Icons.home,
-            label: 'Home',
-            isActive: navigationShell.currentIndex == 0,
-          ),
-          _buildNavItem(
-            icon: Icons.forum_outlined,
-            activeIcon: Icons.forum,
-            label: 'Board',
-            isActive: navigationShell.currentIndex == 1,
-          ),
-          _buildNavItem(
-            icon: Icons.schedule_outlined,
-            activeIcon: Icons.schedule,
-            label: 'Timetable',
-            isActive: navigationShell.currentIndex == 2,
-          ),
-          _buildNavItem(
-            icon: Icons.chat_outlined,
-            activeIcon: Icons.chat,
-            label: 'Chat',
-            isActive: navigationShell.currentIndex == 3,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            activeIcon: Icons.person,
-            label: 'Profile',
-            isActive: navigationShell.currentIndex == 4,
-          ),
-        ],
       ),
     );
   }
@@ -87,15 +99,18 @@ class AppBottomNavigationBar extends StatelessWidget {
     required bool isActive,
   }) {
     return BottomNavigationBarItem(
-      icon: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 200),
-        transitionBuilder: (child, animation) {
-          return ScaleTransition(scale: animation, child: child);
-        },
-        child: Icon(
-          isActive ? activeIcon : icon,
-          key: ValueKey(isActive),
-          size: 24,
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(scale: animation, child: child);
+          },
+          child: Icon(
+            isActive ? activeIcon : icon,
+            key: ValueKey(isActive),
+            size: 24,
+          ),
         ),
       ),
       label: label,
@@ -133,7 +148,8 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? Theme.of(context).appBarTheme.backgroundColor;
+    final bgColor =
+        backgroundColor ?? Theme.of(context).appBarTheme.backgroundColor;
 
     return AppBar(
       title: title != null
@@ -152,8 +168,9 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
       centerTitle: centerTitle,
       actions: actions,
-      leading: leading ??
-          (showBackButton
+      leading:
+          leading ??
+          (showBackButton && Navigator.of(context).canPop()
               ? IconButton(
                   onPressed: () => context.pop(),
                   icon: const Icon(Icons.arrow_back),
@@ -191,10 +208,7 @@ class AppTabBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).dividerColor,
-            width: 1,
-          ),
+          bottom: BorderSide(color: Theme.of(context).dividerColor, width: 1),
         ),
       ),
       child: TabBar(
@@ -211,9 +225,7 @@ class AppTabBar extends StatelessWidget {
         indicatorSize: TabBarIndicatorSize.label,
         labelColor: Theme.of(context).colorScheme.primary,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        labelStyle: AppTypography.button.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: AppTypography.button.copyWith(fontWeight: FontWeight.w600),
         unselectedLabelStyle: AppTypography.button,
         onTap: onTap,
         tabs: tabs.map((tab) => Tab(text: tab)).toList(),
@@ -249,8 +261,10 @@ class AppFAB extends StatelessWidget {
       return FloatingActionButton.extended(
         onPressed: onPressed,
         tooltip: tooltip,
-        backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
-        foregroundColor: foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
+        backgroundColor:
+            backgroundColor ?? Theme.of(context).colorScheme.primary,
+        foregroundColor:
+            foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
         elevation: 6,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -258,9 +272,7 @@ class AppFAB extends StatelessWidget {
         icon: Icon(icon),
         label: Text(
           label!,
-          style: AppTypography.button.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTypography.button.copyWith(fontWeight: FontWeight.w600),
         ),
       );
     }
@@ -269,7 +281,8 @@ class AppFAB extends StatelessWidget {
       onPressed: onPressed,
       tooltip: tooltip,
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
-      foregroundColor: foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
+      foregroundColor:
+          foregroundColor ?? Theme.of(context).colorScheme.onPrimary,
       elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),

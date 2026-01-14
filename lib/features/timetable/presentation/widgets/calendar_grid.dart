@@ -84,7 +84,8 @@ class CalendarGrid extends StatelessWidget {
           day,
           style: AppTypography.labelMedium.copyWith(
             color: AppColors.textSecondary,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
           ),
         ),
       ),
@@ -121,73 +122,59 @@ class CalendarDayCell extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         height: 80,
-        padding: EdgeInsets.all(AppSpacing.xxs),
+        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withOpacity(0.1)
+              ? AppColors.primary
               : isToday
-                  ? AppColors.secondary.withOpacity(0.1)
-                  : AppColors.surface,
-          borderRadius: BorderRadius.circular(8),
-          border: isSelected
+                  ? Colors.white.withOpacity(0.6)
+                  : Colors.white.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(12),
+          border: isToday && !isSelected
               ? Border.all(color: AppColors.primary, width: 2)
-              : isToday
-                  ? Border.all(color: AppColors.secondary, width: 1)
-                  : hasEvents
-                      ? Border.all(color: AppColors.surfaceSecondary, width: 1)
-                      : null,
+              : null,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Day number
             Text(
               date.day.toString(),
-              style: AppTypography.bodySmall.copyWith(
+              style: AppTypography.bodyMedium.copyWith(
                 color: isSelected
-                    ? AppColors.primary
-                    : isToday
-                        ? AppColors.secondary
-                        : AppColors.textPrimary,
-                fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.w500,
+                    ? Colors.white
+                    : AppColors.textPrimary,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
               ),
             ),
 
-            SizedBox(height: AppSpacing.xxs),
+            SizedBox(height: 6),
 
-            // Event indicators
+            // Event indicators - Simple colored dots
             if (hasEvents) ...[
               Expanded(
-                child: ListView.builder(
-                  itemCount: events.length > 3 ? 3 : events.length,
-                  itemBuilder: (context, index) {
-                    final event = events[index];
-                    final color = Color(event.color ?? event.typeColor);
-
-                    return Container(
-                      height: 3,
-                      margin: EdgeInsets.only(bottom: 1),
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(1.5),
-                      ),
-                    );
-                  },
+                child: Column(
+                  children: [
+                    // Show up to 3 event indicators as colored bars
+                    ...events.take(3).map((event) {
+                      final color = Color(event.color ?? event.typeColor);
+                      return Container(
+                        width: double.infinity,
+                        height: 4,
+                        margin: EdgeInsets.only(bottom: 2),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white.withOpacity(0.9) : color,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      );
+                    }),
+                  ],
                 ),
               ),
-
-              // Show "+X more" if there are more than 3 events
-              if (events.length > 3)
-                Text(
-                  '+${events.length - 3}',
-                  style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 8,
-                  ),
-                ),
             ],
           ],
         ),

@@ -25,6 +25,7 @@ class Routes {
   static const String userProfile = '/profile/:userId';
   static const String timetableCreate = '/timetable/create';
   static const String timetableEvent = '/timetable/event/:id';
+  static const String gpaCalculator = '/timetable/gpa-calculator';
 
   // 🔍 Query parameters
   static const String search = '/search?query=:query';
@@ -39,5 +40,6 @@ class Routes {
   static String timetableCreatePath() => '/timetable/create';
   static String timetableEventPath(String eventId) =>
       '/timetable/event/$eventId';
+  static String gpaCalculatorPath() => '/timetable/gpa-calculator';
   static String searchPath(String query) => '/search?query=$query';
 }

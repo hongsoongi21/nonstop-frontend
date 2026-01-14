@@ -3,18 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
-import 'package:nonstop/features/auth/presentation/screens/login_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
-import 'package:nonstop/features/auth/presentation/screens/signup_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
+import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
+import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
@@ -23,7 +24,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: authState.isAuthenticated ? Routes.home : Routes.login,
+    initialLocation: authState.isAuthenticated ? Routes.board : Routes.login,
     redirect: (context, state) {
       final isAuthenticated = authState.isAuthenticated;
       final isGoingToAuth =
@@ -36,9 +37,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return Routes.login;
       }
 
-      // If authenticated and on auth screen, redirect to home
+      // If authenticated and on auth screen, redirect to board
       if (isAuthenticated && isGoingToAuth) {
-        return Routes.home;
+        return Routes.board;
       }
 
       return null;
@@ -47,11 +48,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Auth routes
       GoRoute(
         path: Routes.login,
-        builder: (context, state) => const LoginScreenV1(), // Using V1 for development
+        builder: (context, state) =>
+            const LoginScreenV1(), // Using V1 for development
       ),
       GoRoute(
         path: Routes.register,
-        builder: (context, state) => const SignupScreenV1(), // Using V1 for development
+        builder: (context, state) =>
+            const SignupScreenV1(), // Using V1 for development
       ),
       GoRoute(
         path: Routes.forgotPassword,
@@ -69,16 +72,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MainScaffold(navigationShell: navigationShell);
         },
         branches: [
-          // Home/Dashboard
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.home,
-                builder: (context, state) => const HomeScreen(),
-              ),
-            ],
-          ),
-
           // Board
           StatefulShellBranch(
             routes: [
@@ -89,6 +82,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: 'create',
                     builder: (context, state) => const CreatePostScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return BoardDetailScreen(boardId: id);
+                    },
                   ),
                 ],
               ),
@@ -106,6 +106,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'create',
                     builder: (context, state) => const CreateEventScreen(),
                   ),
+                  GoRoute(
+                    path: 'gpa-calculator',
+                    builder: (context, state) => const GpaCalculatorScreen(),
+                  ),
                 ],
               ),
             ],
@@ -117,6 +121,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Routes.chat,
                 builder: (context, state) => const ChatScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':roomId',
+                    builder: (context, state) {
+                      final roomId = int.tryParse(state.pathParameters['roomId'] ?? '') ?? 0;
+                      return ChatRoomScreen(roomId: roomId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -131,6 +144,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      // Hidden/Standalone Routes
+      GoRoute(
+        path: Routes.home,
+        builder: (context, state) => const HomeScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

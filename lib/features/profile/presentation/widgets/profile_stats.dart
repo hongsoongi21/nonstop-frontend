@@ -3,188 +3,91 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../domain/entities/profile_stats.dart' as domain;
 import '../../domain/entities/user_profile.dart';
+import 'glass_container.dart';
 
-/// Profile statistics widget showing user activity and achievements
+/// Profile statistics widget with glassmorphism design
 class ProfileStats extends StatelessWidget {
   final UserProfile profile;
-  final ProfileStats stats;
+  final domain.ProfileStats stats;
+  final VoidCallback? onEditProfilePressed;
 
-  const ProfileStats({super.key, required this.profile, required this.stats});
+  const ProfileStats({
+    super.key,
+    required this.profile,
+    required this.stats,
+    this.onEditProfilePressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(AppSpacing.md),
-      child: Padding(
-        padding: EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Row(
-              children: [
-                Icon(Icons.bar_chart, color: AppColors.primary, size: 24),
-                SizedBox(width: AppSpacing.sm),
-                Text(
-                  'Statistika',
-                  style: AppTypography.titleMedium.copyWith(
+    return GlassContainer(
+      margin: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      padding: EdgeInsets.all(AppSpacing.lg),
+      borderRadius: 20,
+      blur: 15,
+      opacity: 0.15,
+      child: Column(
+        children: [
+          // Stats Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _StatItem(
+                value: '24',
+                label: 'My Posts',
+              ),
+              Container(
+                width: 1,
+                height: 40,
+                color: AppColors.textSecondary.withOpacity(0.2),
+              ),
+              _StatItem(
+                value: '156',
+                label: 'My Comments',
+              ),
+              Container(
+                width: 1,
+                height: 40,
+                color: AppColors.textSecondary.withOpacity(0.2),
+              ),
+              _StatItem(
+                value: '48',
+                label: 'Friends',
+              ),
+            ],
+          ),
+
+          SizedBox(height: AppSpacing.lg),
+
+          // Edit Profile Button
+          InkWell(
+            onTap: onEditProfilePressed,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  'Edit Profile',
+                  style: AppTypography.bodyLarge.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const Spacer(),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.xxs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    'Faol foydalanuvchi',
-                    style: AppTypography.labelSmall.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: AppSpacing.md),
-
-            // Activity Level Progress
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Faollik darajasi',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    Text(
-                      '75/100',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: AppSpacing.xxs),
-                LinearProgressIndicator(
-                  value: 0.75,
-                  backgroundColor: AppColors.surfaceSecondary,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
-                    AppColors.primary,
-                  ),
-                ),
-                SizedBox(height: AppSpacing.xxs),
-                Text(
-                  'Siz faol foydalanuvchisiz!',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: AppSpacing.lg),
-
-            // Stats Grid
-            Row(
-              children: [
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.post_add,
-                    value: '12',
-                    label: 'Postlar',
-                    color: AppColors.primary,
-                  ),
-                ),
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.thumb_up,
-                    value: '45',
-                    label: 'Layklar',
-                    color: AppColors.success,
-                  ),
-                ),
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.comment,
-                    value: '23',
-                    label: 'Izohlar',
-                    color: AppColors.warning,
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: AppSpacing.md),
-
-            // Additional Stats
-            Row(
-              children: [
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.calendar_today,
-                    value: '30',
-                    label: 'Faol kunlar',
-                    color: AppColors.info,
-                  ),
-                ),
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.trending_up,
-                    value: '7',
-                    label: 'Eng uzun ketma-ket',
-                    color: AppColors.secondary,
-                  ),
-                ),
-                Expanded(
-                  child: _StatItem(
-                    icon: Icons.access_time,
-                    value: '2.3x',
-                    label: 'O\'rtacha',
-                    color: AppColors.universityRed,
-                  ),
-                ),
-              ],
-            ),
-
-            // Activity Status
-            Container(
-              margin: EdgeInsets.only(top: AppSpacing.md),
-              padding: EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: AppColors.success.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.success.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 20),
-                  SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      'Siz faol foydalanuvchisiz! Davom eting!',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.success,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -192,46 +95,32 @@ class ProfileStats extends StatelessWidget {
 
 /// Individual stat item widget
 class _StatItem extends StatelessWidget {
-  final IconData icon;
   final String value;
   final String label;
-  final Color color;
 
   const _StatItem({
-    required this.icon,
     required this.value,
     required this.label,
-    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: EdgeInsets.all(AppSpacing.sm),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(icon, color: color, size: 20),
-        ),
-        SizedBox(height: AppSpacing.xxs),
         Text(
           value,
-          style: AppTypography.bodyLarge.copyWith(
-            fontWeight: FontWeight.w600,
+          style: AppTypography.headlineSmall.copyWith(
+            fontWeight: FontWeight.bold,
             color: AppColors.textPrimary,
           ),
         ),
         SizedBox(height: AppSpacing.xxs),
         Text(
           label,
-          style: AppTypography.labelSmall.copyWith(
+          style: AppTypography.bodyMedium.copyWith(
             color: AppColors.textSecondary,
           ),
           textAlign: TextAlign.center,
-          maxLines: 2,
         ),
       ],
     );

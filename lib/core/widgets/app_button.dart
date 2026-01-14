@@ -16,6 +16,7 @@ class AppButton extends StatelessWidget {
   final IconData? trailingIcon;
   final double? width;
   final EdgeInsetsGeometry? padding;
+  final bool useGradient; // Added this
 
   const AppButton({
     super.key,
@@ -29,16 +30,46 @@ class AppButton extends StatelessWidget {
     this.trailingIcon,
     this.width,
     this.padding,
+    this.useGradient = true, // Default to true
   });
 
   bool get _isDisabled => isDisabled || isLoading || onPressed == null;
 
   @override
   Widget build(BuildContext context) {
+    if (variant == ButtonVariant.primary && useGradient && !_isDisabled) {
+      return Container(
+        width: width,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: AppColors.brandGradient,
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF7C3BEE).withValues(alpha: 0.2),
+              offset: const Offset(0, 4),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: _getButtonStyle(context).copyWith(
+            backgroundColor: WidgetStateProperty.all(Colors.transparent),
+            shadowColor: WidgetStateProperty.all(Colors.transparent),
+          ),
+          child: _buildContent(),
+        ),
+      );
+    }
+
     final buttonStyle = _getButtonStyle(context);
 
     return SizedBox(
-      width: width ?? double.infinity,
+      width: width,
       child: ElevatedButton(
         onPressed: _isDisabled ? null : onPressed,
         style: buttonStyle,
@@ -63,7 +94,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (_isDisabled) return AppColors.primary.withValues(alpha: 0.5);
-            if (states.contains(WidgetState.pressed)) return AppColors.primaryDark;
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.primaryDark;
+            }
             return AppColors.primary;
           }),
           foregroundColor: WidgetStateProperty.all(AppColors.textOnPrimary),
@@ -76,7 +109,9 @@ class AppButton extends StatelessWidget {
             return AppColors.surface;
           }),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (_isDisabled) return AppColors.textSecondary.withValues(alpha: 0.5);
+            if (_isDisabled) {
+              return AppColors.textSecondary.withValues(alpha: 0.5);
+            }
             return AppColors.textPrimary;
           }),
           side: WidgetStateProperty.all(
@@ -93,7 +128,9 @@ class AppButton extends StatelessWidget {
           }),
           side: WidgetStateProperty.all(
             BorderSide(
-              color: _isDisabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary,
+              color: _isDisabled
+                  ? AppColors.primary.withValues(alpha: 0.5)
+                  : AppColors.primary,
               width: 1.5,
             ),
           ),
@@ -103,7 +140,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.all(Colors.transparent),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (_isDisabled) return AppColors.textSecondary.withValues(alpha: 0.5);
+            if (_isDisabled) {
+              return AppColors.textSecondary.withValues(alpha: 0.5);
+            }
             return AppColors.textSecondary;
           }),
           elevation: WidgetStateProperty.all(0),
@@ -113,7 +152,9 @@ class AppButton extends StatelessWidget {
         return baseStyle.copyWith(
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (_isDisabled) return AppColors.error.withValues(alpha: 0.5);
-            if (states.contains(WidgetState.pressed)) return AppColors.error.withValues(alpha: 0.8);
+            if (states.contains(WidgetState.pressed)) {
+              return AppColors.error.withValues(alpha: 0.8);
+            }
             return AppColors.error;
           }),
           foregroundColor: WidgetStateProperty.all(Colors.white),
@@ -148,7 +189,10 @@ class AppButton extends StatelessWidget {
       case ButtonSize.medium:
         return AppTypography.button;
       case ButtonSize.large:
-        return AppTypography.button.copyWith(fontSize: 18, fontWeight: FontWeight.w600);
+        return AppTypography.button.copyWith(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        );
     }
   }
 
@@ -175,7 +219,7 @@ class AppButton extends StatelessWidget {
       children.add(const SizedBox(width: AppSpacing.sm));
     }
 
-    children.add(Text(text));
+    children.add(Flexible(child: Text(text)));
 
     if (trailingIcon != null) {
       children.add(const SizedBox(width: AppSpacing.sm));
@@ -202,20 +246,10 @@ class AppButton extends StatelessWidget {
 }
 
 /// Button variants
-enum ButtonVariant {
-  primary,
-  secondary,
-  outline,
-  ghost,
-  danger,
-}
+enum ButtonVariant { primary, secondary, outline, ghost, danger }
 
 /// Button sizes
-enum ButtonSize {
-  small,
-  medium,
-  large,
-}
+enum ButtonSize { small, medium, large }
 
 /// Social login button for OAuth providers
 class SocialButton extends StatelessWidget {
@@ -304,10 +338,7 @@ class AppIconButton extends StatelessWidget {
     final icColor = iconColor ?? Theme.of(context).colorScheme.onSurface;
 
     return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
       child: IconButton(
         onPressed: isLoading ? null : onPressed,
         tooltip: tooltip,

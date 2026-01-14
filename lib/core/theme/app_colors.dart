@@ -76,7 +76,7 @@ class AppColors {
   ];
 
   // Board post category colors
-  static const Color boardFree = Color(0xFF10B981); // Erkin - Green
+  static const Color boardFree = Color(0xFF06B6D4); // Erkin - Cyan (aligned with brand)
   static const Color boardSecret = Color(0xFF8B5CF6); // Sirli - Purple
   static const Color boardQuestion = Color(0xFF3B82F6); // Savol - Blue
   static const Color boardMarket = Color(0xFFF59E0B); // Bozor - Yellow
@@ -95,6 +95,19 @@ class AppColors {
   static const Color messageBubbleReceived = Color(0xFFF3F4F6);
 
   // Gradient colors
+  static const Color backgroundGradientStart = Color(0xFFE0DBF8);
+  static const Color backgroundGradientEnd = Color(0xFFDEF4EB);
+  static const List<Color> backgroundGradient = [
+    backgroundGradientStart,
+    backgroundGradientEnd,
+  ];
+
+  static const List<Color> brandGradient = [
+    Color(0xFF7C3BEE),
+    Color(0xFFB95686),
+    Color(0xFFF5711E),
+  ];
+
   static const List<Color> primaryGradient = [primary, primaryLight];
   static const List<Color> secondaryGradient = [secondary, secondaryLight];
   static const List<Color> universityGradient = [universityRed, universityPurple];

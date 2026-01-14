@@ -1,10 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/env_config.dart';
 import '../config/app_config.dart';
 import '../storage/secure_storage_service.dart';
 import '../utils/logger.dart';
+
+final dioClientProvider = Provider<DioClient>((ref) {
+  return DioClient(ref.read(secureStorageServiceProvider));
+});
 
 /// 인증 및 로깅을 위한 인터셉터가 포함된 Dio 기반 HTTP 클라이언트
 class DioClient {

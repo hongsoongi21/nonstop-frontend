@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
@@ -9,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';
 import '../providers/board_provider.dart';
@@ -20,23 +20,12 @@ class BoardScreen extends ConsumerStatefulWidget {
   ConsumerState<BoardScreen> createState() => _BoardScreenState();
 }
 
-class _BoardScreenState extends ConsumerState<BoardScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    _tabController.addListener(() {
-      final category = PostCategory.values[_tabController.index];
-      ref.read(boardProvider.notifier).changeCategory(category);
-    });
-  }
+class _BoardScreenState extends ConsumerState<BoardScreen> {
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -46,140 +35,243 @@ class _BoardScreenState extends ConsumerState<BoardScreen>
     final filteredPosts = boardState.filteredPosts;
     final isLoading = boardState.isLoading;
     final error = boardState.error;
+    final selectedCategory = boardState.selectedCategory;
 
     return AppScaffold(
       title: 'Board',
-      actions: [
-        IconButton(
-          onPressed: () => context.go(Routes.boardCreatePath()),
-          icon: const Icon(Icons.add),
-          tooltip: 'Create Post',
+      showAppBar: false, // Custom header
+      backgroundColor: Colors.transparent, // Handle bg in Stack
+      padding: EdgeInsets.zero, // Allow background to be edge-to-edge
+      extendBody: true, // Background behind bottom nav
+      extendBodyBehindAppBar: true, // Background behind status bar
+      body: Container(
+        constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height,
         ),
-        IconButton(
-          onPressed: () {}, // TODO: Navigate to search
-          icon: const Icon(Icons.search),
-          tooltip: 'Search',
-        ),
-      ],
-      floatingActionButton: AppFab(
-        onPressed: () => context.go(Routes.boardCreatePath()),
-        icon: Icons.edit,
-        tooltip: 'New Post',
-      ),
-      body: Column(
-        children: [
-          // Category tabs
-          Container(
-            margin: EdgeInsets.only(bottom: AppSpacing.md),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicator: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: AppColors.primary,
-              unselectedLabelColor: AppColors.textSecondary,
-              labelStyle: AppTypography.button.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-              unselectedLabelStyle: AppTypography.button,
-              tabs: const [
-                Tab(text: 'Erkin'),
-                Tab(text: 'Sirli'),
-                Tab(text: 'Savol'),
-                Tab(text: 'Bozor'),
-              ],
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: AppColors.backgroundGradient,
           ),
+        ),
+        child: Stack(
+          children: [
 
-          // Error message
-          if (error != null)
-            Container(
-              margin: EdgeInsets.only(bottom: AppSpacing.md),
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.error_outline, color: AppColors.error, size: 20),
-                  const SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      error,
-                      style: AppTypography.body2.copyWith(color: AppColors.error),
+          // Main Content
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Board',
+                        style: AppTypography.headline4.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => context.go(Routes.boardCreatePath()),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: AppColors.brandGradient,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF7C3BEE).withValues(alpha: 0.25),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.edit_square, size: 18, color: Colors.white),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Write',
+                                style: AppTypography.button.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Categories
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  child: Row(
+                    children: PostCategory.values.map((category) {
+                      final isSelected = category == selectedCategory;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: AppSpacing.sm),
+                        child: GestureDetector(
+                          onTap: () => ref.read(boardProvider.notifier).changeCategory(category),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected ? AppColors.primary : Colors.white.withValues(alpha: 0.2),
+                              ),
+                              boxShadow: [
+                                if (isSelected)
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                              ],
+                            ),
+                            child: Text(
+                              _getCategoryName(category),
+                              style: AppTypography.button.copyWith(
+                                color: isSelected ? Colors.white : AppColors.textSecondary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                // Search Bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                  child: GlassContainer(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    borderRadius: BorderRadius.circular(12),
+                    opacity: 0.5,
+                    blur: 15,
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search posts...',
+                        hintStyle: AppTypography.body2.copyWith(color: AppColors.textSecondary),
+                        icon: Icon(Icons.search, color: AppColors.textSecondary),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      onChanged: (value) {
+                        // TODO: Implement search filter in provider
+                      },
                     ),
                   ),
-                  IconButton(
-                    onPressed: () => ref.read(boardProvider.notifier).clearError(),
-                    icon: Icon(Icons.close, color: AppColors.error, size: 20),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                ),
+
+                // Error Message
+                if (error != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+                    child: GlassContainer(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      borderColor: AppColors.error.withValues(alpha: 0.3),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              error,
+                              style: AppTypography.body2.copyWith(color: AppColors.error),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => ref.read(boardProvider.notifier).clearError(),
+                            icon: Icon(Icons.close, color: AppColors.error, size: 20),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ),
 
-          // Posts list
-          Expanded(
-            child: AppRefreshIndicator(
-              onRefresh: () => ref.read(boardProvider.notifier).refreshPosts(),
-              child: filteredPosts.isEmpty && !isLoading
-                  ? _buildEmptyState(boardState.selectedCategory)
-                  : ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: isLoading ? 0 : filteredPosts.length,
-                      itemBuilder: (context, index) {
-                        final post = filteredPosts[index];
-                        final likesCount = boardState.getPostLikes(post.id);
+                // Posts List
+                Expanded(
+                  child: AppRefreshIndicator(
+                    onRefresh: () => ref.read(boardProvider.notifier).refreshPosts(),
+                    child: filteredPosts.isEmpty && !isLoading
+                        ? _buildEmptyState(selectedCategory)
+                        : ListView.builder(
+                            padding: const EdgeInsets.only(
+                              left: AppSpacing.md,
+                              right: AppSpacing.md,
+                              top: AppSpacing.sm,
+                              bottom: 80, // Space for bottom nav
+                            ),
+                            itemCount: isLoading ? 0 : filteredPosts.length,
+                            itemBuilder: (context, index) {
+                              final post = filteredPosts[index];
+                              final likesCount = boardState.getPostLikes(post.id);
 
-                        return Padding(
-                          padding: EdgeInsets.only(bottom: AppSpacing.md),
-                          child: PostCard(
-                            post: post.copyWith(likes: likesCount),
-                            onTap: () {
-                              // TODO: Navigate to post details
-                            },
-                            onLike: () => ref.read(boardProvider.notifier).toggleLike(post.id),
-                            onComment: () {
-                              // Simulate adding a comment
-                              ref.read(boardProvider.notifier).addComment(
-                                post.id,
-                                'This is a sample comment!',
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Comment added!')),
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                                child: PostCard(
+                                  post: post.copyWith(likes: likesCount),
+                                  onTap: () => context.go(Routes.boardDetailPath(post.id)),
+                                  onLike: () => ref.read(boardProvider.notifier).toggleLike(post.id),
+                                  onComment: () {
+                                    ref.read(boardProvider.notifier).addComment(
+                                          post.id,
+                                          'This is a sample comment!',
+                                        );
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Comment added!')),
+                                    );
+                                  },
+                                ),
                               );
                             },
                           ),
-                        );
-                      },
-                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEmptyState(PostCategory selectedCategory) {
-    final categoryNames = {
-      PostCategory.free: 'Erkin',
-      PostCategory.secret: 'Sirli',
-      PostCategory.question: 'Savol',
-      PostCategory.market: 'Bozor',
-    };
+  String _getCategoryName(PostCategory category) {
+    switch (category) {
+      case PostCategory.free:
+        return 'Erkin';
+      case PostCategory.secret:
+        return 'Sirli';
+      case PostCategory.question:
+        return 'Savol';
+      case PostCategory.market:
+        return 'Bozor';
+    }
+  }
 
-    final categoryDescriptions = {
+  Widget _buildEmptyState(PostCategory selectedCategory) {
+    final description = {
       PostCategory.free: 'Share your thoughts and connect with fellow students',
       PostCategory.secret: 'Post anonymously and share what\'s on your mind',
       PostCategory.question: 'Ask questions and get help from the community',
@@ -188,51 +280,57 @@ class _BoardScreenState extends ConsumerState<BoardScreen>
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(AppSpacing.xl),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: GlassContainer(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.forum_outlined,
+                  size: 48,
+                  color: AppColors.primary,
+                ),
               ),
-              child: Icon(
-                Icons.forum_outlined,
-                size: 64,
-                color: AppColors.primary,
+              SizedBox(height: AppSpacing.lg),
+              Text(
+                'No ${_getCategoryName(selectedCategory)} posts yet',
+                style: AppTypography.headline6.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-
-            SizedBox(height: AppSpacing.lg),
-
-            Text(
-              'No ${categoryNames[selectedCategory]} posts yet',
-              style: AppTypography.headline6.copyWith(
-                fontWeight: FontWeight.w600,
+              SizedBox(height: AppSpacing.sm),
+              Text(
+                description[selectedCategory]!,
+                style: AppTypography.body2.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-
-            SizedBox(height: AppSpacing.sm),
-
-            Text(
-              categoryDescriptions[selectedCategory]!,
-              style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
+              SizedBox(height: AppSpacing.lg),
+              ElevatedButton.icon(
+                onPressed: () => context.go(Routes.boardCreatePath()),
+                icon: const Icon(Icons.add),
+                label: const Text('Create First Post'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-
-            SizedBox(height: AppSpacing.xl),
-
-            AppFab(
-              onPressed: () => context.go(Routes.boardCreatePath()),
-              icon: Icons.add,
-              tooltip: 'Create First Post',
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

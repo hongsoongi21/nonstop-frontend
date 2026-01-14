@@ -2,7 +2,6 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
-import '../../../../core/mock/mock_data.dart';
 import '../../domain/entities/event.dart';
 import '../../domain/repository/timetable_repository.dart';
 import '../api/timetable_api.dart';
@@ -52,7 +51,10 @@ class TimetableRepositoryImpl implements TimetableRepository {
     required DateTime weekStart,
   }) async {
     try {
-      final result = await api.getEventsForWeek(userId: userId, weekStart: weekStart);
+      final result = await api.getEventsForWeek(
+        userId: userId,
+        weekStart: weekStart,
+      );
       return result.fold(
         (exception) => Left(_mapExceptionToFailure(exception)),
         (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
@@ -103,9 +105,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
   }
 
   @override
-  Future<Either<Failure, Event>> getEvent({
-    required String eventId,
-  }) async {
+  Future<Either<Failure, Event>> getEvent({required String eventId}) async {
     try {
       final result = await api.getEvent(eventId: eventId);
       return result.fold(
@@ -118,9 +118,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
   }
 
   @override
-  Future<Either<Failure, Event>> createEvent({
-    required Event event,
-  }) async {
+  Future<Either<Failure, Event>> createEvent({required Event event}) async {
     try {
       final createDto = CreateEventDto.fromDomain(event);
       final result = await api.createEvent(event: createDto);
@@ -151,9 +149,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> deleteEvent({
-    required String eventId,
-  }) async {
+  Future<Either<Failure, Unit>> deleteEvent({required String eventId}) async {
     try {
       final result = await api.deleteEvent(eventId: eventId);
       return result.fold(

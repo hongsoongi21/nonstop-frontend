@@ -196,5 +196,11 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, String?>> getAccessToken() async {
+    // TODO: Implement actual token retrieval from secure storage
+    return const Right('mock_access_token'); 
+  }
+
+  @override
   Stream<User?> get authStateChanges => _authApi.authStateChanges;
 }
