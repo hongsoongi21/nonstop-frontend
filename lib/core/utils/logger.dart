@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'dart:developer';
 
@@ -23,8 +24,15 @@ void initLogger() {
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    log('${levelColorTagMap[record.level]!}'
-        '[${levelStringMap[record.level]}] ${record.time}: ${record.message}${record.error == null ? '' : '\n: ${record.error}'}${record.stackTrace == null ? '' : '\n--- Start of Stack Trace ---\n${record.stackTrace}--- End of Stack Trace ---'}$resetTag');
+    final message = '${levelColorTagMap[record.level]!}'
+        '[${levelStringMap[record.level]}] ${record.time}: ${record.message}${record.error == null ? '' : '\n: ${record.error}'}$resetTag';
+    
+    // debugPrint를 사용하여 터미널 로그를 더 안정적으로 출력합니다.
+    debugPrint('[NONSTOP] $message');
+    
+    if (record.stackTrace != null && record.level >= Level.SEVERE) {
+      debugPrint('[NONSTOP] --- Start of Stack Trace ---\n${record.stackTrace}\n--- End of Stack Trace ---');
+    }
   });
 }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
@@ -28,6 +29,12 @@ class AuthApiImpl implements AuthApi {
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
         final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
+        
+        if (!kReleaseMode) {
+          debugPrint('[NONSTOP] 🔑 Tokens Received:');
+          debugPrint('[NONSTOP]   Access: ${tokenData.accessToken}');
+          debugPrint('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+        }
         
         // 보안 저장소에 토큰 저장
         await _secureStorageService.saveAccessToken(tokenData.accessToken);

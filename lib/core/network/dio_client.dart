@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -185,6 +186,9 @@ class _AuthInterceptor extends Interceptor {
     final token = await _secureStorageService.getAccessToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
+      if (!kReleaseMode) {
+        debugPrint('[NONSTOP] 🛡️ Auth Header: Bearer $token');
+      }
     }
 
     super.onRequest(options, handler);
@@ -263,7 +267,13 @@ class _LoggingInterceptor extends Interceptor {
       debugPrint('✅ HTTP Response: ${response.statusCode}');
       debugPrint('📥 URL: ${response.requestOptions.uri.toString()}');
       if (response.data != null) {
-        debugPrint('📦 Data: ${response.data}');
+        final dataStr = response.data.toString();
+        // 데이터가 너무 길면 잘라서 출력합니다 (최대 1000자)
+        if (dataStr.length > 1000) {
+          debugPrint('📦 Data (truncated): ${dataStr.substring(0, 1000)}...');
+        } else {
+          debugPrint('📦 Data: $dataStr');
+        }
       }
     }
 
@@ -277,7 +287,12 @@ class _LoggingInterceptor extends Interceptor {
       debugPrint('🔗 URL: ${err.requestOptions.uri.toString()}');
       if (err.response != null) {
         debugPrint('📊 Status: ${err.response!.statusCode}');
-        debugPrint('📦 Data: ${err.response!.data}');
+        final dataStr = err.response!.data.toString();
+        if (dataStr.length > 1000) {
+          debugPrint('📦 Error Data (truncated): ${dataStr.substring(0, 1000)}...');
+        } else {
+          debugPrint('📦 Error Data: $dataStr');
+        }
       }
     }
 

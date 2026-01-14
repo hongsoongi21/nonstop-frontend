@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,7 +20,12 @@ class SecureStorageService {
   }
 
   Future<String?> getAccessToken() async {
-    return await _storage.read(key: _accessTokenKey);
+    final token = await _storage.read(key: _accessTokenKey);
+    if (!kReleaseMode) {
+      debugPrint('[NONSTOP] 🔑 Access Token Retrieval: ${token != null ? 'EXISTS' : 'NULL'}');
+      if (token != null) debugPrint('[NONSTOP]   Value: $token');
+    }
+    return token;
   }
 
   Future<void> saveRefreshToken(String token) async {
@@ -27,7 +33,12 @@ class SecureStorageService {
   }
 
   Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _refreshTokenKey);
+    final token = await _storage.read(key: _refreshTokenKey);
+    if (!kReleaseMode) {
+      debugPrint('[NONSTOP] 🔄 Refresh Token Retrieval: ${token != null ? 'EXISTS' : 'NULL'}');
+      if (token != null) debugPrint('[NONSTOP]   Value: $token');
+    }
+    return token;
   }
 
   Future<void> deleteAllTokens() async {

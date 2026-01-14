@@ -8,5 +8,6 @@ class University with _$University {
     required int id,
     required String name,
     String? region,
+    String? logoImageUrl,
   }) = _University;
 }

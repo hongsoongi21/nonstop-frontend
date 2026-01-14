@@ -1,13 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/repository_impl/university_repository_mock.dart';
+import '../../data/api/university_api.dart';
+import '../../data/repository_impl/university_repository_impl.dart';
 import '../../domain/entities/university.dart';
 import '../../domain/repository/university_repository.dart';
+import 'auth_provider.dart'; // dioClientProvider를 사용하기 위함
+
+/// UniversityApi 구현체에 대한 Provider입니다.
+final universityApiProvider = Provider<UniversityApi>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return UniversityApiImpl(dioClient);
+});
 
 /// UniversityRepository 구현체에 대한 Provider입니다.
 final universityRepositoryProvider = Provider<UniversityRepository>((ref) {
-  // 계획된 대로 현재는 Mock 구현체를 사용합니다.
-  return UniversityRepositoryMock();
+  final api = ref.watch(universityApiProvider);
+  return UniversityRepositoryImpl(api);
 });
 
 /// 대학교 목록을 가져오는 FutureProvider입니다.
