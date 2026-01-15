@@ -273,7 +273,7 @@ class _LoggingInterceptor extends Interceptor {
       if (response.data != null) {
         // Truncate long strings (like HTML) to avoid flooding logs
         if (response.data is String && (response.data as String).length > 500) {
-           resultLog('📦 Data:', (response.data as String).substring(0, 500) + '... (truncated)');
+           resultLog('📦 Data:', '${(response.data as String).substring(0, 500)}... (truncated)');
         } else {
            resultLog('📦 Data:', response.data);
         }

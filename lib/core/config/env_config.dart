@@ -1,5 +1,9 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
+
 /// Environment configuration
-/// Loads environment variables from .env file or system environment
+/// Loads environment variables via `--dart-define` (compile-time).
 class EnvConfig {
   static const String _apiBaseUrlKey = 'API_BASE_URL';
   static const String _wsBaseUrlKey = 'WS_BASE_URL';
@@ -10,20 +14,40 @@ class EnvConfig {
   static const String _defaultWsBaseUrl = 'ws://vmi.thejoin.co.kr:28080/ws';
   static const String _defaultEnvironment = 'development';
 
+  static String get _localApiBaseUrl {
+    if (kIsWeb) return 'http://localhost:28080';
+    if (Platform.isAndroid) return 'http://10.0.2.2:28080';
+    return 'http://localhost:28080';
+  }
+
+  static String get _localWsBaseUrl {
+    if (kIsWeb) return 'ws://localhost:28080/ws';
+    if (Platform.isAndroid) return 'ws://10.0.2.2:28080/ws';
+    return 'ws://localhost:28080/ws';
+  }
+
   /// API base URL
   static String get apiBaseUrl {
-    return const String.fromEnvironment(
+    final value = const String.fromEnvironment(
       _apiBaseUrlKey,
       defaultValue: _defaultApiBaseUrl,
     );
+    if (!kReleaseMode && value == _defaultApiBaseUrl) {
+      return _localApiBaseUrl;
+    }
+    return value;
   }
 
   /// WebSocket base URL
   static String get wsBaseUrl {
-    return const String.fromEnvironment(
+    final value = const String.fromEnvironment(
       _wsBaseUrlKey,
       defaultValue: _defaultWsBaseUrl,
     );
+    if (!kReleaseMode && value == _defaultWsBaseUrl) {
+      return _localWsBaseUrl;
+    }
+    return value;
   }
 
   /// Current environment (staging, production, development)
