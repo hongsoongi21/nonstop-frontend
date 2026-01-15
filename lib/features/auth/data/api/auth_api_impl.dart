@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/secure_storage_service.dart';
@@ -75,7 +76,10 @@ class AuthApiImpl implements AuthApi {
       if (token == null) return null;
       return await _fetchCurrentUser();
     } catch (e) {
-      await _storage.clearTokens();
+      // Only clear tokens when we are sure they are invalid (401 Unauthorized).
+      if (e is DioException && e.response?.statusCode == 401) {
+        await _storage.clearTokens();
+      }
       return null;
     }
   }
