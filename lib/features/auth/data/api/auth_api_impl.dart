@@ -2,9 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/network/dto/auth_response_dto.dart';
 import '../../../../core/services/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
-import '../dto/auth_response_dto.dart';
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
 
@@ -20,10 +20,7 @@ class AuthApiImpl implements AuthApi {
   AuthApiImpl(this._dioClient);
 
   @override
-  Future<User> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<User> signIn({required String email, required String password}) async {
     // 1. Login to get tokens
     final response = await _dioClient.post(
       '/api/v1/auth/login',
@@ -31,7 +28,7 @@ class AuthApiImpl implements AuthApi {
     );
 
     final authResponse = AuthResponseDto.fromJson(response.data['data']);
-    
+
     // 2. Save tokens
     await _storage.saveAccessToken(authResponse.accessToken);
     await _storage.saveRefreshToken(authResponse.refreshToken);
@@ -55,7 +52,8 @@ class AuthApiImpl implements AuthApi {
         'email': email,
         'password': password,
         'nickname': fullName, // Using fullName as nickname
-        'universityId': int.tryParse(university ?? '') ?? 0, // Should be handled better
+        'universityId':
+            int.tryParse(university ?? '') ?? 0, // Should be handled better
         'majorId': int.tryParse(major ?? '') ?? 0, // Should be handled better
       },
     );
@@ -109,15 +107,21 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Future<User> updateProfile({String? fullName, String? university, String? major, String? bio, String? avatarUrl}) async {
-     // Stub
+  Future<User> updateProfile({
+    String? fullName,
+    String? university,
+    String? major,
+    String? bio,
+    String? avatarUrl,
+  }) async {
+    // Stub
     throw UnimplementedError();
   }
 
   @override
   Future<void> deleteAccount() async {
-      await _dioClient.delete('/api/v1/users/me');
-      await _storage.clearTokens();
+    await _dioClient.delete('/api/v1/users/me');
+    await _storage.clearTokens();
   }
 
   @override

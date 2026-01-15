@@ -45,11 +45,15 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Fixed: Handle null post with proper error message or loading state
     if (post == null) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: Center(child: Text(error ?? 'Post not found')),
-      );
+      if (error != null) {
+        return Scaffold(
+          appBar: AppBar(),
+          body: Center(child: Text(error)),
+        );
+      }
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(

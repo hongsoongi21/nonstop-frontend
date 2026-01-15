@@ -6,6 +6,7 @@ import '../config/env_config.dart';
 import '../config/app_config.dart';
 import '../utils/logger.dart';
 import '../services/secure_storage_service.dart';
+import 'dto/auth_response_dto.dart';
 
 final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient();
@@ -197,7 +198,10 @@ class _AuthInterceptor extends Interceptor {
   final _storage = SecureStorageService();
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final token = await _storage.getAccessToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
@@ -207,13 +211,76 @@ class _AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     // Handle token refresh on 401
     if (err.response?.statusCode == 401) {
-      // TODO: Implement token refresh logic
-      // - Try to refresh token
-      // - Retry original request if refresh successful
-      // - Logout user if refresh fails
+      final refreshToken = await _storage.getRefreshToken();
+      if (refreshToken == null) {
+        super.onError(err, handler);
+        return;
+      }
+
+      try {
+        // Create a new Dio instance for the refresh request to avoid interceptors
+        // We use the same base URL as the original client
+        final refreshDio = Dio(
+          BaseOptions(
+            baseUrl: EnvConfig.apiBaseUrl,
+            headers: {'Content-Type': 'application/json'},
+            validateStatus: (status) => status != null && status < 500,
+          ),
+        );
+
+        // Call refresh endpoint
+        final refreshResponse = await refreshDio.post(
+          '/api/v1/auth/refresh',
+          data: {'refreshToken': refreshToken},
+        );
+
+        if (refreshResponse.statusCode == 200) {
+          // Parse new tokens (API returns ApiResponse<TokenResponseDto>)
+          final authResponse = AuthResponseDto.fromJson(
+            refreshResponse.data['data'],
+          );
+
+          // Save new tokens
+          await _storage.saveAccessToken(authResponse.accessToken);
+          await _storage.saveRefreshToken(authResponse.refreshToken);
+
+          // Retry original request with new token
+          final opts = err.requestOptions;
+          opts.headers['Authorization'] = 'Bearer ${authResponse.accessToken}';
+
+          final clonedRequest = await refreshDio.request(
+            opts.path,
+            options: Options(
+              method: opts.method,
+              headers: opts.headers,
+              contentType: opts.contentType,
+              responseType: opts.responseType,
+              followRedirects: opts.followRedirects,
+              validateStatus: opts.validateStatus,
+              receiveTimeout: opts.receiveTimeout,
+              sendTimeout: opts.sendTimeout,
+              extra: opts.extra,
+            ),
+            data: opts.data,
+            queryParameters: opts.queryParameters,
+            cancelToken: opts.cancelToken,
+            onReceiveProgress: opts.onReceiveProgress,
+            onSendProgress: opts.onSendProgress,
+          );
+
+          handler.resolve(clonedRequest);
+          return;
+        } else {
+          // Refresh failed
+          await _storage.clearTokens();
+        }
+      } catch (e) {
+        // Refresh error
+        await _storage.clearTokens();
+      }
     }
 
     super.onError(err, handler);
@@ -225,23 +292,24 @@ class _ResponseCheckInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     final contentType = response.headers.value('content-type');
-    
+
     // Check if the response content type indicates HTML
     // Often happens when an API request is redirected to a login page (302 -> 200 OK HTML)
     if (contentType != null && contentType.contains('text/html')) {
-       // Only reject if we expected JSON (default)
-       if (response.requestOptions.responseType == ResponseType.json) {
-         handler.reject(
-           DioException(
-             requestOptions: response.requestOptions,
-             response: response,
-             type: DioExceptionType.badResponse,
-             error: 'Received HTML response instead of JSON. This likely indicates an authentication issue (redirect to login).',
-           ),
-           true
-         );
-         return;
-       }
+      // Only reject if we expected JSON (default)
+      if (response.requestOptions.responseType == ResponseType.json) {
+        handler.reject(
+          DioException(
+            requestOptions: response.requestOptions,
+            response: response,
+            type: DioExceptionType.badResponse,
+            error:
+                'Received HTML response instead of JSON. This likely indicates an authentication issue (redirect to login).',
+          ),
+          true,
+        );
+        return;
+      }
     }
     super.onResponse(response, handler);
   }
@@ -273,9 +341,12 @@ class _LoggingInterceptor extends Interceptor {
       if (response.data != null) {
         // Truncate long strings (like HTML) to avoid flooding logs
         if (response.data is String && (response.data as String).length > 500) {
-           resultLog('📦 Data:', '${(response.data as String).substring(0, 500)}... (truncated)');
+          resultLog(
+            '📦 Data:',
+            '${(response.data as String).substring(0, 500)}... (truncated)',
+          );
         } else {
-           resultLog('📦 Data:', response.data);
+          resultLog('📦 Data:', response.data);
         }
       }
     }
