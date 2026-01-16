@@ -214,6 +214,20 @@ class BoardNotifier extends StateNotifier<BoardState> {
   void clearError() {
     state = state.copyWith(error: null);
   }
+
+  void updateLocalPost(PostEntity updatedPost) {
+    state = state.copyWith(
+      posts: state.posts.map((post) {
+        return post.id == updatedPost.id ? updatedPost : post;
+      }).toList(),
+    );
+  }
+
+  void removeLocalPost(int postId) {
+    state = state.copyWith(
+      posts: state.posts.where((post) => post.id != postId).toList(),
+    );
+  }
 }
 
 /// Board provider

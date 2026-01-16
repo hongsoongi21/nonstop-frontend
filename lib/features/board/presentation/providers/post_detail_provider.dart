@@ -3,6 +3,7 @@ import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
 import '../../domain/repository/board_repository.dart';
 import '../../data/repositories/board_repository_impl.dart';
+import 'board_provider.dart';
 
 class PostDetailState {
   final bool isLoading;
@@ -35,8 +36,9 @@ class PostDetailState {
 class PostDetailNotifier extends StateNotifier<PostDetailState> {
   final BoardRepository _repository;
   final int _postId;
+  final Ref _ref;
 
-  PostDetailNotifier(this._repository, this._postId)
+  PostDetailNotifier(this._repository, this._postId, this._ref)
     : super(const PostDetailState()) {
     fetchPostDetail();
   }
@@ -56,11 +58,14 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
             post: post,
             error: error,
           ),
-          (comments) => state = state.copyWith(
-            isLoading: false,
-            post: post,
-            comments: comments,
-          ),
+          (comments) {
+            state = state.copyWith(
+              isLoading: false,
+              post: post,
+              comments: comments,
+            );
+            _ref.read(boardProvider.notifier).updateLocalPost(post);
+          },
         );
       },
     );
@@ -91,14 +96,14 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
     result.fold((error) => state = state.copyWith(error: error), (_) {
       final currentPost = state.post!;
       final isLiked = !currentPost.isLiked;
-      state = state.copyWith(
-        post: currentPost.copyWith(
-          isLiked: isLiked,
-          likeCount: isLiked
-              ? currentPost.likeCount + 1
-              : currentPost.likeCount - 1,
-        ),
+      final updatedPost = currentPost.copyWith(
+        isLiked: isLiked,
+        likeCount: isLiked
+            ? currentPost.likeCount + 1
+            : currentPost.likeCount - 1,
       );
+      state = state.copyWith(post: updatedPost);
+      _ref.read(boardProvider.notifier).updateLocalPost(updatedPost);
     });
   }
 
@@ -107,6 +112,7 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
     result.fold((error) => state = state.copyWith(error: error), (_) {
       // Handle success, e.g., navigate back (UI handles this via listener or callback, or provider state)
       // For now, we can just clear post or set a flag. But usually navigation happens in UI.
+      _ref.read(boardProvider.notifier).removeLocalPost(_postId);
     });
   }
 
@@ -123,10 +129,10 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
       isAnonymous: isAnonymous,
       isSecret: isSecret,
     );
-    result.fold(
-      (error) => state = state.copyWith(error: error),
-      (updatedPost) => state = state.copyWith(post: updatedPost),
-    );
+    result.fold((error) => state = state.copyWith(error: error), (updatedPost) {
+      state = state.copyWith(post: updatedPost);
+      _ref.read(boardProvider.notifier).updateLocalPost(updatedPost);
+    });
   }
 
   Future<void> toggleCommentLike(int commentId) async {
@@ -188,5 +194,5 @@ final postDetailProvider =
       postId,
     ) {
       final repository = ref.watch(boardRepositoryProvider);
-      return PostDetailNotifier(repository, postId);
+      return PostDetailNotifier(repository, postId, ref);
     });
