@@ -367,6 +367,11 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
