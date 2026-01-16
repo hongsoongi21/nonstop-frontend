@@ -96,6 +96,42 @@ class BoardRepositoryImpl implements BoardRepository {
   }
 
   @override
+  Future<Either<String, PostEntity>> updatePost(
+    int postId, {
+    required String title,
+    required String content,
+    bool isAnonymous = false,
+    bool isSecret = false,
+    List<String>? imageUrls,
+  }) async {
+    try {
+      final result = await _dataSource.updatePost(
+        postId,
+        title: title,
+        content: content,
+        isAnonymous: isAnonymous,
+        isSecret: isSecret,
+        imageUrls: imageUrls,
+      );
+      return Right(result);
+    } catch (e) {
+      log('updatePost error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, void>> deletePost(int postId) async {
+    try {
+      await _dataSource.deletePost(postId);
+      return const Right(null);
+    } catch (e) {
+      log('deletePost error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
   Future<Either<String, void>> togglePostLike(int postId) async {
     try {
       await _dataSource.togglePostLike(postId);
@@ -136,6 +172,49 @@ class BoardRepositoryImpl implements BoardRepository {
       return Right(result);
     } catch (e) {
       log('createComment error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, CommentEntity>> updateComment(
+    int commentId, {
+    required String content,
+    bool isAnonymous = false,
+    List<String>? imageUrls,
+  }) async {
+    try {
+      final result = await _dataSource.updateComment(
+        commentId,
+        content: content,
+        isAnonymous: isAnonymous,
+        imageUrls: imageUrls,
+      );
+      return Right(result);
+    } catch (e) {
+      log('updateComment error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, void>> deleteComment(int commentId) async {
+    try {
+      await _dataSource.deleteComment(commentId);
+      return const Right(null);
+    } catch (e) {
+      log('deleteComment error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, void>> toggleCommentLike(int commentId) async {
+    try {
+      await _dataSource.toggleCommentLike(commentId);
+      return const Right(null);
+    } catch (e) {
+      log('toggleCommentLike error: $e', name: 'BoardRepository');
       return Left(e.toString());
     }
   }

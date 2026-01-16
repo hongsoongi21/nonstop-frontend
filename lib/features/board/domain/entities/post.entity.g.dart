@@ -19,6 +19,7 @@ _$PostEntityImpl _$$PostEntityImplFromJson(Map<String, dynamic> json) =>
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
       isSecret: json['isSecret'] as bool? ?? false,
       isLiked: json['isLiked'] as bool? ?? false,
+      isMine: json['isMine'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
@@ -43,6 +44,7 @@ Map<String, dynamic> _$$PostEntityImplToJson(_$PostEntityImpl instance) =>
       'commentCount': instance.commentCount,
       'isSecret': instance.isSecret,
       'isLiked': instance.isLiked,
+      'isMine': instance.isMine,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'imageUrls': instance.imageUrls,

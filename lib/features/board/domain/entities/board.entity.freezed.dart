@@ -23,6 +23,7 @@ Board _$BoardFromJson(Map<String, dynamic> json) {
 mixin _$Board {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
   BoardType get type => throw _privateConstructorUsedError;
   bool get isSecret => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
@@ -44,6 +45,7 @@ abstract class $BoardCopyWith<$Res> {
   $Res call({
     int id,
     String name,
+    String? description,
     BoardType type,
     bool isSecret,
     DateTime createdAt,
@@ -67,6 +69,7 @@ class _$BoardCopyWithImpl<$Res, $Val extends Board>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? description = freezed,
     Object? type = null,
     Object? isSecret = null,
     Object? createdAt = null,
@@ -81,6 +84,10 @@ class _$BoardCopyWithImpl<$Res, $Val extends Board>
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
             type: null == type
                 ? _value.type
                 : type // ignore: cast_nullable_to_non_nullable
@@ -110,6 +117,7 @@ abstract class _$$BoardImplCopyWith<$Res> implements $BoardCopyWith<$Res> {
   $Res call({
     int id,
     String name,
+    String? description,
     BoardType type,
     bool isSecret,
     DateTime createdAt,
@@ -132,6 +140,7 @@ class __$$BoardImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? name = null,
+    Object? description = freezed,
     Object? type = null,
     Object? isSecret = null,
     Object? createdAt = null,
@@ -146,6 +155,10 @@ class __$$BoardImplCopyWithImpl<$Res>
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
         type: null == type
             ? _value.type
             : type // ignore: cast_nullable_to_non_nullable
@@ -169,6 +182,7 @@ class _$BoardImpl implements _Board {
   const _$BoardImpl({
     required this.id,
     required this.name,
+    this.description,
     required this.type,
     this.isSecret = false,
     required this.createdAt,
@@ -182,6 +196,8 @@ class _$BoardImpl implements _Board {
   @override
   final String name;
   @override
+  final String? description;
+  @override
   final BoardType type;
   @override
   @JsonKey()
@@ -191,7 +207,7 @@ class _$BoardImpl implements _Board {
 
   @override
   String toString() {
-    return 'Board(id: $id, name: $name, type: $type, isSecret: $isSecret, createdAt: $createdAt)';
+    return 'Board(id: $id, name: $name, description: $description, type: $type, isSecret: $isSecret, createdAt: $createdAt)';
   }
 
   @override
@@ -201,6 +217,8 @@ class _$BoardImpl implements _Board {
             other is _$BoardImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.isSecret, isSecret) ||
                 other.isSecret == isSecret) &&
@@ -210,8 +228,15 @@ class _$BoardImpl implements _Board {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, type, isSecret, createdAt);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    description,
+    type,
+    isSecret,
+    createdAt,
+  );
 
   /// Create a copy of Board
   /// with the given fields replaced by the non-null parameter values.
@@ -231,6 +256,7 @@ abstract class _Board implements Board {
   const factory _Board({
     required final int id,
     required final String name,
+    final String? description,
     required final BoardType type,
     final bool isSecret,
     required final DateTime createdAt,
@@ -242,6 +268,8 @@ abstract class _Board implements Board {
   int get id;
   @override
   String get name;
+  @override
+  String? get description;
   @override
   BoardType get type;
   @override

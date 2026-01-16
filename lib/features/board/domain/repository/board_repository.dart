@@ -21,6 +21,15 @@ abstract class BoardRepository {
     bool isSecret = false,
     List<String>? imageUrls,
   });
+  Future<Either<String, PostEntity>> updatePost(
+    int postId, {
+    required String title,
+    required String content,
+    bool isAnonymous = false,
+    bool isSecret = false,
+    List<String>? imageUrls,
+  });
+  Future<Either<String, void>> deletePost(int postId);
   Future<Either<String, void>> togglePostLike(int postId);
   Future<Either<String, List<CommentEntity>>> getComments(int postId);
   Future<Either<String, CommentEntity>> createComment(
@@ -30,4 +39,12 @@ abstract class BoardRepository {
     bool isAnonymous = false,
     List<String>? imageUrls,
   });
+  Future<Either<String, CommentEntity>> updateComment(
+    int commentId, {
+    required String content,
+    bool isAnonymous = false,
+    List<String>? imageUrls,
+  });
+  Future<Either<String, void>> deleteComment(int commentId);
+  Future<Either<String, void>> toggleCommentLike(int commentId);
 }

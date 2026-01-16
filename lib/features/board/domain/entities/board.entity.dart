@@ -19,6 +19,7 @@ class Board with _$Board {
   const factory Board({
     required int id,
     required String name,
+    String? description,
     required BoardType type,
     @Default(false) bool isSecret,
     required DateTime createdAt,

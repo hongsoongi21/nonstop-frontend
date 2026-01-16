@@ -102,6 +102,81 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
     });
   }
 
+  Future<void> deletePost() async {
+    final result = await _repository.deletePost(_postId);
+    result.fold((error) => state = state.copyWith(error: error), (_) {
+      // Handle success, e.g., navigate back (UI handles this via listener or callback, or provider state)
+      // For now, we can just clear post or set a flag. But usually navigation happens in UI.
+    });
+  }
+
+  Future<void> updatePost({
+    required String title,
+    required String content,
+    bool isAnonymous = false,
+    bool isSecret = false,
+  }) async {
+    final result = await _repository.updatePost(
+      _postId,
+      title: title,
+      content: content,
+      isAnonymous: isAnonymous,
+      isSecret: isSecret,
+    );
+    result.fold(
+      (error) => state = state.copyWith(error: error),
+      (updatedPost) => state = state.copyWith(post: updatedPost),
+    );
+  }
+
+  Future<void> toggleCommentLike(int commentId) async {
+    final result = await _repository.toggleCommentLike(commentId);
+    result.fold((error) => state = state.copyWith(error: error), (_) {
+      // Optimistic update for comment like
+      final updatedComments = state.comments.map((c) {
+        if (c.id == commentId) {
+          final isLiked = !c.isLiked;
+          return c.copyWith(
+            isLiked: isLiked,
+            likeCount: isLiked ? c.likeCount + 1 : c.likeCount - 1,
+          );
+        }
+        // Check replies
+        if (c.replies.isNotEmpty) {
+          final updatedReplies = c.replies.map((r) {
+            if (r.id == commentId) {
+              final isLiked = !r.isLiked;
+              return r.copyWith(
+                isLiked: isLiked,
+                likeCount: isLiked ? r.likeCount + 1 : r.likeCount - 1,
+              );
+            }
+            return r;
+          }).toList();
+          return c.copyWith(replies: updatedReplies);
+        }
+        return c;
+      }).toList();
+      state = state.copyWith(comments: updatedComments);
+    });
+  }
+
+  Future<void> deleteComment(int commentId) async {
+    final result = await _repository.deleteComment(commentId);
+    result.fold((error) => state = state.copyWith(error: error), (_) {
+      // Refresh comments
+      fetchPostDetail();
+    });
+  }
+
+  Future<void> updateComment(int commentId, String content) async {
+    final result = await _repository.updateComment(commentId, content: content);
+    result.fold((error) => state = state.copyWith(error: error), (_) {
+      // Refresh comments
+      fetchPostDetail();
+    });
+  }
+
   void clearError() {
     state = state.copyWith(error: null);
   }

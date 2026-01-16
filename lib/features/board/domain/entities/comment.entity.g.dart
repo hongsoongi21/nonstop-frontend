@@ -19,6 +19,7 @@ _$CommentEntityImpl _$$CommentEntityImplFromJson(Map<String, dynamic> json) =>
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       isLiked: json['isLiked'] as bool? ?? false,
       isDeleted: json['isDeleted'] as bool? ?? false,
+      isMine: json['isMine'] as bool? ?? false,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
@@ -48,6 +49,7 @@ Map<String, dynamic> _$$CommentEntityImplToJson(_$CommentEntityImpl instance) =>
       'likeCount': instance.likeCount,
       'isLiked': instance.isLiked,
       'isDeleted': instance.isDeleted,
+      'isMine': instance.isMine,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'imageUrls': instance.imageUrls,

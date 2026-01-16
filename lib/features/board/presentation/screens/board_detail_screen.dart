@@ -203,6 +203,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   List<Widget> _buildCommentsList(List<CommentEntity> comments, int postId) {
     List<Widget> list = [];
+    final notifier = ref.read(postDetailProvider(postId).notifier);
+
     for (var comment in comments) {
       list.add(
         _CommentItem(
@@ -211,6 +213,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             setState(() => _replyingToId = comment.id);
             _commentFocusNode.requestFocus();
           },
+          onLike: () => notifier.toggleCommentLike(comment.id),
+          onEdit: () => _showEditCommentDialog(comment, notifier),
+          onDelete: () => _showDeleteCommentDialog(comment.id, notifier),
         ),
       );
       // Add nested replies
@@ -224,6 +229,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 setState(() => _replyingToId = reply.id);
                 _commentFocusNode.requestFocus();
               },
+              onLike: () => notifier.toggleCommentLike(reply.id),
+              onEdit: () => _showEditCommentDialog(reply, notifier),
+              onDelete: () => _showDeleteCommentDialog(reply.id, notifier),
             ),
           );
         }
@@ -283,12 +291,157 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ],
           ),
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.more_vert),
-          color: AppColors.textSecondary,
-        ),
+        if (post.isMine)
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+            onSelected: (value) {
+              if (value == 'edit') {
+                _showEditPostDialog(post);
+              } else if (value == 'delete') {
+                _showDeletePostDialog(post.id);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(value: 'edit', child: Text('Edit')),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Text('Delete', style: TextStyle(color: AppColors.error)),
+              ),
+            ],
+          )
+        else
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.more_vert),
+            color: AppColors.textSecondary,
+          ),
       ],
+    );
+  }
+
+  void _showEditPostDialog(PostEntity post) {
+    final titleController = TextEditingController(text: post.title);
+    final contentController = TextEditingController(text: post.content);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Post'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'Title'),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: contentController,
+              decoration: const InputDecoration(labelText: 'Content'),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref
+                  .read(postDetailProvider(post.id).notifier)
+                  .updatePost(
+                    title: titleController.text,
+                    content: contentController.text,
+                    isAnonymous: post.isWriterAnonymous,
+                    isSecret: post.isSecret,
+                  );
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeletePostDialog(int postId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Post'),
+        content: const Text('Are you sure you want to delete this post?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(postDetailProvider(postId).notifier).deletePost();
+              Navigator.pop(context); // Pop dialog
+              context.pop(); // Pop screen
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditCommentDialog(
+    CommentEntity comment,
+    PostDetailNotifier notifier,
+  ) {
+    final contentController = TextEditingController(text: comment.content);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Comment'),
+        content: TextField(
+          controller: contentController,
+          decoration: const InputDecoration(labelText: 'Content'),
+          maxLines: 2,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              notifier.updateComment(comment.id, contentController.text);
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteCommentDialog(int commentId, PostDetailNotifier notifier) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Comment'),
+        content: const Text('Are you sure you want to delete this comment?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              notifier.deleteComment(commentId);
+              Navigator.pop(context);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -410,11 +563,17 @@ class _CommentItem extends StatelessWidget {
   final CommentEntity comment;
   final bool isReply;
   final VoidCallback? onReply;
+  final VoidCallback? onLike;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const _CommentItem({
     required this.comment,
     this.isReply = false,
     this.onReply,
+    this.onLike,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -447,13 +606,48 @@ class _CommentItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        comment.isWriterAnonymous
-                            ? 'Anonymous'
-                            : comment.writerNickname,
-                        style: AppTypography.body2.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            comment.isWriterAnonymous
+                                ? 'Anonymous'
+                                : comment.writerNickname,
+                            style: AppTypography.body2.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (comment.isMine)
+                            PopupMenuButton<String>(
+                              icon: const Icon(
+                                Icons.more_horiz,
+                                size: 16,
+                                color: AppColors.textSecondary,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onSelected: (value) {
+                                if (value == 'edit') {
+                                  onEdit?.call();
+                                } else if (value == 'delete') {
+                                  onDelete?.call();
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'edit',
+                                  child: Text('Edit'),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(comment.content, style: AppTypography.body2),
@@ -470,11 +664,28 @@ class _CommentItem extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Text(
-                      '${comment.likeCount} Likes',
-                      style: AppTypography.caption.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textSecondary,
+                    GestureDetector(
+                      onTap: onLike,
+                      child: Row(
+                        children: [
+                          Icon(
+                            comment.isLiked
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            size: 14,
+                            color: comment.isLiked
+                                ? AppColors.error
+                                : AppColors.textSecondary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${comment.likeCount}',
+                            style: AppTypography.caption.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     if (!isReply) ...[

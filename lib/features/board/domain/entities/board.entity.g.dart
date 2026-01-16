@@ -9,6 +9,7 @@ part of 'board.entity.dart';
 _$BoardImpl _$$BoardImplFromJson(Map<String, dynamic> json) => _$BoardImpl(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
+  description: json['description'] as String?,
   type: $enumDecode(_$BoardTypeEnumMap, json['type']),
   isSecret: json['isSecret'] as bool? ?? false,
   createdAt: DateTime.parse(json['createdAt'] as String),
@@ -18,6 +19,7 @@ Map<String, dynamic> _$$BoardImplToJson(_$BoardImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
+      'description': instance.description,
       'type': _$BoardTypeEnumMap[instance.type]!,
       'isSecret': instance.isSecret,
       'createdAt': instance.createdAt.toIso8601String(),

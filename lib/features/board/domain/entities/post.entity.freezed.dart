@@ -32,6 +32,7 @@ mixin _$PostEntity {
   int get commentCount => throw _privateConstructorUsedError;
   bool get isSecret => throw _privateConstructorUsedError;
   bool get isLiked => throw _privateConstructorUsedError;
+  bool get isMine => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
   List<String> get imageUrls => throw _privateConstructorUsedError;
@@ -65,6 +66,7 @@ abstract class $PostEntityCopyWith<$Res> {
     int commentCount,
     bool isSecret,
     bool isLiked,
+    bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
     List<String> imageUrls,
@@ -97,6 +99,7 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
     Object? commentCount = null,
     Object? isSecret = null,
     Object? isLiked = null,
+    Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? imageUrls = null,
@@ -147,6 +150,10 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
                 ? _value.isLiked
                 : isLiked // ignore: cast_nullable_to_non_nullable
                       as bool,
+            isMine: null == isMine
+                ? _value.isMine
+                : isMine // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -186,6 +193,7 @@ abstract class _$$PostEntityImplCopyWith<$Res>
     int commentCount,
     bool isSecret,
     bool isLiked,
+    bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
     List<String> imageUrls,
@@ -217,6 +225,7 @@ class __$$PostEntityImplCopyWithImpl<$Res>
     Object? commentCount = null,
     Object? isSecret = null,
     Object? isLiked = null,
+    Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? imageUrls = null,
@@ -267,6 +276,10 @@ class __$$PostEntityImplCopyWithImpl<$Res>
             ? _value.isLiked
             : isLiked // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isMine: null == isMine
+            ? _value.isMine
+            : isMine // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -299,6 +312,7 @@ class _$PostEntityImpl implements _PostEntity {
     this.commentCount = 0,
     this.isSecret = false,
     this.isLiked = false,
+    this.isMine = false,
     required this.createdAt,
     this.updatedAt,
     final List<String> imageUrls = const [],
@@ -336,6 +350,9 @@ class _$PostEntityImpl implements _PostEntity {
   @JsonKey()
   final bool isLiked;
   @override
+  @JsonKey()
+  final bool isMine;
+  @override
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
@@ -350,7 +367,7 @@ class _$PostEntityImpl implements _PostEntity {
 
   @override
   String toString() {
-    return 'PostEntity(id: $id, boardId: $boardId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, title: $title, content: $content, viewCount: $viewCount, likeCount: $likeCount, commentCount: $commentCount, isSecret: $isSecret, isLiked: $isLiked, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls)';
+    return 'PostEntity(id: $id, boardId: $boardId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, title: $title, content: $content, viewCount: $viewCount, likeCount: $likeCount, commentCount: $commentCount, isSecret: $isSecret, isLiked: $isLiked, isMine: $isMine, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls)';
   }
 
   @override
@@ -375,6 +392,7 @@ class _$PostEntityImpl implements _PostEntity {
             (identical(other.isSecret, isSecret) ||
                 other.isSecret == isSecret) &&
             (identical(other.isLiked, isLiked) || other.isLiked == isLiked) &&
+            (identical(other.isMine, isMine) || other.isMine == isMine) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -400,6 +418,7 @@ class _$PostEntityImpl implements _PostEntity {
     commentCount,
     isSecret,
     isLiked,
+    isMine,
     createdAt,
     updatedAt,
     const DeepCollectionEquality().hash(_imageUrls),
@@ -432,6 +451,7 @@ abstract class _PostEntity implements PostEntity {
     final int commentCount,
     final bool isSecret,
     final bool isLiked,
+    final bool isMine,
     required final DateTime createdAt,
     final DateTime? updatedAt,
     final List<String> imageUrls,
@@ -462,6 +482,8 @@ abstract class _PostEntity implements PostEntity {
   bool get isSecret;
   @override
   bool get isLiked;
+  @override
+  bool get isMine;
   @override
   DateTime get createdAt;
   @override

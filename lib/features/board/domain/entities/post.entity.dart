@@ -17,6 +17,7 @@ class PostEntity with _$PostEntity {
     @Default(0) int commentCount,
     @Default(false) bool isSecret,
     @Default(false) bool isLiked,
+    @Default(false) bool isMine,
     required DateTime createdAt,
     DateTime? updatedAt,
     @Default([]) List<String> imageUrls,

@@ -10,6 +10,7 @@ class Community with _$Community {
     required String name,
     String? description,
     String? icon,
+    @Default(false) bool universityRequired,
     @Default(false) bool isAnonymous,
   }) = _Community;
 

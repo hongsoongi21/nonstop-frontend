@@ -10,6 +10,7 @@ import '../../../../core/widgets/app_states.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/board_provider.dart';
 import '../../domain/entities/community.entity.dart';
 
@@ -362,6 +363,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     List<Community> communities,
     Community? selectedCommunity,
   ) {
+    final user = ref.read(currentUserProvider);
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -371,16 +374,42 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
           children: [
             Text('Select Community', style: AppTypography.headline6),
             const SizedBox(height: AppSpacing.md),
-            ...communities.map(
-              (c) => ListTile(
-                title: Text(c.name),
+            ...communities.map((c) {
+              final isLocked = c.universityRequired && user?.university == null;
+              return ListTile(
+                title: Row(
+                  children: [
+                    Text(c.name),
+                    if (isLocked) ...[
+                      const SizedBox(width: 8),
+                      const Icon(Icons.lock, size: 16, color: Colors.grey),
+                    ],
+                  ],
+                ),
+                subtitle: isLocked
+                    ? const Text(
+                        'University verification required',
+                        style: TextStyle(fontSize: 12, color: Colors.red),
+                      )
+                    : null,
                 selected: c.id == selectedCommunity?.id,
                 onTap: () {
+                  if (isLocked) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'University verification required to access this community',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
                   ref.read(boardProvider.notifier).selectCommunity(c);
                   Navigator.pop(context);
                 },
-              ),
-            ),
+              );
+            }),
           ],
         ),
       ),

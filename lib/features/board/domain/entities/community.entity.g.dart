@@ -12,6 +12,7 @@ _$CommunityImpl _$$CommunityImplFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       description: json['description'] as String?,
       icon: json['icon'] as String?,
+      universityRequired: json['universityRequired'] as bool? ?? false,
       isAnonymous: json['isAnonymous'] as bool? ?? false,
     );
 
@@ -21,5 +22,6 @@ Map<String, dynamic> _$$CommunityImplToJson(_$CommunityImpl instance) =>
       'name': instance.name,
       'description': instance.description,
       'icon': instance.icon,
+      'universityRequired': instance.universityRequired,
       'isAnonymous': instance.isAnonymous,
     };

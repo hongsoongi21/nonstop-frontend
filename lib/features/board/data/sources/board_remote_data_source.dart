@@ -68,6 +68,31 @@ class BoardRemoteDataSource {
     return PostEntity.fromJson(response.data['data']);
   }
 
+  Future<PostEntity> updatePost(
+    int postId, {
+    required String title,
+    required String content,
+    bool isAnonymous = false,
+    bool isSecret = false,
+    List<String>? imageUrls,
+  }) async {
+    final response = await _dioClient.patch(
+      '/api/v1/posts/$postId',
+      data: {
+        'title': title,
+        'content': content,
+        'isAnonymous': isAnonymous,
+        'isSecret': isSecret,
+        'imageUrls': imageUrls,
+      },
+    );
+    return PostEntity.fromJson(response.data['data']);
+  }
+
+  Future<void> deletePost(int postId) async {
+    await _dioClient.delete('/api/v1/posts/$postId');
+  }
+
   Future<void> togglePostLike(int postId) async {
     await _dioClient.post('/api/v1/posts/$postId/like');
   }
@@ -95,5 +120,30 @@ class BoardRemoteDataSource {
       },
     );
     return CommentEntity.fromJson(response.data['data']);
+  }
+
+  Future<CommentEntity> updateComment(
+    int commentId, {
+    required String content,
+    bool isAnonymous = false,
+    List<String>? imageUrls,
+  }) async {
+    final response = await _dioClient.patch(
+      '/api/v1/comments/$commentId',
+      data: {
+        'content': content,
+        'isAnonymous': isAnonymous,
+        'imageUrls': imageUrls,
+      },
+    );
+    return CommentEntity.fromJson(response.data['data']);
+  }
+
+  Future<void> deleteComment(int commentId) async {
+    await _dioClient.delete('/api/v1/comments/$commentId');
+  }
+
+  Future<void> toggleCommentLike(int commentId) async {
+    await _dioClient.post('/api/v1/comments/$commentId/like');
   }
 }

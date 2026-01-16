@@ -25,6 +25,7 @@ mixin _$Community {
   String get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get icon => throw _privateConstructorUsedError;
+  bool get universityRequired => throw _privateConstructorUsedError;
   bool get isAnonymous => throw _privateConstructorUsedError;
 
   /// Serializes this Community to a JSON map.
@@ -47,6 +48,7 @@ abstract class $CommunityCopyWith<$Res> {
     String name,
     String? description,
     String? icon,
+    bool universityRequired,
     bool isAnonymous,
   });
 }
@@ -70,6 +72,7 @@ class _$CommunityCopyWithImpl<$Res, $Val extends Community>
     Object? name = null,
     Object? description = freezed,
     Object? icon = freezed,
+    Object? universityRequired = null,
     Object? isAnonymous = null,
   }) {
     return _then(
@@ -90,6 +93,10 @@ class _$CommunityCopyWithImpl<$Res, $Val extends Community>
                 ? _value.icon
                 : icon // ignore: cast_nullable_to_non_nullable
                       as String?,
+            universityRequired: null == universityRequired
+                ? _value.universityRequired
+                : universityRequired // ignore: cast_nullable_to_non_nullable
+                      as bool,
             isAnonymous: null == isAnonymous
                 ? _value.isAnonymous
                 : isAnonymous // ignore: cast_nullable_to_non_nullable
@@ -114,6 +121,7 @@ abstract class _$$CommunityImplCopyWith<$Res>
     String name,
     String? description,
     String? icon,
+    bool universityRequired,
     bool isAnonymous,
   });
 }
@@ -136,6 +144,7 @@ class __$$CommunityImplCopyWithImpl<$Res>
     Object? name = null,
     Object? description = freezed,
     Object? icon = freezed,
+    Object? universityRequired = null,
     Object? isAnonymous = null,
   }) {
     return _then(
@@ -156,6 +165,10 @@ class __$$CommunityImplCopyWithImpl<$Res>
             ? _value.icon
             : icon // ignore: cast_nullable_to_non_nullable
                   as String?,
+        universityRequired: null == universityRequired
+            ? _value.universityRequired
+            : universityRequired // ignore: cast_nullable_to_non_nullable
+                  as bool,
         isAnonymous: null == isAnonymous
             ? _value.isAnonymous
             : isAnonymous // ignore: cast_nullable_to_non_nullable
@@ -173,6 +186,7 @@ class _$CommunityImpl implements _Community {
     required this.name,
     this.description,
     this.icon,
+    this.universityRequired = false,
     this.isAnonymous = false,
   });
 
@@ -189,11 +203,14 @@ class _$CommunityImpl implements _Community {
   final String? icon;
   @override
   @JsonKey()
+  final bool universityRequired;
+  @override
+  @JsonKey()
   final bool isAnonymous;
 
   @override
   String toString() {
-    return 'Community(id: $id, name: $name, description: $description, icon: $icon, isAnonymous: $isAnonymous)';
+    return 'Community(id: $id, name: $name, description: $description, icon: $icon, universityRequired: $universityRequired, isAnonymous: $isAnonymous)';
   }
 
   @override
@@ -206,14 +223,23 @@ class _$CommunityImpl implements _Community {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.icon, icon) || other.icon == icon) &&
+            (identical(other.universityRequired, universityRequired) ||
+                other.universityRequired == universityRequired) &&
             (identical(other.isAnonymous, isAnonymous) ||
                 other.isAnonymous == isAnonymous));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, description, icon, isAnonymous);
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    name,
+    description,
+    icon,
+    universityRequired,
+    isAnonymous,
+  );
 
   /// Create a copy of Community
   /// with the given fields replaced by the non-null parameter values.
@@ -235,6 +261,7 @@ abstract class _Community implements Community {
     required final String name,
     final String? description,
     final String? icon,
+    final bool universityRequired,
     final bool isAnonymous,
   }) = _$CommunityImpl;
 
@@ -249,6 +276,8 @@ abstract class _Community implements Community {
   String? get description;
   @override
   String? get icon;
+  @override
+  bool get universityRequired;
   @override
   bool get isAnonymous;
 
