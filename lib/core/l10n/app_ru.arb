@@ -1,4 +1,59 @@
 {
   "@@locale": "ru",
-  "helloWorld": "Привет, мир!"
+  "helloWorld": "Привет, мир!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "Редактировать пост",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "Отмена",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "Сохранить",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "Удалить пост",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "Вы уверены, что хотите удалить этот пост?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "Редактировать комментарий",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "Удалить комментарий",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "Вы уверены, что хотите удалить этот комментарий?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "Требуется верификация университета",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "Для доступа к этому сообществу требуется верификация университета",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "Заголовок",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "Содержание",
+  "@content": {
+    "description": "Label for content field"
+  },
+  "selectCommunity": "Выбрать сообщество",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
+  }
 }

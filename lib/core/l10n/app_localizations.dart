@@ -105,6 +105,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hello World!'**
   String get helloWorld;
+
+  /// Button text for editing a post
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Post'**
+  String get editPost;
+
+  /// Button text for canceling an action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Button text for saving changes
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Button text for deleting a post
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Post'**
+  String get deletePost;
+
+  /// Confirmation message for deleting a post
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this post?'**
+  String get confirmDeletePost;
+
+  /// Button text for editing a comment
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Comment'**
+  String get editComment;
+
+  /// Button text for deleting a comment
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Comment'**
+  String get deleteComment;
+
+  /// Confirmation message for deleting a comment
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this comment?'**
+  String get confirmDeleteComment;
+
+  /// Message indicating university verification is needed
+  ///
+  /// In en, this message translates to:
+  /// **'University verification required'**
+  String get universityVerificationRequired;
+
+  /// Message for community access requiring university verification
+  ///
+  /// In en, this message translates to:
+  /// **'University verification required to access this community'**
+  String get universityVerificationRequiredAccess;
+
+  /// Label for title field
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get title;
+
+  /// Label for content field
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get content;
+
+  /// Title for community selection modal
+  ///
+  /// In en, this message translates to:
+  /// **'Select Community'**
+  String get selectCommunity;
 }
 
 class _AppLocalizationsDelegate

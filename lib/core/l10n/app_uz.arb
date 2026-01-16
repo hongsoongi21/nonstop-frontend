@@ -1,4 +1,55 @@
 {
   "@@locale": "uz",
-  "helloWorld": "Salom, dunyo!"
+  "helloWorld": "Salom, dunyo!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "Postni tahrirlash",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "Bekor qilish",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "Saqlash",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "Postni o'chirish",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "Bu postni o'chirishga ishonchingiz komilmi?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "Sharhni tahrirlash",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "Sharhni o'chirish",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "Bu sharhni o'chirishga ishonchingiz komilmi?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "Universitet tekshiruvi talab qilinadi",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "Bu jamiyatga kirish uchun universitet tekshiruvi talab qilinadi",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "Sarlavha",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "Tarkib",
+  "@content": {
+    "description": "Label for content field"
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -45,7 +46,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    // Fixed: Handle null post with proper error message or loading state
     if (post == null) {
       if (error != null) {
         return Scaffold(
@@ -57,147 +57,155 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Post',
-          style: AppTypography.headline6.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
+      backgroundColor: AppColors.surface,
+      appBar: _buildAppBar(),
+      body: _buildBody(post, comments, postId),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppColors.surface,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+        onPressed: () => context.pop(),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Post Header (Author, Time, Menu)
-                  _buildPostHeader(post),
+      title: Text(
+        'Post',
+        style: AppTypography.headline6.copyWith(
+          fontWeight: FontWeight.bold,
+          color: AppColors.textPrimary,
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
 
-                  const SizedBox(height: AppSpacing.md),
-
-                  // Title
-                  Text(
-                    post.title,
-                    style: AppTypography.headline5.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.sm),
-
-                  // Content
-                  Text(
-                    post.content,
-                    style: AppTypography.body1.copyWith(
-                      color: AppColors.textPrimary,
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Stats Text
-                  Text(
-                    '${post.viewCount} views   ${post.likeCount} likes   ${post.commentCount} comments',
-                    style: AppTypography.body2.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.md),
-                  const Divider(height: 1),
-
-                  // Action Buttons Row (Twitter Style)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        _TwitterActionButton(
-                          icon: Icons.chat_bubble_outline,
-                          onTap: () {
-                            setState(() => _replyingToId = null);
-                            _commentFocusNode.requestFocus();
-                          },
-                        ),
-                        const SizedBox(width: AppSpacing.lg),
-                        _TwitterActionButton(
-                          icon: post.isLiked
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: post.isLiked ? AppColors.error : null,
-                          onTap: () => ref
-                              .read(postDetailProvider(postId).notifier)
-                              .toggleLike(),
-                        ),
-                        const SizedBox(width: AppSpacing.lg),
-                        _TwitterActionButton(
-                          icon: Icons.bookmark_border,
-                          onTap: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  const SizedBox(height: AppSpacing.lg),
-
-                  // Comments Section Title
-                  Text(
-                    'Comments',
-                    style: AppTypography.headline6.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.md),
-
-                  // Comments List
-                  if (comments.isEmpty)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(
-                        child: Text('No comments yet. Be the first!'),
-                      ),
-                    )
-                  else
-                    ..._buildCommentsList(comments, postId),
-                ],
-              ),
+  Widget _buildBody(PostEntity post, List<CommentEntity> comments, int postId) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPostHeader(post),
+                const SizedBox(height: AppSpacing.md),
+                _buildPostContent(post),
+                const SizedBox(height: AppSpacing.md),
+                const Divider(height: 1),
+                _buildActionButtons(post, postId),
+                const Divider(height: 1),
+                const SizedBox(height: AppSpacing.lg),
+                _buildCommentsSection(comments, postId),
+              ],
             ),
           ),
-
-          // Bottom Input Area
-          if (_replyingToId != null)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: AppColors.primary.withValues(alpha: 0.1),
-              child: Row(
-                children: [
-                  const Text('Replying to comment...'),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 20),
-                    onPressed: () => setState(() => _replyingToId = null),
-                  ),
-                ],
-              ),
+        ),
+        if (_replyingToId != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: AppColors.primary.withValues(alpha: 0.1),
+            child: Row(
+              children: [
+                const Text('Replying to comment...'),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close, size: 20),
+                  onPressed: () => setState(() => _replyingToId = null),
+                ),
+              ],
             ),
-          _buildInputArea(postId),
+          ),
+        _buildInputArea(postId),
+      ],
+    );
+  }
+
+  Widget _buildPostContent(PostEntity post) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          post.title,
+          style: AppTypography.headline5.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Text(
+          post.content,
+          style: AppTypography.body1.copyWith(
+            color: AppColors.textPrimary,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          '${post.viewCount} views   ${post.likeCount} likes   ${post.commentCount} comments',
+          style: AppTypography.body2.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(PostEntity post, int postId) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _TwitterActionButton(
+            icon: Icons.chat_bubble_outline,
+            onTap: () {
+              setState(() => _replyingToId = null);
+              _commentFocusNode.requestFocus();
+            },
+          ),
+          const SizedBox(width: AppSpacing.lg),
+          _TwitterActionButton(
+            icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
+            color: post.isLiked ? AppColors.error : null,
+            onTap: () => ref
+                .read(postDetailProvider(postId).notifier)
+                .toggleLike(),
+          ),
+          const SizedBox(width: AppSpacing.lg),
+          _TwitterActionButton(
+            icon: Icons.bookmark_border,
+            onTap: () {},
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCommentsSection(List<CommentEntity> comments, int postId) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Comments',
+          style: AppTypography.headline6.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        if (comments.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Text('No comments yet. Be the first!'),
+            ),
+          )
+        else
+          ..._buildCommentsList(comments, postId),
+      ],
     );
   }
 
@@ -322,22 +330,23 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   void _showEditPostDialog(PostEntity post) {
     final titleController = TextEditingController(text: post.title);
     final contentController = TextEditingController(text: post.content);
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Post'),
+        title: Text(l10n.editPost),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: l10n.title),
             ),
             const SizedBox(height: 8),
             TextField(
               controller: contentController,
-              decoration: const InputDecoration(labelText: 'Content'),
+              decoration: InputDecoration(labelText: l10n.content),
               maxLines: 3,
             ),
           ],
@@ -345,7 +354,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -359,7 +368,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   );
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -367,15 +376,16 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   }
 
   void _showDeletePostDialog(int postId) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Post'),
-        content: const Text('Are you sure you want to delete this post?'),
+        title: Text(l10n.deletePost),
+        content: Text(l10n.confirmDeletePost),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -383,7 +393,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               Navigator.pop(context); // Pop dialog
               context.pop(); // Pop screen
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.deletePost,
+              style: const TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -395,27 +408,28 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     PostDetailNotifier notifier,
   ) {
     final contentController = TextEditingController(text: comment.content);
+    final l10n = AppLocalizations.of(context);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Comment'),
+        title: Text(l10n.editComment),
         content: TextField(
           controller: contentController,
-          decoration: const InputDecoration(labelText: 'Content'),
+          decoration: InputDecoration(labelText: l10n.content),
           maxLines: 2,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               notifier.updateComment(comment.id, contentController.text);
               Navigator.pop(context);
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -423,22 +437,26 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   }
 
   void _showDeleteCommentDialog(int commentId, PostDetailNotifier notifier) {
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Comment'),
-        content: const Text('Are you sure you want to delete this comment?'),
+        title: Text(l10n.deleteComment),
+        content: Text(l10n.confirmDeleteComment),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               notifier.deleteComment(commentId);
               Navigator.pop(context);
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.deleteComment,
+              style: const TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -449,9 +467,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         border: Border(
-          top: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+          top: BorderSide(color: AppColors.divider.withValues(alpha: 0.2)),
         ),
       ),
       child: SafeArea(
@@ -481,7 +499,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5F6FA),
+                      color: AppColors.surfaceSecondary,
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: TextField(
@@ -509,7 +527,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   child: IconButton(
                     icon: const Icon(
                       Icons.send_rounded,
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                       size: 20,
                     ),
                     onPressed: () {
@@ -586,10 +604,12 @@ class _CommentItem extends StatelessWidget {
           CircleAvatar(
             radius: 16,
             backgroundColor: Colors.grey[200],
-            child: Text(
-              comment.writerNickname.isNotEmpty
-                  ? comment.writerNickname[0].toUpperCase()
-                  : '?',
+            child: Center(
+              child: Text(
+                comment.writerNickname.isNotEmpty
+                    ? comment.writerNickname[0].toUpperCase()
+                    : '?',
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -600,7 +620,7 @@ class _CommentItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF5F6FA),
+                    color: AppColors.surfaceSecondary,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -618,34 +638,9 @@ class _CommentItem extends StatelessWidget {
                             ),
                           ),
                           if (comment.isMine)
-                            PopupMenuButton<String>(
-                              icon: const Icon(
-                                Icons.more_horiz,
-                                size: 16,
-                                color: AppColors.textSecondary,
-                              ),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onSelected: (value) {
-                                if (value == 'edit') {
-                                  onEdit?.call();
-                                } else if (value == 'delete') {
-                                  onDelete?.call();
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                const PopupMenuItem(
-                                  value: 'edit',
-                                  child: Text('Edit'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
+                            _CommentAuthorMenu(
+                              onEdit: onEdit,
+                              onDelete: onDelete,
                             ),
                         ],
                       ),
@@ -655,59 +650,117 @@ class _CommentItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      timeAgo(comment.createdAt),
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    GestureDetector(
-                      onTap: onLike,
-                      child: Row(
-                        children: [
-                          Icon(
-                            comment.isLiked
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            size: 14,
-                            color: comment.isLiked
-                                ? AppColors.error
-                                : AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${comment.likeCount}',
-                            style: AppTypography.caption.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (!isReply) ...[
-                      const SizedBox(width: 16),
-                      GestureDetector(
-                        onTap: onReply,
-                        child: Text(
-                          'Reply',
-                          style: AppTypography.caption.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+                _CommentStatsRow(
+                  comment: comment,
+                  isReply: isReply,
+                  onLike: onLike,
+                  onReply: onReply,
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _CommentAuthorMenu extends StatelessWidget {
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+
+  const _CommentAuthorMenu({this.onEdit, this.onDelete});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return PopupMenuButton<String>(
+      icon: const Icon(
+        Icons.more_horiz,
+        size: 16,
+        color: AppColors.textSecondary,
+      ),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      onSelected: (value) {
+        if (value == 'edit') {
+          onEdit?.call();
+        } else if (value == 'delete') {
+          onDelete?.call();
+        }
+      },
+      itemBuilder: (context) => [
+        PopupMenuItem(value: 'edit', child: Text(l10n.editComment)),
+        PopupMenuItem(
+          value: 'delete',
+          child: Text(
+            l10n.deleteComment,
+            style: const TextStyle(color: AppColors.error),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CommentStatsRow extends StatelessWidget {
+  final CommentEntity comment;
+  final bool isReply;
+  final VoidCallback? onLike;
+  final VoidCallback? onReply;
+
+  const _CommentStatsRow({
+    required this.comment,
+    required this.isReply,
+    this.onLike,
+    this.onReply,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          timeAgo(comment.createdAt),
+          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+        ),
+        const SizedBox(width: 16),
+        GestureDetector(
+          onTap: onLike,
+          child: Row(
+            children: [
+              Icon(
+                comment.isLiked ? Icons.favorite : Icons.favorite_border,
+                size: 14,
+                color: comment.isLiked
+                    ? AppColors.error
+                    : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '${comment.likeCount}',
+                style: AppTypography.caption.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!isReply) ...[
+          const SizedBox(width: 16),
+          GestureDetector(
+            onTap: onReply,
+            child: Text(
+              'Reply',
+              style: AppTypography.caption.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

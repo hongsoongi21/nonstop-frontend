@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -91,6 +92,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   Widget build(BuildContext context) {
     final boardState = ref.watch(boardProvider);
     final boards = boardState.boards;
+    final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
       title: 'Create Post',
@@ -130,7 +132,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       padding: const EdgeInsets.all(AppSpacing.md),
                       child: AppTextField(
                         controller: _titleController,
-                        labelText: 'Title',
+                        labelText: l10n.title,
                         hintText: 'Write a clear, engaging title...',
                         maxLines: 2,
                         validator: (value) {
@@ -153,7 +155,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       padding: const EdgeInsets.all(AppSpacing.md),
                       child: AppTextField(
                         controller: _contentController,
-                        labelText: 'Content',
+                        labelText: l10n.content,
                         hintText: 'Share your thoughts...',
                         maxLines: 8,
                         validator: (value) {
@@ -186,7 +188,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                     children: [
                       Expanded(
                         child: AppButton(
-                          text: 'Cancel',
+                          text: l10n.cancel,
                           onPressed: () => context.pop(),
                           variant: ButtonVariant.secondary,
                         ),
@@ -241,7 +243,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       setState(() => _selectedBoard = board);
                     }
                   },
-                  backgroundColor: Colors.white.withOpacity(0.5),
+                  backgroundColor: AppColors.surface.withValues(alpha: 0.5),
                   selectedColor: AppColors.primary.withValues(alpha: 0.15),
                   checkmarkColor: AppColors.primary,
                   labelStyle: AppTypography.body2.copyWith(

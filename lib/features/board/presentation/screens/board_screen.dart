@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';
@@ -149,13 +150,13 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                 const Icon(
                                   Icons.edit_square,
                                   size: 18,
-                                  color: Colors.white,
+                                  color: AppColors.textOnPrimary,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Write',
                                   style: AppTypography.button.copyWith(
-                                    color: Colors.white,
+                                    color: AppColors.textOnPrimary,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -195,12 +196,16 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? AppColors.primary
-                                      : Colors.white.withValues(alpha: 0.2),
+                                      : AppColors.surface.withValues(
+                                          alpha: 0.2,
+                                        ),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: isSelected
                                         ? AppColors.primary
-                                        : Colors.white.withValues(alpha: 0.2),
+                                        : AppColors.surface.withValues(
+                                            alpha: 0.2,
+                                          ),
                                   ),
                                   boxShadow: [
                                     if (isSelected)
@@ -217,7 +222,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                   board.name,
                                   style: AppTypography.button.copyWith(
                                     color: isSelected
-                                        ? Colors.white
+                                        ? AppColors.textOnPrimary
                                         : AppColors.textSecondary,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -364,11 +369,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     Community? selectedCommunity,
   ) {
     final user = ref.read(currentUserProvider);
+    final l10n = AppLocalizations.of(context);
 
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -377,7 +383,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Select Community', style: AppTypography.headline6),
+            Text(l10n.selectCommunity, style: AppTypography.headline6),
             const SizedBox(height: AppSpacing.md),
             ...communities.map((c) {
               final isLocked = c.universityRequired && user?.university == null;
@@ -387,14 +393,21 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                     Text(c.name),
                     if (isLocked) ...[
                       const SizedBox(width: 8),
-                      const Icon(Icons.lock, size: 16, color: Colors.grey),
+                      const Icon(
+                        Icons.lock,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
                     ],
                   ],
                 ),
                 subtitle: isLocked
-                    ? const Text(
-                        'University verification required',
-                        style: TextStyle(fontSize: 12, color: Colors.red),
+                    ? Text(
+                        l10n.universityVerificationRequired,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.error,
+                        ),
                       )
                     : null,
                 selected: c.id == selectedCommunity?.id,
@@ -402,9 +415,9 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   if (isLocked) {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         content: Text(
-                          'University verification required to access this community',
+                          l10n.universityVerificationRequiredAccess,
                         ),
                       ),
                     );
@@ -465,7 +478,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                 label: const Text('Create First Post'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.textOnPrimary,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
