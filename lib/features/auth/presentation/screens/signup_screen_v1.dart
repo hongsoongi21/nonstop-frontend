@@ -103,6 +103,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           universityId: _selectedUniversityId,
         );
 
+    // 위젯이 마운트된 상태인지 확인
+    if (!mounted) return;
+
     // 5. 실행 결과에 따른 처리
     final authState = ref.read(authProvider);
     if (authState.hasError) {

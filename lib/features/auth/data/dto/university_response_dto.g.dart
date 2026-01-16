@@ -23,3 +23,25 @@ Map<String, dynamic> _$$UniversityResponseDtoImplToJson(
   'region': instance.region,
   'logoImageUrl': instance.logoImageUrl,
 };
+
+_$UniversityListResponseDtoImpl _$$UniversityListResponseDtoImplFromJson(
+  Map<String, dynamic> json,
+) => _$UniversityListResponseDtoImpl(
+  items: (json['items'] as List<dynamic>)
+      .map((e) => UniversityResponseDto.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  totalCount: (json['totalCount'] as num).toInt(),
+  hasMore: json['hasMore'] as bool,
+  limit: (json['limit'] as num?)?.toInt(),
+  offset: (json['offset'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$$UniversityListResponseDtoImplToJson(
+  _$UniversityListResponseDtoImpl instance,
+) => <String, dynamic>{
+  'items': instance.items,
+  'totalCount': instance.totalCount,
+  'hasMore': instance.hasMore,
+  'limit': instance.limit,
+  'offset': instance.offset,
+};

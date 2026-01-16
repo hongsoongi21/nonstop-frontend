@@ -239,3 +239,272 @@ abstract class _UniversityResponseDto extends UniversityResponseDto {
   _$$UniversityResponseDtoImplCopyWith<_$UniversityResponseDtoImpl>
   get copyWith => throw _privateConstructorUsedError;
 }
+
+UniversityListResponseDto _$UniversityListResponseDtoFromJson(
+  Map<String, dynamic> json,
+) {
+  return _UniversityListResponseDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$UniversityListResponseDto {
+  List<UniversityResponseDto> get items => throw _privateConstructorUsedError;
+  int get totalCount => throw _privateConstructorUsedError;
+  bool get hasMore => throw _privateConstructorUsedError;
+  int? get limit => throw _privateConstructorUsedError;
+  int? get offset => throw _privateConstructorUsedError;
+
+  /// Serializes this UniversityListResponseDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of UniversityListResponseDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $UniversityListResponseDtoCopyWith<UniversityListResponseDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $UniversityListResponseDtoCopyWith<$Res> {
+  factory $UniversityListResponseDtoCopyWith(
+    UniversityListResponseDto value,
+    $Res Function(UniversityListResponseDto) then,
+  ) = _$UniversityListResponseDtoCopyWithImpl<$Res, UniversityListResponseDto>;
+  @useResult
+  $Res call({
+    List<UniversityResponseDto> items,
+    int totalCount,
+    bool hasMore,
+    int? limit,
+    int? offset,
+  });
+}
+
+/// @nodoc
+class _$UniversityListResponseDtoCopyWithImpl<
+  $Res,
+  $Val extends UniversityListResponseDto
+>
+    implements $UniversityListResponseDtoCopyWith<$Res> {
+  _$UniversityListResponseDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of UniversityListResponseDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? totalCount = null,
+    Object? hasMore = null,
+    Object? limit = freezed,
+    Object? offset = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            items: null == items
+                ? _value.items
+                : items // ignore: cast_nullable_to_non_nullable
+                      as List<UniversityResponseDto>,
+            totalCount: null == totalCount
+                ? _value.totalCount
+                : totalCount // ignore: cast_nullable_to_non_nullable
+                      as int,
+            hasMore: null == hasMore
+                ? _value.hasMore
+                : hasMore // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            limit: freezed == limit
+                ? _value.limit
+                : limit // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            offset: freezed == offset
+                ? _value.offset
+                : offset // ignore: cast_nullable_to_non_nullable
+                      as int?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$UniversityListResponseDtoImplCopyWith<$Res>
+    implements $UniversityListResponseDtoCopyWith<$Res> {
+  factory _$$UniversityListResponseDtoImplCopyWith(
+    _$UniversityListResponseDtoImpl value,
+    $Res Function(_$UniversityListResponseDtoImpl) then,
+  ) = __$$UniversityListResponseDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    List<UniversityResponseDto> items,
+    int totalCount,
+    bool hasMore,
+    int? limit,
+    int? offset,
+  });
+}
+
+/// @nodoc
+class __$$UniversityListResponseDtoImplCopyWithImpl<$Res>
+    extends
+        _$UniversityListResponseDtoCopyWithImpl<
+          $Res,
+          _$UniversityListResponseDtoImpl
+        >
+    implements _$$UniversityListResponseDtoImplCopyWith<$Res> {
+  __$$UniversityListResponseDtoImplCopyWithImpl(
+    _$UniversityListResponseDtoImpl _value,
+    $Res Function(_$UniversityListResponseDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of UniversityListResponseDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? items = null,
+    Object? totalCount = null,
+    Object? hasMore = null,
+    Object? limit = freezed,
+    Object? offset = freezed,
+  }) {
+    return _then(
+      _$UniversityListResponseDtoImpl(
+        items: null == items
+            ? _value._items
+            : items // ignore: cast_nullable_to_non_nullable
+                  as List<UniversityResponseDto>,
+        totalCount: null == totalCount
+            ? _value.totalCount
+            : totalCount // ignore: cast_nullable_to_non_nullable
+                  as int,
+        hasMore: null == hasMore
+            ? _value.hasMore
+            : hasMore // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        limit: freezed == limit
+            ? _value.limit
+            : limit // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        offset: freezed == offset
+            ? _value.offset
+            : offset // ignore: cast_nullable_to_non_nullable
+                  as int?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$UniversityListResponseDtoImpl implements _UniversityListResponseDto {
+  const _$UniversityListResponseDtoImpl({
+    required final List<UniversityResponseDto> items,
+    required this.totalCount,
+    required this.hasMore,
+    this.limit,
+    this.offset,
+  }) : _items = items;
+
+  factory _$UniversityListResponseDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UniversityListResponseDtoImplFromJson(json);
+
+  final List<UniversityResponseDto> _items;
+  @override
+  List<UniversityResponseDto> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_items);
+  }
+
+  @override
+  final int totalCount;
+  @override
+  final bool hasMore;
+  @override
+  final int? limit;
+  @override
+  final int? offset;
+
+  @override
+  String toString() {
+    return 'UniversityListResponseDto(items: $items, totalCount: $totalCount, hasMore: $hasMore, limit: $limit, offset: $offset)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$UniversityListResponseDtoImpl &&
+            const DeepCollectionEquality().equals(other._items, _items) &&
+            (identical(other.totalCount, totalCount) ||
+                other.totalCount == totalCount) &&
+            (identical(other.hasMore, hasMore) || other.hasMore == hasMore) &&
+            (identical(other.limit, limit) || other.limit == limit) &&
+            (identical(other.offset, offset) || other.offset == offset));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    const DeepCollectionEquality().hash(_items),
+    totalCount,
+    hasMore,
+    limit,
+    offset,
+  );
+
+  /// Create a copy of UniversityListResponseDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$UniversityListResponseDtoImplCopyWith<_$UniversityListResponseDtoImpl>
+  get copyWith =>
+      __$$UniversityListResponseDtoImplCopyWithImpl<
+        _$UniversityListResponseDtoImpl
+      >(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$UniversityListResponseDtoImplToJson(this);
+  }
+}
+
+abstract class _UniversityListResponseDto implements UniversityListResponseDto {
+  const factory _UniversityListResponseDto({
+    required final List<UniversityResponseDto> items,
+    required final int totalCount,
+    required final bool hasMore,
+    final int? limit,
+    final int? offset,
+  }) = _$UniversityListResponseDtoImpl;
+
+  factory _UniversityListResponseDto.fromJson(Map<String, dynamic> json) =
+      _$UniversityListResponseDtoImpl.fromJson;
+
+  @override
+  List<UniversityResponseDto> get items;
+  @override
+  int get totalCount;
+  @override
+  bool get hasMore;
+  @override
+  int? get limit;
+  @override
+  int? get offset;
+
+  /// Create a copy of UniversityListResponseDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$UniversityListResponseDtoImplCopyWith<_$UniversityListResponseDtoImpl>
+  get copyWith => throw _privateConstructorUsedError;
+}

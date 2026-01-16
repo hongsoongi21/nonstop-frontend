@@ -27,3 +27,17 @@ class UniversityResponseDto with _$UniversityResponseDto {
     );
   }
 }
+
+@freezed
+class UniversityListResponseDto with _$UniversityListResponseDto {
+  const factory UniversityListResponseDto({
+    required List<UniversityResponseDto> items,
+    required int totalCount,
+    required bool hasMore,
+    int? limit,
+    int? offset,
+  }) = _UniversityListResponseDto;
+
+  factory UniversityListResponseDto.fromJson(Map<String, dynamic> json) =>
+      _$UniversityListResponseDtoFromJson(json);
+}

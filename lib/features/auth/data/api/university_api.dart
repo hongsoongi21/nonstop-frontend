@@ -4,9 +4,11 @@ import '../../../../core/network/dio_client.dart';
 import '../dto/university_response_dto.dart';
 
 abstract class UniversityApi {
-  Future<List<UniversityResponseDto>> getUniversities({
+  Future<UniversityListResponseDto> getUniversities({
     String? keyword,
     String? region,
+    int? limit,
+    int? offset,
   });
 
   Future<UniversityResponseDto> getUniversityById(int id);
@@ -18,25 +20,26 @@ class UniversityApiImpl implements UniversityApi {
   UniversityApiImpl(this._dioClient);
 
   @override
-  Future<List<UniversityResponseDto>> getUniversities({
+  Future<UniversityListResponseDto> getUniversities({
     String? keyword,
     String? region,
+    int? limit,
+    int? offset,
   }) async {
     try {
       final response = await _dioClient.get(
-        '/api/v1/universities',
+        '/api/v1/universities/list',
         queryParameters: {
           if (keyword != null) 'keyword': keyword,
           if (region != null) 'region': region,
+          if (limit != null) 'limit': limit,
+          if (offset != null) 'offset': offset,
         },
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
-        final List<dynamic> data = apiResponse['data'];
-        return data
-            .map((json) => UniversityResponseDto.fromJson(json))
-            .toList();
+        return UniversityListResponseDto.fromJson(apiResponse['data']);
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '대학교 목록을 불러오는데 실패했습니다.',

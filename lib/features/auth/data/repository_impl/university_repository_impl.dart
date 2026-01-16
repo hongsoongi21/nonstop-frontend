@@ -13,8 +13,8 @@ class UniversityRepositoryImpl implements UniversityRepository {
   @override
   Future<Either<Failure, List<University>>> getUniversities() async {
     try {
-      final dtos = await _universityApi.getUniversities();
-      final universities = dtos.map((dto) => dto.toDomain()).toList();
+      final responseDto = await _universityApi.getUniversities();
+      final universities = responseDto.items.map((dto) => dto.toDomain()).toList();
       return Right(universities);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));

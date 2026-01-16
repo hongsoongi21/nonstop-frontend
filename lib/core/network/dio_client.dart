@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -186,9 +187,7 @@ class _AuthInterceptor extends Interceptor {
     final token = await _secureStorageService.getAccessToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
-      if (!kReleaseMode) {
-        debugPrint('[NONSTOP] 🛡️ Auth Header: Bearer $token');
-      }
+      AppLogger.d('🛡️ Auth Header injected');
     }
 
     super.onRequest(options, handler);
@@ -202,6 +201,7 @@ class _AuthInterceptor extends Interceptor {
 
       if (refreshToken != null) {
         _isRefreshing = true;
+        AppLogger.w('🔄 Token expired. Attempting refresh...');
 
         try {
           // 토큰 갱신 API 호출용 별도 Dio 인스턴스 생성 (무한 루프 방지)
@@ -217,6 +217,8 @@ class _AuthInterceptor extends Interceptor {
             final newAccessToken = data['accessToken'];
             final newRefreshToken = data['refreshToken'];
 
+            AppLogger.s('✅ Token refreshed successfully');
+
             // 새 토큰 저장
             await _secureStorageService.saveAccessToken(newAccessToken);
             if (newRefreshToken != null) {
@@ -231,6 +233,7 @@ class _AuthInterceptor extends Interceptor {
             return handler.resolve(retryResponse);
           }
         } catch (e) {
+          AppLogger.e('❌ Token refresh failed. Logging out...', e);
           // 리프레시 실패 시 로그아웃 처리 유도 (토큰 삭제)
           await _secureStorageService.deleteAllTokens();
         } finally {
@@ -245,58 +248,98 @@ class _AuthInterceptor extends Interceptor {
 
 /// 로깅 인터셉터
 class _LoggingInterceptor extends Interceptor {
+  final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent('  ');
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      debugPrint('🌐 HTTP Request: ${options.uri.toString()}');
-      debugPrint('📤 Method: ${options.method}');
-      if (options.data != null) {
-        debugPrint('📦 Data: ${options.data}');
-      }
-      if (options.queryParameters.isNotEmpty) {
-        debugPrint('🔍 Query: ${options.queryParameters}');
-      }
+    final method = options.method.toUpperCase();
+    final uri = options.uri.toString();
+    
+    AppLogger.n('┌── 🚀 [API REQUEST] $method');
+    AppLogger.n('│ 🔗 URL: $uri');
+    
+    if (options.data != null) {
+      _printFormattedBody('│ 📦 Body:', options.data);
     }
+    if (options.queryParameters.isNotEmpty) {
+      AppLogger.d('│ 🔍 Query: ${options.queryParameters}');
+    }
+    AppLogger.n('└────────────────────────────────────────────────────');
 
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      debugPrint('✅ HTTP Response: ${response.statusCode}');
-      debugPrint('📥 URL: ${response.requestOptions.uri.toString()}');
-      if (response.data != null) {
-        final dataStr = response.data.toString();
-        // 데이터가 너무 길면 잘라서 출력합니다 (최대 1000자)
-        if (dataStr.length > 1000) {
-          debugPrint('📦 Data (truncated): ${dataStr.substring(0, 1000)}...');
-        } else {
-          debugPrint('📦 Data: $dataStr');
-        }
-      }
+    final method = response.requestOptions.method.toUpperCase();
+    final path = response.requestOptions.uri.path;
+    final statusCode = response.statusCode;
+    final successIcon = (statusCode != null && statusCode >= 200 && statusCode < 300) ? '✅' : '⚠️';
+    
+    AppLogger.s('┌── $successIcon [API RESPONSE] $statusCode | $method $path');
+    
+    if (response.data != null) {
+      _printFormattedBody('│ 📥 Data:', response.data);
     }
+    AppLogger.s('└────────────────────────────────────────────────────');
 
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      debugPrint('❌ HTTP Error: ${err.message}');
-      debugPrint('🔗 URL: ${err.requestOptions.uri.toString()}');
-      if (err.response != null) {
-        debugPrint('📊 Status: ${err.response!.statusCode}');
-        final dataStr = err.response!.data.toString();
-        if (dataStr.length > 1000) {
-          debugPrint('📦 Error Data (truncated): ${dataStr.substring(0, 1000)}...');
-        } else {
-          debugPrint('📦 Error Data: $dataStr');
-        }
-      }
+    final method = err.requestOptions.method.toUpperCase();
+    final path = err.requestOptions.uri.path;
+    final statusCode = err.response?.statusCode ?? 'ERROR';
+    final message = err.message;
+
+    AppLogger.e('┌── ❌ [API ERROR] $statusCode | $method $path');
+    AppLogger.e('│ 📝 Message: $message');
+    
+    if (err.response?.data != null) {
+      _printFormattedBody('│ 📦 Error Data:', err.response?.data);
     }
+    AppLogger.e('└────────────────────────────────────────────────────');
 
     super.onError(err, handler);
+  }
+
+  void _printFormattedBody(String prefix, dynamic data) {
+    if (data == null) return;
+
+    if (data is String) {
+      // HTML 감지
+      if (data.trim().toLowerCase().startsWith('<!doctype html') || 
+          data.trim().toLowerCase().startsWith('<html')) {
+        
+        // Title 추출 시도
+        final titleMatch = RegExp(r'<title>(.*?)</title>', caseSensitive: false, dotAll: true).firstMatch(data);
+        final title = titleMatch?.group(1)?.trim() ?? 'No Title';
+        
+        AppLogger.w('$prefix [HTML RESPONSE DETECTED]');
+        AppLogger.d('│    📄 Page Title: "$title"');
+        AppLogger.d('│    📄 Preview: ${data.substring(0, min(data.length, 100)).replaceAll('\n', ' ')}...');
+        return;
+      }
+      
+      // 일반 문자열
+      AppLogger.d('$prefix $data');
+    } else if (data is Map || data is List) {
+      // JSON Pretty Print
+      try {
+        final prettyJson = _jsonEncoder.convert(data);
+        // 너무 길면 줄바꿈 처리해서 출력하거나, AppLogger에 맡김.
+        // 여기서는 가독성을 위해 첫 줄 뒤에 내용을 붙입니다.
+        // AppLogger가 긴 내용을 처리한다고 가정하고 통째로 넘기되, 
+        // 박스 라인을 맞추기 위해 줄바꿈을 처리할 수도 있습니다.
+        // 단순하게 갑니다.
+        AppLogger.d('$prefix $prettyJson');
+      } catch (e) {
+        AppLogger.d('$prefix $data');
+      }
+    } else {
+      AppLogger.d('$prefix $data');
+    }
   }
 }
 
