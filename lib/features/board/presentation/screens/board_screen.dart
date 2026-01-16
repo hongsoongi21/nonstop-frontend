@@ -7,7 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
-import '../../../../core/l10n/app_localizations.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';

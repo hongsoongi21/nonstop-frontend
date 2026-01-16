@@ -146,9 +146,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         const SizedBox(height: AppSpacing.lg),
         Text(
           '${post.viewCount} views   ${post.likeCount} likes   ${post.commentCount} comments',
-          style: AppTypography.body2.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: AppTypography.body2.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -171,15 +169,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           _TwitterActionButton(
             icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
             color: post.isLiked ? AppColors.error : null,
-            onTap: () => ref
-                .read(postDetailProvider(postId).notifier)
-                .toggleLike(),
+            onTap: () =>
+                ref.read(postDetailProvider(postId).notifier).toggleLike(),
           ),
           const SizedBox(width: AppSpacing.lg),
-          _TwitterActionButton(
-            icon: Icons.bookmark_border,
-            onTap: () {},
-          ),
+          _TwitterActionButton(icon: Icons.bookmark_border, onTap: () {}),
         ],
       ),
     );
@@ -191,17 +185,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       children: [
         Text(
           'Comments',
-          style: AppTypography.headline6.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTypography.headline6.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: AppSpacing.md),
         if (comments.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 20),
-            child: Center(
-              child: Text('No comments yet. Be the first!'),
-            ),
+            child: Center(child: Text('No comments yet. Be the first!')),
           )
         else
           ..._buildCommentsList(comments, postId),
@@ -603,7 +593,7 @@ class _CommentItem extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: Colors.grey[200],
+            backgroundColor: AppColors.surfaceSecondary,
             child: Center(
               child: Text(
                 comment.writerNickname.isNotEmpty

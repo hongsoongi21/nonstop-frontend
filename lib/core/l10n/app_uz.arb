@@ -49,7 +49,11 @@
     "description": "Label for title field"
   },
   "content": "Tarkib",
-  "@content": {
+    "@content": {
     "description": "Label for content field"
+  },
+  "selectCommunity": "Jamiyatni tanlang",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
   }
 }

@@ -52,5 +52,5 @@ class AppLocalizationsUz extends AppLocalizations {
   String get content => 'Tarkib';
 
   @override
-  String get selectCommunity => 'Select Community';
+  String get selectCommunity => 'Jamiyatni tanlang';
 }
