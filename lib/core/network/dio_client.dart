@@ -1,38 +1,39 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/env_config.dart';
 import '../config/app_config.dart';
+import '../storage/secure_storage_service.dart'; // Corrected import path
 import '../utils/logger.dart';
-import '../services/secure_storage_service.dart';
+// import '../services/secure_storage_service.dart'; // Removed duplicate import
 import 'dto/auth_response_dto.dart';
 
 final dioClientProvider = Provider<DioClient>((ref) {
-  return DioClient();
+  return DioClient(ref.read(secureStorageServiceProvider));
 });
 
-/// HTTP client using Dio with interceptors for authentication and logging
+/// 인증 및 로깅을 위한 인터셉터가 포함된 Dio 기반 HTTP 클라이언트
 class DioClient {
   late final Dio _dio;
+  final SecureStorageService _secureStorageService;
 
-  DioClient() {
+  DioClient(this._secureStorageService) {
     _dio = Dio(_createBaseOptions());
 
-    // Add interceptors
+    // 인터셉터 추가
     _dio.interceptors.addAll([
-      _AuthInterceptor(),
-      _ResponseCheckInterceptor(),
+      _AuthInterceptor(_secureStorageService), // From feature/auth-screens, takes service
+      _ResponseCheckInterceptor(), // From HEAD
       _LoggingInterceptor(),
       _ErrorInterceptor(),
     ]);
 
-    // Add certificate pinning in production
+    // 운영 환경에서 SSL 인증서 고정(Pinning) 추가
     if (EnvConfig.isProduction) {
-      // TODO: Add SSL certificate pinning
-      // _dio.httpClientAdapter = HttpClientAdapter()..onHttpClientCreate = (client) {
-      //   // Configure certificate pinning
-      // };
+      // TODO: SSL 인증서 고정 로직 추가
     }
   }
 
@@ -45,17 +46,15 @@ class DioClient {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        // TODO: Add version headers
-        // 'X-App-Version': AppConfig.appVersion,
-        // 'X-Platform': Platform.operatingSystem,
       },
       validateStatus: (status) => status != null && status < 500,
     );
   }
 
-  /// GET request
+  /// GET 요청
   Future<Response<T>> get<T>(
-    String path, {
+    String path,
+    {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
@@ -70,9 +69,10 @@ class DioClient {
     );
   }
 
-  /// POST request
+  /// POST 요청
   Future<Response<T>> post<T>(
-    String path, {
+    String path,
+    {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -91,9 +91,10 @@ class DioClient {
     );
   }
 
-  /// PUT request
+  /// PUT 요청
   Future<Response<T>> put<T>(
-    String path, {
+    String path,
+    {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -112,9 +113,10 @@ class DioClient {
     );
   }
 
-  /// PATCH request
+  /// PATCH 요청
   Future<Response<T>> patch<T>(
-    String path, {
+    String path,
+    {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -133,9 +135,10 @@ class DioClient {
     );
   }
 
-  /// DELETE request
+  /// DELETE 요청
   Future<Response<T>> delete<T>(
-    String path, {
+    String path,
+    {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -150,10 +153,11 @@ class DioClient {
     );
   }
 
-  /// Download file
+  /// 파일 다운로드
   Future<Response> download(
     String urlPath,
-    String savePath, {
+    String savePath,
+    {
     ProgressCallback? onReceiveProgress,
     Map<String, dynamic>? queryParameters,
     CancelToken? cancelToken,
@@ -175,36 +179,24 @@ class DioClient {
     );
   }
 
-  /// Update authentication token
-  void updateAuthToken(String? token) {
-    if (token != null) {
-      _dio.options.headers['Authorization'] = 'Bearer $token';
-    } else {
-      _dio.options.headers.remove('Authorization');
-    }
-  }
-
-  /// Clear authentication
-  void clearAuth() {
-    _dio.options.headers.remove('Authorization');
-  }
-
-  /// Get the underlying Dio instance (for advanced usage)
+  /// 기본 Dio 인스턴스 반환 (고급 사용 용도)
   Dio get dio => _dio;
 }
 
-/// Authentication interceptor
+/// 인증 인터셉터
 class _AuthInterceptor extends Interceptor {
-  final _storage = SecureStorageService();
+  final SecureStorageService _secureStorageService;
+  bool _isRefreshing = false;
+
+  _AuthInterceptor(this._secureStorageService);
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
-    final token = await _storage.getAccessToken();
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // 보안 저장소에서 JWT 토큰을 가져와 헤더에 주입
+    final token = await _secureStorageService.getAccessToken();
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
+      AppLogger.d('🛡️ Auth Header injected');
     }
 
     super.onRequest(options, handler);
@@ -212,74 +204,50 @@ class _AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // Handle token refresh on 401
-    if (err.response?.statusCode == 401) {
-      final refreshToken = await _storage.getRefreshToken();
-      if (refreshToken == null) {
-        super.onError(err, handler);
-        return;
-      }
+    // 401 에러(인증 만료) 발생 시 토큰 갱신 시도
+    if (err.response?.statusCode == 401 && !_isRefreshing) {
+      final refreshToken = await _secureStorageService.getRefreshToken();
 
-      try {
-        // Create a new Dio instance for the refresh request to avoid interceptors
-        // We use the same base URL as the original client
-        final refreshDio = Dio(
-          BaseOptions(
-            baseUrl: EnvConfig.apiBaseUrl,
-            headers: {'Content-Type': 'application/json'},
-            validateStatus: (status) => status != null && status < 500,
-          ),
-        );
+      if (refreshToken != null) {
+        _isRefreshing = true;
+        AppLogger.w('🔄 Token expired. Attempting refresh...');
 
-        // Call refresh endpoint
-        final refreshResponse = await refreshDio.post(
-          '/api/v1/auth/refresh',
-          data: {'refreshToken': refreshToken},
-        );
-
-        if (refreshResponse.statusCode == 200) {
-          // Parse new tokens (API returns ApiResponse<TokenResponseDto>)
-          final authResponse = AuthResponseDto.fromJson(
-            refreshResponse.data['data'],
+        try {
+          // 토큰 갱신 API 호출용 별도 Dio 인스턴스 생성 (무한 루프 방지)
+          final dio = Dio(BaseOptions(baseUrl: EnvConfig.apiBaseUrl));
+          final response = await dio.post(
+            '/api/v1/auth/refresh',
+            data: {'refreshToken': refreshToken},
           );
 
-          // Save new tokens
-          await _storage.saveAccessToken(authResponse.accessToken);
-          await _storage.saveRefreshToken(authResponse.refreshToken);
+          final apiResponse = response.data as Map<String, dynamic>;
+          if (apiResponse['success'] == true) {
+            final data = apiResponse['data'];
+            final newAccessToken = data['accessToken'];
+            final newRefreshToken = data['refreshToken'];
 
-          // Retry original request with new token
-          final opts = err.requestOptions;
-          opts.headers['Authorization'] = 'Bearer ${authResponse.accessToken}';
+            AppLogger.s('✅ Token refreshed successfully');
 
-          final clonedRequest = await refreshDio.request(
-            opts.path,
-            options: Options(
-              method: opts.method,
-              headers: opts.headers,
-              contentType: opts.contentType,
-              responseType: opts.responseType,
-              followRedirects: opts.followRedirects,
-              validateStatus: opts.validateStatus,
-              receiveTimeout: opts.receiveTimeout,
-              sendTimeout: opts.sendTimeout,
-              extra: opts.extra,
-            ),
-            data: opts.data,
-            queryParameters: opts.queryParameters,
-            cancelToken: opts.cancelToken,
-            onReceiveProgress: opts.onReceiveProgress,
-            onSendProgress: opts.onSendProgress,
-          );
+            // 새 토큰 저장
+            await _secureStorageService.saveAccessToken(newAccessToken);
+            if (newRefreshToken != null) {
+              await _secureStorageService.saveRefreshToken(newRefreshToken);
+            }
 
-          handler.resolve(clonedRequest);
-          return;
-        } else {
-          // Refresh failed
-          await _storage.clearTokens();
+            // 원래 실패했던 요청 재시도
+            final options = err.requestOptions;
+            options.headers['Authorization'] = 'Bearer $newAccessToken';
+            
+            final retryResponse = await dio.fetch(options);
+            return handler.resolve(retryResponse);
+          }
+        } catch (e) {
+          AppLogger.e('❌ Token refresh failed. Logging out...', e);
+          // 리프레시 실패 시 로그아웃 처리 유도 (토큰 삭제)
+          await _secureStorageService.deleteAllTokens();
+        } finally {
+          _isRefreshing = false;
         }
-      } catch (e) {
-        // Refresh error
-        await _storage.clearTokens();
       }
     }
 
@@ -315,65 +283,108 @@ class _ResponseCheckInterceptor extends Interceptor {
   }
 }
 
-/// Logging interceptor
+/// 로깅 인터셉터
 class _LoggingInterceptor extends Interceptor {
+  final JsonEncoder _jsonEncoder = const JsonEncoder.withIndent('  ');
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      infoLog('🌐 HTTP Request:', options.uri.toString());
-      infoLog('📤 Method:', options.method);
-      if (options.data != null) {
-        infoLog('📦 Data:', options.data);
-      }
-      if (options.queryParameters.isNotEmpty) {
-        infoLog('🔍 Query:', options.queryParameters);
-      }
+    final method = options.method.toUpperCase();
+    final uri = options.uri.toString();
+    
+    AppLogger.n('┌── 🚀 [API REQUEST] $method');
+    AppLogger.n('│ 🔗 URL: $uri');
+    
+    if (options.data != null) {
+      _printFormattedBody('│ 📦 Body:', options.data);
     }
+    if (options.queryParameters.isNotEmpty) {
+      AppLogger.d('│ 🔍 Query: ${options.queryParameters}');
+    }
+    AppLogger.n('└────────────────────────────────────────────────────');
 
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      resultLog('✅ HTTP Response:', response.statusCode);
-      resultLog('📥 URL:', response.requestOptions.uri.toString());
-      if (response.data != null) {
-        // Truncate long strings (like HTML) to avoid flooding logs
-        if (response.data is String && (response.data as String).length > 500) {
-          resultLog(
-            '📦 Data:',
-            '${(response.data as String).substring(0, 500)}... (truncated)',
-          );
-        } else {
-          resultLog('📦 Data:', response.data);
-        }
-      }
+    final method = response.requestOptions.method.toUpperCase();
+    final path = response.requestOptions.uri.path;
+    final statusCode = response.statusCode;
+    final successIcon = (statusCode != null && statusCode >= 200 && statusCode < 300) ? '✅' : '⚠️';
+    
+    AppLogger.s('┌── $successIcon [API RESPONSE] $statusCode | $method $path');
+    
+    if (response.data != null) {
+      _printFormattedBody('│ 📥 Data:', response.data);
     }
+    AppLogger.s('└────────────────────────────────────────────────────');
 
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (!kReleaseMode) {
-      errLog('❌ HTTP Error:', err.message);
-      errLog('🔗 URL:', err.requestOptions.uri.toString());
-      if (err.response != null) {
-        errLog('📊 Status:', err.response!.statusCode);
-        errLog('📦 Data:', err.response!.data);
-      }
+    final method = err.requestOptions.method.toUpperCase();
+    final path = err.requestOptions.uri.path;
+    final statusCode = err.response?.statusCode ?? 'ERROR';
+    final message = err.message;
+
+    AppLogger.e('┌── ❌ [API ERROR] $statusCode | $method $path');
+    AppLogger.e('│ 📝 Message: $message');
+    
+    if (err.response?.data != null) {
+      _printFormattedBody('│ 📦 Error Data:', err.response?.data);
     }
+    AppLogger.e('└────────────────────────────────────────────────────');
 
     super.onError(err, handler);
   }
+
+  void _printFormattedBody(String prefix, dynamic data) {
+    if (data == null) return;
+
+    if (data is String) {
+      // HTML 감지
+      if (data.trim().toLowerCase().startsWith('<!doctype html') || 
+          data.trim().toLowerCase().startsWith('<html')) {
+        
+        // Title 추출 시도
+        final titleMatch = RegExp(r'<title>(.*?)</title>', caseSensitive: false, dotAll: true).firstMatch(data);
+        final title = titleMatch?.group(1)?.trim() ?? 'No Title';
+        
+        AppLogger.w('$prefix [HTML RESPONSE DETECTED]');
+        AppLogger.d('│    📄 Page Title: "$title"');
+        AppLogger.d('│    📄 Preview: ${data.substring(0, min(data.length, 100))).replaceAll('\n', ' ')}...');
+        return;
+      }
+      
+      // 일반 문자열
+      AppLogger.d('$prefix $data');
+    } else if (data is Map || data is List) {
+      // JSON Pretty Print
+      try {
+        final prettyJson = _jsonEncoder.convert(data);
+        // 너무 길면 줄바꿈 처리해서 출력하거나, AppLogger에 맡김.
+        // 여기서는 가독성을 위해 첫 줄 뒤에 내용을 붙입니다.
+        // AppLogger가 긴 내용을 처리한다고 가정하고 통째로 넘기되, 
+        // 박스 라인을 맞추기 위해 줄바꿈을 처리할 수도 있습니다.
+        // 단순하게 갑니다.
+        AppLogger.d('$prefix $prettyJson');
+      } catch (e) {
+        AppLogger.d('$prefix $data');
+      }
+    } else {
+      AppLogger.d('$prefix $data');
+    }
+  }
 }
 
-/// Error interceptor for standardization
+/// 에러 표준화를 위한 인터셉터
 class _ErrorInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // Standardize error format
+    // 에러 형식 표준화
     final errorData = {
       'message': err.message ?? 'Unknown error',
       'statusCode': err.response?.statusCode,
@@ -381,7 +392,7 @@ class _ErrorInterceptor extends Interceptor {
       'type': err.type.toString(),
     };
 
-    // Create standardized response
+    // 표준화된 응답 생성
     final standardizedResponse = Response(
       requestOptions: err.requestOptions,
       statusCode: err.response?.statusCode ?? 500,
@@ -389,7 +400,7 @@ class _ErrorInterceptor extends Interceptor {
       data: errorData,
     );
 
-    // Replace the error with standardized response
+    // 표준화된 응답으로 에러 교체
     final standardizedError = DioException(
       requestOptions: err.requestOptions,
       response: standardizedResponse,

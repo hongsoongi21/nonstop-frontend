@@ -120,7 +120,7 @@ class WebSocketClient {
       // Reset reconnect attempts on successful connection
       _reconnectAttempts = 0;
     } catch (e) {
-      errLog('WebSocket connection failed:', e);
+      AppLogger.e('WebSocket connection failed: $e');
       _updateState(WebSocketState.error);
       _scheduleReconnect();
     }
@@ -150,10 +150,10 @@ class WebSocketClient {
       _channel!.sink.add(jsonString);
 
       if (!kReleaseMode) {
-        infoLog('📤 WebSocket sent:', message.toString());
+        AppLogger.i('📤 WebSocket sent: ${message.toString()}');
       }
     } catch (e) {
-      errLog('Failed to send WebSocket message:', e);
+      AppLogger.e('Failed to send WebSocket message: $e');
       rethrow;
     }
   }
@@ -165,7 +165,7 @@ class WebSocketClient {
       final message = WebSocketMessage.fromJson(jsonData);
 
       if (!kReleaseMode) {
-        infoLog('📥 WebSocket received:', message.toString());
+        AppLogger.i('📥 WebSocket received: ${message.toString()}');
       }
 
       // Handle ping/pong for health monitoring
@@ -182,20 +182,20 @@ class WebSocketClient {
       // Emit message to listeners
       _messageController.add(message);
     } catch (e) {
-      errLog('Failed to parse WebSocket message:', e);
+      AppLogger.e('Failed to parse WebSocket message: $e');
     }
   }
 
   /// Handle WebSocket errors
   void _onError(Object error) {
-    errLog('WebSocket error:', error);
+    AppLogger.e('WebSocket error: $error');
     _updateState(WebSocketState.error);
     _scheduleReconnect();
   }
 
   /// Handle disconnection
   void _onDisconnected() {
-    warnLog('WebSocket disconnected');
+    AppLogger.w('WebSocket disconnected');
     _updateState(WebSocketState.disconnected);
     _scheduleReconnect();
   }
@@ -207,7 +207,7 @@ class WebSocketClient {
       _stateController.add(newState);
 
       if (!kReleaseMode) {
-        infoLog('🔄 WebSocket state:', newState.name);
+        AppLogger.i('🔄 WebSocket state: ${newState.name}');
       }
     }
   }
@@ -215,7 +215,7 @@ class WebSocketClient {
   /// Schedule reconnection with exponential backoff
   void _scheduleReconnect() {
     if (_reconnectAttempts >= AppConfig.wsMaxReconnectAttempts) {
-      errLog('Max reconnection attempts reached');
+      AppLogger.e('Max reconnection attempts reached');
       return;
     }
 
@@ -235,7 +235,7 @@ class WebSocketClient {
     });
 
     if (!kReleaseMode) {
-      infoLog(
+      AppLogger.i(
         '⏰ Reconnecting in ${clampedDelay}ms (attempt $_reconnectAttempts)',
       );
     }

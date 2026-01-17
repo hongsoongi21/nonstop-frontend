@@ -8,11 +8,14 @@ part of 'user_dto.dart';
 
 _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
     _$UserDtoImpl(
-      id: (json['id'] as num).toInt(),
+      id: json['id'],
       email: json['email'] as String,
-      fullName: json['nickname'] as String,
+      nickname: json['nickname'] as String,
+      fullName: json['fullName'] as String?,
       avatarUrl: json['profileImageUrl'] as String?,
+      university: json['university'] as String?,
       universityId: (json['universityId'] as num?)?.toInt(),
+      major: json['major'] as String?,
       majorId: (json['majorId'] as num?)?.toInt(),
       bio: json['introduction'] as String?,
       isEmailVerified: json['isVerified'] as bool? ?? false,
@@ -28,9 +31,12 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'email': instance.email,
-      'nickname': instance.fullName,
+      'nickname': instance.nickname,
+      'fullName': instance.fullName,
       'profileImageUrl': instance.avatarUrl,
+      'university': instance.university,
       'universityId': instance.universityId,
+      'major': instance.major,
       'majorId': instance.majorId,
       'introduction': instance.bio,
       'isVerified': instance.isEmailVerified,

@@ -21,15 +21,16 @@ UserDto _$UserDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserDto {
-  int get id => throw _privateConstructorUsedError;
+  // 백엔드의 숫자형 ID를 문자열로 안전하게 받기 위해 dynamic으로 설정 후 toDomain에서 처리
+  dynamic get id => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
-  @JsonKey(name: 'nickname')
-  String get fullName => throw _privateConstructorUsedError;
+  String get nickname => throw _privateConstructorUsedError;
+  String? get fullName => throw _privateConstructorUsedError;
   @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl => throw _privateConstructorUsedError;
-  @JsonKey(name: 'universityId')
+  String? get university => throw _privateConstructorUsedError;
   int? get universityId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'majorId')
+  String? get major => throw _privateConstructorUsedError;
   int? get majorId => throw _privateConstructorUsedError;
   @JsonKey(name: 'introduction')
   String? get bio => throw _privateConstructorUsedError;
@@ -53,12 +54,15 @@ abstract class $UserDtoCopyWith<$Res> {
       _$UserDtoCopyWithImpl<$Res, UserDto>;
   @useResult
   $Res call({
-    int id,
+    dynamic id,
     String email,
-    @JsonKey(name: 'nickname') String fullName,
+    String nickname,
+    String? fullName,
     @JsonKey(name: 'profileImageUrl') String? avatarUrl,
-    @JsonKey(name: 'universityId') int? universityId,
-    @JsonKey(name: 'majorId') int? majorId,
+    String? university,
+    int? universityId,
+    String? major,
+    int? majorId,
     @JsonKey(name: 'introduction') String? bio,
     @JsonKey(name: 'isVerified') bool isEmailVerified,
     DateTime? createdAt,
@@ -81,11 +85,14 @@ class _$UserDtoCopyWithImpl<$Res, $Val extends UserDto>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? email = null,
-    Object? fullName = null,
+    Object? nickname = null,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
+    Object? university = freezed,
     Object? universityId = freezed,
+    Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
     Object? isEmailVerified = null,
@@ -94,26 +101,38 @@ class _$UserDtoCopyWithImpl<$Res, $Val extends UserDto>
   }) {
     return _then(
       _value.copyWith(
-            id: null == id
+            id: freezed == id
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as dynamic,
             email: null == email
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String,
-            fullName: null == fullName
+            nickname: null == nickname
+                ? _value.nickname
+                : nickname // ignore: cast_nullable_to_non_nullable
+                      as String,
+            fullName: freezed == fullName
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             avatarUrl: freezed == avatarUrl
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            university: freezed == university
+                ? _value.university
+                : university // ignore: cast_nullable_to_non_nullable
                       as String?,
             universityId: freezed == universityId
                 ? _value.universityId
                 : universityId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            major: freezed == major
+                ? _value.major
+                : major // ignore: cast_nullable_to_non_nullable
+                      as String?,
             majorId: freezed == majorId
                 ? _value.majorId
                 : majorId // ignore: cast_nullable_to_non_nullable
@@ -149,12 +168,15 @@ abstract class _$$UserDtoImplCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
   @override
   @useResult
   $Res call({
-    int id,
+    dynamic id,
     String email,
-    @JsonKey(name: 'nickname') String fullName,
+    String nickname,
+    String? fullName,
     @JsonKey(name: 'profileImageUrl') String? avatarUrl,
-    @JsonKey(name: 'universityId') int? universityId,
-    @JsonKey(name: 'majorId') int? majorId,
+    String? university,
+    int? universityId,
+    String? major,
+    int? majorId,
     @JsonKey(name: 'introduction') String? bio,
     @JsonKey(name: 'isVerified') bool isEmailVerified,
     DateTime? createdAt,
@@ -176,11 +198,14 @@ class __$$UserDtoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? id = freezed,
     Object? email = null,
-    Object? fullName = null,
+    Object? nickname = null,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
+    Object? university = freezed,
     Object? universityId = freezed,
+    Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
     Object? isEmailVerified = null,
@@ -189,26 +214,38 @@ class __$$UserDtoImplCopyWithImpl<$Res>
   }) {
     return _then(
       _$UserDtoImpl(
-        id: null == id
+        id: freezed == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as dynamic,
         email: null == email
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String,
-        fullName: null == fullName
+        nickname: null == nickname
+            ? _value.nickname
+            : nickname // ignore: cast_nullable_to_non_nullable
+                  as String,
+        fullName: freezed == fullName
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         avatarUrl: freezed == avatarUrl
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        university: freezed == university
+            ? _value.university
+            : university // ignore: cast_nullable_to_non_nullable
                   as String?,
         universityId: freezed == universityId
             ? _value.universityId
             : universityId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        major: freezed == major
+            ? _value.major
+            : major // ignore: cast_nullable_to_non_nullable
+                  as String?,
         majorId: freezed == majorId
             ? _value.majorId
             : majorId // ignore: cast_nullable_to_non_nullable
@@ -240,10 +277,13 @@ class _$UserDtoImpl extends _UserDto {
   const _$UserDtoImpl({
     required this.id,
     required this.email,
-    @JsonKey(name: 'nickname') required this.fullName,
+    required this.nickname,
+    this.fullName,
     @JsonKey(name: 'profileImageUrl') this.avatarUrl,
-    @JsonKey(name: 'universityId') this.universityId,
-    @JsonKey(name: 'majorId') this.majorId,
+    this.university,
+    this.universityId,
+    this.major,
+    this.majorId,
     @JsonKey(name: 'introduction') this.bio,
     @JsonKey(name: 'isVerified') this.isEmailVerified = false,
     this.createdAt,
@@ -253,21 +293,25 @@ class _$UserDtoImpl extends _UserDto {
   factory _$UserDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserDtoImplFromJson(json);
 
+  // 백엔드의 숫자형 ID를 문자열로 안전하게 받기 위해 dynamic으로 설정 후 toDomain에서 처리
   @override
-  final int id;
+  final dynamic id;
   @override
   final String email;
   @override
-  @JsonKey(name: 'nickname')
-  final String fullName;
+  final String nickname;
+  @override
+  final String? fullName;
   @override
   @JsonKey(name: 'profileImageUrl')
   final String? avatarUrl;
   @override
-  @JsonKey(name: 'universityId')
+  final String? university;
+  @override
   final int? universityId;
   @override
-  @JsonKey(name: 'majorId')
+  final String? major;
+  @override
   final int? majorId;
   @override
   @JsonKey(name: 'introduction')
@@ -282,7 +326,7 @@ class _$UserDtoImpl extends _UserDto {
 
   @override
   String toString() {
-    return 'UserDto(id: $id, email: $email, fullName: $fullName, avatarUrl: $avatarUrl, universityId: $universityId, majorId: $majorId, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserDto(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -290,14 +334,19 @@ class _$UserDtoImpl extends _UserDto {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserDtoImpl &&
-            (identical(other.id, id) || other.id == id) &&
+            const DeepCollectionEquality().equals(other.id, id) &&
             (identical(other.email, email) || other.email == email) &&
+            (identical(other.nickname, nickname) ||
+                other.nickname == nickname) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
+            (identical(other.university, university) ||
+                other.university == university) &&
             (identical(other.universityId, universityId) ||
                 other.universityId == universityId) &&
+            (identical(other.major, major) || other.major == major) &&
             (identical(other.majorId, majorId) || other.majorId == majorId) &&
             (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
@@ -312,11 +361,14 @@ class _$UserDtoImpl extends _UserDto {
   @override
   int get hashCode => Object.hash(
     runtimeType,
-    id,
+    const DeepCollectionEquality().hash(id),
     email,
+    nickname,
     fullName,
     avatarUrl,
+    university,
     universityId,
+    major,
     majorId,
     bio,
     isEmailVerified,
@@ -340,12 +392,15 @@ class _$UserDtoImpl extends _UserDto {
 
 abstract class _UserDto extends UserDto {
   const factory _UserDto({
-    required final int id,
+    required final dynamic id,
     required final String email,
-    @JsonKey(name: 'nickname') required final String fullName,
+    required final String nickname,
+    final String? fullName,
     @JsonKey(name: 'profileImageUrl') final String? avatarUrl,
-    @JsonKey(name: 'universityId') final int? universityId,
-    @JsonKey(name: 'majorId') final int? majorId,
+    final String? university,
+    final int? universityId,
+    final String? major,
+    final int? majorId,
     @JsonKey(name: 'introduction') final String? bio,
     @JsonKey(name: 'isVerified') final bool isEmailVerified,
     final DateTime? createdAt,
@@ -355,21 +410,25 @@ abstract class _UserDto extends UserDto {
 
   factory _UserDto.fromJson(Map<String, dynamic> json) = _$UserDtoImpl.fromJson;
 
+  // 백엔드의 숫자형 ID를 문자열로 안전하게 받기 위해 dynamic으로 설정 후 toDomain에서 처리
   @override
-  int get id;
+  dynamic get id;
   @override
   String get email;
   @override
-  @JsonKey(name: 'nickname')
-  String get fullName;
+  String get nickname;
+  @override
+  String? get fullName;
   @override
   @JsonKey(name: 'profileImageUrl')
   String? get avatarUrl;
   @override
-  @JsonKey(name: 'universityId')
+  String? get university;
+  @override
   int? get universityId;
   @override
-  @JsonKey(name: 'majorId')
+  String? get major;
+  @override
   int? get majorId;
   @override
   @JsonKey(name: 'introduction')

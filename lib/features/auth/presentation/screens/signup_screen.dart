@@ -71,9 +71,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
         .signUp(
           email: email,
           password: password,
-          fullName: fullName,
-          university: university,
-          major: major,
+          nickname: fullName, // 기존 fullName을 nickname으로 사용
+          universityId: null, // 새로운 구조에 맞춰 ID로 보내야 하므로 임시 null 처리
+          majorId: null,      // 새로운 구조에 맞춰 ID로 보내야 하므로 임시 null 처리
         );
 
     // Check if signup was successful

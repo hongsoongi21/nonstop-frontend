@@ -8,12 +8,16 @@ part 'user_dto.g.dart';
 @freezed
 class UserDto with _$UserDto {
   const factory UserDto({
-    required int id,
+    // 백엔드의 숫자형 ID를 문자열로 안전하게 받기 위해 dynamic으로 설정 후 toDomain에서 처리
+    required dynamic id,
     required String email,
-    @JsonKey(name: 'nickname') required String fullName,
+    required String nickname,
+    String? fullName,
     @JsonKey(name: 'profileImageUrl') String? avatarUrl,
-    @JsonKey(name: 'universityId') int? universityId,
-    @JsonKey(name: 'majorId') int? majorId,
+    String? university,
+    int? universityId,
+    String? major,
+    int? majorId,
     @JsonKey(name: 'introduction') String? bio,
     @JsonKey(name: 'isVerified') @Default(false) bool isEmailVerified,
     DateTime? createdAt,
@@ -25,15 +29,18 @@ class UserDto with _$UserDto {
   factory UserDto.fromJson(Map<String, dynamic> json) =>
       _$UserDtoFromJson(json);
 
-  /// Convert DTO to domain entity
+  /// DTO를 도메인 엔티티로 변환
   User toDomain() {
     return User(
-      id: id.toString(),
+      id: id?.toString() ?? '',
       email: email,
+      nickname: nickname,
       fullName: fullName,
       avatarUrl: avatarUrl,
-      university: universityId?.toString(),
-      major: majorId?.toString(),
+      university: university,
+      universityId: universityId,
+      major: major,
+      majorId: majorId,
       bio: bio,
       isEmailVerified: isEmailVerified,
       createdAt: createdAt,
@@ -41,15 +48,18 @@ class UserDto with _$UserDto {
     );
   }
 
-  /// Create DTO from domain entity
+  /// 도메인 엔티티를 DTO로 변환
   factory UserDto.fromDomain(User user) {
     return UserDto(
-      id: int.tryParse(user.id) ?? 0,
+      id: user.id, // User id is already string, just pass it
       email: user.email,
+      nickname: user.nickname,
       fullName: user.fullName,
       avatarUrl: user.avatarUrl,
-      universityId: int.tryParse(user.university ?? '') ?? 0,
-      majorId: int.tryParse(user.major ?? '') ?? 0,
+      university: user.university,
+      universityId: user.universityId,
+      major: user.major,
+      majorId: user.majorId,
       bio: user.bio,
       isEmailVerified: user.isEmailVerified,
       createdAt: user.createdAt,

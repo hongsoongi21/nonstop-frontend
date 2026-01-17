@@ -128,6 +128,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Category
+        _buildCategoryPill(post), // This was in feature/auth-screens in the root of _buildBody
+        const SizedBox(height: AppSpacing.md),
         Text(
           post.title,
           style: AppTypography.headline5.copyWith(
@@ -149,6 +152,20 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           style: AppTypography.body2.copyWith(color: AppColors.textSecondary),
         ),
       ],
+    );
+  }
+
+  Widget _buildCategoryPill(PostEntity post) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        post.category,
+        style: AppTypography.caption.copyWith(color: AppColors.primary),
+      ),
     );
   }
 
@@ -459,7 +476,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border(
-          top: BorderSide(color: AppColors.divider.withValues(alpha: 0.2)),
+          top: BorderSide(color: AppColors.divider.withOpacity(0.2)),
         ),
       ),
       child: SafeArea(

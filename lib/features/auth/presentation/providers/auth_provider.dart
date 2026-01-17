@@ -1,12 +1,49 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/storage/secure_storage_service.dart';
+import '../../data/api/auth_api.dart';
+import '../../data/api/auth_api_impl.dart';
+import '../../data/repository_impl/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repository/auth_repository.dart';
-import '../../data/repository_impl/auth_repository_impl.dart';
-import '../../data/api/auth_api_impl.dart';
+import '../../domain/usecases/sign_in_usecase.dart';
+import '../../domain/usecases/sign_up_usecase.dart';
 
-/// Auth state that represents the current authentication status
+/// DioClient 제공자
+final dioClientProvider = Provider<DioClient>((ref) {
+  final secureStorage = ref.watch(secureStorageServiceProvider);
+  return DioClient(secureStorage);
+});
+
+/// AuthApi 제공자
+final authApiProvider = Provider<AuthApi>((ref) {
+  // 제공자로부터 DioClient 사용
+  final dioClient = ref.watch(dioClientProvider);
+  final secureStorage = ref.watch(secureStorageServiceProvider);
+  return AuthApiImpl(dioClient, secureStorage);
+});
+
+/// AuthRepository 제공자
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final api = ref.watch(authApiProvider);
+  return AuthRepositoryImpl(api);
+});
+
+/// SignInUseCase 제공자
+final signInUseCaseProvider = Provider<SignInUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return SignInUseCase(repository);
+});
+
+/// SignUpUseCase 제공자
+final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return SignUpUseCase(repository);
+});
+
+/// 현재 인증 상태를 나타내는 클래스
 class AuthState {
   final bool isLoading;
   final User? user;
@@ -30,101 +67,98 @@ class AuthState {
     );
   }
 
-  /// Check if user is authenticated
+  /// 사용자가 인증되었는지 확인
   bool get isAuthenticated => user != null;
 
-  /// Check if there's an error
+  /// 에러 발생 여부 확인
   bool get hasError => failure != null;
 }
 
-/// Auth notifier that manages authentication state
+/// 인증 상태를 관리하는 Notifier입니다.
+/// 로그인, 회원가입, 로그아웃 등 모든 인증 관련 상태 변화를 담당합니다.
 class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _repository;
+  final SignInUseCase _signInUseCase;
+  final SignUpUseCase _signUpUseCase;
+  final AuthRepository _authRepository;
 
-  AuthNotifier(this._repository) : super(const AuthState()) {
-    // Initialize auth state
+  AuthNotifier({
+    required SignInUseCase signInUseCase,
+    required SignUpUseCase signUpUseCase,
+    required AuthRepository authRepository,
+  })  : _signInUseCase = signInUseCase,
+        _signUpUseCase = signUpUseCase,
+        _authRepository = authRepository,
+        super(const AuthState()) {
+    // 앱 시작 시 현재 로그인된 사용자가 있는지 초기화합니다.
     _initializeAuth();
   }
 
-  /// Initialize authentication state on app start
+  /// 앱 구동 시 로컬 저장소의 토큰을 확인하여 자동 로그인 정보를 가져옵니다.
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
-    
-    final result = await _repository.getCurrentUser();
-    
+    final result = await _authRepository.getCurrentUser();
     result.fold(
-      (failure) {
-         // If generic failure (e.g. no token), just set not authenticated
-         state = state.copyWith(isLoading: false, user: null, failure: null);
-      },
-      (user) {
-        state = state.copyWith(isLoading: false, user: user, failure: null);
-      },
+      (failure) => state = state.copyWith(isLoading: false),
+      (user) => state = state.copyWith(isLoading: false, user: user),
     );
   }
 
-  /// Sign in with email and password
+  /// 이메일과 비밀번호로 로그인을 수행합니다.
   Future<void> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, failure: null);
-
-    final result = await _repository.signIn(email: email, password: password);
-    
+    final result = await _signInUseCase(SignInParams(email: email, password: password));
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) => state = state.copyWith(isLoading: false, user: user, failure: null),
+      (user) => state = state.copyWith(isLoading: false, user: user),
     );
   }
 
-  /// Sign up with user details
+  /// 새로운 사용자를 등록합니다.
+  /// 회원가입 성공 시 자동으로 로그인이 진행되어 user 상태가 업데이트됩니다.
   Future<void> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
-
-    final result = await _repository.signUp(
+    final result = await _signUpUseCase(SignUpParams(
       email: email,
       password: password,
-      fullName: fullName,
-      university: university,
-      major: major,
-    );
-    
+      nickname: nickname,
+      universityId: universityId,
+      majorId: majorId,
+    ));
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) => state = state.copyWith(isLoading: false, user: user, failure: null),
+      (user) => state = state.copyWith(isLoading: false, user: user),
     );
   }
 
-  /// Sign out current user
+  /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.
   Future<void> signOut() async {
-    state = state.copyWith(isLoading: true, failure: null);
-    
-    await _repository.signOut();
-    
-    state = const AuthState(); // Reset to initial state
+    state = state.copyWith(isLoading: true);
+    await _authRepository.signOut();
+    state = const AuthState();
   }
 
-  /// Clear any current error
+  /// 발생한 에러 상태를 초기화합니다.
   void clearError() {
     state = state.copyWith(failure: null);
   }
 }
 
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final authApi = ref.watch(authApiProvider);
-  return AuthRepositoryImpl(authApi);
-});
-
+/// Auth 제공자
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  return AuthNotifier(
+    signInUseCase: ref.watch(signInUseCaseProvider),
+    signUpUseCase: ref.watch(signUpUseCaseProvider),
+    authRepository: ref.watch(authRepositoryProvider),
+  );
 });
 
-/// Convenience providers for common auth state checks
+/// 편의성 제공자들
 final isAuthenticatedProvider = Provider<bool>((ref) {
   return ref.watch(authProvider).isAuthenticated;
 });

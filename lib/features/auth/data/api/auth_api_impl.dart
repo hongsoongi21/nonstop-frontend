@@ -1,134 +1,293 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
-import '../../../../core/network/dto/auth_response_dto.dart';
-import '../../../../core/services/secure_storage_service.dart';
+import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
+import '../dto/auth_request_dto.dart';
+import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
+import '../../../../core/utils/logger.dart'; // Added for AppLogger
 
 final authApiProvider = Provider<AuthApi>((ref) {
   final dioClient = ref.watch(dioClientProvider);
-  return AuthApiImpl(dioClient);
+  final secureStorageService = ref.watch(secureStorageServiceProvider);
+  return AuthApiImpl(dioClient, secureStorageService);
 });
 
 class AuthApiImpl implements AuthApi {
   final DioClient _dioClient;
-  final SecureStorageService _storage = SecureStorageService();
+  final SecureStorageService _secureStorageService;
+  final _authStateController = StreamController<User?>.broadcast();
 
-  AuthApiImpl(this._dioClient);
+  AuthApiImpl(this._dioClient, this._secureStorageService);
 
   @override
   Future<User> signIn({required String email, required String password}) async {
-    // 1. Login to get tokens
-    final response = await _dioClient.post(
-      '/api/v1/auth/login',
-      data: {'email': email, 'password': password},
-    );
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/login',
+        data: LoginRequestDto(email: email, password: password).toJson(),
+      );
 
-    final authResponse = AuthResponseDto.fromJson(response.data['data']);
-
-    // 2. Save tokens
-    await _storage.saveAccessToken(authResponse.accessToken);
-    await _storage.saveRefreshToken(authResponse.refreshToken);
-
-    // 3. Get User Info
-    return await _fetchCurrentUser();
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        final tokenData = AuthResponseDto.fromJson(apiResponse['data']); // Changed to AuthResponseDto
+        
+        if (!kReleaseMode) {
+          AppLogger.d('[NONSTOP] 🔑 Tokens Received:'); // Using AppLogger
+          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
+          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+        }
+        
+        // 보안 저장소에 토큰 저장
+        await _secureStorageService.saveAccessToken(tokenData.accessToken);
+        if (tokenData.refreshToken != null) {
+          await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
+        }
+        
+        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
+        return await _fetchAndEmitUserInfo();
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '로그인에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<User> signUp({
     required String email,
     required String password,
-    required String fullName,
-    String? university,
-    String? major,
+    required String nickname,
+    int? universityId,
+    int? majorId,
   }) async {
-    // 1. Sign up
-    await _dioClient.post(
-      '/api/v1/auth/signup',
-      data: {
-        'email': email,
-        'password': password,
-        'nickname': fullName, // Using fullName as nickname
-        'universityId':
-            int.tryParse(university ?? '') ?? 0, // Should be handled better
-        'majorId': int.tryParse(major ?? '') ?? 0, // Should be handled better
-      },
-    );
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/signup',
+        data: SignUpRequestDto(
+          email: email,
+          password: password,
+          nickname: nickname,
+          universityId: universityId,
+          majorId: majorId,
+        ).toJson(),
+      );
 
-    // 2. Login to get tokens and return User
-    return signIn(email: email, password: password);
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        // 회원가입 성공 직후, 사용자 편의를 위해 즉시 로그인을 시도합니다.
+        return await signIn(email: email, password: password);
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '회원가입에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<void> signOut() async {
-    await _storage.clearTokens();
+    try {
+      final refreshToken = await _secureStorageService.getRefreshToken();
+      if (refreshToken != null) {
+        // 서버에 로그아웃 요청 (Refresh Token 무효화)
+        await _dioClient.post(
+          '/api/v1/auth/logout',
+          data: RefreshRequestDto(refreshToken: refreshToken).toJson(),
+        );
+      }
+    } catch (e) {
+      // 서버 호출 실패 로그 (필요 시)
+      AppLogger.e('로그아웃 요청 실패: $e'); // Using AppLogger
+    } finally {
+      // 서버 성공 여부와 관계없이 로컬 인증 정보 삭제
+      await _secureStorageService.deleteAllTokens();
+      _authStateController.add(null);
+    }
   }
 
   @override
   Future<User?> getCurrentUser() async {
     try {
-      final token = await _storage.getAccessToken();
-      if (token == null) return null;
-      return await _fetchCurrentUser();
+      return await _fetchAndEmitUserInfo();
     } catch (e) {
-      // Only clear tokens when we are sure they are invalid (401 Unauthorized).
-      if (e is DioException && e.response?.statusCode == 401) {
-        await _storage.clearTokens();
-      }
+      AppLogger.e('현재 사용자 정보 조회 실패: $e'); // Using AppLogger
       return null;
     }
   }
 
-  Future<User> _fetchCurrentUser() async {
-    final response = await _dioClient.get('/api/v1/users/me');
-    final userDto = UserDto.fromJson(response.data['data']);
-    return userDto.toDomain();
-  }
-
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    // Not implemented in backend yet or path unknown
-    throw UnimplementedError();
+    // 백엔드 API 제공 시 구현
+    throw UnimplementedError('sendPasswordResetEmail not implemented'); // Add explicit error
   }
 
   @override
   Future<void> verifyEmail(String code) async {
-    // Not implemented in backend yet or path unknown
-    throw UnimplementedError();
+    // 백엔드 API 제공 시 구현
+    throw UnimplementedError('verifyEmail not implemented'); // Add explicit error
   }
 
   @override
   Future<void> resendEmailVerification() async {
-    // Not implemented in backend yet or path unknown
-    throw UnimplementedError();
+    // 백엔드 API 제공 시 구현
+    throw UnimplementedError('resendEmailVerification not implemented'); // Add explicit error
+  }
+
+  @override
+  Future<void> checkEmailDuplicate(String email) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/email/check',
+        data: {'email': email},
+      );
+      
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '이미 존재하는 이메일입니다',
+          statusCode: 409, // Conflict
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> checkNicknameDuplicate(String nickname) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/nickname/check',
+        data: {'nickname': nickname},
+      );
+      
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '이미 존재하는 닉네임입니다',
+          statusCode: 409,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<User> updateProfile({
-    String? fullName,
-    String? university,
-    String? major,
+    String? nickname,
+    int? universityId,
+    int? majorId,
     String? bio,
     String? avatarUrl,
   }) async {
-    // Stub
-    throw UnimplementedError();
+    try {
+      // Need to import ProfileUpdateRequestDto
+      // Assuming ProfileUpdateRequestDto is in lib/features/profile/data/dto
+      // If not, it needs to be created or imported from the correct location.
+      // For now, I'll use a direct map.
+      final response = await _dioClient.patch(
+        '/api/v1/users/me',
+        data: {
+          'nickname': nickname,
+          'universityId': universityId,
+          'majorId': majorId,
+          'introduction': bio,
+          // 'avatarUrl': avatarUrl, // Not included in current DTO. If needed, ProfileUpdateRequestDto must handle it.
+        },
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        return await _fetchAndEmitUserInfo();
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '프로필 업데이트 실패',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<void> deleteAccount() async {
-    await _dioClient.delete('/api/v1/users/me');
-    await _storage.clearTokens();
+    try {
+      final response = await _dioClient.delete('/api/v1/users/me');
+      
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        await _secureStorageService.deleteAllTokens();
+        _authStateController.add(null);
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '계정 삭제 실패',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Stream<User?> get authStateChanges => _authStateController.stream;
+
+  Future<User> _fetchAndEmitUserInfo() async {
+    try {
+      final response = await _dioClient.get('/api/v1/users/me');
+      final apiResponse = response.data as Map<String, dynamic>;
+      
+      if (apiResponse['success'] == true) {
+        final userDto = UserDto.fromJson(apiResponse['data']);
+        final user = userDto.toDomain();
+        _authStateController.add(user);
+        return user;
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '사용자 정보 조회 실패',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Exception _handleDioError(DioException e) {
+    if (e.response != null) {
+      final data = e.response?.data;
+      if (data is Map<String, dynamic>) {
+        return ServerException(
+          message: data['message'] ?? '서버 오류가 발생했습니다',
+          statusCode: e.response?.statusCode ?? 500,
+        );
+      }
+      return ServerException(
+        message: e.message ?? '서버 오류가 발생했습니다',
+        statusCode: e.response?.statusCode ?? 500,
+      );
+    }
+    return NetworkException('인터넷 연결을 확인해주세요.');
   }
 
   @override
   Future<String?> getAccessToken() async {
-    return await _storage.getAccessToken();
+    return await _secureStorageService.getAccessToken();
   }
-
-  @override
-  Stream<User?> get authStateChanges => Stream.empty();
 }

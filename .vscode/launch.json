@@ -8,7 +8,9 @@
       "type": "dart",
       "program": "lib/main.dart",
       "args": [
-        "--dart-define=ENVIRONMENT=development"
+        "--dart-define=ENVIRONMENT=development",
+        "--dart-define=API_BASE_URL=http://10.0.2.2:28080",
+        "--dart-define=WS_BASE_URL=ws://10.0.2.2:28080/ws"
       ]
     },
     {
@@ -16,7 +18,12 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "deviceId": "emulator-5554"
+      "deviceId": "emulator-5554",
+      "args": [
+        "--dart-define=ENVIRONMENT=development",
+        "--dart-define=API_BASE_URL=http://10.0.2.2:28080",
+        "--dart-define=WS_BASE_URL=ws://10.0.2.2:28080/ws"
+      ]
     },
     {
       "name": "Flutter: Run on Chrome",

@@ -64,7 +64,7 @@ Container(
 ```
 
 ### 2. 언어 선택기
-- 크기: 233.w × 43.h
+- 위젯: `LanguageSelector` (공통 위젯으로 구현됨)
 - 스타일: login_screen_v1.dart와 동일
 - 버튼: UZ | RU | EN
 
@@ -111,7 +111,7 @@ Container(
      - Westminster International University in Tashkent
      - Inha University in Tashkent
      - Turin Polytechnic University in Tashkent
-     - MDIS Tashkent
+     - Management Development Institute of Singapore in Tashkent
      - Tashkent University of Information Technologies
      - Tashkent State Technical University
 
@@ -158,7 +158,7 @@ Container(
 
 **정책 텍스트 클릭**:
 - TODO: 정책 상세 화면으로 이동
-- 임시로 SnackBar 표시
+- 임시로 SnackBar 표시 (구현 완료)
 
 #### 3.4 회원가입 버튼
 - 위젯: `GradientButton`
@@ -167,7 +167,7 @@ Container(
 - borderRadius: 15.r
 - gradient: #7C3BEE → #B95686 → #F5711E
 - boxShadow: #7C3BEE with opacity
-- onPressed: TODO (현재는 validation만)
+- onPressed: validation 로직 실행 (구현 완료)
 
 #### 3.5 로그인 링크
 - 위치: 하단 중앙
@@ -175,7 +175,7 @@ Container(
 - "Kirish" 부분:
   - color: #7C3BEE
   - decoration: underline
-  - onTap: `context.go('/login')` 또는 `context.pop()`
+  - onTap: `context.go('/login')`
 
 ## 상태 관리
 
@@ -208,6 +208,12 @@ void _handleSignup() {
 
   // Check required policies
   if (!_termsAgreed || !_privacyAgreed) {
+    // Show error snackbar
+    return;
+  }
+  
+  // Check university selection
+  if (_selectedUniversity == null) {
     // Show error snackbar
     return;
   }
@@ -245,37 +251,35 @@ void _handleSignup() {
 
 ## 구현 순서
 
-### ✅ 체크리스트
-- [ ] signup_screen_v1.dart 파일 생성
-- [ ] Scaffold + 배경 그라디언트 구현
-- [ ] 언어 선택기 구현 (login_screen_v1.dart 복사)
-- [ ] 메인 컨테이너 + 헤더 구현
-- [ ] 입력 필드 5개 구현 (nickname, university, email, password, confirm)
-- [ ] 대학교 드롭다운 구현
-- [ ] 정책 동의 섹션 구현 (전체동의 + 개별)
-- [ ] 회원가입 버튼 구현
-- [ ] 로그인 링크 구현
-- [ ] Validation 로직 구현
-- [ ] dispose() 메서드에서 controller 정리
-- [ ] 에러 메시지 표시 UI (필요시)
-- [ ] 테스트 및 스타일 조정
+### ✅ 체크리스트 (V1 구현 완료)
+- [x] signup_screen_v1.dart 파일 생성
+- [x] Scaffold + 배경 그라디언트 구현
+- [x] 언어 선택기 구현 (`LanguageSelector` 위젯 사용)
+- [x] 메인 컨테이너 + 헤더 구현
+- [x] 입력 필드 5개 구현 (nickname, university, email, password, confirm)
+- [x] 대학교 드롭다운 구현
+- [x] 정책 동의 섹션 구현 (전체동의 + 개별)
+- [x] 회원가입 버튼 구현
+- [x] 로그인 링크 구현
+- [x] Validation 로직 구현
+- [x] dispose() 메서드에서 controller 정리
+- [x] 에러 메시지 표시 UI (SnackBar 사용)
+- [x] 테스트 및 스타일 조정
 
 ## 참고사항
 
-- 현재는 **UI만 구현**, 실제 API 연동은 나중에
+- **V1 UI 구현 완료.** 실제 API 연동은 다음 단계에서 진행.
 - 모든 TODO 주석으로 미구현 기능 표시
 - login_screen_v1.dart의 스타일을 최대한 일관되게 유지
 - 반응형 크기를 위해 모든 수치에 .w, .h, .sp, .r 사용
 - CustomAuthTextField와 GradientButton 재사용
-- 대학교 드롭다운은 인라인으로 구현 (별도 위젯 X)
-- 정책 동의 섹션은 인라인으로 구현 (별도 위젯 X)
-- **자주 사용되는 패턴이 보이면 나중에 공통 위젯으로 추출 검토**
+- **자주 사용되는 패턴이 보이면 나중에 공통 위젯으로 추출 검토** (예: `LanguageSelector`가 좋은 예시)
 
 ## 다음 단계 (이후 작업)
 1. 회원가입 API 연동
 2. 실제 대학교 목록 API 연동
 3. 정책 상세 화면 구현
 4. 이메일 인증 플로우 연결
-5. 에러 처리 개선
-6. 로딩 상태 추가
-7. 공통 패턴 위젯 추출 검토
+5. 에러 처리 개선 (더 구체적인 메시지 등)
+6. 로딩 상태 추가 (버튼 클릭 시)
+7. 공통 패턴 위젯 추출 검토 (예: 정책 동의 섹션)

@@ -6,23 +6,24 @@ part 'user_profile_dto.freezed.dart';
 part 'user_profile_dto.g.dart';
 
 /// DTO for UserProfile entity - handles API serialization/deserialization
+/// DTO for UserProfile entity - handles API serialization/deserialization
 @freezed
 class UserProfileDto with _$UserProfileDto {
   const factory UserProfileDto({
-    required String id,
-    required String userId,
+    required dynamic id,
+    required dynamic userId,
     required String fullName,
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    @JsonKey(name: 'universityId') dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -42,11 +43,11 @@ class UserProfileDto with _$UserProfileDto {
 
   factory UserProfileDto.fromJson(Map<String, dynamic> json) => _$UserProfileDtoFromJson(json);
 
-  /// Convert DTO to domain entity
+  /// DTO를 도메인 엔티티로 변환
   UserProfile toDomain() {
     return UserProfile(
-      id: id,
-      userId: userId,
+      id: id?.toString() ?? '',
+      userId: userId?.toString() ?? '',
       fullName: fullName,
       displayName: displayName,
       email: email,
@@ -58,7 +59,7 @@ class UserProfileDto with _$UserProfileDto {
       gender: gender,
       location: location,
       website: website,
-      universityId: universityId,
+      universityId: universityId?.toString(),
       major: major,
       year: year,
       gpa: gpa,
@@ -109,7 +110,7 @@ class UserProfileDto with _$UserProfileDto {
   }
 }
 
-/// DTO for updating user profile
+/// 사용자 프로필 업데이트를 위한 DTO
 @freezed
 class UpdateUserProfileDto with _$UpdateUserProfileDto {
   const factory UpdateUserProfileDto({
@@ -117,14 +118,14 @@ class UpdateUserProfileDto with _$UpdateUserProfileDto {
     String? displayName,
     String? email,
     String? phoneNumber,
-    String? bio,
-    String? avatarUrl,
+    @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'profileImageUrl') String? avatarUrl,
     String? coverImageUrl,
     DateTime? dateOfBirth,
     String? gender,
     String? location,
     String? website,
-    String? universityId,
+    dynamic universityId,
     String? major,
     int? year,
     double? gpa,
@@ -141,7 +142,7 @@ class UpdateUserProfileDto with _$UpdateUserProfileDto {
 
   factory UpdateUserProfileDto.fromJson(Map<String, dynamic> json) => _$UpdateUserProfileDtoFromJson(json);
 
-  /// Create from domain entity updates
+  /// 도메인 엔티티의 변경사항으로부터 생성
   static UpdateUserProfileDto fromDomain(UserProfile profile) {
     return UpdateUserProfileDto(
       fullName: profile.fullName,

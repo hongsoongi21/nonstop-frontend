@@ -97,6 +97,7 @@ The application will provide features such as user authentication, community boa
 | Method | URI | Description |
 |---|---|---|
 | GET | /api/v1/universities | University List |
+| GET | /api/v1/universities/list | University List(no auth) |
 | GET | /api/v1/universities/{id} | University Detail |
 | GET | /api/v1/universities/{id}/majors | Major List |
 

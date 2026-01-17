@@ -3,15 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// Language selector widget for authentication screens
 ///
-/// Displays three language options: UZ | RU | EN
+/// Displays three language options: O'zbek | Pyccknn | English
 /// with vertical dividers between them.
 ///
 /// Features:
 /// - Fixed size: 233x43
 /// - Border radius: 12px
 /// - White background with gray border
-class LanguageSelector extends StatelessWidget {
+class LanguageSelector extends StatefulWidget {
   const LanguageSelector({super.key});
+
+  @override
+  State<LanguageSelector> createState() => _LanguageSelectorState();
+}
+
+class _LanguageSelectorState extends State<LanguageSelector> {
+  String _selectedLanguage = 'O\'zbek'; // Initial active language
 
   @override
   Widget build(BuildContext context) {
@@ -29,36 +36,50 @@ class LanguageSelector extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildLanguageButton('UZ', () {
-            // TODO: 우즈베크어로 언어 변경
-          }),
+          _buildLanguageButton('O\'zbek'),
           _buildDivider(),
-          _buildLanguageButton('RU', () {
-            // TODO: 러시아어로 언어 변경
-          }),
+          _buildLanguageButton('Pyccknn'),
           _buildDivider(),
-          _buildLanguageButton('EN', () {
-            // TODO: 영어로 언어 변경
-          }),
+          _buildLanguageButton('English'),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageButton(String label, VoidCallback onPressed) {
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w500,
-          color: const Color(0xFF111827),
+  Widget _buildLanguageButton(String language) {
+    final bool isActive = _selectedLanguage == language;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedLanguage = language;
+          // TODO: 실제 언어 변경 로직 추가
+        });
+      },
+      child: Container(
+        width: 65.w,
+        height: 28.h,
+        alignment: Alignment.center,
+        decoration: isActive
+            ? BoxDecoration(
+                color: const Color(0xFF7C39ED),
+                borderRadius: BorderRadius.circular(8.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF000000).withOpacity(0.25),
+                    blurRadius: 4.r,
+                    offset: Offset(0, 1.h),
+                  ),
+                ],
+              )
+            : null,
+        child: Text(
+          language,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.w500,
+            color: isActive ? Colors.white : const Color(0xFF111827),
+          ),
         ),
       ),
     );

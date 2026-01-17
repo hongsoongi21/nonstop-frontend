@@ -19,10 +19,13 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$User {
   String get id => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
-  String get fullName => throw _privateConstructorUsedError;
+  String get nickname => throw _privateConstructorUsedError;
+  String? get fullName => throw _privateConstructorUsedError;
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get university => throw _privateConstructorUsedError;
+  int? get universityId => throw _privateConstructorUsedError;
   String? get major => throw _privateConstructorUsedError;
+  int? get majorId => throw _privateConstructorUsedError;
   String? get bio => throw _privateConstructorUsedError;
   bool get isEmailVerified => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
@@ -42,10 +45,13 @@ abstract class $UserCopyWith<$Res> {
   $Res call({
     String id,
     String email,
-    String fullName,
+    String nickname,
+    String? fullName,
     String? avatarUrl,
     String? university,
+    int? universityId,
     String? major,
+    int? majorId,
     String? bio,
     bool isEmailVerified,
     DateTime? createdAt,
@@ -70,10 +76,13 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? fullName = null,
+    Object? nickname = null,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
     Object? university = freezed,
+    Object? universityId = freezed,
     Object? major = freezed,
+    Object? majorId = freezed,
     Object? bio = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
@@ -89,10 +98,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String,
-            fullName: null == fullName
+            nickname: null == nickname
+                ? _value.nickname
+                : nickname // ignore: cast_nullable_to_non_nullable
+                      as String,
+            fullName: freezed == fullName
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             avatarUrl: freezed == avatarUrl
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
@@ -101,10 +114,18 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.university
                 : university // ignore: cast_nullable_to_non_nullable
                       as String?,
+            universityId: freezed == universityId
+                ? _value.universityId
+                : universityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             major: freezed == major
                 ? _value.major
                 : major // ignore: cast_nullable_to_non_nullable
                       as String?,
+            majorId: freezed == majorId
+                ? _value.majorId
+                : majorId // ignore: cast_nullable_to_non_nullable
+                      as int?,
             bio: freezed == bio
                 ? _value.bio
                 : bio // ignore: cast_nullable_to_non_nullable
@@ -138,10 +159,13 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
   $Res call({
     String id,
     String email,
-    String fullName,
+    String nickname,
+    String? fullName,
     String? avatarUrl,
     String? university,
+    int? universityId,
     String? major,
+    int? majorId,
     String? bio,
     bool isEmailVerified,
     DateTime? createdAt,
@@ -163,10 +187,13 @@ class __$$UserImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? email = null,
-    Object? fullName = null,
+    Object? nickname = null,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
     Object? university = freezed,
+    Object? universityId = freezed,
     Object? major = freezed,
+    Object? majorId = freezed,
     Object? bio = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
@@ -182,10 +209,14 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String,
-        fullName: null == fullName
+        nickname: null == nickname
+            ? _value.nickname
+            : nickname // ignore: cast_nullable_to_non_nullable
+                  as String,
+        fullName: freezed == fullName
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         avatarUrl: freezed == avatarUrl
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
@@ -194,10 +225,18 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.university
             : university // ignore: cast_nullable_to_non_nullable
                   as String?,
+        universityId: freezed == universityId
+            ? _value.universityId
+            : universityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         major: freezed == major
             ? _value.major
             : major // ignore: cast_nullable_to_non_nullable
                   as String?,
+        majorId: freezed == majorId
+            ? _value.majorId
+            : majorId // ignore: cast_nullable_to_non_nullable
+                  as int?,
         bio: freezed == bio
             ? _value.bio
             : bio // ignore: cast_nullable_to_non_nullable
@@ -225,10 +264,13 @@ class _$UserImpl extends _User {
   const _$UserImpl({
     required this.id,
     required this.email,
-    required this.fullName,
+    required this.nickname,
+    this.fullName,
     this.avatarUrl,
     this.university,
+    this.universityId,
     this.major,
+    this.majorId,
     this.bio,
     this.isEmailVerified = false,
     this.createdAt,
@@ -240,13 +282,19 @@ class _$UserImpl extends _User {
   @override
   final String email;
   @override
-  final String fullName;
+  final String nickname;
+  @override
+  final String? fullName;
   @override
   final String? avatarUrl;
   @override
   final String? university;
   @override
+  final int? universityId;
+  @override
   final String? major;
+  @override
+  final int? majorId;
   @override
   final String? bio;
   @override
@@ -259,7 +307,7 @@ class _$UserImpl extends _User {
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, major: $major, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'User(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -269,13 +317,18 @@ class _$UserImpl extends _User {
             other is _$UserImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.email, email) || other.email == email) &&
+            (identical(other.nickname, nickname) ||
+                other.nickname == nickname) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.university, university) ||
                 other.university == university) &&
+            (identical(other.universityId, universityId) ||
+                other.universityId == universityId) &&
             (identical(other.major, major) || other.major == major) &&
+            (identical(other.majorId, majorId) || other.majorId == majorId) &&
             (identical(other.bio, bio) || other.bio == bio) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
@@ -290,10 +343,13 @@ class _$UserImpl extends _User {
     runtimeType,
     id,
     email,
+    nickname,
     fullName,
     avatarUrl,
     university,
+    universityId,
     major,
+    majorId,
     bio,
     isEmailVerified,
     createdAt,
@@ -313,10 +369,13 @@ abstract class _User extends User {
   const factory _User({
     required final String id,
     required final String email,
-    required final String fullName,
+    required final String nickname,
+    final String? fullName,
     final String? avatarUrl,
     final String? university,
+    final int? universityId,
     final String? major,
+    final int? majorId,
     final String? bio,
     final bool isEmailVerified,
     final DateTime? createdAt,
@@ -329,13 +388,19 @@ abstract class _User extends User {
   @override
   String get email;
   @override
-  String get fullName;
+  String get nickname;
+  @override
+  String? get fullName;
   @override
   String? get avatarUrl;
   @override
   String? get university;
   @override
+  int? get universityId;
+  @override
   String? get major;
+  @override
+  int? get majorId;
   @override
   String? get bio;
   @override
