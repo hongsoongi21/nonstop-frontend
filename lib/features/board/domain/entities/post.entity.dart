@@ -12,6 +12,7 @@ class PostEntity with _$PostEntity {
     @Default(false) bool isWriterAnonymous,
     required String title,
     required String content,
+    required String category, // Added category field
     @Default(0) int viewCount,
     @Default(0) int likeCount,
     @Default(0) int commentCount,

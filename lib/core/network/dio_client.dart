@@ -355,7 +355,7 @@ class _LoggingInterceptor extends Interceptor {
         
         AppLogger.w('$prefix [HTML RESPONSE DETECTED]');
         AppLogger.d('│    📄 Page Title: "$title"');
-        AppLogger.d('│    📄 Preview: ${data.substring(0, min(data.length, 100))).replaceAll('\n', ' ')}...');
+        AppLogger.d('│    📄 Preview: ${data.substring(0, min(data.length, 100)).replaceAll('\n', ' ')}...');
         return;
       }
       

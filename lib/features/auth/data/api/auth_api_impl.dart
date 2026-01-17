@@ -36,7 +36,7 @@ class AuthApiImpl implements AuthApi {
 
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
-        final tokenData = AuthResponseDto.fromJson(apiResponse['data']); // Changed to AuthResponseDto
+        final tokenData = TokenResponseDto.fromJson(apiResponse['data']); // Changed to TokenResponseDto
         
         if (!kReleaseMode) {
           AppLogger.d('[NONSTOP] 🔑 Tokens Received:'); // Using AppLogger

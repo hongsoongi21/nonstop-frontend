@@ -27,6 +27,8 @@ mixin _$PostEntity {
   bool get isWriterAnonymous => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
+  String get category =>
+      throw _privateConstructorUsedError; // Added category field
   int get viewCount => throw _privateConstructorUsedError;
   int get likeCount => throw _privateConstructorUsedError;
   int get commentCount => throw _privateConstructorUsedError;
@@ -61,6 +63,7 @@ abstract class $PostEntityCopyWith<$Res> {
     bool isWriterAnonymous,
     String title,
     String content,
+    String category,
     int viewCount,
     int likeCount,
     int commentCount,
@@ -94,6 +97,7 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
     Object? isWriterAnonymous = null,
     Object? title = null,
     Object? content = null,
+    Object? category = null,
     Object? viewCount = null,
     Object? likeCount = null,
     Object? commentCount = null,
@@ -129,6 +133,10 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
             content: null == content
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
+                      as String,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
                       as String,
             viewCount: null == viewCount
                 ? _value.viewCount
@@ -188,6 +196,7 @@ abstract class _$$PostEntityImplCopyWith<$Res>
     bool isWriterAnonymous,
     String title,
     String content,
+    String category,
     int viewCount,
     int likeCount,
     int commentCount,
@@ -220,6 +229,7 @@ class __$$PostEntityImplCopyWithImpl<$Res>
     Object? isWriterAnonymous = null,
     Object? title = null,
     Object? content = null,
+    Object? category = null,
     Object? viewCount = null,
     Object? likeCount = null,
     Object? commentCount = null,
@@ -255,6 +265,10 @@ class __$$PostEntityImplCopyWithImpl<$Res>
         content: null == content
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
+                  as String,
+        category: null == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
                   as String,
         viewCount: null == viewCount
             ? _value.viewCount
@@ -307,6 +321,7 @@ class _$PostEntityImpl implements _PostEntity {
     this.isWriterAnonymous = false,
     required this.title,
     required this.content,
+    required this.category,
     this.viewCount = 0,
     this.likeCount = 0,
     this.commentCount = 0,
@@ -334,6 +349,9 @@ class _$PostEntityImpl implements _PostEntity {
   final String title;
   @override
   final String content;
+  @override
+  final String category;
+  // Added category field
   @override
   @JsonKey()
   final int viewCount;
@@ -367,7 +385,7 @@ class _$PostEntityImpl implements _PostEntity {
 
   @override
   String toString() {
-    return 'PostEntity(id: $id, boardId: $boardId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, title: $title, content: $content, viewCount: $viewCount, likeCount: $likeCount, commentCount: $commentCount, isSecret: $isSecret, isLiked: $isLiked, isMine: $isMine, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls)';
+    return 'PostEntity(id: $id, boardId: $boardId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, title: $title, content: $content, category: $category, viewCount: $viewCount, likeCount: $likeCount, commentCount: $commentCount, isSecret: $isSecret, isLiked: $isLiked, isMine: $isMine, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls)';
   }
 
   @override
@@ -383,6 +401,8 @@ class _$PostEntityImpl implements _PostEntity {
                 other.isWriterAnonymous == isWriterAnonymous) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.content, content) || other.content == content) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             (identical(other.viewCount, viewCount) ||
                 other.viewCount == viewCount) &&
             (identical(other.likeCount, likeCount) ||
@@ -413,6 +433,7 @@ class _$PostEntityImpl implements _PostEntity {
     isWriterAnonymous,
     title,
     content,
+    category,
     viewCount,
     likeCount,
     commentCount,
@@ -446,6 +467,7 @@ abstract class _PostEntity implements PostEntity {
     final bool isWriterAnonymous,
     required final String title,
     required final String content,
+    required final String category,
     final int viewCount,
     final int likeCount,
     final int commentCount,
@@ -472,6 +494,8 @@ abstract class _PostEntity implements PostEntity {
   String get title;
   @override
   String get content;
+  @override
+  String get category; // Added category field
   @override
   int get viewCount;
   @override
