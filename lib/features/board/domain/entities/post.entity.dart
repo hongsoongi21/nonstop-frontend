@@ -12,7 +12,7 @@ class PostEntity with _$PostEntity {
     @Default(false) bool isWriterAnonymous,
     required String title,
     required String content,
-    required String category, // Added category field
+    String? category, // Added category field
     @Default(0) int viewCount,
     @Default(0) int likeCount,
     @Default(0) int commentCount,
@@ -21,7 +21,7 @@ class PostEntity with _$PostEntity {
     @Default(false) bool isMine,
     required DateTime createdAt,
     DateTime? updatedAt,
-    @Default([]) List<String> imageUrls,
+    List<String>? imageUrls,
   }) = _PostEntity;
 
   factory PostEntity.fromJson(Map<String, dynamic> json) =>

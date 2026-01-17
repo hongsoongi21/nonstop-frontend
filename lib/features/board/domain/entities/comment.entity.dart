@@ -27,7 +27,7 @@ class CommentEntity with _$CommentEntity {
     @Default(false) bool isMine,
     required DateTime createdAt,
     DateTime? updatedAt,
-    @Default([]) List<String> imageUrls,
+    List<String>? imageUrls,
     @Default([]) List<CommentEntity> replies,
   }) = _CommentEntity;
 

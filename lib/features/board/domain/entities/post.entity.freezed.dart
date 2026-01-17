@@ -27,7 +27,7 @@ mixin _$PostEntity {
   bool get isWriterAnonymous => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get content => throw _privateConstructorUsedError;
-  String get category =>
+  String? get category =>
       throw _privateConstructorUsedError; // Added category field
   int get viewCount => throw _privateConstructorUsedError;
   int get likeCount => throw _privateConstructorUsedError;
@@ -37,7 +37,7 @@ mixin _$PostEntity {
   bool get isMine => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  List<String> get imageUrls => throw _privateConstructorUsedError;
+  List<String>? get imageUrls => throw _privateConstructorUsedError;
 
   /// Serializes this PostEntity to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -63,7 +63,7 @@ abstract class $PostEntityCopyWith<$Res> {
     bool isWriterAnonymous,
     String title,
     String content,
-    String category,
+    String? category,
     int viewCount,
     int likeCount,
     int commentCount,
@@ -72,7 +72,7 @@ abstract class $PostEntityCopyWith<$Res> {
     bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
-    List<String> imageUrls,
+    List<String>? imageUrls,
   });
 }
 
@@ -97,7 +97,7 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
     Object? isWriterAnonymous = null,
     Object? title = null,
     Object? content = null,
-    Object? category = null,
+    Object? category = freezed,
     Object? viewCount = null,
     Object? likeCount = null,
     Object? commentCount = null,
@@ -106,7 +106,7 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
     Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? imageUrls = null,
+    Object? imageUrls = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -134,10 +134,10 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
                 ? _value.content
                 : content // ignore: cast_nullable_to_non_nullable
                       as String,
-            category: null == category
+            category: freezed == category
                 ? _value.category
                 : category // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             viewCount: null == viewCount
                 ? _value.viewCount
                 : viewCount // ignore: cast_nullable_to_non_nullable
@@ -170,10 +170,10 @@ class _$PostEntityCopyWithImpl<$Res, $Val extends PostEntity>
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            imageUrls: null == imageUrls
+            imageUrls: freezed == imageUrls
                 ? _value.imageUrls
                 : imageUrls // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
+                      as List<String>?,
           )
           as $Val,
     );
@@ -196,7 +196,7 @@ abstract class _$$PostEntityImplCopyWith<$Res>
     bool isWriterAnonymous,
     String title,
     String content,
-    String category,
+    String? category,
     int viewCount,
     int likeCount,
     int commentCount,
@@ -205,7 +205,7 @@ abstract class _$$PostEntityImplCopyWith<$Res>
     bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
-    List<String> imageUrls,
+    List<String>? imageUrls,
   });
 }
 
@@ -229,7 +229,7 @@ class __$$PostEntityImplCopyWithImpl<$Res>
     Object? isWriterAnonymous = null,
     Object? title = null,
     Object? content = null,
-    Object? category = null,
+    Object? category = freezed,
     Object? viewCount = null,
     Object? likeCount = null,
     Object? commentCount = null,
@@ -238,7 +238,7 @@ class __$$PostEntityImplCopyWithImpl<$Res>
     Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? imageUrls = null,
+    Object? imageUrls = freezed,
   }) {
     return _then(
       _$PostEntityImpl(
@@ -266,10 +266,10 @@ class __$$PostEntityImplCopyWithImpl<$Res>
             ? _value.content
             : content // ignore: cast_nullable_to_non_nullable
                   as String,
-        category: null == category
+        category: freezed == category
             ? _value.category
             : category // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         viewCount: null == viewCount
             ? _value.viewCount
             : viewCount // ignore: cast_nullable_to_non_nullable
@@ -302,10 +302,10 @@ class __$$PostEntityImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        imageUrls: null == imageUrls
+        imageUrls: freezed == imageUrls
             ? _value._imageUrls
             : imageUrls // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
+                  as List<String>?,
       ),
     );
   }
@@ -321,7 +321,7 @@ class _$PostEntityImpl implements _PostEntity {
     this.isWriterAnonymous = false,
     required this.title,
     required this.content,
-    required this.category,
+    this.category,
     this.viewCount = 0,
     this.likeCount = 0,
     this.commentCount = 0,
@@ -330,7 +330,7 @@ class _$PostEntityImpl implements _PostEntity {
     this.isMine = false,
     required this.createdAt,
     this.updatedAt,
-    final List<String> imageUrls = const [],
+    final List<String>? imageUrls,
   }) : _imageUrls = imageUrls;
 
   factory _$PostEntityImpl.fromJson(Map<String, dynamic> json) =>
@@ -350,7 +350,7 @@ class _$PostEntityImpl implements _PostEntity {
   @override
   final String content;
   @override
-  final String category;
+  final String? category;
   // Added category field
   @override
   @JsonKey()
@@ -374,13 +374,14 @@ class _$PostEntityImpl implements _PostEntity {
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
-  final List<String> _imageUrls;
+  final List<String>? _imageUrls;
   @override
-  @JsonKey()
-  List<String> get imageUrls {
+  List<String>? get imageUrls {
+    final value = _imageUrls;
+    if (value == null) return null;
     if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_imageUrls);
+    return EqualUnmodifiableListView(value);
   }
 
   @override
@@ -467,7 +468,7 @@ abstract class _PostEntity implements PostEntity {
     final bool isWriterAnonymous,
     required final String title,
     required final String content,
-    required final String category,
+    final String? category,
     final int viewCount,
     final int likeCount,
     final int commentCount,
@@ -476,7 +477,7 @@ abstract class _PostEntity implements PostEntity {
     final bool isMine,
     required final DateTime createdAt,
     final DateTime? updatedAt,
-    final List<String> imageUrls,
+    final List<String>? imageUrls,
   }) = _$PostEntityImpl;
 
   factory _PostEntity.fromJson(Map<String, dynamic> json) =
@@ -495,7 +496,7 @@ abstract class _PostEntity implements PostEntity {
   @override
   String get content;
   @override
-  String get category; // Added category field
+  String? get category; // Added category field
   @override
   int get viewCount;
   @override
@@ -513,7 +514,7 @@ abstract class _PostEntity implements PostEntity {
   @override
   DateTime? get updatedAt;
   @override
-  List<String> get imageUrls;
+  List<String>? get imageUrls;
 
   /// Create a copy of PostEntity
   /// with the given fields replaced by the non-null parameter values.

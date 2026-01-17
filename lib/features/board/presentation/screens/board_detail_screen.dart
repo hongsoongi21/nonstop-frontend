@@ -129,8 +129,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Category
-        _buildCategoryPill(post), // This was in feature/auth-screens in the root of _buildBody
-        const SizedBox(height: AppSpacing.md),
+        if (post.category != null) ...[
+          _buildCategoryPill(post),
+          const SizedBox(height: AppSpacing.md),
+        ],
         Text(
           post.title,
           style: AppTypography.headline5.copyWith(
@@ -156,6 +158,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   }
 
   Widget _buildCategoryPill(PostEntity post) {
+    if (post.category == null) return const SizedBox.shrink();
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -163,7 +167,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        post.category,
+        post.category!,
         style: AppTypography.caption.copyWith(color: AppColors.primary),
       ),
     );

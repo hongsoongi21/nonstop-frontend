@@ -24,11 +24,9 @@ _$CommentEntityImpl _$$CommentEntityImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-      imageUrls:
-          (json['imageUrls'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       replies:
           (json['replies'] as List<dynamic>?)
               ?.map((e) => CommentEntity.fromJson(e as Map<String, dynamic>))

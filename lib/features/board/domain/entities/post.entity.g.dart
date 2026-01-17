@@ -14,7 +14,7 @@ _$PostEntityImpl _$$PostEntityImplFromJson(Map<String, dynamic> json) =>
       isWriterAnonymous: json['isWriterAnonymous'] as bool? ?? false,
       title: json['title'] as String,
       content: json['content'] as String,
-      category: json['category'] as String,
+      category: json['category'] as String?,
       viewCount: (json['viewCount'] as num?)?.toInt() ?? 0,
       likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
       commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
@@ -25,11 +25,9 @@ _$PostEntityImpl _$$PostEntityImplFromJson(Map<String, dynamic> json) =>
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
-      imageUrls:
-          (json['imageUrls'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const [],
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$$PostEntityImplToJson(_$PostEntityImpl instance) =>

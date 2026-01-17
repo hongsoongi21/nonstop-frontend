@@ -35,7 +35,7 @@ mixin _$CommentEntity {
   bool get isMine => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  List<String> get imageUrls => throw _privateConstructorUsedError;
+  List<String>? get imageUrls => throw _privateConstructorUsedError;
   List<CommentEntity> get replies => throw _privateConstructorUsedError;
 
   /// Serializes this CommentEntity to a JSON map.
@@ -70,7 +70,7 @@ abstract class $CommentEntityCopyWith<$Res> {
     bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
-    List<String> imageUrls,
+    List<String>? imageUrls,
     List<CommentEntity> replies,
   });
 }
@@ -104,7 +104,7 @@ class _$CommentEntityCopyWithImpl<$Res, $Val extends CommentEntity>
     Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? imageUrls = null,
+    Object? imageUrls = freezed,
     Object? replies = null,
   }) {
     return _then(
@@ -165,10 +165,10 @@ class _$CommentEntityCopyWithImpl<$Res, $Val extends CommentEntity>
                 ? _value.updatedAt
                 : updatedAt // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            imageUrls: null == imageUrls
+            imageUrls: freezed == imageUrls
                 ? _value.imageUrls
                 : imageUrls // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
+                      as List<String>?,
             replies: null == replies
                 ? _value.replies
                 : replies // ignore: cast_nullable_to_non_nullable
@@ -203,7 +203,7 @@ abstract class _$$CommentEntityImplCopyWith<$Res>
     bool isMine,
     DateTime createdAt,
     DateTime? updatedAt,
-    List<String> imageUrls,
+    List<String>? imageUrls,
     List<CommentEntity> replies,
   });
 }
@@ -236,7 +236,7 @@ class __$$CommentEntityImplCopyWithImpl<$Res>
     Object? isMine = null,
     Object? createdAt = null,
     Object? updatedAt = freezed,
-    Object? imageUrls = null,
+    Object? imageUrls = freezed,
     Object? replies = null,
   }) {
     return _then(
@@ -297,10 +297,10 @@ class __$$CommentEntityImplCopyWithImpl<$Res>
             ? _value.updatedAt
             : updatedAt // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        imageUrls: null == imageUrls
+        imageUrls: freezed == imageUrls
             ? _value._imageUrls
             : imageUrls // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
+                  as List<String>?,
         replies: null == replies
             ? _value._replies
             : replies // ignore: cast_nullable_to_non_nullable
@@ -328,7 +328,7 @@ class _$CommentEntityImpl implements _CommentEntity {
     this.isMine = false,
     required this.createdAt,
     this.updatedAt,
-    final List<String> imageUrls = const [],
+    final List<String>? imageUrls,
     final List<CommentEntity> replies = const [],
   }) : _imageUrls = imageUrls,
        _replies = replies;
@@ -370,13 +370,14 @@ class _$CommentEntityImpl implements _CommentEntity {
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
-  final List<String> _imageUrls;
+  final List<String>? _imageUrls;
   @override
-  @JsonKey()
-  List<String> get imageUrls {
+  List<String>? get imageUrls {
+    final value = _imageUrls;
+    if (value == null) return null;
     if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_imageUrls);
+    return EqualUnmodifiableListView(value);
   }
 
   final List<CommentEntity> _replies;
@@ -478,7 +479,7 @@ abstract class _CommentEntity implements CommentEntity {
     final bool isMine,
     required final DateTime createdAt,
     final DateTime? updatedAt,
-    final List<String> imageUrls,
+    final List<String>? imageUrls,
     final List<CommentEntity> replies,
   }) = _$CommentEntityImpl;
 
@@ -514,7 +515,7 @@ abstract class _CommentEntity implements CommentEntity {
   @override
   DateTime? get updatedAt;
   @override
-  List<String> get imageUrls;
+  List<String>? get imageUrls;
   @override
   List<CommentEntity> get replies;
 
