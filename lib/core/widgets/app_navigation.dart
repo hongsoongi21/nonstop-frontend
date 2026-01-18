@@ -80,10 +80,16 @@ class AppBottomNavigationBar extends StatelessWidget {
                 isActive: navigationShell.currentIndex == 2,
               ),
               _buildNavItem(
+                icon: Icons.group_outlined,
+                activeIcon: Icons.group,
+                label: 'Friends',
+                isActive: navigationShell.currentIndex == 3,
+              ),
+              _buildNavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
                 label: 'Profile',
-                isActive: navigationShell.currentIndex == 3,
+                isActive: navigationShell.currentIndex == 4,
               ),
             ],
           ),

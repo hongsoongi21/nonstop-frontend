@@ -25,6 +25,7 @@ mixin _$TimetableEntryDto {
   int get timetableId => throw _privateConstructorUsedError;
   String get subjectName => throw _privateConstructorUsedError;
   String? get professor => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   DayOfWeek get dayOfWeek => throw _privateConstructorUsedError;
   String get startTime =>
       throw _privateConstructorUsedError; // Format: "HH:mm" (e.g., "09:00")
@@ -55,6 +56,7 @@ abstract class $TimetableEntryDtoCopyWith<$Res> {
     int timetableId,
     String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     DayOfWeek dayOfWeek,
     String startTime,
     String endTime,
@@ -146,6 +148,7 @@ abstract class _$$TimetableEntryDtoImplCopyWith<$Res>
     int timetableId,
     String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     DayOfWeek dayOfWeek,
     String startTime,
     String endTime,
@@ -229,6 +232,7 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
     required this.timetableId,
     required this.subjectName,
     this.professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required this.dayOfWeek,
     required this.startTime,
     required this.endTime,
@@ -248,6 +252,7 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
   @override
   final String? professor;
   @override
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   final DayOfWeek dayOfWeek;
   @override
   final String startTime;
@@ -324,6 +329,7 @@ abstract class _TimetableEntryDto implements TimetableEntryDto {
     required final int timetableId,
     required final String subjectName,
     final String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required final DayOfWeek dayOfWeek,
     required final String startTime,
     required final String endTime,
@@ -343,6 +349,7 @@ abstract class _TimetableEntryDto implements TimetableEntryDto {
   @override
   String? get professor;
   @override
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   DayOfWeek get dayOfWeek;
   @override
   String get startTime; // Format: "HH:mm" (e.g., "09:00")
@@ -371,6 +378,7 @@ TimetableEntryRequestDto _$TimetableEntryRequestDtoFromJson(
 mixin _$TimetableEntryRequestDto {
   String get subjectName => throw _privateConstructorUsedError;
   String? get professor => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   DayOfWeek get dayOfWeek => throw _privateConstructorUsedError;
   String get startTime => throw _privateConstructorUsedError; // Format: "HH:mm"
   String get endTime => throw _privateConstructorUsedError; // Format: "HH:mm"
@@ -397,6 +405,7 @@ abstract class $TimetableEntryRequestDtoCopyWith<$Res> {
   $Res call({
     String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     DayOfWeek dayOfWeek,
     String startTime,
     String endTime,
@@ -479,6 +488,7 @@ abstract class _$$TimetableEntryRequestDtoImplCopyWith<$Res>
   $Res call({
     String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     DayOfWeek dayOfWeek,
     String startTime,
     String endTime,
@@ -554,6 +564,7 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
   const _$TimetableEntryRequestDtoImpl({
     required this.subjectName,
     this.professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required this.dayOfWeek,
     required this.startTime,
     required this.endTime,
@@ -569,6 +580,7 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
   @override
   final String? professor;
   @override
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   final DayOfWeek dayOfWeek;
   @override
   final String startTime;
@@ -638,6 +650,7 @@ abstract class _TimetableEntryRequestDto implements TimetableEntryRequestDto {
   const factory _TimetableEntryRequestDto({
     required final String subjectName,
     final String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required final DayOfWeek dayOfWeek,
     required final String startTime,
     required final String endTime,
@@ -653,6 +666,7 @@ abstract class _TimetableEntryRequestDto implements TimetableEntryRequestDto {
   @override
   String? get professor;
   @override
+  @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
   DayOfWeek get dayOfWeek;
   @override
   String get startTime; // Format: "HH:mm"

@@ -1,13 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fpdart/fpdart.dart';
 
-import '../../../../core/errors/failures.dart';
-import '../../data/api/timetable_api_impl.dart';
-import '../../data/dto/timetable_dto.dart';
-import '../../data/dto/timetable_entry_dto.dart';
+import '../../data/repository_impl/timetable_repository_impl.dart';
+import '../../domain/entities/day_of_week.dart';
 import '../../domain/entities/semester.dart';
 import '../../domain/entities/timetable.dart';
 import '../../domain/entities/timetable_entry.dart';
+import '../../domain/repository/timetable_repository.dart';
 
 /// State for timetable management
 class TimetableManagementState {
@@ -63,25 +61,23 @@ class TimetableManagementState {
 /// Provider for Timetable Management
 class TimetableManagementNotifier
     extends StateNotifier<TimetableManagementState> {
-  final TimetableApi _api;
+  final TimetableRepository _repository;
 
-  TimetableManagementNotifier(this._api) : super(TimetableManagementState());
+  TimetableManagementNotifier(this._repository)
+    : super(TimetableManagementState());
 
   /// Load semesters (for creating new timetables)
   Future<void> loadSemesters() async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final result = await _api.getSemesters();
+    final result = await _repository.getSemesters();
 
     result.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
         error: 'Failed to load semesters',
       ),
-      (semesterDtos) {
-        final semesters = semesterDtos
-            .map((dto) => Semester.fromDto(dto))
-            .toList();
+      (semesters) {
         state = state.copyWith(isLoading: false, semesters: semesters);
       },
     );
@@ -91,17 +87,14 @@ class TimetableManagementNotifier
   Future<void> loadMyTimetables() async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final result = await _api.getMyTimetables();
+    final result = await _repository.getMyTimetables();
 
     result.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
         error: 'Failed to load timetables',
       ),
-      (timetableDtos) {
-        final timetables = timetableDtos
-            .map((dto) => Timetable.fromDto(dto))
-            .toList();
+      (timetables) {
         state = state.copyWith(isLoading: false, myTimetables: timetables);
 
         // Auto-select first timetable if none selected
@@ -120,13 +113,11 @@ class TimetableManagementNotifier
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final request = TimetableRequestDto(
+    final result = await _repository.createTimetable(
       semesterId: semesterId,
       title: title,
       isPublic: isPublic,
     );
-
-    final result = await _api.createTimetable(request);
 
     return result.fold(
       (failure) {
@@ -136,8 +127,7 @@ class TimetableManagementNotifier
         );
         return false;
       },
-      (timetableDto) {
-        final newTimetable = Timetable.fromDto(timetableDto);
+      (newTimetable) {
         final updatedList = [...state.myTimetables, newTimetable];
         state = state.copyWith(isLoading: false, myTimetables: updatedList);
 
@@ -156,15 +146,14 @@ class TimetableManagementNotifier
       selectedTimetableId: timetableId,
     );
 
-    final result = await _api.getTimetableDetail(timetableId);
+    final result = await _repository.getTimetableDetail(timetableId);
 
     result.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
         error: 'Failed to load timetable details',
       ),
-      (detailDto) {
-        final detail = TimetableDetail.fromDto(detailDto);
+      (detail) {
         state = state.copyWith(isLoading: false, selectedTimetable: detail);
       },
     );
@@ -178,9 +167,11 @@ class TimetableManagementNotifier
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final request = TimetableRequestDto(title: title, isPublic: isPublic);
-
-    final result = await _api.updateTimetable(timetableId, request);
+    final result = await _repository.updateTimetable(
+      id: timetableId,
+      title: title,
+      isPublic: isPublic,
+    );
 
     return result.fold(
       (failure) {
@@ -190,8 +181,7 @@ class TimetableManagementNotifier
         );
         return false;
       },
-      (updatedDto) {
-        final updated = Timetable.fromDto(updatedDto);
+      (updated) {
         final updatedList = state.myTimetables
             .map((t) => t.id == timetableId ? updated : t)
             .toList();
@@ -210,7 +200,7 @@ class TimetableManagementNotifier
   Future<bool> deleteTimetable(int timetableId) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final result = await _api.deleteTimetable(timetableId);
+    final result = await _repository.deleteTimetable(timetableId);
 
     return result.fold(
       (failure) {
@@ -257,7 +247,8 @@ class TimetableManagementNotifier
 
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final request = TimetableEntryRequestDto(
+    final result = await _repository.addEntry(
+      timetableId: state.selectedTimetableId!,
       subjectName: subjectName,
       professor: professor,
       dayOfWeek: dayOfWeek,
@@ -266,8 +257,6 @@ class TimetableManagementNotifier
       place: place,
       color: color,
     );
-
-    final result = await _api.addEntry(state.selectedTimetableId!, request);
 
     return result.fold(
       (failure) {
@@ -298,7 +287,8 @@ class TimetableManagementNotifier
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final request = TimetableEntryRequestDto(
+    final result = await _repository.updateEntry(
+      entryId: entryId,
       subjectName: subjectName,
       professor: professor,
       dayOfWeek: dayOfWeek,
@@ -307,8 +297,6 @@ class TimetableManagementNotifier
       place: place,
       color: color,
     );
-
-    final result = await _api.updateEntry(entryId, request);
 
     return result.fold(
       (failure) {
@@ -332,7 +320,7 @@ class TimetableManagementNotifier
   Future<bool> deleteEntry(int entryId) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
-    final result = await _api.deleteEntry(entryId);
+    final result = await _repository.deleteEntry(entryId);
 
     return result.fold(
       (failure) {
@@ -365,7 +353,7 @@ class TimetableManagementNotifier
     state = state.copyWith(isLoading: true, clearError: true);
 
     // 1. Load Semesters
-    final semResult = await _api.getSemesters();
+    final semResult = await _repository.getSemesters();
     if (semResult.isLeft()) {
       state = state.copyWith(
         isLoading: false,
@@ -374,8 +362,7 @@ class TimetableManagementNotifier
       return;
     }
 
-    final semesterDtos = semResult.getOrElse((_) => []);
-    final semesters = semesterDtos.map((dto) => Semester.fromDto(dto)).toList();
+    final semesters = semResult.getOrElse((_) => []);
 
     // 2. Find "Current" Semester using backend flag
     // If multiple are marked current (shouldn't happen), take first.
@@ -385,11 +372,8 @@ class TimetableManagementNotifier
         semesters.firstOrNull;
 
     // 3. Load User Timetables
-    final ttResult = await _api.getMyTimetables();
-    final timetableDtos = ttResult.getOrElse((_) => []);
-    final timetables = timetableDtos
-        .map((dto) => Timetable.fromDto(dto))
-        .toList();
+    final ttResult = await _repository.getMyTimetables();
+    final timetables = ttResult.getOrElse((_) => []);
 
     state = state.copyWith(semesters: semesters, myTimetables: timetables);
 
@@ -424,8 +408,8 @@ final timetableManagementProvider =
       TimetableManagementNotifier,
       TimetableManagementState
     >((ref) {
-      final api = ref.watch(timetableApiProvider);
-      return TimetableManagementNotifier(api);
+      final repository = ref.watch(timetableRepositoryProvider);
+      return TimetableManagementNotifier(repository);
     });
 
 /// Convenience providers for specific state slices

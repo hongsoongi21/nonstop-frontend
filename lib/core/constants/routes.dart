@@ -17,6 +17,10 @@ class Routes {
   static const String profile = '/profile';
   static const String settings = '/settings';
 
+  // 👥 Friends
+  static const String friendRequests = '/friends/requests';
+  static const String friendSearch = '/friends/search';
+
   // 📄 Detail Screens (with parameters)
   static const String boardDetail = '/board/:id';
   static const String boardCreate = '/board/create';

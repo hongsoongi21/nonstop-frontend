@@ -6,7 +6,8 @@ import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/timetable/domain/entities/gpa_course.dart';
 import 'package:nonstop/features/timetable/presentation/providers/gpa_provider.dart';
-import 'package:nonstop/features/timetable/presentation/providers/timetable_provider.dart';
+// import 'package:nonstop/features/timetable/presentation/providers/timetable_provider.dart';
+import 'package:nonstop/features/timetable/presentation/providers/timetable_management_provider.dart';
 import 'package:nonstop/shared/components/app_background.dart';
 import 'package:nonstop/shared/components/glass_container.dart';
 
@@ -14,7 +15,8 @@ class GpaCalculatorScreen extends ConsumerStatefulWidget {
   const GpaCalculatorScreen({super.key});
 
   @override
-  ConsumerState<GpaCalculatorScreen> createState() => _GpaCalculatorScreenState();
+  ConsumerState<GpaCalculatorScreen> createState() =>
+      _GpaCalculatorScreenState();
 }
 
 class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
@@ -46,8 +48,14 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             icon: Icon(Icons.download_outlined, color: AppColors.textPrimary),
             tooltip: 'Import from Timetable',
             onPressed: () {
-              final events = ref.read(timetableEventsProvider);
-              notifier.importCourses(events);
+              // final events = ref.read(timetableEventsProvider);
+              final entries =
+                  ref
+                      .read(timetableManagementProvider)
+                      .selectedTimetable
+                      ?.entries ??
+                  [];
+              notifier.importCourses(entries);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Courses imported from timetable')),
               );
@@ -61,7 +69,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: Text('Reset Calculator?'),
-                  content: Text('This will remove all courses from the calculator.'),
+                  content: Text(
+                    'This will remove all courses from the calculator.',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -89,9 +99,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             children: [
               // GPA Summary Card
               _buildSummaryCard(gpaState),
-              
+
               SizedBox(height: AppSpacing.lg),
-              
+
               // Course List Header
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
@@ -118,9 +128,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                   ],
                 ),
               ),
-              
+
               SizedBox(height: AppSpacing.sm),
-              
+
               // Course List
               if (gpaState.courses.isEmpty)
                 _buildEmptyState()
@@ -129,13 +139,14 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: gpaState.courses.length,
-                  separatorBuilder: (context, index) => SizedBox(height: AppSpacing.sm),
+                  separatorBuilder: (context, index) =>
+                      SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
                     final course = gpaState.courses[index];
                     return _buildCourseItem(context, ref, course);
                   },
                 ),
-                
+
               SizedBox(height: 100), // Bottom padding
             ],
           ),
@@ -187,7 +198,11 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildStatItem('Total GPA', state.totalGpa.toStringAsFixed(2), isMain: true),
+              _buildStatItem(
+                'Total GPA',
+                state.totalGpa.toStringAsFixed(2),
+                isMain: true,
+              ),
               Container(width: 1, height: 40, color: AppColors.border),
               _buildStatItem('Major GPA', state.majorGpa.toStringAsFixed(2)),
               Container(width: 1, height: 40, color: AppColors.border),
@@ -204,14 +219,12 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
       children: [
         Text(
           label,
-          style: AppTypography.caption.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
         ),
         SizedBox(height: 4),
         Text(
           value,
-          style: isMain 
+          style: isMain
               ? AppTypography.headlineMedium.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
@@ -225,7 +238,11 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     );
   }
 
-  Widget _buildCourseItem(BuildContext context, WidgetRef ref, GpaCourse course) {
+  Widget _buildCourseItem(
+    BuildContext context,
+    WidgetRef ref,
+    GpaCourse course,
+  ) {
     return Dismissible(
       key: Key(course.id),
       direction: DismissDirection.endToStart,
@@ -273,7 +290,10 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                       if (course.isMajor)
                         Container(
                           margin: EdgeInsets.only(right: 8),
-                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
@@ -315,7 +335,11 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             ),
             SizedBox(width: 8),
             IconButton(
-              icon: Icon(Icons.more_vert, size: 20, color: AppColors.textSecondary),
+              icon: Icon(
+                Icons.more_vert,
+                size: 20,
+                color: AppColors.textSecondary,
+              ),
               onPressed: () => _showEditCourseDialog(context, ref, course),
               padding: EdgeInsets.zero,
               constraints: BoxConstraints(),
@@ -341,7 +365,11 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
         padding: EdgeInsets.symmetric(vertical: 40),
         child: Column(
           children: [
-            Icon(Icons.calculate_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.3)),
+            Icon(
+              Icons.calculate_outlined,
+              size: 64,
+              color: AppColors.textSecondary.withValues(alpha: 0.3),
+            ),
             SizedBox(height: 16),
             Text(
               'No courses added yet',
@@ -366,11 +394,19 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     _showCourseDialog(context, ref, null);
   }
 
-  void _showEditCourseDialog(BuildContext context, WidgetRef ref, GpaCourse course) {
+  void _showEditCourseDialog(
+    BuildContext context,
+    WidgetRef ref,
+    GpaCourse course,
+  ) {
     _showCourseDialog(context, ref, course);
   }
 
-  void _showCourseDialog(BuildContext context, WidgetRef ref, GpaCourse? course) {
+  void _showCourseDialog(
+    BuildContext context,
+    WidgetRef ref,
+    GpaCourse? course,
+  ) {
     final isEditing = course != null;
     final nameController = TextEditingController(text: course?.name ?? '');
     double credits = course?.credits ?? 3.0;
@@ -398,14 +434,18 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             children: [
               Text(
                 isEditing ? 'Edit Course' : 'Add Course',
-                style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
+                style: AppTypography.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: 20),
               TextField(
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: 'Course Name',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   filled: true,
                   fillColor: AppColors.surface,
                 ),
@@ -419,11 +459,31 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                       initialValue: credits,
                       decoration: InputDecoration(
                         labelText: 'Credits',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      items: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0]
-                          .map((c) => DropdownMenuItem(value: c, child: Text(c.toString())))
-                          .toList(),
+                      items:
+                          [
+                                0.5,
+                                1.0,
+                                1.5,
+                                2.0,
+                                2.5,
+                                3.0,
+                                3.5,
+                                4.0,
+                                4.5,
+                                5.0,
+                                6.0,
+                              ]
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(c.toString()),
+                                ),
+                              )
+                              .toList(),
                       onChanged: (v) => setState(() => credits = v!),
                     ),
                   ),
@@ -433,11 +493,29 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                       initialValue: grade,
                       decoration: InputDecoration(
                         labelText: 'Grade',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      items: ['A+', 'A0', 'B+', 'B0', 'C+', 'C0', 'D+', 'D0', 'F', 'P', 'NP']
-                          .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                          .toList(),
+                      items:
+                          [
+                                'A+',
+                                'A0',
+                                'B+',
+                                'B0',
+                                'C+',
+                                'C0',
+                                'D+',
+                                'D0',
+                                'F',
+                                'P',
+                                'NP',
+                              ]
+                              .map(
+                                (g) =>
+                                    DropdownMenuItem(value: g, child: Text(g)),
+                              )
+                              .toList(),
                       onChanged: (v) => setState(() => grade = v!),
                     ),
                   ),
@@ -457,7 +535,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (nameController.text.isEmpty) return;
-                    
+
                     final newCourse = isEditing
                         ? course.copyWith(
                             name: nameController.text,
@@ -471,13 +549,13 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                             grade: grade,
                             isMajor: isMajor,
                           );
-                    
+
                     if (isEditing) {
                       ref.read(gpaProvider.notifier).updateCourse(newCourse);
                     } else {
                       ref.read(gpaProvider.notifier).addCourse(newCourse);
                     }
-                    
+
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(

@@ -2,28 +2,20 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../domain/entities/event.dart';
+import '../../domain/entities/timetable_entry.dart';
+import '../../domain/entities/day_of_week.dart';
 
-/// Weekly time grid widget showing hours and days like Korean everytime app
+/// Weekly time grid widget showing hours and days
 class WeeklyTimeGrid extends StatelessWidget {
-  final DateTime focusedDate;
-  final DateTime? selectedDate;
-  final List<Event> events;
-  final ValueChanged<DateTime>? onDateSelected;
+  final List<TimetableEntry> entries;
 
-  const WeeklyTimeGrid({
-    super.key,
-    required this.focusedDate,
-    this.selectedDate,
-    this.events = const [],
-    this.onDateSelected,
-  });
+  const WeeklyTimeGrid({super.key, this.entries = const []});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.4),
+        color: Colors.white.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -32,16 +24,13 @@ class WeeklyTimeGrid extends StatelessWidget {
           _buildDaysHeader(),
 
           // Time grid
-          Expanded(
-            child: _buildTimeGrid(),
-          ),
+          Expanded(child: _buildTimeGrid()),
         ],
       ),
     );
   }
 
   Widget _buildDaysHeader() {
-    final weekStart = focusedDate.subtract(Duration(days: focusedDate.weekday - 1));
     final weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
     return Container(
@@ -49,7 +38,7 @@ class WeeklyTimeGrid extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -61,29 +50,17 @@ class WeeklyTimeGrid extends StatelessWidget {
 
           // Day headers
           ...List.generate(5, (index) {
-            final date = weekStart.add(Duration(days: index));
             final dayName = weekDays[index];
-            final dayNumber = date.day;
 
             return Expanded(
-              child: Column(
-                children: [
-                  Text(
-                    dayName,
-                    style: AppTypography.labelSmall.copyWith(
-                      color: AppColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+              child: Center(
+                child: Text(
+                  dayName,
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    dayNumber.toString(),
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+                ),
               ),
             );
           }),
@@ -97,41 +74,40 @@ class WeeklyTimeGrid extends StatelessWidget {
     final timeSlots = List.generate(13, (index) => 9 + index);
 
     return SingleChildScrollView(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          // Time column
-          Column(
-            children: timeSlots.map((hour) {
-              return Container(
-                height: 80,
-                width: 50,
-                alignment: Alignment.topCenter,
-                padding: EdgeInsets.only(top: 4),
-                child: Text(
-                  hour.toString(),
-                  style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Time column
+              Column(
+                children: timeSlots.map((hour) {
+                  return Container(
+                    height: 80,
+                    width: 50,
+                    alignment: Alignment.topCenter,
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      hour.toString(),
+                      style: AppTypography.labelSmall.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
 
-          // Days grid
-          Expanded(
-            child: Stack(
-              children: [
-                // Grid lines
-                Column(
+              // Days grid background
+              Expanded(
+                child: Column(
                   children: timeSlots.map((hour) {
                     return Container(
                       height: 80,
                       decoration: BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
@@ -144,7 +120,9 @@ class WeeklyTimeGrid extends StatelessWidget {
                                 border: Border(
                                   left: dayIndex > 0
                                       ? BorderSide(
-                                          color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           width: 1,
                                         )
                                       : BorderSide.none,
@@ -157,10 +135,86 @@ class WeeklyTimeGrid extends StatelessWidget {
                     );
                   }).toList(),
                 ),
+              ),
+            ],
+          ),
 
-                // Events/classes will be positioned here
-                // TODO: Add event blocks positioned based on time and day
-              ],
+          // Events Overlay
+          Positioned.fill(
+            left: 50, // Skip time column
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final dayWidth = constraints.maxWidth / 5;
+
+                return Stack(
+                  children: entries
+                      .where((e) {
+                        // Only show Mon(1) to Fri(5)
+                        final dayNum = e.dayOfWeek.weekdayNumber;
+                        return dayNum >= 1 && dayNum <= 5;
+                      })
+                      .map((entry) {
+                        // Calculate position
+                        final dayIndex = entry.dayOfWeek.weekdayNumber - 1;
+
+                        final startParts = entry.startTime.split(':');
+                        final startHour = int.parse(startParts[0]);
+                        final startMin = int.parse(startParts[1]);
+
+                        // Grid starts at 9:00. Each hour is 80px.
+                        final double top =
+                            ((startHour - 9) * 80) + (startMin / 60 * 80);
+                        final double height =
+                            (entry.durationInMinutes / 60) * 80;
+
+                        return Positioned(
+                          left: dayIndex * dayWidth,
+                          width: dayWidth,
+                          top: top,
+                          height: height,
+                          child: Container(
+                            margin: EdgeInsets.all(2),
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Color(
+                                entry.displayColor,
+                              ).withValues(alpha: 0.8),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  entry.subjectName,
+                                  style: AppTypography.caption.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                if (entry.place != null)
+                                  Text(
+                                    entry.place!,
+                                    style: AppTypography.caption.copyWith(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
+                                      fontSize: 9,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      })
+                      .toList(),
+                );
+              },
             ),
           ),
         ],

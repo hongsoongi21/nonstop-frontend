@@ -1,25 +1,26 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nonstop/features/timetable/domain/entities/event.dart';
-import 'package:nonstop/features/timetable/domain/entities/gpa_course.dart';
+import '../../domain/entities/timetable_entry.dart';
+import '../../domain/entities/gpa_course.dart';
 
 class GpaState {
   final List<GpaCourse> courses;
-  
+
   GpaState({this.courses = const []});
 
-  double get totalCredits => courses.fold(0, (sum, course) => sum + course.credits);
-  
+  double get totalCredits =>
+      courses.fold(0, (sum, course) => sum + course.credits);
+
   double get totalGpa {
     double totalPoints = 0;
     double calculatedCredits = 0;
-    
+
     for (var course in courses) {
       if (course.includeInCalc && course.isGraded) {
         totalPoints += course.gradePoints * course.credits;
         calculatedCredits += course.credits;
       }
     }
-    
+
     if (calculatedCredits == 0) return 0.0;
     return totalPoints / calculatedCredits;
   }
@@ -27,14 +28,14 @@ class GpaState {
   double get majorGpa {
     double totalPoints = 0;
     double calculatedCredits = 0;
-    
+
     for (var course in courses) {
       if (course.isMajor && course.includeInCalc && course.isGraded) {
         totalPoints += course.gradePoints * course.credits;
         calculatedCredits += course.credits;
       }
     }
-    
+
     if (calculatedCredits == 0) return 0.0;
     return totalPoints / calculatedCredits;
   }
@@ -53,7 +54,9 @@ class GpaNotifier extends StateNotifier<GpaState> {
 
   void updateCourse(GpaCourse updatedCourse) {
     state = GpaState(
-      courses: state.courses.map((c) => c.id == updatedCourse.id ? updatedCourse : c).toList(),
+      courses: state.courses
+          .map((c) => c.id == updatedCourse.id ? updatedCourse : c)
+          .toList(),
     );
   }
 
@@ -61,25 +64,25 @@ class GpaNotifier extends StateNotifier<GpaState> {
     state = GpaState(courses: []);
   }
 
-  void importCourses(List<Event> events) {
+  void importCourses(List<TimetableEntry> entries) {
     final newCourses = <GpaCourse>[];
-    
-    // Filter for course events only
-    final courseEvents = events.where((e) => e.type == EventType.course).toList();
-    
-    for (final event in courseEvents) {
+
+    for (final entry in entries) {
       // Check if course with same name already exists
-      if (state.courses.any((c) => c.name == event.title)) {
+      if (state.courses.any((c) => c.name == entry.subjectName)) {
         continue;
       }
-      
-      newCourses.add(GpaCourse.create(
-        name: event.title,
-        credits: 3.0, // Default to 3 credits as events might not have credit info
-        grade: 'A+',  // Default grade
-      ));
+
+      newCourses.add(
+        GpaCourse.create(
+          name: entry.subjectName,
+          credits:
+              3.0, // Default to 3 credits as entries might not have credit info
+          grade: 'A+', // Default grade
+        ),
+      );
     }
-    
+
     if (newCourses.isNotEmpty) {
       state = GpaState(courses: [...state.courses, ...newCourses]);
     }

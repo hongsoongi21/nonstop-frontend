@@ -13,7 +13,7 @@ _$TimetableEntryDtoImpl _$$TimetableEntryDtoImplFromJson(
   timetableId: (json['timetableId'] as num).toInt(),
   subjectName: json['subjectName'] as String,
   professor: json['professor'] as String?,
-  dayOfWeek: $enumDecode(_$DayOfWeekEnumMap, json['dayOfWeek']),
+  dayOfWeek: _dayOfWeekFromJson(json['dayOfWeek'] as String),
   startTime: json['startTime'] as String,
   endTime: json['endTime'] as String,
   place: json['place'] as String?,
@@ -27,21 +27,11 @@ Map<String, dynamic> _$$TimetableEntryDtoImplToJson(
   'timetableId': instance.timetableId,
   'subjectName': instance.subjectName,
   'professor': instance.professor,
-  'dayOfWeek': _$DayOfWeekEnumMap[instance.dayOfWeek]!,
+  'dayOfWeek': _dayOfWeekToJson(instance.dayOfWeek),
   'startTime': instance.startTime,
   'endTime': instance.endTime,
   'place': instance.place,
   'color': instance.color,
-};
-
-const _$DayOfWeekEnumMap = {
-  DayOfWeek.monday: 'MONDAY',
-  DayOfWeek.tuesday: 'TUESDAY',
-  DayOfWeek.wednesday: 'WEDNESDAY',
-  DayOfWeek.thursday: 'THURSDAY',
-  DayOfWeek.friday: 'FRIDAY',
-  DayOfWeek.saturday: 'SATURDAY',
-  DayOfWeek.sunday: 'SUNDAY',
 };
 
 _$TimetableEntryRequestDtoImpl _$$TimetableEntryRequestDtoImplFromJson(
@@ -49,7 +39,7 @@ _$TimetableEntryRequestDtoImpl _$$TimetableEntryRequestDtoImplFromJson(
 ) => _$TimetableEntryRequestDtoImpl(
   subjectName: json['subjectName'] as String,
   professor: json['professor'] as String?,
-  dayOfWeek: $enumDecode(_$DayOfWeekEnumMap, json['dayOfWeek']),
+  dayOfWeek: _dayOfWeekFromJson(json['dayOfWeek'] as String),
   startTime: json['startTime'] as String,
   endTime: json['endTime'] as String,
   place: json['place'] as String?,
@@ -61,7 +51,7 @@ Map<String, dynamic> _$$TimetableEntryRequestDtoImplToJson(
 ) => <String, dynamic>{
   'subjectName': instance.subjectName,
   'professor': instance.professor,
-  'dayOfWeek': _$DayOfWeekEnumMap[instance.dayOfWeek]!,
+  'dayOfWeek': _dayOfWeekToJson(instance.dayOfWeek),
   'startTime': instance.startTime,
   'endTime': instance.endTime,
   'place': instance.place,

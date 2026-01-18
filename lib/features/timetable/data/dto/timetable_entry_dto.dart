@@ -1,63 +1,48 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../domain/entities/day_of_week.dart';
 
 part 'timetable_entry_dto.freezed.dart';
 part 'timetable_entry_dto.g.dart';
 
-/// Day of week enum matching backend
-enum DayOfWeek {
-  @JsonValue('MONDAY')
-  monday,
-  @JsonValue('TUESDAY')
-  tuesday,
-  @JsonValue('WEDNESDAY')
-  wednesday,
-  @JsonValue('THURSDAY')
-  thursday,
-  @JsonValue('FRIDAY')
-  friday,
-  @JsonValue('SATURDAY')
-  saturday,
-  @JsonValue('SUNDAY')
-  sunday,
-}
-
-/// Extension for DayOfWeek to get weekday number (1=Monday, 7=Sunday)
-extension DayOfWeekExtension on DayOfWeek {
-  int get weekdayNumber {
+/// Day of week enum JSON mapping for backend
+extension DayOfWeekJson on DayOfWeek {
+  String toJson() {
     switch (this) {
       case DayOfWeek.monday:
-        return 1;
+        return 'MONDAY';
       case DayOfWeek.tuesday:
-        return 2;
+        return 'TUESDAY';
       case DayOfWeek.wednesday:
-        return 3;
+        return 'WEDNESDAY';
       case DayOfWeek.thursday:
-        return 4;
+        return 'THURSDAY';
       case DayOfWeek.friday:
-        return 5;
+        return 'FRIDAY';
       case DayOfWeek.saturday:
-        return 6;
+        return 'SATURDAY';
       case DayOfWeek.sunday:
-        return 7;
+        return 'SUNDAY';
     }
   }
 
-  String get displayName {
-    switch (this) {
-      case DayOfWeek.monday:
-        return 'Dushanba';
-      case DayOfWeek.tuesday:
-        return 'Seshanba';
-      case DayOfWeek.wednesday:
-        return 'Chorshanba';
-      case DayOfWeek.thursday:
-        return 'Payshanba';
-      case DayOfWeek.friday:
-        return 'Juma';
-      case DayOfWeek.saturday:
-        return 'Shanba';
-      case DayOfWeek.sunday:
-        return 'Yakshanba';
+  static DayOfWeek fromJson(String value) {
+    switch (value.toUpperCase()) {
+      case 'MONDAY':
+        return DayOfWeek.monday;
+      case 'TUESDAY':
+        return DayOfWeek.tuesday;
+      case 'WEDNESDAY':
+        return DayOfWeek.wednesday;
+      case 'THURSDAY':
+        return DayOfWeek.thursday;
+      case 'FRIDAY':
+        return DayOfWeek.friday;
+      case 'SATURDAY':
+        return DayOfWeek.saturday;
+      case 'SUNDAY':
+        return DayOfWeek.sunday;
+      default:
+        return DayOfWeek.monday;
     }
   }
 }
@@ -71,6 +56,7 @@ class TimetableEntryDto with _$TimetableEntryDto {
     required int timetableId,
     required String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required DayOfWeek dayOfWeek,
     required String startTime, // Format: "HH:mm" (e.g., "09:00")
     required String endTime, // Format: "HH:mm" (e.g., "10:30")
@@ -82,12 +68,16 @@ class TimetableEntryDto with _$TimetableEntryDto {
       _$TimetableEntryDtoFromJson(json);
 }
 
+DayOfWeek _dayOfWeekFromJson(String value) => DayOfWeekJson.fromJson(value);
+String _dayOfWeekToJson(DayOfWeek value) => value.toJson();
+
 /// Request DTO for creating/updating a timetable entry
 @freezed
 class TimetableEntryRequestDto with _$TimetableEntryRequestDto {
   const factory TimetableEntryRequestDto({
     required String subjectName,
     String? professor,
+    @JsonKey(fromJson: _dayOfWeekFromJson, toJson: _dayOfWeekToJson)
     required DayOfWeek dayOfWeek,
     required String startTime, // Format: "HH:mm"
     required String endTime, // Format: "HH:mm"

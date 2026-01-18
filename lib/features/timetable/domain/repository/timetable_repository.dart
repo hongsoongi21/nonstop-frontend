@@ -1,71 +1,54 @@
 import 'package:fpdart/fpdart.dart';
-
-import 'package:nonstop/core/errors/failures.dart';
-import '../entities/event.dart';
+import '../../../../core/errors/failures.dart';
+import '../entities/day_of_week.dart';
+import '../entities/semester.dart';
+import '../entities/timetable.dart';
+import '../entities/timetable_entry.dart';
 
 /// Repository interface for timetable operations
-/// Provides methods to manage scheduled events
+/// Domain layer - framework agnostic
 abstract class TimetableRepository {
-  /// Get all events for a specific user
-  Future<Either<Failure, List<Event>>> getEvents({required String userId});
+  // Semester operations
+  Future<Either<Failure, List<Semester>>> getSemesters();
 
-  /// Get events for a specific date
-  Future<Either<Failure, List<Event>>> getEventsForDate({
-    required String userId,
-    required DateTime date,
+  // Timetable operations
+  Future<Either<Failure, List<Timetable>>> getMyTimetables();
+  Future<Either<Failure, Timetable>> createTimetable({
+    required int semesterId,
+    String? title,
+    bool isPublic = false,
   });
-
-  /// Get events for a specific week
-  Future<Either<Failure, List<Event>>> getEventsForWeek({
-    required String userId,
-    required DateTime weekStart,
+  Future<Either<Failure, TimetableDetail>> getTimetableDetail(int id);
+  Future<Either<Failure, Timetable>> updateTimetable({
+    required int id,
+    String? title,
+    bool? isPublic,
   });
+  Future<Either<Failure, Unit>> deleteTimetable(int id);
 
-  /// Get events for a specific month
-  Future<Either<Failure, List<Event>>> getEventsForMonth({
-    required String userId,
-    required int year,
-    required int month,
+  // Entry operations
+  Future<Either<Failure, TimetableEntry>> addEntry({
+    required int timetableId,
+    required String subjectName,
+    String? professor,
+    required DayOfWeek dayOfWeek,
+    required String startTime,
+    required String endTime,
+    String? place,
+    String? color,
   });
-
-  /// Get events by type
-  Future<Either<Failure, List<Event>>> getEventsByType({
-    required String userId,
-    required EventType type,
+  Future<Either<Failure, TimetableEntry>> updateEntry({
+    required int entryId,
+    required String subjectName,
+    String? professor,
+    required DayOfWeek dayOfWeek,
+    required String startTime,
+    required String endTime,
+    String? place,
+    String? color,
   });
+  Future<Either<Failure, Unit>> deleteEntry(int entryId);
 
-  /// Get a single event by ID
-  Future<Either<Failure, Event>> getEvent({required String eventId});
-
-  /// Create a new event
-  Future<Either<Failure, Event>> createEvent({required Event event});
-
-  /// Update an existing event
-  Future<Either<Failure, Event>> updateEvent({
-    required String eventId,
-    required Event event,
-  });
-
-  /// Delete an event
-  Future<Either<Failure, Unit>> deleteEvent({required String eventId});
-
-  /// Check for time conflicts with existing events
-  Future<Either<Failure, List<Event>>> checkConflicts({
-    required String userId,
-    required DateTime startTime,
-    required DateTime endTime,
-    String? excludeEventId,
-  });
-
-  /// Get upcoming events (next 7 days)
-  Future<Either<Failure, List<Event>>> getUpcomingEvents({
-    required String userId,
-    int days = 7,
-  });
-
-  /// Search events by title or description
-  Future<Either<Failure, List<Event>>> searchEvents({
-    required String userId,
-    required String query,
-  });
+  // Public timetables
+  Future<Either<Failure, List<Timetable>>> getPublicTimetables();
 }

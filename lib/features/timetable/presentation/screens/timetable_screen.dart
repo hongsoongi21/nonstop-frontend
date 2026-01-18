@@ -7,18 +7,42 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/components/glass_container.dart';
-import '../providers/timetable_provider.dart';
+import '../providers/timetable_management_provider.dart';
 import '../providers/gpa_provider.dart';
 import '../widgets/weekly_time_grid.dart';
 
 /// Main timetable screen with calendar views
-class TimetableScreen extends ConsumerWidget {
+class TimetableScreen extends ConsumerStatefulWidget {
   const TimetableScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(timetableProvider);
-    final notifier = ref.read(timetableProvider.notifier);
+  ConsumerState<TimetableScreen> createState() => _TimetableScreenState();
+}
+
+class _TimetableScreenState extends ConsumerState<TimetableScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Auto-load timetable on screen init
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(timetableManagementProvider.notifier).initializeTimetable();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(timetableManagementProvider);
+    final notifier = ref.read(timetableManagementProvider.notifier);
+    final currentTimetable = state.selectedTimetable;
+    final entries = currentTimetable?.entries ?? [];
+
+    // Find current semester name (if any) or generic date
+    final semesterName =
+        state.semesters
+            .where((s) => s.id == currentTimetable?.semesterId)
+            .firstOrNull
+            ?.displayName ??
+        '2026-Winter';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -45,29 +69,34 @@ class TimetableScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '2026-겨울',
+                          semesterName,
                           style: AppTypography.caption.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Text(
-                              'Dars jadvali',
-                              style: AppTypography.headlineSmall.copyWith(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w700,
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: Show timetable switcher
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                currentTimetable?.title ?? 'Dars jadvali',
+                                style: AppTypography.headlineSmall.copyWith(
+                                  color: AppColors.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.keyboard_arrow_down,
-                              color: AppColors.textPrimary,
-                              size: 24,
-                            ),
-                          ],
+                              SizedBox(width: 8),
+                              Icon(
+                                Icons.keyboard_arrow_down,
+                                color: AppColors.textPrimary,
+                                size: 24,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -75,7 +104,7 @@ class TimetableScreen extends ConsumerWidget {
                     IconButton(
                       onPressed: () => _showCreateEventDialog(context, ref),
                       icon: Icon(Icons.add, color: AppColors.textPrimary),
-                      tooltip: 'Yangi tadbir qo\'shish',
+                      tooltip: 'Yangi dars qo\'shish',
                     ),
                     IconButton(
                       onPressed: () => _showSettings(context, ref),
@@ -86,7 +115,7 @@ class TimetableScreen extends ConsumerWidget {
                       tooltip: 'Sozlamalar',
                     ),
                     IconButton(
-                      onPressed: () => notifier.navigateToToday(),
+                      onPressed: () => notifier.initializeTimetable(),
                       icon: Icon(Icons.refresh, color: AppColors.textPrimary),
                       tooltip: 'Yangilash',
                     ),
@@ -94,15 +123,14 @@ class TimetableScreen extends ConsumerWidget {
                 ),
               ),
 
+              if (state.isLoading)
+                LinearProgressIndicator(color: AppColors.primary),
+
               // Weekly time grid
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                  child: WeeklyTimeGrid(
-                    focusedDate: state.focusedDate,
-                    selectedDate: state.selectedDate,
-                    events: state.eventsForFocusedWeek,
-                  ),
+                  child: WeeklyTimeGrid(entries: entries),
                 ),
               ),
 
@@ -182,7 +210,7 @@ class TimetableScreen extends ConsumerWidget {
   }
 
   void _showCreateEventDialog(BuildContext context, WidgetRef ref) {
-    context.go('/timetable/create');
+    context.go(Routes.timetableCreate);
   }
 
   void _showSettings(BuildContext context, WidgetRef ref) {

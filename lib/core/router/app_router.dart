@@ -12,13 +12,14 @@ import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
-import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/add_timetable_entry_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_test_screen.dart';
 import 'package:nonstop/features/settings/presentation/screens/settings_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nonstop/features/friends/presentation/screens/friends_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
 /// Main router with authentication guard and bottom navigation
@@ -106,7 +107,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'create',
-                    builder: (context, state) => const CreateEventScreen(),
+                    builder: (context, state) =>
+                        const AddTimetableEntryScreen(),
                   ),
                   GoRoute(
                     path: 'gpa-calculator',
@@ -134,6 +136,16 @@ final routerProvider = Provider<GoRouter>((ref) {
                     },
                   ),
                 ],
+              ),
+            ],
+          ),
+
+          // Friends
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.friends,
+                builder: (context, state) => const FriendsScreen(),
               ),
             ],
           ),

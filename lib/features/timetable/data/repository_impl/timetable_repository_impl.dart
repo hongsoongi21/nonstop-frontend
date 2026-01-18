@@ -1,246 +1,162 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
-import '../../domain/entities/event.dart';
+import '../../data/api/timetable_api_impl.dart';
+import '../../data/dto/timetable_dto.dart';
+import '../../data/dto/timetable_entry_dto.dart';
+import '../../domain/entities/day_of_week.dart';
+import '../../domain/entities/semester.dart';
+import '../../domain/entities/timetable.dart';
+import '../../domain/entities/timetable_entry.dart';
 import '../../domain/repository/timetable_repository.dart';
-import '../api/timetable_api.dart';
-import '../dto/event_dto.dart';
 
-/// Implementation of TimetableRepository
-/// Uses mock data for now, can be easily replaced with real API calls
+final timetableRepositoryProvider = Provider<TimetableRepository>((ref) {
+  return TimetableRepositoryImpl(ref.read(timetableApiProvider));
+});
+
 class TimetableRepositoryImpl implements TimetableRepository {
-  final TimetableApi api;
+  final TimetableApi _api;
 
-  TimetableRepositoryImpl(this.api);
+  TimetableRepositoryImpl(this._api);
 
   @override
-  Future<Either<Failure, List<Event>>> getEvents({
-    required String userId,
+  Future<Either<Failure, List<Semester>>> getSemesters() async {
+    final result = await _api.getSemesters();
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dtos) => Right(dtos.map((dto) => Semester.fromDto(dto)).toList()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<Timetable>>> getMyTimetables() async {
+    final result = await _api.getMyTimetables();
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dtos) => Right(dtos.map((dto) => Timetable.fromDto(dto)).toList()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Timetable>> createTimetable({
+    required int semesterId,
+    String? title,
+    bool isPublic = false,
   }) async {
-    try {
-      final result = await api.getEvents(userId: userId);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+    final request = TimetableRequestDto(
+      semesterId: semesterId,
+      title: title,
+      isPublic: isPublic,
+    );
+    final result = await _api.createTimetable(request);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dto) => Right(Timetable.fromDto(dto)),
+    );
   }
 
   @override
-  Future<Either<Failure, List<Event>>> getEventsForDate({
-    required String userId,
-    required DateTime date,
+  Future<Either<Failure, TimetableDetail>> getTimetableDetail(int id) async {
+    final result = await _api.getTimetableDetail(id);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dto) => Right(TimetableDetail.fromDto(dto)),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Timetable>> updateTimetable({
+    required int id,
+    String? title,
+    bool? isPublic,
   }) async {
-    try {
-      final result = await api.getEventsForDate(userId: userId, date: date);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+    final request = TimetableRequestDto(title: title, isPublic: isPublic);
+    final result = await _api.updateTimetable(id, request);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dto) => Right(Timetable.fromDto(dto)),
+    );
   }
 
   @override
-  Future<Either<Failure, List<Event>>> getEventsForWeek({
-    required String userId,
-    required DateTime weekStart,
+  Future<Either<Failure, Unit>> deleteTimetable(int id) async {
+    final result = await _api.deleteTimetable(id);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (unit) => Right(unit),
+    );
+  }
+
+  @override
+  Future<Either<Failure, TimetableEntry>> addEntry({
+    required int timetableId,
+    required String subjectName,
+    String? professor,
+    required DayOfWeek dayOfWeek,
+    required String startTime,
+    required String endTime,
+    String? place,
+    String? color,
   }) async {
-    try {
-      final result = await api.getEventsForWeek(
-        userId: userId,
-        weekStart: weekStart,
-      );
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+    final request = TimetableEntryRequestDto(
+      subjectName: subjectName,
+      professor: professor,
+      dayOfWeek: dayOfWeek,
+      startTime: startTime,
+      endTime: endTime,
+      place: place,
+      color: color,
+    );
+    final result = await _api.addEntry(timetableId, request);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dto) => Right(TimetableEntry.fromDto(dto)),
+    );
   }
 
   @override
-  Future<Either<Failure, List<Event>>> getEventsForMonth({
-    required String userId,
-    required int year,
-    required int month,
+  Future<Either<Failure, TimetableEntry>> updateEntry({
+    required int entryId,
+    required String subjectName,
+    String? professor,
+    required DayOfWeek dayOfWeek,
+    required String startTime,
+    required String endTime,
+    String? place,
+    String? color,
   }) async {
-    try {
-      final result = await api.getEventsForMonth(
-        userId: userId,
-        year: year,
-        month: month,
-      );
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+    final request = TimetableEntryRequestDto(
+      subjectName: subjectName,
+      professor: professor,
+      dayOfWeek: dayOfWeek,
+      startTime: startTime,
+      endTime: endTime,
+      place: place,
+      color: color,
+    );
+    final result = await _api.updateEntry(entryId, request);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dto) => Right(TimetableEntry.fromDto(dto)),
+    );
   }
 
   @override
-  Future<Either<Failure, List<Event>>> getEventsByType({
-    required String userId,
-    required EventType type,
-  }) async {
-    try {
-      final result = await api.getEventsByType(
-        userId: userId,
-        eventType: type.name,
-      );
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
+  Future<Either<Failure, Unit>> deleteEntry(int entryId) async {
+    final result = await _api.deleteEntry(entryId);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (unit) => Right(unit),
+    );
   }
 
   @override
-  Future<Either<Failure, Event>> getEvent({required String eventId}) async {
-    try {
-      final result = await api.getEvent(eventId: eventId);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDto) => Right(eventDto.toDomain()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Event>> createEvent({required Event event}) async {
-    try {
-      final createDto = CreateEventDto.fromDomain(event);
-      final result = await api.createEvent(event: createDto);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDto) => Right(eventDto.toDomain()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Event>> updateEvent({
-    required String eventId,
-    required Event event,
-  }) async {
-    try {
-      final updateDto = UpdateEventDto.fromDomain(event);
-      final result = await api.updateEvent(eventId: eventId, event: updateDto);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDto) => Right(eventDto.toDomain()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> deleteEvent({required String eventId}) async {
-    try {
-      final result = await api.deleteEvent(eventId: eventId);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (_) => const Right(unit),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<Event>>> checkConflicts({
-    required String userId,
-    required DateTime startTime,
-    required DateTime endTime,
-    String? excludeEventId,
-  }) async {
-    try {
-      final result = await api.checkConflicts(
-        userId: userId,
-        startTime: startTime,
-        endTime: endTime,
-        excludeEventId: excludeEventId,
-      );
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<Event>>> getUpcomingEvents({
-    required String userId,
-    int days = 7,
-  }) async {
-    try {
-      final result = await api.getUpcomingEvents(userId: userId, days: days);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<Event>>> searchEvents({
-    required String userId,
-    required String query,
-  }) async {
-    try {
-      final result = await api.searchEvents(userId: userId, query: query);
-      return result.fold(
-        (exception) => Left(_mapExceptionToFailure(exception)),
-        (eventDtos) => Right(eventDtos.map((dto) => dto.toDomain()).toList()),
-      );
-    } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
-    }
-  }
-
-  /// Map API exceptions to domain failures
-  Failure _mapExceptionToFailure(ApiException exception) {
-    switch (exception.runtimeType) {
-      case NetworkException:
-        return NetworkFailure(message: exception.message);
-      case ServerException:
-        final serverEx = exception as ServerException;
-        return ServerFailure(
-          message: serverEx.message,
-          statusCode: serverEx.statusCode,
-        );
-      case ValidationException:
-        final validationEx = exception as ValidationException;
-        return ValidationFailure(
-          message: validationEx.message,
-          errors: validationEx.errors,
-        );
-      case AuthenticationException:
-        return AuthenticationFailure(message: exception.message);
-      case AuthorizationException:
-        return AuthorizationFailure(message: exception.message);
-      case TimeoutException:
-        return TimeoutFailure(message: exception.message);
-      default:
-        return UnknownFailure(message: exception.message);
-    }
+  Future<Either<Failure, List<Timetable>>> getPublicTimetables() async {
+    final result = await _api.getPublicTimetables();
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dtos) => Right(dtos.map((dto) => Timetable.fromDto(dto)).toList()),
+    );
   }
 }

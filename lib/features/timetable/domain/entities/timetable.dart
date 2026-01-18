@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../data/dto/semester_dto.dart';
 import '../../data/dto/timetable_dto.dart';
-import '../../data/dto/timetable_entry_dto.dart'; // For DayOfWeekExtension
+import 'day_of_week.dart';
 import 'semester.dart';
 import 'timetable_entry.dart';
 

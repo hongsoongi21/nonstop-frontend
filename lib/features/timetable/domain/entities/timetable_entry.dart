@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../data/dto/timetable_entry_dto.dart';
+import 'day_of_week.dart';
 
 part 'timetable_entry.freezed.dart';
 

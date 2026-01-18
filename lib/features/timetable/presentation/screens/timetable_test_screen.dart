@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/constants/routes.dart';
+import 'package:nonstop/core/theme/app_colors.dart';
+import 'package:nonstop/core/theme/app_spacing.dart';
+import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/shared/components/glass_container.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
-import '../../data/dto/timetable_entry_dto.dart';
+import '../../domain/entities/day_of_week.dart';
 import '../providers/timetable_management_provider.dart';
 
 /// Simple test screen for the new Timetable API integration
