@@ -45,20 +45,13 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     return AppScaffold(
       title: 'Board',
       showAppBar: false,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.surface,
       padding: EdgeInsets.zero,
       extendBody: true,
       extendBodyBehindAppBar: true,
       body: Container(
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
-        ),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.backgroundGradient,
-          ),
         ),
         child: Stack(
           children: [

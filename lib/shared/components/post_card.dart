@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nonstop/shared/components/glass_container.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -26,23 +25,53 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassContainer(
+    return Container(
       width: double.infinity,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-      onTap: onTap,
-      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.border.withAlpha(100),
+            width: 0.5,
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: Author Info & Time
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Avatar
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                child: Text(
+          _buildHeader(),
+          _buildCategoryChip(),
+          _buildContent(),
+          _buildFooter(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Avatar
+        CircleAvatar(
+          radius: 24,
+          backgroundColor: post.isWriterAnonymous 
+              ? AppColors.border.withAlpha(50)
+              : AppColors.primary.withAlpha(20),
+          child: post.isWriterAnonymous
+              ? Text(
+                  'A',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                )
+              : Text(
                   post.writerNickname.isNotEmpty
                       ? post.writerNickname[0].toUpperCase()
                       : '?',
@@ -52,84 +81,111 @@ class PostCard extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-              ),
+        ),
 
-              SizedBox(width: AppSpacing.md),
+        SizedBox(width: AppSpacing.md),
 
-              // Name & Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            post.isWriterAnonymous
-                                ? 'Anonymous'
-                                : post.writerNickname,
-                            style: AppTypography.body1.copyWith(
-                              fontWeight: FontWeight.w700,
-                              height: 1.2,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(width: AppSpacing.sm),
-                        Text(
-                          '•',
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textHint,
-                          ),
-                        ),
-                        SizedBox(width: AppSpacing.sm),
-                        Text(
-                          timeAgo(post.createdAt),
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textHint,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Student', // Fallback as university/major might not be in PostDto.Response directly
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w500,
+        // Name & Details
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      post.isWriterAnonymous
+                          ? 'Anonymous'
+                          : post.writerNickname,
+                      style: AppTypography.body1.copyWith(
+                        fontWeight: FontWeight.w700,
+                        height: 1.2,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: AppSpacing.sm),
+                  Text(
+                    '•',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textHint,
+                    ),
+                  ),
+                  SizedBox(width: AppSpacing.sm),
+                  Text(
+                    timeAgo(post.createdAt),
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textHint,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
-
-              // Menu Icon
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.more_vert,
-                  size: 20,
+              SizedBox(height: 2),
+              Text(
+                'Student', // Fallback text
+                style: AppTypography.caption.copyWith(
                   color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
                 ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                visualDensity: VisualDensity.compact,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
+        ),
 
-          SizedBox(height: AppSpacing.md),
+        // Menu Icon
+        IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.more_vert,
+            size: 20,
+            color: AppColors.textSecondary,
+          ),
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(),
+          visualDensity: VisualDensity.compact,
+        ),
+      ],
+    );
+  }
 
+  Widget _buildCategoryChip() {
+    return Container(
+      margin: const EdgeInsets.only(top: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withAlpha(20),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      ),
+      child: Text(
+        'General', // Fallback category
+        style: AppTypography.caption.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           // Title
           Text(
             post.title,
             style: AppTypography.headline6.copyWith(
               fontWeight: FontWeight.w700,
               height: 1.3,
+              fontSize: 18,
             ),
           ),
 
@@ -150,7 +206,7 @@ class PostCard extends StatelessWidget {
           if (!showFullContent && post.content.length > 100) ...[
             SizedBox(height: AppSpacing.xs),
             GestureDetector(
-              onTap: onTap, // Allow tapping "Read more" to open details
+              onTap: onTap,
               child: Text(
                 'Read more...',
                 style: AppTypography.caption.copyWith(
@@ -160,40 +216,42 @@ class PostCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
 
-          SizedBox(height: AppSpacing.lg),
+  Widget _buildFooter() {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.lg),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // Views
+          _StatItem(
+            icon: Icons.remove_red_eye,
+            count: post.viewCount.toInt(),
+            color: AppColors.textSecondary,
+          ),
 
-          // Footer Stats (Comments, Likes, Views)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Comments
-              _StatItem(
-                icon: Icons.chat_bubble_outline,
-                count: post.commentCount,
-                color: AppColors.textSecondary,
-                onTap: onComment,
-              ),
+          SizedBox(width: AppSpacing.lg),
 
-              SizedBox(width: AppSpacing.lg),
+          // Likes
+          _StatItem(
+            icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
+            count: post.likeCount,
+            color: post.isLiked ? AppColors.error : AppColors.textSecondary,
+            onTap: onLike,
+          ),
 
-              // Likes
-              _StatItem(
-                icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
-                count: post.likeCount,
-                color: post.isLiked ? AppColors.error : AppColors.textSecondary,
-                onTap: onLike,
-              ),
+          SizedBox(width: AppSpacing.lg),
 
-              SizedBox(width: AppSpacing.lg),
-
-              // Views
-              _StatItem(
-                icon: Icons.bar_chart,
-                count: post.viewCount.toInt(),
-                color: AppColors.textSecondary,
-              ),
-            ],
+          // Comments
+          _StatItem(
+            icon: Icons.chat_bubble_outline,
+            count: post.commentCount,
+            color: AppColors.textSecondary,
+            onTap: onComment,
           ),
         ],
       ),
