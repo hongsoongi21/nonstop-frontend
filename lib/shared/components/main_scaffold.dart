@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/constants/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/app_navigation.dart';
@@ -16,9 +18,65 @@ class MainScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      body: AppBackground(child: navigationShell),
+      body: Stack(
+        children: [
+          AppBackground(child: navigationShell),
+          if (kDebugMode) const _DebugPortal(),
+        ],
+      ),
       bottomNavigationBar: AppBottomNavigationBar(
         navigationShell: navigationShell,
+      ),
+    );
+  }
+}
+
+/// A floating debug button visible only in debug mode
+class _DebugPortal extends StatelessWidget {
+  const _DebugPortal();
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      right: 16,
+      bottom: 100, // Above bottom nav
+      child: FloatingActionButton.small(
+        heroTag: 'debug_portal',
+        onPressed: () => _showDebugMenu(context),
+        backgroundColor: Colors.red.withValues(alpha: 0.8),
+        child: const Icon(Icons.bug_report, color: Colors.white),
+      ),
+    );
+  }
+
+  void _showDebugMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Developer Menu',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.table_chart),
+              title: const Text('Timetable Integration Test'),
+              subtitle: const Text(
+                'Test real backend connection for schedules',
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                context.push(Routes.timetableTest);
+              },
+            ),
+            // Add more test screens here in the future
+          ],
+        ),
       ),
     );
   }
@@ -143,7 +201,8 @@ class AppScaffold extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: backgroundColor ?? (useGradient ? Colors.transparent : null),
+      backgroundColor:
+          backgroundColor ?? (useGradient ? Colors.transparent : null),
       extendBody: extendBody,
       extendBodyBehindAppBar: extendBodyBehindAppBar,
       appBar: showAppBar && title != null

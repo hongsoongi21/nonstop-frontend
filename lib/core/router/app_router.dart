@@ -14,6 +14,7 @@ import 'package:nonstop/features/board/presentation/screens/board_detail_screen.
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/create_event_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
+import 'package:nonstop/features/timetable/presentation/screens/timetable_test_screen.dart';
 import 'package:nonstop/features/settings/presentation/screens/settings_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
@@ -157,6 +158,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.settings,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.timetableTest,
+        builder: (context, state) => const TimetableTestScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
