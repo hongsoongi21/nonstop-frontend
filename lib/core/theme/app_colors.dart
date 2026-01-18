@@ -72,7 +72,13 @@ class AppColors {
     Color(0xFF06B6D4), // Cyan
     Color(0xFFEC4899), // Pink
     Color(0xFF84CC16), // Lime
-    Color(0xFFF97316), // Amber
+    Color(0xFFFFB300), // Amber
+    Color(0xFF14B8A6), // Teal
+    Color(0xFF6366F1), // Indigo
+    Color(0xFFD946EF), // Fuchsia
+    Color(0xFFF43F5E), // Rose
+    Color(0xFF78716C), // Stone
+    Color(0xFF475569), // Slate
   ];
 
   // Board post category colors

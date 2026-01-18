@@ -12,6 +12,7 @@ import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_screen.dart';
+import 'package:nonstop/features/timetable/domain/entities/timetable_entry.dart';
 import 'package:nonstop/features/timetable/presentation/screens/add_timetable_entry_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/gpa_calculator_screen.dart';
 import 'package:nonstop/features/timetable/presentation/screens/timetable_test_screen.dart';
@@ -107,8 +108,10 @@ final routerProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'create',
-                    builder: (context, state) =>
-                        const AddTimetableEntryScreen(),
+                    builder: (context, state) {
+                      final entry = state.extra as TimetableEntry?;
+                      return AddTimetableEntryScreen(initialEntry: entry);
+                    },
                   ),
                   GoRoute(
                     path: 'gpa-calculator',

@@ -10,6 +10,7 @@ import '../../../../shared/components/glass_container.dart';
 import '../providers/timetable_management_provider.dart';
 import '../providers/gpa_provider.dart';
 import '../widgets/weekly_time_grid.dart';
+import '../../domain/entities/semester.dart';
 
 /// Main timetable screen with calendar views
 class TimetableScreen extends ConsumerStatefulWidget {
@@ -37,12 +38,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     final entries = currentTimetable?.entries ?? [];
 
     // Find current semester name (if any) or generic date
-    final semesterName =
-        state.semesters
-            .where((s) => s.id == currentTimetable?.semesterId)
-            .firstOrNull
-            ?.displayName ??
-        '2026-Winter';
+    final semesterName = currentTimetable != null
+        ? '${currentTimetable.year} - ${currentTimetable.semesterType.displayName}'
+        : 'Yuklanmoqda...';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -77,9 +75,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                         ),
                         SizedBox(height: 4),
                         GestureDetector(
-                          onTap: () {
-                            // TODO: Show timetable switcher
-                          },
+                          onTap: () => _showTimetableSwitcher(context, ref),
                           child: Row(
                             children: [
                               Text(
@@ -130,7 +126,52 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                  child: WeeklyTimeGrid(entries: entries),
+                  child: Stack(
+                    children: [
+                      WeeklyTimeGrid(
+                        entries: entries,
+                        onEntryTap: (entry) {
+                          context.push(Routes.timetableCreate, extra: entry);
+                        },
+                      ),
+                      if (entries.isEmpty && !state.isLoading)
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 64,
+                                color: AppColors.textSecondary.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                              SizedBox(height: AppSpacing.md),
+                              Text(
+                                'Darslar qo\'shilmagan',
+                                style: AppTypography.titleMedium.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              SizedBox(height: AppSpacing.sm),
+                              ElevatedButton.icon(
+                                onPressed:
+                                    () => _showCreateEventDialog(context, ref),
+                                icon: Icon(Icons.add),
+                                label: Text('Dars qo\'shish'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -210,10 +251,87 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   }
 
   void _showCreateEventDialog(BuildContext context, WidgetRef ref) {
-    context.go(Routes.timetableCreate);
+    context.push(Routes.timetableCreate);
   }
 
   void _showSettings(BuildContext context, WidgetRef ref) {
     context.go(Routes.settings);
+  }
+
+  void _showTimetableSwitcher(BuildContext context, WidgetRef ref) {
+    final state = ref.read(timetableManagementProvider);
+    final notifier = ref.read(timetableManagementProvider.notifier);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => GlassContainer(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Jadvallarim',
+                style: AppTypography.titleLarge.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: state.myTimetables.length,
+                  itemBuilder: (context, index) {
+                    final tt = state.myTimetables[index];
+                    final isSelected = tt.id == state.selectedTimetableId;
+
+                    return ListTile(
+                      leading: Icon(
+                        isSelected ? Icons.check_circle : Icons.calendar_today,
+                        color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                      ),
+                      title: Text(
+                        tt.title ?? 'Nomsiz jadval',
+                        style: TextStyle(
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      subtitle: Text('${tt.year} - ${tt.semesterType.displayName}'),
+                      onTap: () {
+                        notifier.selectTimetable(tt.id);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // TODO: Navigate to create new timetable screen
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Yangi jadval yaratish'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

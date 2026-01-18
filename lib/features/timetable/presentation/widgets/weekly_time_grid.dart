@@ -8,8 +8,9 @@ import '../../domain/entities/day_of_week.dart';
 /// Weekly time grid widget showing hours and days
 class WeeklyTimeGrid extends StatelessWidget {
   final List<TimetableEntry> entries;
+  final Function(TimetableEntry)? onEntryTap;
 
-  const WeeklyTimeGrid({super.key, this.entries = const []});
+  const WeeklyTimeGrid({super.key, this.entries = const [], this.onEntryTap});
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +155,12 @@ class WeeklyTimeGrid extends StatelessWidget {
                         return dayNum >= 1 && dayNum <= 5;
                       })
                       .map((entry) {
+                        // Check for conflicts
+                        final hasConflict = entries.any(
+                          (other) =>
+                              other.id != entry.id && entry.conflictsWith(other),
+                        );
+
                         // Calculate position
                         final dayIndex = entry.dayOfWeek.weekdayNumber - 1;
 
@@ -172,42 +179,65 @@ class WeeklyTimeGrid extends StatelessWidget {
                           width: dayWidth,
                           top: top,
                           height: height,
-                          child: Container(
-                            margin: EdgeInsets.all(2),
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Color(
-                                entry.displayColor,
-                              ).withValues(alpha: 0.8),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  entry.subjectName,
-                                  style: AppTypography.caption.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                if (entry.place != null)
+                          child: GestureDetector(
+                            onTap: () => onEntryTap?.call(entry),
+                            child: Container(
+                              margin: EdgeInsets.all(2),
+                              padding: EdgeInsets.all(4),
+                                                          decoration: BoxDecoration(
+                                                            color: Color(
+                                                              entry.displayColor,
+                                                            ).withValues(alpha: hasConflict ? 0.6 : 0.8),
+                                                            borderRadius: BorderRadius.circular(4),
+                                                            border: hasConflict
+                                                                ? Border.all(color: Colors.red, width: 2)
+                                                                : null,
+                                                          ),
+                              
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
                                   Text(
-                                    entry.place!,
+                                    entry.subjectName,
                                     style: AppTypography.caption.copyWith(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      fontSize: 9,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
                                     ),
-                                    maxLines: 1,
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                              ],
+                                  if (entry.place != null)
+                                    Text(
+                                      entry.place!,
+                                      style: AppTypography.caption.copyWith(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
+                                        fontSize: 9,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  if (height > 40 && entry.professor != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2),
+                                      child: Text(
+                                        entry.professor!,
+                                        style: AppTypography.caption.copyWith(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.8,
+                                          ),
+                                          fontSize: 8,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );

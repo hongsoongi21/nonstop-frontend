@@ -9,10 +9,13 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../domain/entities/day_of_week.dart';
+import '../../domain/entities/timetable_entry.dart';
 import '../providers/timetable_management_provider.dart';
 
 class AddTimetableEntryScreen extends ConsumerStatefulWidget {
-  const AddTimetableEntryScreen({super.key});
+  final TimetableEntry? initialEntry;
+
+  const AddTimetableEntryScreen({super.key, this.initialEntry});
 
   @override
   ConsumerState<AddTimetableEntryScreen> createState() =>
@@ -34,6 +37,40 @@ class _AddTimetableEntryScreenState
   Color _selectedColor = AppColors.courseColors[0];
 
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialEntry != null) {
+      final entry = widget.initialEntry!;
+      _subjectController.text = entry.subjectName;
+      _professorController.text = entry.professor ?? '';
+      _placeController.text = entry.place ?? '';
+      _selectedDay = entry.dayOfWeek;
+
+      final startParts = entry.startTime.split(':');
+      _startTime = TimeOfDay(
+        hour: int.parse(startParts[0]),
+        minute: int.parse(startParts[1]),
+      );
+
+      final endParts = entry.endTime.split(':');
+      _endTime = TimeOfDay(
+        hour: int.parse(endParts[0]),
+        minute: int.parse(endParts[1]),
+      );
+
+      if (entry.color != null) {
+        try {
+          final colorValue = int.parse(
+            entry.color!.replaceAll('#', 'FF'),
+            radix: 16,
+          );
+          _selectedColor = Color(colorValue);
+        } catch (_) {}
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -92,27 +129,49 @@ class _AddTimetableEntryScreenState
     setState(() => _isSubmitting = true);
 
     try {
-      final success = await ref
-          .read(timetableManagementProvider.notifier)
-          .addEntry(
-            subjectName: _subjectController.text.trim(),
-            professor: _professorController.text.trim().isEmpty
-                ? null
-                : _professorController.text.trim(),
-            dayOfWeek: _selectedDay,
-            startTime: _formatTimeOfDay(_startTime),
-            endTime: _formatTimeOfDay(_endTime),
-            place: _placeController.text.trim().isEmpty
-                ? null
-                : _placeController.text.trim(),
-            color: '#${_selectedColor.value.toRadixString(16).substring(2)}',
-          );
+      final notifier = ref.read(timetableManagementProvider.notifier);
+      final bool success;
+
+      if (widget.initialEntry != null) {
+        success = await notifier.updateEntry(
+          entryId: widget.initialEntry!.id,
+          subjectName: _subjectController.text.trim(),
+          professor: _professorController.text.trim().isEmpty
+              ? null
+              : _professorController.text.trim(),
+          dayOfWeek: _selectedDay,
+          startTime: _formatTimeOfDay(_startTime),
+          endTime: _formatTimeOfDay(_endTime),
+          place: _placeController.text.trim().isEmpty
+              ? null
+              : _placeController.text.trim(),
+          color: '#${_selectedColor.value.toRadixString(16).substring(2)}',
+        );
+      } else {
+        success = await notifier.addEntry(
+          subjectName: _subjectController.text.trim(),
+          professor: _professorController.text.trim().isEmpty
+              ? null
+              : _professorController.text.trim(),
+          dayOfWeek: _selectedDay,
+          startTime: _formatTimeOfDay(_startTime),
+          endTime: _formatTimeOfDay(_endTime),
+          place: _placeController.text.trim().isEmpty
+              ? null
+              : _placeController.text.trim(),
+          color: '#${_selectedColor.value.toRadixString(16).substring(2)}',
+        );
+      }
 
       if (success && mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Dars muvaffaqiyatli qo\'shildi'),
+          SnackBar(
+            content: Text(
+              widget.initialEntry != null
+                  ? 'Dars o\'zgartirildi'
+                  : 'Dars muvaffaqiyatli qo\'shildi',
+            ),
             backgroundColor: AppColors.success,
           ),
         );
@@ -134,8 +193,10 @@ class _AddTimetableEntryScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.initialEntry != null;
+
     return AppScaffold(
-      title: 'Yangi dars qo\'shish',
+      title: isEditing ? 'Darsni tahrirlash' : 'Yangi dars qo\'shish',
       showBackButton: true,
       body: SingleChildScrollView(
         child: Form(
@@ -304,17 +365,90 @@ class _AddTimetableEntryScreenState
                   child: _isSubmitting
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          'Saqlash',
+                          isEditing ? 'O\'zgarishlarni saqlash' : 'Saqlash',
                           style: AppTypography.button.copyWith(fontSize: 18),
                         ),
                 ),
               ),
+
+              if (isEditing) ...[
+                const SizedBox(height: AppSpacing.md),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: OutlinedButton(
+                    onPressed: _isSubmitting ? null : _deleteEntry,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text('Darsni o\'chirish'),
+                  ),
+                ),
+              ],
+
               const SizedBox(height: AppSpacing.xl),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _deleteEntry() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Darsni o\'chirish'),
+        content: const Text('Haqiqatan ham ushbu darsni o\'chirmoqchimisiz?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Bekor qilish'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('O\'chirish'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final success = await ref
+          .read(timetableManagementProvider.notifier)
+          .deleteEntry(widget.initialEntry!.id);
+
+      if (success && mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Dars o\'chirildi'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              ref.read(timetableManagementProvider).error ??
+                  'Xatolik yuz berdi',
+            ),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   Widget _buildSectionTitle(String title) {
