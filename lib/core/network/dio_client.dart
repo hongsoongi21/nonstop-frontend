@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/env_config.dart';
@@ -9,7 +8,6 @@ import '../config/app_config.dart';
 import '../storage/secure_storage_service.dart'; // Corrected import path
 import '../utils/logger.dart';
 // import '../services/secure_storage_service.dart'; // Removed duplicate import
-import 'dto/auth_response_dto.dart';
 
 final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient(ref.read(secureStorageServiceProvider));

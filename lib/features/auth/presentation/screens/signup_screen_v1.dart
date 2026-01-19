@@ -376,7 +376,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       ),
       child: universitiesAsync.when(
         data: (universities) => DropdownButtonFormField<int>(
-          value: _selectedUniversityId,
+          initialValue: _selectedUniversityId,
           decoration: InputDecoration(
             hintText: 'Select University',
             hintStyle: TextStyle(

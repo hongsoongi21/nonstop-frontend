@@ -78,8 +78,8 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
           ? null
           : FloatingActionButton(
               onPressed: () => _showAddEntryDialog(context, notifier),
-              child: const Icon(Icons.add),
               backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add),
             ),
     );
   }
@@ -233,7 +233,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
             const SizedBox(height: 16),
             DropdownButtonFormField<int>(
               decoration: const InputDecoration(labelText: 'Semester'),
-              value: selectedSemesterId,
+              initialValue: selectedSemesterId,
               items: ref
                   .read(semestersProvider)
                   .map(
@@ -314,7 +314,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
                 const SizedBox(height: 16),
                 DropdownButtonFormField<DayOfWeek>(
                   decoration: const InputDecoration(labelText: 'Day'),
-                  value: selectedDay,
+                  initialValue: selectedDay,
                   items: DayOfWeek.values
                       .map(
                         (d) => DropdownMenuItem(

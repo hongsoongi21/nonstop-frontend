@@ -253,7 +253,7 @@ class _AddTimetableEntryScreenState
 
                     // Day Selector
                     DropdownButtonFormField<DayOfWeek>(
-                      value: _selectedDay,
+                      initialValue: _selectedDay,
                       decoration: InputDecoration(
                         labelText: 'Hafta kuni',
                         prefixIcon: const Icon(Icons.calendar_today_outlined),
