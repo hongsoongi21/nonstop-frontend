@@ -88,17 +88,31 @@ Organize code by **Feature** first, then **Layer**.
 *   **Assets**: Put images in `assets/images/`, icons in `assets/icons/`.
 *   **Env**: `flutter_dotenv`.
 
-## 6. Development Workflow for Agents
+## 6. Development Workflow for Agents (Beads Protocol)
 
-1.  **Check Work**: Run `bd ready` to find the next available task.
-2.  **Analyze**: Understand the feature requirements and existing code in `lib/features/`.
-2.  **Plan**: If adding a new feature, create the 3-layer structure (`data`, `domain`, `presentation`).
-3.  **Implement**:
+AI agents MUST use the **Beads** workflow for task management and persistence across sessions.
+
+### Step 1: Context Recovery (Start of Session)
+*   **Prime**: Run `bd prime` immediately to recover project context.
+*   **Check Work**: Run `bd ready` to find the next available task (no blockers).
+*   **Status**: Use `bd list --status=open,in_progress` to see the current roadmap.
+
+### Step 2: Task Execution
+*   **Claim**: Run `bd update <id> --status=in_progress` before starting work.
+*   **Analyze**: Understand the feature requirements and existing code in `lib/features/`.
+*   **Plan**: If adding a new feature, create the 3-layer structure (`data`, `domain`, `presentation`).
+*   **Implement**:
     *   Start with **Domain** (Entity -> Repository Interface).
     *   Implement **Data** (DTO -> API -> Repository Impl).
     *   Implement **Presentation** (Provider -> Widget).
-4.  **Generate**: Run `build_runner` if you added `@freezed` or `@JsonSerializable`.
-5.  **Verify**: Run `flutter analyze` and `flutter test`.
+*   **Generate**: Run `build_runner` if you added `@freezed` or `@JsonSerializable`.
+*   **Verify**: Run `flutter analyze` and `flutter test`.
+
+### Step 3: Session Completion (Landing the Plane)
+*   **Close Tasks**: Run `bd close <id> --reason "detailed explanation"` for all finished items.
+*   **Discover Work**: Use `bd create` for any bugs or technical debt discovered during implementation.
+*   **Sync**: Run `bd sync` to commit beads metadata.
+*   **Push**: Run `git push` only after user approval (see Git Protocol below).
 
 ## 7. Common Tasks
 
