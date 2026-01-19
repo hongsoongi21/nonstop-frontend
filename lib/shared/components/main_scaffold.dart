@@ -1,25 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/app_navigation.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
 import 'app_background.dart';
 
 /// Main scaffold with bottom navigation for the app
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
 
   const MainScaffold({super.key, required this.navigationShell});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final user = authState.user;
+    final isAdmin = user?.isAdmin ?? false;
+
     return Scaffold(
       extendBody: true,
       body: AppBackground(child: navigationShell),
       bottomNavigationBar: AppBottomNavigationBar(
         navigationShell: navigationShell,
       ),
+      floatingActionButton: isAdmin
+          ? AppFab(
+              icon: Icons.admin_panel_settings,
+              tooltip: 'Admin Menu',
+              backgroundColor: AppColors.secondary,
+              onPressed: () {
+                // TODO: 관리자 기능 구현
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
+                );
+              },
+            )
+          : null,
     );
   }
 }

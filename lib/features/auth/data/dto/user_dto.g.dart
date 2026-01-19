@@ -18,6 +18,7 @@ _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
       major: json['major'] as String?,
       majorId: (json['majorId'] as num?)?.toInt(),
       bio: json['introduction'] as String?,
+      role: json['userRole'] as String?,
       isEmailVerified: json['isVerified'] as bool? ?? false,
       createdAt: json['createdAt'] == null
           ? null
@@ -39,6 +40,7 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
       'major': instance.major,
       'majorId': instance.majorId,
       'introduction': instance.bio,
+      'userRole': instance.role,
       'isVerified': instance.isEmailVerified,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),

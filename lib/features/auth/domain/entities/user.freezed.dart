@@ -27,6 +27,7 @@ mixin _$User {
   String? get major => throw _privateConstructorUsedError;
   int? get majorId => throw _privateConstructorUsedError;
   String? get bio => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
   bool get isEmailVerified => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
@@ -53,6 +54,7 @@ abstract class $UserCopyWith<$Res> {
     String? major,
     int? majorId,
     String? bio,
+    String? role,
     bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -84,6 +86,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
+    Object? role = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -130,6 +133,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.bio
                 : bio // ignore: cast_nullable_to_non_nullable
                       as String?,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
             isEmailVerified: null == isEmailVerified
                 ? _value.isEmailVerified
                 : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -167,6 +174,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String? major,
     int? majorId,
     String? bio,
+    String? role,
     bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -195,6 +203,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
+    Object? role = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -241,6 +250,10 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.bio
             : bio // ignore: cast_nullable_to_non_nullable
                   as String?,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
         isEmailVerified: null == isEmailVerified
             ? _value.isEmailVerified
             : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -272,6 +285,7 @@ class _$UserImpl extends _User {
     this.major,
     this.majorId,
     this.bio,
+    this.role,
     this.isEmailVerified = false,
     this.createdAt,
     this.updatedAt,
@@ -298,6 +312,8 @@ class _$UserImpl extends _User {
   @override
   final String? bio;
   @override
+  final String? role;
+  @override
   @JsonKey()
   final bool isEmailVerified;
   @override
@@ -307,7 +323,7 @@ class _$UserImpl extends _User {
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'User(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, role: $role, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -330,6 +346,7 @@ class _$UserImpl extends _User {
             (identical(other.major, major) || other.major == major) &&
             (identical(other.majorId, majorId) || other.majorId == majorId) &&
             (identical(other.bio, bio) || other.bio == bio) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
             (identical(other.createdAt, createdAt) ||
@@ -351,6 +368,7 @@ class _$UserImpl extends _User {
     major,
     majorId,
     bio,
+    role,
     isEmailVerified,
     createdAt,
     updatedAt,
@@ -377,6 +395,7 @@ abstract class _User extends User {
     final String? major,
     final int? majorId,
     final String? bio,
+    final String? role,
     final bool isEmailVerified,
     final DateTime? createdAt,
     final DateTime? updatedAt,
@@ -403,6 +422,8 @@ abstract class _User extends User {
   int? get majorId;
   @override
   String? get bio;
+  @override
+  String? get role;
   @override
   bool get isEmailVerified;
   @override

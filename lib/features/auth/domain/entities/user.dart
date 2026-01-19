@@ -15,12 +15,16 @@ class User with _$User {
     String? major,
     int? majorId,
     String? bio,
+    String? role,
     @Default(false) bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _User;
 
   const User._();
+
+  /// 관리자 여부 확인
+  bool get isAdmin => role == 'ADMIN';
 
   /// 프로필 설정이 완료되었는지 확인
   bool get isProfileComplete => nickname.isNotEmpty && universityId != null;

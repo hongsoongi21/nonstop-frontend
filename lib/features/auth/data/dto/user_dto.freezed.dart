@@ -34,6 +34,8 @@ mixin _$UserDto {
   int? get majorId => throw _privateConstructorUsedError;
   @JsonKey(name: 'introduction')
   String? get bio => throw _privateConstructorUsedError;
+  @JsonKey(name: 'userRole')
+  String? get role => throw _privateConstructorUsedError;
   @JsonKey(name: 'isVerified')
   bool get isEmailVerified => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
@@ -64,6 +66,7 @@ abstract class $UserDtoCopyWith<$Res> {
     String? major,
     int? majorId,
     @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'userRole') String? role,
     @JsonKey(name: 'isVerified') bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -95,6 +98,7 @@ class _$UserDtoCopyWithImpl<$Res, $Val extends UserDto>
     Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
+    Object? role = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -141,6 +145,10 @@ class _$UserDtoCopyWithImpl<$Res, $Val extends UserDto>
                 ? _value.bio
                 : bio // ignore: cast_nullable_to_non_nullable
                       as String?,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
             isEmailVerified: null == isEmailVerified
                 ? _value.isEmailVerified
                 : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -178,6 +186,7 @@ abstract class _$$UserDtoImplCopyWith<$Res> implements $UserDtoCopyWith<$Res> {
     String? major,
     int? majorId,
     @JsonKey(name: 'introduction') String? bio,
+    @JsonKey(name: 'userRole') String? role,
     @JsonKey(name: 'isVerified') bool isEmailVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -208,6 +217,7 @@ class __$$UserDtoImplCopyWithImpl<$Res>
     Object? major = freezed,
     Object? majorId = freezed,
     Object? bio = freezed,
+    Object? role = freezed,
     Object? isEmailVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
@@ -254,6 +264,10 @@ class __$$UserDtoImplCopyWithImpl<$Res>
             ? _value.bio
             : bio // ignore: cast_nullable_to_non_nullable
                   as String?,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
         isEmailVerified: null == isEmailVerified
             ? _value.isEmailVerified
             : isEmailVerified // ignore: cast_nullable_to_non_nullable
@@ -285,6 +299,7 @@ class _$UserDtoImpl extends _UserDto {
     this.major,
     this.majorId,
     @JsonKey(name: 'introduction') this.bio,
+    @JsonKey(name: 'userRole') this.role,
     @JsonKey(name: 'isVerified') this.isEmailVerified = false,
     this.createdAt,
     this.updatedAt,
@@ -317,6 +332,9 @@ class _$UserDtoImpl extends _UserDto {
   @JsonKey(name: 'introduction')
   final String? bio;
   @override
+  @JsonKey(name: 'userRole')
+  final String? role;
+  @override
   @JsonKey(name: 'isVerified')
   final bool isEmailVerified;
   @override
@@ -326,7 +344,7 @@ class _$UserDtoImpl extends _UserDto {
 
   @override
   String toString() {
-    return 'UserDto(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'UserDto(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, role: $role, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -349,6 +367,7 @@ class _$UserDtoImpl extends _UserDto {
             (identical(other.major, major) || other.major == major) &&
             (identical(other.majorId, majorId) || other.majorId == majorId) &&
             (identical(other.bio, bio) || other.bio == bio) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
             (identical(other.createdAt, createdAt) ||
@@ -371,6 +390,7 @@ class _$UserDtoImpl extends _UserDto {
     major,
     majorId,
     bio,
+    role,
     isEmailVerified,
     createdAt,
     updatedAt,
@@ -402,6 +422,7 @@ abstract class _UserDto extends UserDto {
     final String? major,
     final int? majorId,
     @JsonKey(name: 'introduction') final String? bio,
+    @JsonKey(name: 'userRole') final String? role,
     @JsonKey(name: 'isVerified') final bool isEmailVerified,
     final DateTime? createdAt,
     final DateTime? updatedAt,
@@ -433,6 +454,9 @@ abstract class _UserDto extends UserDto {
   @override
   @JsonKey(name: 'introduction')
   String? get bio;
+  @override
+  @JsonKey(name: 'userRole')
+  String? get role;
   @override
   @JsonKey(name: 'isVerified')
   bool get isEmailVerified;
