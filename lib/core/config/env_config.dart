@@ -21,9 +21,9 @@ class EnvConfig {
   }
 
   static String get _localWsBaseUrl {
-    if (kIsWeb) return 'ws://localhost:28080/ws';
-    if (Platform.isAndroid) return 'ws://10.0.2.2:28080/ws';
-    return 'ws://localhost:28080/ws';
+    if (kIsWeb) return 'ws://localhost:28080/ws/v1/chat';
+    if (Platform.isAndroid) return 'ws://10.0.2.2:28080/ws/v1/chat';
+    return 'ws://localhost:28080/ws/v1/chat';
   }
 
   /// API base URL

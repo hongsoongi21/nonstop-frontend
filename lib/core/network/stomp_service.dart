@@ -5,34 +5,29 @@ import '../config/env_config.dart';
 import '../utils/logger.dart';
 
 /// Connection status for the UI to consume
-enum StompConnectionState {
-  disconnected,
-  connecting,
-  connected,
-  error,
-}
+enum StompConnectionState { disconnected, connecting, connected, error }
 
 /// A wrapper around StompClient to handle authentication and app-specific logic
 class StompService {
   StompClient? _client;
-  
+
   final _stateController = StreamController<StompConnectionState>.broadcast();
   Stream<StompConnectionState> get stateStream => _stateController.stream;
-  
+
   StompConnectionState _currentState = StompConnectionState.disconnected;
   StompConnectionState get currentState => _currentState;
 
   /// Connect to the STOMP server
   void connect({required String accessToken}) {
-    if (_currentState == StompConnectionState.connected || 
+    if (_currentState == StompConnectionState.connected ||
         _currentState == StompConnectionState.connecting) {
       return;
     }
 
     _updateState(StompConnectionState.connecting);
 
-    final wsUrl = EnvConfig.wsBaseUrl; // e.g. wss://api.nonstop.app/ws/v1/chat
-    
+    final wsUrl = '${EnvConfig.wsBaseUrl}?token=$accessToken';
+
     _client = StompClient(
       config: StompConfig(
         url: wsUrl,
@@ -41,12 +36,8 @@ class StompService {
         onStompError: (StompFrame frame) => _onError(frame.body),
         onDisconnect: (StompFrame frame) => _onDisconnect(frame),
         // Pass the access token in the headers for handshake authentication
-        stompConnectHeaders: {
-          'Authorization': 'Bearer $accessToken',
-        },
-        webSocketConnectHeaders: {
-          'Authorization': 'Bearer $accessToken',
-        },
+        stompConnectHeaders: {'Authorization': 'Bearer $accessToken'},
+        webSocketConnectHeaders: {'Authorization': 'Bearer $accessToken'},
       ),
     );
 
@@ -61,8 +52,8 @@ class StompService {
   /// Subscribe to a specific topic (e.g. a chat room)
   /// Returns a function to unsubscribe.
   void Function() subscribe({
-    required String destination, 
-    required void Function(Map<String, dynamic>) callback
+    required String destination,
+    required void Function(Map<String, dynamic>) callback,
   }) {
     if (_client == null || !_client!.connected) {
       AppLogger.w('Attempted to subscribe while disconnected: $destination');
@@ -70,7 +61,7 @@ class StompService {
     }
 
     AppLogger.i('Subscribing to: $destination');
-    
+
     return _client!.subscribe(
       destination: destination,
       callback: (StompFrame frame) {
@@ -87,19 +78,13 @@ class StompService {
   }
 
   /// Send a message to a destination
-  void send({
-    required String destination,
-    required Map<String, dynamic> body,
-  }) {
+  void send({required String destination, required Map<String, dynamic> body}) {
     if (_client == null || !_client!.connected) {
       AppLogger.e('Attempted to send message while disconnected');
       return;
     }
 
-    _client!.send(
-      destination: destination,
-      body: jsonEncode(body),
-    );
+    _client!.send(destination: destination, body: jsonEncode(body));
   }
 
   void _onConnect(StompFrame frame) {
