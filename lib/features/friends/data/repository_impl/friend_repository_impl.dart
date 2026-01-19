@@ -44,8 +44,8 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> acceptFriend(String userId) async {
-    final result = await _api.acceptFriend(userId);
+  Future<Either<Failure, Unit>> acceptFriend(String requestId) async {
+    final result = await _api.acceptFriend(requestId);
     return result.match(
       (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
       (unit) => Right(unit),
@@ -53,8 +53,26 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> deleteFriend(String userId) async {
-    final result = await _api.deleteFriend(userId);
+  Future<Either<Failure, Unit>> rejectFriend(String requestId) async {
+    final result = await _api.rejectFriend(requestId);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (unit) => Right(unit),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> cancelRequest(String requestId) async {
+    final result = await _api.cancelRequest(requestId);
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (unit) => Right(unit),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteFriend(String friendId) async {
+    final result = await _api.deleteFriend(friendId);
     return result.match(
       (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
       (unit) => Right(unit),

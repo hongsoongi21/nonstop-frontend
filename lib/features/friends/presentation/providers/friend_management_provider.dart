@@ -84,8 +84,8 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     }, (unit) => true);
   }
 
-  Future<bool> acceptRequest(String userId) async {
-    final result = await _repository.acceptFriend(userId);
+  Future<bool> acceptRequest(String requestId) async {
+    final result = await _repository.acceptFriend(requestId);
     return result.fold(
       (failure) {
         state = state.copyWith(error: failure.message);
@@ -99,8 +99,22 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     );
   }
 
-  Future<bool> deleteFriend(String userId) async {
-    final result = await _repository.deleteFriend(userId);
+  Future<bool> rejectRequest(String requestId) async {
+    final result = await _repository.rejectFriend(requestId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(error: failure.message);
+        return false;
+      },
+      (unit) {
+        loadRequests();
+        return true;
+      },
+    );
+  }
+
+  Future<bool> deleteFriend(String friendId) async {
+    final result = await _repository.deleteFriend(friendId);
     return result.fold(
       (failure) {
         state = state.copyWith(error: failure.message);

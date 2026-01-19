@@ -13,8 +13,9 @@ enum FriendStatus {
 @freezed
 class Friend with _$Friend {
   const factory Friend({
-    required String id,
+    required String id, // This is User ID
     required String nickname,
+    String? relationshipId, // This is requestId or friendshipId
     String? profileImageUrl,
     String? universityName,
     String? majorName,

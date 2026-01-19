@@ -17,8 +17,10 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$Friend {
-  String get id => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError; // This is User ID
   String get nickname => throw _privateConstructorUsedError;
+  String? get relationshipId =>
+      throw _privateConstructorUsedError; // This is requestId or friendshipId
   String? get profileImageUrl => throw _privateConstructorUsedError;
   String? get universityName => throw _privateConstructorUsedError;
   String? get majorName => throw _privateConstructorUsedError;
@@ -38,6 +40,7 @@ abstract class $FriendCopyWith<$Res> {
   $Res call({
     String id,
     String nickname,
+    String? relationshipId,
     String? profileImageUrl,
     String? universityName,
     String? majorName,
@@ -62,6 +65,7 @@ class _$FriendCopyWithImpl<$Res, $Val extends Friend>
   $Res call({
     Object? id = null,
     Object? nickname = null,
+    Object? relationshipId = freezed,
     Object? profileImageUrl = freezed,
     Object? universityName = freezed,
     Object? majorName = freezed,
@@ -77,6 +81,10 @@ class _$FriendCopyWithImpl<$Res, $Val extends Friend>
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
                       as String,
+            relationshipId: freezed == relationshipId
+                ? _value.relationshipId
+                : relationshipId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             profileImageUrl: freezed == profileImageUrl
                 ? _value.profileImageUrl
                 : profileImageUrl // ignore: cast_nullable_to_non_nullable
@@ -110,6 +118,7 @@ abstract class _$$FriendImplCopyWith<$Res> implements $FriendCopyWith<$Res> {
   $Res call({
     String id,
     String nickname,
+    String? relationshipId,
     String? profileImageUrl,
     String? universityName,
     String? majorName,
@@ -133,6 +142,7 @@ class __$$FriendImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? nickname = null,
+    Object? relationshipId = freezed,
     Object? profileImageUrl = freezed,
     Object? universityName = freezed,
     Object? majorName = freezed,
@@ -148,6 +158,10 @@ class __$$FriendImplCopyWithImpl<$Res>
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
                   as String,
+        relationshipId: freezed == relationshipId
+            ? _value.relationshipId
+            : relationshipId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         profileImageUrl: freezed == profileImageUrl
             ? _value.profileImageUrl
             : profileImageUrl // ignore: cast_nullable_to_non_nullable
@@ -175,6 +189,7 @@ class _$FriendImpl implements _Friend {
   const _$FriendImpl({
     required this.id,
     required this.nickname,
+    this.relationshipId,
     this.profileImageUrl,
     this.universityName,
     this.majorName,
@@ -183,8 +198,12 @@ class _$FriendImpl implements _Friend {
 
   @override
   final String id;
+  // This is User ID
   @override
   final String nickname;
+  @override
+  final String? relationshipId;
+  // This is requestId or friendshipId
   @override
   final String? profileImageUrl;
   @override
@@ -197,7 +216,7 @@ class _$FriendImpl implements _Friend {
 
   @override
   String toString() {
-    return 'Friend(id: $id, nickname: $nickname, profileImageUrl: $profileImageUrl, universityName: $universityName, majorName: $majorName, status: $status)';
+    return 'Friend(id: $id, nickname: $nickname, relationshipId: $relationshipId, profileImageUrl: $profileImageUrl, universityName: $universityName, majorName: $majorName, status: $status)';
   }
 
   @override
@@ -208,6 +227,8 @@ class _$FriendImpl implements _Friend {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
+            (identical(other.relationshipId, relationshipId) ||
+                other.relationshipId == relationshipId) &&
             (identical(other.profileImageUrl, profileImageUrl) ||
                 other.profileImageUrl == profileImageUrl) &&
             (identical(other.universityName, universityName) ||
@@ -222,6 +243,7 @@ class _$FriendImpl implements _Friend {
     runtimeType,
     id,
     nickname,
+    relationshipId,
     profileImageUrl,
     universityName,
     majorName,
@@ -241,6 +263,7 @@ abstract class _Friend implements Friend {
   const factory _Friend({
     required final String id,
     required final String nickname,
+    final String? relationshipId,
     final String? profileImageUrl,
     final String? universityName,
     final String? majorName,
@@ -248,9 +271,11 @@ abstract class _Friend implements Friend {
   }) = _$FriendImpl;
 
   @override
-  String get id;
+  String get id; // This is User ID
   @override
   String get nickname;
+  @override
+  String? get relationshipId; // This is requestId or friendshipId
   @override
   String? get profileImageUrl;
   @override

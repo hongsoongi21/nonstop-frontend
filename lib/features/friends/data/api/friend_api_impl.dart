@@ -39,7 +39,8 @@ class FriendApiImpl implements FriendApi {
   }
 
   @override
-  Future<Either<ApiException, List<FriendDto>>> getFriendRequests() async {
+  Future<Either<ApiException, List<FriendRequestDto>>>
+  getFriendRequests() async {
     try {
       final response = await _dio.get('/api/v1/friends/requests');
 
@@ -47,7 +48,7 @@ class FriendApiImpl implements FriendApi {
         final data = response.data;
         if (data['success'] == true && data['data'] != null) {
           final list = (data['data'] as List)
-              .map((json) => FriendDto.fromJson(json))
+              .map((json) => FriendRequestDto.fromJson(json))
               .toList();
           return right(list);
         }
@@ -63,7 +64,10 @@ class FriendApiImpl implements FriendApi {
   @override
   Future<Either<ApiException, Unit>> requestFriend(String userId) async {
     try {
-      final response = await _dio.post('/api/v1/friends/request/$userId');
+      final response = await _dio.post(
+        '/api/v1/friends/request',
+        data: {'targetUserId': int.parse(userId)},
+      );
 
       if (response.statusCode == 200) {
         return right(unit);
@@ -77,9 +81,11 @@ class FriendApiImpl implements FriendApi {
   }
 
   @override
-  Future<Either<ApiException, Unit>> acceptFriend(String userId) async {
+  Future<Either<ApiException, Unit>> acceptFriend(String requestId) async {
     try {
-      final response = await _dio.post('/api/v1/friends/accept/$userId');
+      final response = await _dio.post(
+        '/api/v1/friends/requests/$requestId/accept',
+      );
 
       if (response.statusCode == 200) {
         return right(unit);
@@ -93,9 +99,43 @@ class FriendApiImpl implements FriendApi {
   }
 
   @override
-  Future<Either<ApiException, Unit>> deleteFriend(String userId) async {
+  Future<Either<ApiException, Unit>> rejectFriend(String requestId) async {
     try {
-      final response = await _dio.delete('/api/v1/friends/$userId');
+      final response = await _dio.post(
+        '/api/v1/friends/requests/$requestId/reject',
+      );
+
+      if (response.statusCode == 200) {
+        return right(unit);
+      }
+      return left(ApiException('Failed to reject friend request'));
+    } on DioException catch (e) {
+      return left(ApiException(e.message ?? 'Network error'));
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ApiException, Unit>> cancelRequest(String requestId) async {
+    try {
+      final response = await _dio.delete('/api/v1/friends/requests/$requestId');
+
+      if (response.statusCode == 200) {
+        return right(unit);
+      }
+      return left(ApiException('Failed to cancel friend request'));
+    } on DioException catch (e) {
+      return left(ApiException(e.message ?? 'Network error'));
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ApiException, Unit>> deleteFriend(String friendId) async {
+    try {
+      final response = await _dio.delete('/api/v1/friends/$friendId');
 
       if (response.statusCode == 200) {
         return right(unit);
@@ -109,7 +149,7 @@ class FriendApiImpl implements FriendApi {
   }
 
   @override
-  Future<Either<ApiException, List<FriendDto>>> searchUsers(
+  Future<Either<ApiException, List<UserInfoDto>>> searchUsers(
     String query,
   ) async {
     try {
@@ -122,7 +162,7 @@ class FriendApiImpl implements FriendApi {
         final data = response.data;
         if (data['success'] == true && data['data'] != null) {
           final list = (data['data'] as List)
-              .map((json) => FriendDto.fromJson(json))
+              .map((json) => UserInfoDto.fromJson(json))
               .toList();
           return right(list);
         }

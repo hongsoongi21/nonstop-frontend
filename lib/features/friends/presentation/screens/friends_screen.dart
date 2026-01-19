@@ -417,7 +417,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 : null,
             child: friend.profileImageUrl == null
                 ? Text(
-                    friend.nickname[0].toUpperCase(),
+                    friend.nickname.isNotEmpty
+                        ? friend.nickname[0].toUpperCase()
+                        : '?',
                     style: AppTypography.headline6.copyWith(
                       color: AppColors.primary,
                     ),
@@ -590,7 +592,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   Future<void> _acceptRequest(Friend user) async {
     final success = await ref
         .read(friendManagementProvider.notifier)
-        .acceptRequest(user.id);
+        .acceptRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Do\'stlik so\'rovi qabul qilindi')),
@@ -601,12 +603,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   Future<void> _rejectRequest(Friend user) async {
     final success = await ref
         .read(friendManagementProvider.notifier)
-        .deleteFriend(user.id);
+        .rejectRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('So\'rov rad etildi')));
-      ref.read(friendManagementProvider.notifier).loadRequests();
     }
   }
 
