@@ -4,10 +4,14 @@ import '../../domain/entities/friend.dart';
 part 'friend_dto.freezed.dart';
 part 'friend_dto.g.dart';
 
+dynamic _readUserId(Map<dynamic, dynamic> json, String key) {
+  return json['userId'] ?? json['id'];
+}
+
 @freezed
 class UserInfoDto with _$UserInfoDto {
   const factory UserInfoDto({
-    required dynamic userId,
+    @JsonKey(readValue: _readUserId) required dynamic userId,
     required String nickname,
     String? profileImageUrl,
   }) = _UserInfoDto;

@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/network/stomp_service.dart';
-import 'package:nonstop/features/auth/data/repository_impl/auth_repository_impl.dart';
-import 'package:nonstop/features/auth/data/api/auth_api_mock.dart';
+import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
 import 'package:nonstop/features/chat/data/api/chat_api_mock.dart';
 import 'package:nonstop/features/chat/data/repository_impl/chat_repository_impl.dart';
@@ -25,11 +24,8 @@ final chatApiProvider = Provider<ChatApi>((ref) {
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   final api = ref.read(chatApiProvider);
   final stompService = ref.read(stompServiceProvider);
-  
-  // In a real app, we would use the globally provided AuthRepository.
-  // For integration testing/dev, we use the mock implementation.
-  final authRepo = AuthRepositoryImpl(AuthApiMock()); 
-  
+  final authRepo = ref.read(authRepositoryProvider);
+
   return ChatRepositoryImpl(api, stompService, authRepo);
 });
 
@@ -40,11 +36,7 @@ class ChatListState {
   final List<ChatRoom> rooms;
   final Failure? error;
 
-  ChatListState({
-    this.isLoading = false,
-    this.rooms = const [],
-    this.error,
-  });
+  ChatListState({this.isLoading = false, this.rooms = const [], this.error});
 }
 
 class ChatListNotifier extends StateNotifier<ChatListState> {
@@ -65,7 +57,11 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     state = ChatListState(isLoading: true, rooms: state.rooms);
     final result = await _repository.getMyChatRooms();
     result.fold(
-      (failure) => state = ChatListState(isLoading: false, error: failure, rooms: state.rooms),
+      (failure) => state = ChatListState(
+        isLoading: false,
+        error: failure,
+        rooms: state.rooms,
+      ),
       (rooms) => state = ChatListState(isLoading: false, rooms: rooms),
     );
   }
@@ -73,17 +69,25 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   Future<void> createOneToOneRoom(int targetUserId) async {
     final result = await _repository.createOneToOneRoom(targetUserId);
     result.fold(
-      (failure) => state = ChatListState(isLoading: false, error: failure, rooms: state.rooms),
-      (room) => state = ChatListState(isLoading: false, rooms: [room, ...state.rooms]),
+      (failure) => state = ChatListState(
+        isLoading: false,
+        error: failure,
+        rooms: state.rooms,
+      ),
+      (room) => state = ChatListState(
+        isLoading: false,
+        rooms: [room, ...state.rooms],
+      ),
     );
   }
 }
 
-final chatListProvider = StateNotifierProvider<ChatListNotifier, ChatListState>((ref) {
-  final repository = ref.watch(chatRepositoryProvider);
-  return ChatListNotifier(repository);
-});
-
+final chatListProvider = StateNotifierProvider<ChatListNotifier, ChatListState>(
+  (ref) {
+    final repository = ref.watch(chatRepositoryProvider);
+    return ChatListNotifier(repository);
+  },
+);
 
 // --- Room State (Messages) ---
 
@@ -92,11 +96,7 @@ class ChatRoomState {
   final List<ChatMessage> messages;
   final Failure? error;
 
-  ChatRoomState({
-    this.isLoading = false,
-    this.messages = const [],
-    this.error,
-  });
+  ChatRoomState({this.isLoading = false, this.messages = const [], this.error});
 }
 
 class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
@@ -113,7 +113,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     state = ChatRoomState(isLoading: true, messages: state.messages);
     final result = await _repository.getMessages(roomId: roomId);
     result.fold(
-      (failure) => state = ChatRoomState(isLoading: false, error: failure, messages: state.messages),
+      (failure) => state = ChatRoomState(
+        isLoading: false,
+        error: failure,
+        messages: state.messages,
+      ),
       (history) => state = ChatRoomState(isLoading: false, messages: history),
     );
   }
@@ -123,17 +127,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       // Deduplicate if needed, or append
       // Assuming new messages come here
       state = ChatRoomState(
-        isLoading: false, 
+        isLoading: false,
         messages: [message, ...state.messages], // Prepend if list is reversed
       );
     });
   }
 
-  Future<void> sendMessage(String content, {MessageType type = MessageType.text}) async {
+  Future<void> sendMessage(
+    String content, {
+    MessageType type = MessageType.text,
+  }) async {
     // Optimistic update
     final tempId = DateTime.now().millisecondsSinceEpoch;
     final optimisticMessage = ChatMessage(
-      id: tempId, 
+      id: tempId,
       roomId: roomId,
       senderId: 0, // Current user ID (unknown here without User provider)
       content: content,
@@ -141,30 +148,42 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       sentAt: DateTime.now(),
       isSending: true,
     );
-    
+
     state = ChatRoomState(
       isLoading: false,
       messages: [optimisticMessage, ...state.messages],
     );
 
-    final result = await _repository.sendMessage(roomId: roomId, content: content, type: type);
-    
+    final result = await _repository.sendMessage(
+      roomId: roomId,
+      content: content,
+      type: type,
+    );
+
     result.fold(
       (failure) {
         // Mark as error
         state = ChatRoomState(
           isLoading: false,
-          messages: state.messages.map((m) => m.id == tempId ? m.copyWith(hasError: true, isSending: false) : m).toList(),
+          messages: state.messages
+              .map(
+                (m) => m.id == tempId
+                    ? m.copyWith(hasError: true, isSending: false)
+                    : m,
+              )
+              .toList(),
         );
       },
       (_) {
-        // Success - usually we wait for the real message via WS to replace this, 
+        // Success - usually we wait for the real message via WS to replace this,
         // or we just mark it sent.
         state = ChatRoomState(
           isLoading: false,
-          messages: state.messages.map((m) => m.id == tempId ? m.copyWith(isSending: false) : m).toList(),
+          messages: state.messages
+              .map((m) => m.id == tempId ? m.copyWith(isSending: false) : m)
+              .toList(),
         );
-      }
+      },
     );
   }
 
@@ -175,7 +194,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 }
 
-final chatRoomProvider = StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, int>((ref, roomId) {
-  final repository = ref.watch(chatRepositoryProvider);
-  return ChatRoomNotifier(repository, roomId);
-});
+final chatRoomProvider =
+    StateNotifierProvider.family<ChatRoomNotifier, ChatRoomState, int>((
+      ref,
+      roomId,
+    ) {
+      final repository = ref.watch(chatRepositoryProvider);
+      return ChatRoomNotifier(repository, roomId);
+    });

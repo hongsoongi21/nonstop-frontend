@@ -8,7 +8,7 @@ part of 'friend_dto.dart';
 
 _$UserInfoDtoImpl _$$UserInfoDtoImplFromJson(Map<String, dynamic> json) =>
     _$UserInfoDtoImpl(
-      userId: json['userId'],
+      userId: _readUserId(json, 'userId'),
       nickname: json['nickname'] as String,
       profileImageUrl: json['profileImageUrl'] as String?,
     );

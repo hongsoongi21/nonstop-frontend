@@ -23,8 +23,9 @@ class DioClient {
 
     // 인터셉터 추가
     _dio.interceptors.addAll([
-      _AuthInterceptor(_secureStorageService), // From feature/auth-screens, takes service
-      _ResponseCheckInterceptor(), // From HEAD
+      _AuthInterceptor(_secureStorageService, _dio), // Pass _dio for retry
+      _ResponseCheckInterceptor(),
+
       _LoggingInterceptor(),
       _ErrorInterceptor(),
     ]);
@@ -51,8 +52,7 @@ class DioClient {
 
   /// GET 요청
   Future<Response<T>> get<T>(
-    String path,
-    {
+    String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
@@ -69,8 +69,7 @@ class DioClient {
 
   /// POST 요청
   Future<Response<T>> post<T>(
-    String path,
-    {
+    String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -91,8 +90,7 @@ class DioClient {
 
   /// PUT 요청
   Future<Response<T>> put<T>(
-    String path,
-    {
+    String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -113,8 +111,7 @@ class DioClient {
 
   /// PATCH 요청
   Future<Response<T>> patch<T>(
-    String path,
-    {
+    String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -135,8 +132,7 @@ class DioClient {
 
   /// DELETE 요청
   Future<Response<T>> delete<T>(
-    String path,
-    {
+    String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
@@ -154,8 +150,7 @@ class DioClient {
   /// 파일 다운로드
   Future<Response> download(
     String urlPath,
-    String savePath,
-    {
+    String savePath, {
     ProgressCallback? onReceiveProgress,
     Map<String, dynamic>? queryParameters,
     CancelToken? cancelToken,
@@ -184,12 +179,16 @@ class DioClient {
 /// 인증 인터셉터
 class _AuthInterceptor extends Interceptor {
   final SecureStorageService _secureStorageService;
+  final Dio _dio;
   bool _isRefreshing = false;
 
-  _AuthInterceptor(this._secureStorageService);
+  _AuthInterceptor(this._secureStorageService, this._dio);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     // 보안 저장소에서 JWT 토큰을 가져와 헤더에 주입
     final token = await _secureStorageService.getAccessToken();
     if (token != null) {
@@ -235,8 +234,8 @@ class _AuthInterceptor extends Interceptor {
             // 원래 실패했던 요청 재시도
             final options = err.requestOptions;
             options.headers['Authorization'] = 'Bearer $newAccessToken';
-            
-            final retryResponse = await dio.fetch(options);
+
+            final retryResponse = await _dio.fetch(options);
             return handler.resolve(retryResponse);
           }
         } catch (e) {
@@ -289,10 +288,10 @@ class _LoggingInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final method = options.method.toUpperCase();
     final uri = options.uri.toString();
-    
+
     AppLogger.n('┌── 🚀 [API REQUEST] $method');
     AppLogger.n('│ 🔗 URL: $uri');
-    
+
     if (options.data != null) {
       _printFormattedBody('│ 📦 Body:', options.data);
     }
@@ -309,10 +308,13 @@ class _LoggingInterceptor extends Interceptor {
     final method = response.requestOptions.method.toUpperCase();
     final path = response.requestOptions.uri.path;
     final statusCode = response.statusCode;
-    final successIcon = (statusCode != null && statusCode >= 200 && statusCode < 300) ? '✅' : '⚠️';
-    
+    final successIcon =
+        (statusCode != null && statusCode >= 200 && statusCode < 300)
+        ? '✅'
+        : '⚠️';
+
     AppLogger.s('┌── $successIcon [API RESPONSE] $statusCode | $method $path');
-    
+
     if (response.data != null) {
       _printFormattedBody('│ 📥 Data:', response.data);
     }
@@ -330,7 +332,7 @@ class _LoggingInterceptor extends Interceptor {
 
     AppLogger.e('┌── ❌ [API ERROR] $statusCode | $method $path');
     AppLogger.e('│ 📝 Message: $message');
-    
+
     if (err.response?.data != null) {
       _printFormattedBody('│ 📦 Error Data:', err.response?.data);
     }
@@ -344,19 +346,24 @@ class _LoggingInterceptor extends Interceptor {
 
     if (data is String) {
       // HTML 감지
-      if (data.trim().toLowerCase().startsWith('<!doctype html') || 
+      if (data.trim().toLowerCase().startsWith('<!doctype html') ||
           data.trim().toLowerCase().startsWith('<html')) {
-        
         // Title 추출 시도
-        final titleMatch = RegExp(r'<title>(.*?)</title>', caseSensitive: false, dotAll: true).firstMatch(data);
+        final titleMatch = RegExp(
+          r'<title>(.*?)</title>',
+          caseSensitive: false,
+          dotAll: true,
+        ).firstMatch(data);
         final title = titleMatch?.group(1)?.trim() ?? 'No Title';
-        
+
         AppLogger.w('$prefix [HTML RESPONSE DETECTED]');
         AppLogger.d('│    📄 Page Title: "$title"');
-        AppLogger.d('│    📄 Preview: ${data.substring(0, min(data.length, 100)).replaceAll('\n', ' ')}...');
+        AppLogger.d(
+          '│    📄 Preview: ${data.substring(0, min(data.length, 100)).replaceAll('\n', ' ')}...',
+        );
         return;
       }
-      
+
       // 일반 문자열
       AppLogger.d('$prefix $data');
     } else if (data is Map || data is List) {
@@ -365,7 +372,7 @@ class _LoggingInterceptor extends Interceptor {
         final prettyJson = _jsonEncoder.convert(data);
         // 너무 길면 줄바꿈 처리해서 출력하거나, AppLogger에 맡김.
         // 여기서는 가독성을 위해 첫 줄 뒤에 내용을 붙입니다.
-        // AppLogger가 긴 내용을 처리한다고 가정하고 통째로 넘기되, 
+        // AppLogger가 긴 내용을 처리한다고 가정하고 통째로 넘기되,
         // 박스 라인을 맞추기 위해 줄바꿈을 처리할 수도 있습니다.
         // 단순하게 갑니다.
         AppLogger.d('$prefix $prettyJson');

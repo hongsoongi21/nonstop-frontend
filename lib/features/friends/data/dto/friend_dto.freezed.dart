@@ -21,6 +21,7 @@ UserInfoDto _$UserInfoDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserInfoDto {
+  @JsonKey(readValue: _readUserId)
   dynamic get userId => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
   String? get profileImageUrl => throw _privateConstructorUsedError;
@@ -42,7 +43,11 @@ abstract class $UserInfoDtoCopyWith<$Res> {
     $Res Function(UserInfoDto) then,
   ) = _$UserInfoDtoCopyWithImpl<$Res, UserInfoDto>;
   @useResult
-  $Res call({dynamic userId, String nickname, String? profileImageUrl});
+  $Res call({
+    @JsonKey(readValue: _readUserId) dynamic userId,
+    String nickname,
+    String? profileImageUrl,
+  });
 }
 
 /// @nodoc
@@ -93,7 +98,11 @@ abstract class _$$UserInfoDtoImplCopyWith<$Res>
   ) = __$$UserInfoDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({dynamic userId, String nickname, String? profileImageUrl});
+  $Res call({
+    @JsonKey(readValue: _readUserId) dynamic userId,
+    String nickname,
+    String? profileImageUrl,
+  });
 }
 
 /// @nodoc
@@ -137,7 +146,7 @@ class __$$UserInfoDtoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserInfoDtoImpl implements _UserInfoDto {
   const _$UserInfoDtoImpl({
-    required this.userId,
+    @JsonKey(readValue: _readUserId) required this.userId,
     required this.nickname,
     this.profileImageUrl,
   });
@@ -146,6 +155,7 @@ class _$UserInfoDtoImpl implements _UserInfoDto {
       _$$UserInfoDtoImplFromJson(json);
 
   @override
+  @JsonKey(readValue: _readUserId)
   final dynamic userId;
   @override
   final String nickname;
@@ -194,7 +204,7 @@ class _$UserInfoDtoImpl implements _UserInfoDto {
 
 abstract class _UserInfoDto implements UserInfoDto {
   const factory _UserInfoDto({
-    required final dynamic userId,
+    @JsonKey(readValue: _readUserId) required final dynamic userId,
     required final String nickname,
     final String? profileImageUrl,
   }) = _$UserInfoDtoImpl;
@@ -203,6 +213,7 @@ abstract class _UserInfoDto implements UserInfoDto {
       _$UserInfoDtoImpl.fromJson;
 
   @override
+  @JsonKey(readValue: _readUserId)
   dynamic get userId;
   @override
   String get nickname;

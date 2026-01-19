@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/friend.dart';
 import '../../domain/repository/friend_repository.dart';
 import '../../data/repository_impl/friend_repository_impl.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
+import '../../../../core/utils/logger.dart';
 
 class FriendManagementState {
   final bool isLoading;
@@ -38,8 +40,10 @@ class FriendManagementState {
 
 class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
   final FriendRepository _repository;
+  final Ref ref;
 
-  FriendManagementNotifier(this._repository) : super(FriendManagementState());
+  FriendManagementNotifier(this._repository, this.ref)
+    : super(FriendManagementState());
 
   Future<void> loadFriends() async {
     state = state.copyWith(isLoading: true, clearError: true);
@@ -67,12 +71,69 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
       state = state.copyWith(searchResults: []);
       return;
     }
+
+    // Ensure friends and requests are loaded first
+    if (state.friends.isEmpty && state.requests.isEmpty) {
+      AppLogger.d('🔍 [Search] Friends/requests not loaded, loading now...');
+      await loadFriends();
+      await loadRequests();
+    }
+
     state = state.copyWith(isLoading: true, clearError: true);
     final result = await _repository.searchUsers(query);
     result.fold(
       (failure) =>
           state = state.copyWith(isLoading: false, error: failure.message),
-      (users) => state = state.copyWith(isLoading: false, searchResults: users),
+      (users) {
+        final currentUserId = ref.read(currentUserProvider)?.id;
+        final currentNickname = ref.read(currentUserProvider)?.nickname;
+
+        AppLogger.d(
+          '🔍 [Search] Current User ID: $currentUserId, Nickname: $currentNickname',
+        );
+        for (var u in users) {
+          AppLogger.d(
+            '🔍 [Search] Result User ID: ${u.id}, Nickname: ${u.nickname}',
+          );
+        }
+
+        final friendsIds = state.friends.map((f) => f.id).toSet();
+        final requestsIds = state.requests.map((r) => r.id).toSet();
+
+        AppLogger.d('🔍 [Search] Friends IDs: $friendsIds');
+        AppLogger.d('🔍 [Search] Requests IDs: $requestsIds');
+        AppLogger.d('🔍 [Search] Friends count: ${state.friends.length}');
+        AppLogger.d('🔍 [Search] Requests count: ${state.requests.length}');
+
+        final filteredUsers = users
+            .where((user) {
+              final isSelf =
+                  user.id == currentUserId || user.nickname == currentNickname;
+              if (isSelf) {
+                AppLogger.d('🔍 [Search] Filtering out self: ${user.nickname}');
+              }
+              return !isSelf;
+            })
+            .map((user) {
+              AppLogger.d(
+                '🔍 [Search] Checking user ${user.id} (${user.nickname}) - isFriend: ${friendsIds.contains(user.id)}, isRequest: ${requestsIds.contains(user.id)}',
+              );
+              if (friendsIds.contains(user.id)) {
+                AppLogger.d('✅ [Search] User ${user.nickname} is a friend');
+                return user.copyWith(status: FriendStatus.accepted);
+              } else if (requestsIds.contains(user.id)) {
+                AppLogger.d(
+                  '📨 [Search] User ${user.nickname} has pending request',
+                );
+                return user.copyWith(status: FriendStatus.pendingReceived);
+              }
+              AppLogger.d('👤 [Search] User ${user.nickname} is new');
+              return user;
+            })
+            .toList();
+
+        state = state.copyWith(isLoading: false, searchResults: filteredUsers);
+      },
     );
   }
 
@@ -132,5 +193,5 @@ final friendManagementProvider =
     StateNotifierProvider<FriendManagementNotifier, FriendManagementState>((
       ref,
     ) {
-      return FriendManagementNotifier(ref.read(friendRepositoryProvider));
+      return FriendManagementNotifier(ref.read(friendRepositoryProvider), ref);
     });
