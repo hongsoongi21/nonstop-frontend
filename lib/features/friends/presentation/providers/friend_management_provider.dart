@@ -11,6 +11,7 @@ class FriendManagementState {
   final List<Friend> friends;
   final List<Friend> requests;
   final List<Friend> searchResults;
+  final Set<String> sentRequestUserIds;
 
   FriendManagementState({
     this.isLoading = false,
@@ -18,6 +19,7 @@ class FriendManagementState {
     this.friends = const [],
     this.requests = const [],
     this.searchResults = const [],
+    this.sentRequestUserIds = const {},
   });
 
   FriendManagementState copyWith({
@@ -26,6 +28,7 @@ class FriendManagementState {
     List<Friend>? friends,
     List<Friend>? requests,
     List<Friend>? searchResults,
+    Set<String>? sentRequestUserIds,
     bool clearError = false,
   }) {
     return FriendManagementState(
@@ -34,6 +37,7 @@ class FriendManagementState {
       friends: friends ?? this.friends,
       requests: requests ?? this.requests,
       searchResults: searchResults ?? this.searchResults,
+      sentRequestUserIds: sentRequestUserIds ?? this.sentRequestUserIds,
     );
   }
 }
@@ -99,6 +103,7 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
 
         final friendsIds = state.friends.map((f) => f.id).toSet();
         final requestsIds = state.requests.map((r) => r.id).toSet();
+        final sentRequestIds = state.sentRequestUserIds;
 
         AppLogger.d('🔍 [Search] Friends IDs: $friendsIds');
         AppLogger.d('🔍 [Search] Requests IDs: $requestsIds');
@@ -126,6 +131,11 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
                   '📨 [Search] User ${user.nickname} has pending request',
                 );
                 return user.copyWith(status: FriendStatus.pendingReceived);
+              } else if (sentRequestIds.contains(user.id)) {
+                AppLogger.d(
+                  '📨 [Search] User ${user.nickname} has pending sent request',
+                );
+                return user.copyWith(status: FriendStatus.pendingSent);
               }
               AppLogger.d('👤 [Search] User ${user.nickname} is new');
               return user;
@@ -142,7 +152,23 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     return result.fold((failure) {
       state = state.copyWith(error: failure.message);
       return false;
-    }, (unit) => true);
+    }, (unit) {
+      final updatedSentIds = {...state.sentRequestUserIds, userId};
+      final updatedResults = state.searchResults
+          .map(
+            (u) => u.id == userId
+                ? u.copyWith(status: FriendStatus.pendingSent)
+                : u,
+          )
+          .toList();
+
+      state = state.copyWith(
+        clearError: true,
+        sentRequestUserIds: updatedSentIds,
+        searchResults: updatedResults,
+      );
+      return true;
+    });
   }
 
   Future<bool> acceptRequest(String requestId) async {
