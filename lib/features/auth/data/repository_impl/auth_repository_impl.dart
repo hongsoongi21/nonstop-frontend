@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
+import '../../domain/entities/policy.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repository/auth_repository.dart';
 import '../api/auth_api.dart';
@@ -222,6 +223,21 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final token = await _authApi.getAccessToken();
       return Right(token);
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Policy>>> getPolicies() async {
+    try {
+      final dtos = await _authApi.getPolicies();
+      final policies = dtos.map((dto) => dto.toDomain()).toList();
+      return Right(policies);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }

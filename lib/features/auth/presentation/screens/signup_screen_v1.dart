@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../domain/entities/policy.dart';
 import '../../domain/entities/university.dart';
 import '../providers/auth_provider.dart';
+import '../providers/policy_provider.dart';
 import '../providers/university_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
 import '../widgets/gradient_button.dart';
@@ -28,10 +31,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   final _confirmPasswordController = TextEditingController();
 
   int? _selectedUniversityId;
-  bool _allAgreed = false;
-  bool _termsAgreed = false;
-  bool _privacyAgreed = false;
-  bool _marketingAgreed = false;
+  
+  // 동의한 정책 ID들을 저장하는 Set
+  final Set<int> _agreedPolicyIds = {};
 
   @override
   void dispose() {
@@ -42,42 +44,81 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     super.dispose();
   }
 
-  void _handleAllAgreedChanged(bool? value) {
+  void _handleAllAgreedChanged(bool? value, List<Policy> policies) {
     setState(() {
-      _allAgreed = value ?? false;
-      _termsAgreed = _allAgreed;
-      _privacyAgreed = _allAgreed;
-      _marketingAgreed = _allAgreed;
+      if (value == true) {
+        _agreedPolicyIds.addAll(policies.map((p) => p.id));
+      } else {
+        _agreedPolicyIds.clear();
+      }
     });
   }
 
-  void _handleIndividualPolicyChanged() {
+  void _handlePolicyToggle(int policyId, bool value) {
     setState(() {
-      _allAgreed = _termsAgreed && _privacyAgreed && _marketingAgreed;
+      if (value) {
+        _agreedPolicyIds.add(policyId);
+      } else {
+        _agreedPolicyIds.remove(policyId);
+      }
     });
   }
 
-  void _handleViewPolicy(String policyType) {
-    // TODO: 정책 상세 화면으로 이동 로직 구현 필요
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$policyType 정책 보기 - 구현 예정'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  Future<void> _handleViewPolicy(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not launch $urlString'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error launching URL: $e'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _handleSignup() async {
     // 1. 클라이언트 측 유효성 검사 (입력 형식 등)
     if (!_formKey.currentState!.validate()) return;
 
-    // 2. 필수 약관 동의 여부 확인
-    if (!_termsAgreed || !_privacyAgreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Majburiy shartlarni qabul qiling'),
+    // 2. 정책 로드 상태 확인 및 필수 약관 동의 검사
+    final policiesAsync = ref.read(policiesProvider);
+    
+    // 데이터가 아직 로드되지 않았거나 에러인 경우 처리
+    if (!policiesAsync.hasValue) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please wait for policies to load'),
           backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final policies = policiesAsync.value!;
+    final mandatoryPolicies = policies.where((p) => p.isMandatory);
+    final isAllMandatoryAgreed = mandatoryPolicies.every((p) => _agreedPolicyIds.contains(p.id));
+
+    if (!isAllMandatoryAgreed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Majburiy shartlarni qabul qiling'),
+          backgroundColor: AppColors.error,
+          duration: Duration(seconds: 2),
         ),
       );
       return;
@@ -86,10 +127,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 3. 대학교 선택 여부 확인
     if (_selectedUniversityId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Universitetni tanlang'),
+        const SnackBar(
+          content: Text('Universitetni tanlang'),
           backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 2),
+          duration: Duration(seconds: 2),
         ),
       );
       return;
@@ -109,7 +150,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 5. 실행 결과에 따른 처리
     final authState = ref.read(authProvider);
     if (authState.hasError) {
-      // 실패 시 에러 메시지 노출 (이미 가입된 이메일 등)
+      // 실패 시 에러 메시지 노출
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authState.failure?.message ?? '회원가입 실패'),
@@ -131,6 +172,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 로딩 상태 및 대학 목록 데이터를 Watch 합니다.
     final isLoading = ref.watch(isLoadingProvider);
     final universitiesAsync = ref.watch(universitiesProvider);
+    // 정책 목록 데이터를 Watch 합니다.
+    final policiesAsync = ref.watch(policiesProvider);
 
     return Scaffold(
       body: Container(
@@ -221,7 +264,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   SizedBox(height: 20.h),
 
-                                  // 대학교 선택 드롭다운 (Async 데이터를 사용하여 빌드)
+                                  // 대학교 선택 드롭다운
                                   _buildUniversityDropdown(universitiesAsync),
 
                                   SizedBox(height: 20.h),
@@ -284,8 +327,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   SizedBox(height: 24.h),
 
-                                  // 약관 동의 섹션
-                                  _buildPolicyAgreementSection(),
+                                  // 약관 동의 섹션 (API 데이터 기반)
+                                  _buildPolicyAgreementSection(policiesAsync),
 
                                   SizedBox(height: 24.h),
 
@@ -435,7 +478,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     );
   }
 
-  Widget _buildPolicyAgreementSection() {
+  Widget _buildPolicyAgreementSection(AsyncValue<List<Policy>> policiesAsync) {
     return Container(
       width: 275.w,
       decoration: BoxDecoration(
@@ -444,93 +487,73 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         border: Border.all(color: const Color(0xFFE5E7EB), width: 1.w),
       ),
       padding: EdgeInsets.all(16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // All agree checkbox
-          InkWell(
-            onTap: () => _handleAllAgreedChanged(!_allAgreed),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 20.w,
-                  height: 20.h,
-                  child: Checkbox(
-                    value: _allAgreed,
-                    onChanged: _handleAllAgreedChanged,
-                    activeColor: const Color(0xFF7C3BEE),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.r),
+      child: policiesAsync.when(
+        data: (policies) {
+          if (policies.isEmpty) {
+            return const Text('No policies available');
+          }
+          
+          final isAllAgreed = policies.every((p) => _agreedPolicyIds.contains(p.id));
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // All agree checkbox
+              InkWell(
+                onTap: () => _handleAllAgreedChanged(!isAllAgreed, policies),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 20.w,
+                      height: 20.h,
+                      child: Checkbox(
+                        value: isAllAgreed,
+                        onChanged: (value) => _handleAllAgreedChanged(value, policies),
+                        activeColor: const Color(0xFF7C3BEE),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      'Hammaga roziman',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF111827),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: 8.w),
-                Text(
-                  'Hammaga roziman',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF111827),
+              ),
+
+              SizedBox(height: 8.h),
+
+              // Divider
+              Divider(color: const Color(0xFFE5E7EB), thickness: 1.h, height: 1.h),
+
+              SizedBox(height: 12.h),
+
+              // Individual Policies
+              ...policies.map((policy) {
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 12.h),
+                  child: _buildPolicyCheckbox(
+                    value: _agreedPolicyIds.contains(policy.id),
+                    onChanged: (value) => _handlePolicyToggle(policy.id, value ?? false),
+                    label: policy.title,
+                    isRequired: policy.isMandatory,
+                    onViewPolicy: () => _handleViewPolicy(policy.url),
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: 8.h),
-
-          // Divider
-          Divider(color: const Color(0xFFE5E7EB), thickness: 1.h, height: 1.h),
-
-          SizedBox(height: 12.h),
-
-          // Terms of service (required)
-          _buildPolicyCheckbox(
-            value: _termsAgreed,
-            onChanged: (value) {
-              setState(() {
-                _termsAgreed = value ?? false;
-                _handleIndividualPolicyChanged();
-              });
-            },
-            label: 'Foydalanish shartlari',
-            isRequired: true,
-            onViewPolicy: () => _handleViewPolicy('Terms of Service'),
-          ),
-
-          SizedBox(height: 12.h),
-
-          // Privacy policy (required)
-          _buildPolicyCheckbox(
-            value: _privacyAgreed,
-            onChanged: (value) {
-              setState(() {
-                _privacyAgreed = value ?? false;
-                _handleIndividualPolicyChanged();
-              });
-            },
-            label: 'Maxfiylik siyosati',
-            isRequired: true,
-            onViewPolicy: () => _handleViewPolicy('Privacy Policy'),
-          ),
-
-          SizedBox(height: 12.h),
-
-          // Marketing (optional)
-          _buildPolicyCheckbox(
-            value: _marketingAgreed,
-            onChanged: (value) {
-              setState(() {
-                _marketingAgreed = value ?? false;
-                _handleIndividualPolicyChanged();
-              });
-            },
-            label: 'Marketing xabarlari',
-            isRequired: false,
-            onViewPolicy: () => _handleViewPolicy('Marketing'),
-          ),
-        ],
+                );
+              }),
+            ],
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(child: Text('Error: $err')),
       ),
     );
   }

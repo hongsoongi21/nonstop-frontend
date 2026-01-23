@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../entities/policy.dart';
 import '../entities/user.dart';
 
 /// Repository interface for authentication operations
@@ -60,6 +61,9 @@ abstract class AuthRepository {
 
   /// Get current access token
   Future<Either<Failure, String?>> getAccessToken();
+  
+  /// Get policy list
+  Future<Either<Failure, List<Policy>>> getPolicies();
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;

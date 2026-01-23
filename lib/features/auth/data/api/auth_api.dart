@@ -1,4 +1,5 @@
 import '../../domain/entities/user.dart';
+import '../dto/policy_response_dto.dart';
 
 /// API interface for authentication operations
 abstract class AuthApi {
@@ -57,6 +58,9 @@ abstract class AuthApi {
   Future<User> signInWithGoogle({
     required String idToken,
   });
+
+  /// Get policy list
+  Future<List<PolicyResponseDto>> getPolicies();
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;

@@ -10,6 +10,7 @@ import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
 import '../dto/google_login_request_dto.dart';
+import '../dto/policy_response_dto.dart';
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
 import '../../../../core/utils/logger.dart'; // Added for AppLogger
@@ -287,6 +288,19 @@ class AuthApiImpl implements AuthApi {
           statusCode: response.statusCode ?? 500,
         );
       }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<List<PolicyResponseDto>> getPolicies() async {
+    try {
+      final response = await _dioClient.get('/api/v1/policies');
+      
+      // JSON Array 응답 처리
+      final List<dynamic> list = response.data;
+      return list.map((e) => PolicyResponseDto.fromJson(e)).toList();
     } on DioException catch (e) {
       throw _handleDioError(e);
     }
