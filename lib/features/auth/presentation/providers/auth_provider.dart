@@ -8,6 +8,7 @@ import '../../data/api/auth_api_impl.dart';
 import '../../data/repository_impl/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../domain/usecases/google_sign_in_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
 
@@ -43,23 +44,21 @@ final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
   return SignUpUseCase(repository);
 });
 
+/// GoogleSignInUseCase 제공자
+final googleSignInUseCaseProvider = Provider<GoogleSignInUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return GoogleSignInUseCase(repository);
+});
+
 /// 현재 인증 상태를 나타내는 클래스
 class AuthState {
   final bool isLoading;
   final User? user;
   final Failure? failure;
 
-  const AuthState({
-    this.isLoading = false,
-    this.user,
-    this.failure,
-  });
+  const AuthState({this.isLoading = false, this.user, this.failure});
 
-  AuthState copyWith({
-    bool? isLoading,
-    User? user,
-    Failure? failure,
-  }) {
+  AuthState copyWith({bool? isLoading, User? user, Failure? failure}) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
@@ -79,16 +78,19 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final SignInUseCase _signInUseCase;
   final SignUpUseCase _signUpUseCase;
+  final GoogleSignInUseCase _googleSignInUseCase;
   final AuthRepository _authRepository;
 
   AuthNotifier({
     required SignInUseCase signInUseCase,
     required SignUpUseCase signUpUseCase,
+    required GoogleSignInUseCase googleSignInUseCase,
     required AuthRepository authRepository,
-  })  : _signInUseCase = signInUseCase,
-        _signUpUseCase = signUpUseCase,
-        _authRepository = authRepository,
-        super(const AuthState()) {
+  }) : _signInUseCase = signInUseCase,
+       _signUpUseCase = signUpUseCase,
+       _googleSignInUseCase = googleSignInUseCase,
+       _authRepository = authRepository,
+       super(const AuthState()) {
     // 앱 시작 시 현재 로그인된 사용자가 있는지 초기화합니다.
     _initializeAuth();
   }
@@ -97,16 +99,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _initializeAuth() async {
     state = state.copyWith(isLoading: true);
     final result = await _authRepository.getCurrentUser();
-    result.fold(
-      (failure) => state = state.copyWith(isLoading: false),
-      (user) => state = state.copyWith(isLoading: false, user: user),
-    );
+    result.fold((failure) => state = state.copyWith(isLoading: false), (user) {
+      state = state.copyWith(isLoading: false, user: user);
+    });
   }
 
   /// 이메일과 비밀번호로 로그인을 수행합니다.
   Future<void> signIn(String email, String password) async {
     state = state.copyWith(isLoading: true, failure: null);
-    final result = await _signInUseCase(SignInParams(email: email, password: password));
+    final result = await _signInUseCase(
+      SignInParams(email: email, password: password),
+    );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
       (user) => state = state.copyWith(isLoading: false, user: user),
@@ -123,13 +126,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
     int? majorId,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
-    final result = await _signUpUseCase(SignUpParams(
-      email: email,
-      password: password,
-      nickname: nickname,
-      universityId: universityId,
-      majorId: majorId,
-    ));
+    final result = await _signUpUseCase(
+      SignUpParams(
+        email: email,
+        password: password,
+        nickname: nickname,
+        universityId: universityId,
+        majorId: majorId,
+      ),
+    );
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) => state = state.copyWith(isLoading: false, user: user),
+    );
+  }
+
+  /// Google로 로그인을 수행합니다.
+  Future<void> signInWithGoogle(String idToken) async {
+    state = state.copyWith(isLoading: true, failure: null);
+    final result = await _googleSignInUseCase(
+      GoogleSignInParams(idToken: idToken),
+    );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
       (user) => state = state.copyWith(isLoading: false, user: user),
@@ -154,6 +171,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     signInUseCase: ref.watch(signInUseCaseProvider),
     signUpUseCase: ref.watch(signUpUseCaseProvider),
+    googleSignInUseCase: ref.watch(googleSignInUseCaseProvider),
     authRepository: ref.watch(authRepositoryProvider),
   );
 });

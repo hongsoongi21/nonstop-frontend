@@ -9,6 +9,17 @@ class EnvConfig {
   static const String _wsBaseUrlKey = 'WS_BASE_URL';
   static const String _environmentKey = 'ENVIRONMENT';
 
+  /// When running a physical Android device over USB with `adb reverse`,
+  /// use localhost from the device to reach the host machine.
+  ///
+  /// Run:
+  /// - `adb reverse tcp:28080 tcp:28080`
+  /// - `flutter run --dart-define=USE_ADB_REVERSE=true`
+  static bool get _useAdbReverse => const bool.fromEnvironment(
+        'USE_ADB_REVERSE',
+        defaultValue: false,
+      );
+
   // Default values for development
   static const String _defaultApiBaseUrl = 'http://10.0.2.2:28080';
   static const String _defaultWsBaseUrl = 'ws://10.0.2.2:28080/ws';
@@ -16,13 +27,20 @@ class EnvConfig {
 
   static String get _localApiBaseUrl {
     if (kIsWeb) return 'http://localhost:28080';
-    if (Platform.isAndroid) return 'http://10.0.2.2:28080';
+    if (Platform.isAndroid) {
+      // Emulator uses 10.0.2.2, physical device should use adb reverse + localhost.
+      return _useAdbReverse ? 'http://127.0.0.1:28080' : 'http://10.0.2.2:28080';
+    }
     return 'http://localhost:28080';
   }
 
   static String get _localWsBaseUrl {
     if (kIsWeb) return 'ws://localhost:28080/ws/v1/chat';
-    if (Platform.isAndroid) return 'ws://10.0.2.2:28080/ws/v1/chat';
+    if (Platform.isAndroid) {
+      return _useAdbReverse
+          ? 'ws://127.0.0.1:28080/ws/v1/chat'
+          : 'ws://10.0.2.2:28080/ws/v1/chat';
+    }
     return 'ws://localhost:28080/ws/v1/chat';
   }
 

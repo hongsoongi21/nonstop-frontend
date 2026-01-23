@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,7 +9,7 @@ class SecureStorageService {
   final FlutterSecureStorage _storage;
 
   SecureStorageService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   static const _accessTokenKey = 'ACCESS_TOKEN';
   static const _refreshTokenKey = 'REFRESH_TOKEN';
@@ -21,10 +20,6 @@ class SecureStorageService {
 
   Future<String?> getAccessToken() async {
     final token = await _storage.read(key: _accessTokenKey);
-    if (!kReleaseMode) {
-      debugPrint('[NONSTOP] 🔑 Access Token Retrieval: ${token != null ? 'EXISTS' : 'NULL'}');
-      if (token != null) debugPrint('[NONSTOP]   Value: $token');
-    }
     return token;
   }
 
@@ -34,10 +29,6 @@ class SecureStorageService {
 
   Future<String?> getRefreshToken() async {
     final token = await _storage.read(key: _refreshTokenKey);
-    if (!kReleaseMode) {
-      debugPrint('[NONSTOP] 🔄 Refresh Token Retrieval: ${token != null ? 'EXISTS' : 'NULL'}');
-      if (token != null) debugPrint('[NONSTOP]   Value: $token');
-    }
     return token;
   }
 
@@ -45,7 +36,7 @@ class SecureStorageService {
     await _storage.delete(key: _accessTokenKey);
     await _storage.delete(key: _refreshTokenKey);
   }
-  
+
   Future<bool> hasAccessToken() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;

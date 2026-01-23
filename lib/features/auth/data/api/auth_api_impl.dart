@@ -9,6 +9,7 @@ import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
+import '../dto/google_login_request_dto.dart';
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
 import '../../../../core/utils/logger.dart'; // Added for AppLogger
@@ -36,23 +37,60 @@ class AuthApiImpl implements AuthApi {
 
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
-        final tokenData = TokenResponseDto.fromJson(apiResponse['data']); // Changed to TokenResponseDto
-        
+        final tokenData = TokenResponseDto.fromJson(
+          apiResponse['data'],
+        ); // Changed to TokenResponseDto
+
         if (!kReleaseMode) {
           AppLogger.d('[NONSTOP] 🔑 Tokens Received:'); // Using AppLogger
           AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
           AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
         }
-        
+
         // 보안 저장소에 토큰 저장
         await _secureStorageService.saveAccessToken(tokenData.accessToken);
         await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
-              
+
         // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
         return await _fetchAndEmitUserInfo();
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '로그인에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<User> signInWithGoogle({required String idToken}) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/google',
+        data: GoogleLoginRequestDto(idToken: idToken).toJson(),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
+
+        if (!kReleaseMode) {
+          AppLogger.d('[NONSTOP] 🔑 Google Login Tokens Received:');
+          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
+          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+        }
+
+        // 보안 저장소에 토큰 저장
+        await _secureStorageService.saveAccessToken(tokenData.accessToken);
+        await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
+
+        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
+        return await _fetchAndEmitUserInfo();
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '구글 로그인에 실패했습니다.',
           statusCode: response.statusCode ?? 500,
         );
       }
@@ -120,6 +158,11 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<User?> getCurrentUser() async {
     try {
+      // Avoid calling `/users/me` when we don't have a token yet.
+      // This prevents noisy 401s during cold start.
+      final accessToken = await _secureStorageService.getAccessToken();
+      if (accessToken == null || accessToken.isEmpty) return null;
+
       return await _fetchAndEmitUserInfo();
     } catch (e) {
       AppLogger.e('현재 사용자 정보 조회 실패: $e'); // Using AppLogger
@@ -130,19 +173,25 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     // 백엔드 API 제공 시 구현
-    throw UnimplementedError('sendPasswordResetEmail not implemented'); // Add explicit error
+    throw UnimplementedError(
+      'sendPasswordResetEmail not implemented',
+    ); // Add explicit error
   }
 
   @override
   Future<void> verifyEmail(String code) async {
     // 백엔드 API 제공 시 구현
-    throw UnimplementedError('verifyEmail not implemented'); // Add explicit error
+    throw UnimplementedError(
+      'verifyEmail not implemented',
+    ); // Add explicit error
   }
 
   @override
   Future<void> resendEmailVerification() async {
     // 백엔드 API 제공 시 구현
-    throw UnimplementedError('resendEmailVerification not implemented'); // Add explicit error
+    throw UnimplementedError(
+      'resendEmailVerification not implemented',
+    ); // Add explicit error
   }
 
   @override
@@ -152,7 +201,7 @@ class AuthApiImpl implements AuthApi {
         '/api/v1/auth/email/check',
         data: {'email': email},
       );
-      
+
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] != true) {
         throw ServerException(
@@ -172,7 +221,7 @@ class AuthApiImpl implements AuthApi {
         '/api/v1/auth/nickname/check',
         data: {'nickname': nickname},
       );
-      
+
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] != true) {
         throw ServerException(
@@ -227,7 +276,7 @@ class AuthApiImpl implements AuthApi {
   Future<void> deleteAccount() async {
     try {
       final response = await _dioClient.delete('/api/v1/users/me');
-      
+
       final apiResponse = response.data as Map<String, dynamic>;
       if (apiResponse['success'] == true) {
         await _secureStorageService.deleteAllTokens();
@@ -250,7 +299,7 @@ class AuthApiImpl implements AuthApi {
     try {
       final response = await _dioClient.get('/api/v1/users/me');
       final apiResponse = response.data as Map<String, dynamic>;
-      
+
       if (apiResponse['success'] == true) {
         final userDto = UserDto.fromJson(apiResponse['data']);
         final user = userDto.toDomain();

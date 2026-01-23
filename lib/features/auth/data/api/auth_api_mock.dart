@@ -9,6 +9,28 @@ class AuthApiMock implements AuthApi {
   User? _currentUser;
 
   @override
+  Future<User> signInWithGoogle({required String idToken}) async {
+    // Simulate API delay
+    await Future.delayed(const Duration(seconds: 1));
+
+    // Create mock user from Google
+    _currentUser = User(
+      id: 'google_user_${DateTime.now().millisecondsSinceEpoch}',
+      email: 'google@example.com',
+      nickname: 'GoogleUser',
+      fullName: 'Google User',
+      universityId: null,
+      majorId: null,
+      isEmailVerified: true,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+
+    _authStateController.add(_currentUser);
+    return _currentUser!;
+  }
+
+  @override
   Future<User> signIn({required String email, required String password}) async {
     // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));

@@ -11,6 +11,11 @@ abstract class AuthRepository {
     required String password,
   });
 
+  /// Sign in with Google
+  Future<Either<Failure, User>> signInWithGoogle({
+    required String idToken,
+  });
+
   /// Signs up a new user with email, password, and nickname.
   Future<Either<Failure, User>> signUp({
     required String email,

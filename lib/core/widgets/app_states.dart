@@ -96,8 +96,8 @@ class AppLoadingIndicator extends StatelessWidget {
 /// Loading variants
 enum LoadingVariant {
   spinner, // Circular progress indicator
-  dots,    // Three dots
-  pulse,   // Pulsing circle
+  dots, // Three dots
+  pulse, // Pulsing circle
 }
 
 /// Full screen loading overlay
@@ -121,25 +121,28 @@ class AppLoadingOverlay extends StatelessWidget {
       children: [
         child,
         if (isLoading)
-          Container(
-            color: overlayColor ?? Colors.black.withValues(alpha: 0.5),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.shadow,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: AppLoadingIndicator(
-                  message: loadingMessage ?? 'Loading...',
-                  variant: LoadingVariant.spinner,
+          AbsorbPointer(
+            absorbing: true,
+            child: Container(
+              color: overlayColor ?? Colors.black.withValues(alpha: 0.5),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: AppLoadingIndicator(
+                    message: loadingMessage ?? 'Loading...',
+                    variant: LoadingVariant.spinner,
+                  ),
                 ),
               ),
             ),
@@ -179,7 +182,8 @@ class AppEmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: (iconColor ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.1),
+                color: (iconColor ?? Theme.of(context).colorScheme.primary)
+                    .withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -251,11 +255,7 @@ class AppErrorState extends StatelessWidget {
                 color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 64,
-                color: AppColors.error,
-              ),
+              child: Icon(icon, size: 64, color: AppColors.error),
             ),
             const SizedBox(height: AppSpacing.lg),
           ],
@@ -324,11 +324,7 @@ class AppSuccessState extends StatelessWidget {
                 color: AppColors.success.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 64,
-                color: AppColors.success,
-              ),
+              child: Icon(icon, size: 64, color: AppColors.success),
             ),
             const SizedBox(height: AppSpacing.lg),
           ],
@@ -407,24 +403,21 @@ class AppShimmer extends StatefulWidget {
   State<AppShimmer> createState() => _AppShimmerState();
 }
 
-class _AppShimmerState extends State<AppShimmer> with SingleTickerProviderStateMixin {
+class _AppShimmerState extends State<AppShimmer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    )..repeat();
+    _controller = AnimationController(vsync: this, duration: widget.duration)
+      ..repeat();
 
-    _animation = Tween<double>(begin: -1.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.easeInOut,
-      ),
-    );
+    _animation = Tween<double>(
+      begin: -1.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -448,11 +441,7 @@ class _AppShimmerState extends State<AppShimmer> with SingleTickerProviderStateM
                 widget.highlightColor ?? Colors.grey[100]!,
                 widget.baseColor ?? Colors.grey[300]!,
               ],
-              stops: [
-                0.0,
-                _animation.value,
-                1.0,
-              ],
+              stops: [0.0, _animation.value, 1.0],
             ).createShader(bounds);
           },
           child: widget.child,

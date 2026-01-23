@@ -53,6 +53,11 @@ abstract class AuthApi {
   /// Get current access token
   Future<String?> getAccessToken();
 
+  /// Sign in with Google
+  Future<User> signInWithGoogle({
+    required String idToken,
+  });
+
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;
 }
