@@ -581,17 +581,13 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         ),
         SizedBox(width: 8.w),
         Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF6B7280),
-              ),
+          child: Text.rich(
+            TextSpan(
               children: [
                 TextSpan(
                   text: isRequired ? '[Majburiy] ' : '[Ixtiyoriy] ',
                   style: TextStyle(
+                    fontSize: 12.sp,
                     color: isRequired
                         ? const Color(0xFFEF4444)
                         : const Color(0xFF10B981),
@@ -600,13 +596,28 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                 ),
                 TextSpan(
                   text: label,
-                  style: const TextStyle(
-                    color: Color(0xFF7C3BEE),
-                    decoration: TextDecoration.underline,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xFF6B7280),
                   ),
-                  recognizer: TapGestureRecognizer()..onTap = onViewPolicy,
                 ),
               ],
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: onViewPolicy,
+          child: Padding(
+            padding: EdgeInsets.only(left: 8.w),
+            child: Text(
+              "[View]",
+              style: TextStyle(
+                fontSize: 11.sp,
+                color: const Color(0xFF7C3BEE),
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.underline,
+              ),
             ),
           ),
         ),
