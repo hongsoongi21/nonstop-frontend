@@ -46,6 +46,9 @@ class MainScaffold extends ConsumerWidget {
               },
             )
           : null,
+      floatingActionButtonLocation: isAdmin
+          ? FloatingActionButtonLocation.startFloat
+          : null,
     );
   }
 }
