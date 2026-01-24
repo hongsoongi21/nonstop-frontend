@@ -8,6 +8,7 @@ class EnvConfig {
   static const String _apiBaseUrlKey = 'API_BASE_URL';
   static const String _wsBaseUrlKey = 'WS_BASE_URL';
   static const String _environmentKey = 'ENVIRONMENT';
+  static const String _googleServerClientIdKey = 'GOOGLE_SERVER_CLIENT_ID';
 
   /// When running a physical Android device over USB with `adb reverse`,
   /// use localhost from the device to reach the host machine.
@@ -15,10 +16,8 @@ class EnvConfig {
   /// Run:
   /// - `adb reverse tcp:28080 tcp:28080`
   /// - `flutter run --dart-define=USE_ADB_REVERSE=true`
-  static bool get _useAdbReverse => const bool.fromEnvironment(
-        'USE_ADB_REVERSE',
-        defaultValue: false,
-      );
+  static bool get _useAdbReverse =>
+      const bool.fromEnvironment('USE_ADB_REVERSE', defaultValue: false);
 
   // Default values for development
   static const String _defaultApiBaseUrl = 'http://10.0.2.2:28080';
@@ -29,7 +28,9 @@ class EnvConfig {
     if (kIsWeb) return 'http://localhost:28080';
     if (Platform.isAndroid) {
       // Emulator uses 10.0.2.2, physical device should use adb reverse + localhost.
-      return _useAdbReverse ? 'http://127.0.0.1:28080' : 'http://10.0.2.2:28080';
+      return _useAdbReverse
+          ? 'http://127.0.0.1:28080'
+          : 'http://10.0.2.2:28080';
     }
     return 'http://localhost:28080';
   }
@@ -84,4 +85,13 @@ class EnvConfig {
 
   /// Check if running in development
   static bool get isDevelopment => environment == 'development';
+
+  /// Google Server Client ID for OAuth
+  static String get googleServerClientId {
+    return const String.fromEnvironment(
+      _googleServerClientIdKey,
+      defaultValue:
+          '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
+    );
+  }
 }

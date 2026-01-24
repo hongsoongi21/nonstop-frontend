@@ -160,6 +160,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState();
   }
 
+  /// Google 로그아웃을 포함한 전체 로그아웃을 수행합니다.
+  Future<void> signOutFull() async {
+    state = state.copyWith(isLoading: true);
+    await _authRepository.signOutFull();
+    state = const AuthState();
+  }
+
+  /// 계정을 삭제하고 상태를 초기화합니다.
+  Future<void> deleteAccount() async {
+    state = state.copyWith(isLoading: true);
+    final result = await _authRepository.deleteAccount();
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (_) => state = const AuthState(),
+    );
+  }
+
   /// 발생한 에러 상태를 초기화합니다.
   void clearError() {
     state = state.copyWith(failure: null);

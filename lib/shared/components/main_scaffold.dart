@@ -54,24 +54,24 @@ class MainScaffold extends ConsumerWidget {
 }
 
 /// A floating debug button visible only in debug mode
-class _DebugPortal extends StatelessWidget {
+class _DebugPortal extends ConsumerWidget {
   const _DebugPortal();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Positioned(
       right: 16,
       bottom: 100, // Above bottom nav
       child: FloatingActionButton.small(
         heroTag: 'debug_portal',
-        onPressed: () => _showDebugMenu(context),
+        onPressed: () => _showDebugMenu(context, ref),
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         child: const Icon(Icons.bug_report, color: Colors.white),
       ),
     );
   }
 
-  void _showDebugMenu(BuildContext context) {
+  void _showDebugMenu(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -96,9 +96,64 @@ class _DebugPortal extends StatelessWidget {
                 context.push(Routes.timetableTest);
               },
             ),
-            // Add more test screens here in the future
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Standard Logout'),
+              subtitle: const Text('App session only'),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(authProvider.notifier).signOut();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.no_accounts),
+              title: const Text('Full Logout'),
+              subtitle: const Text('App + Google sign-out'),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(authProvider.notifier).signOutFull();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title: const Text(
+                'Delete Account',
+                style: TextStyle(color: Colors.red),
+              ),
+              subtitle: const Text('Soft delete on backend'),
+              onTap: () {
+                Navigator.pop(context);
+                _showDeleteConfirmDialog(context, ref);
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+          'This will soft-delete your user record on the backend.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ref.read(authProvider.notifier).deleteAccount();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

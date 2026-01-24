@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/storage/secure_storage_service.dart';
@@ -25,6 +27,10 @@ class AuthApiImpl implements AuthApi {
   final DioClient _dioClient;
   final SecureStorageService _secureStorageService;
   final _authStateController = StreamController<User?>.broadcast();
+  final _googleSignIn = GoogleSignIn(
+    serverClientId: EnvConfig.googleServerClientId,
+    scopes: ['email', 'profile'],
+  );
 
   AuthApiImpl(this._dioClient, this._secureStorageService);
 
@@ -153,6 +159,14 @@ class AuthApiImpl implements AuthApi {
       // 서버 성공 여부와 관계없이 로컬 인증 정보 삭제
       await _secureStorageService.deleteAllTokens();
       _authStateController.add(null);
+    }
+  }
+
+  @override
+  Future<void> signOutFull() async {
+    await signOut();
+    if (await _googleSignIn.isSignedIn()) {
+      await _googleSignIn.signOut();
     }
   }
 
@@ -297,7 +311,7 @@ class AuthApiImpl implements AuthApi {
   Future<List<PolicyResponseDto>> getPolicies() async {
     try {
       final response = await _dioClient.get('/api/v1/policies');
-      
+
       // JSON Array 응답 처리
       final List<dynamic> list = response.data;
       return list.map((e) => PolicyResponseDto.fromJson(e)).toList();

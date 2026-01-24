@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/config/env_config.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -26,8 +27,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId:
-        '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
+    serverClientId: EnvConfig.googleServerClientId,
     scopes: ['email', 'profile'],
   );
   late AnimationController _animationController;
