@@ -20,29 +20,29 @@ class EnvConfig {
       const bool.fromEnvironment('USE_ADB_REVERSE', defaultValue: false);
 
   // Default values for development
-  static const String _defaultApiBaseUrl = 'http://10.0.2.2:28080';
-  static const String _defaultWsBaseUrl = 'ws://10.0.2.2:28080/ws';
+  static const String _defaultApiBaseUrl = 'http://20.2.136.12:28080';
+  static const String _defaultWsBaseUrl = 'ws://20.2.136.12:28080/ws';
   static const String _defaultEnvironment = 'development';
 
   static String get _localApiBaseUrl {
-    if (kIsWeb) return 'http://localhost:28080';
+    if (kIsWeb) return 'http://20.2.136.12:28080';
     if (Platform.isAndroid) {
       // Emulator uses 10.0.2.2, physical device should use adb reverse + localhost.
       return _useAdbReverse
-          ? 'http://127.0.0.1:28080'
-          : 'http://10.0.2.2:28080';
+          ? 'http://20.2.136.12:28080'
+          : 'http://20.2.136.12:28080';
     }
-    return 'http://localhost:28080';
+    return 'http://20.2.136.12:28080';
   }
 
   static String get _localWsBaseUrl {
-    if (kIsWeb) return 'ws://localhost:28080/ws/v1/chat';
+    if (kIsWeb) return 'ws://20.2.136.12:28080/ws/v1/chat';
     if (Platform.isAndroid) {
       return _useAdbReverse
-          ? 'ws://127.0.0.1:28080/ws/v1/chat'
-          : 'ws://10.0.2.2:28080/ws/v1/chat';
+          ? 'ws://20.2.136.12:28080/ws/v1/chat'
+          : 'ws://20.2.136.12:28080/ws/v1/chat';
     }
-    return 'ws://localhost:28080/ws/v1/chat';
+    return 'ws://20.2.136.12:28080/ws/v1/chat';
   }
 
   /// API base URL
