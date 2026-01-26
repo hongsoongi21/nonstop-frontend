@@ -1,28 +1,28 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
     {
-      "name": "Flutter: Run (Development)",
+      "name": "Flutter: Run (Local Backend)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
       "args": [
         "--dart-define=ENVIRONMENT=development",
         "--dart-define=API_BASE_URL=http://10.0.2.2:28080",
-        "--dart-define=WS_BASE_URL=ws://10.0.2.2:28080/ws"
+        "--dart-define=WS_BASE_URL=ws://10.0.2.2:28080/ws",
+        "--dart-define=GOOGLE_SERVER_CLIENT_ID=821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com"
       ]
     },
     {
-      "name": "Flutter: Run on Android Emulator",
+      "name": "Flutter: Run (Azure Backend)",
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "deviceId": "emulator-5554",
       "args": [
         "--dart-define=ENVIRONMENT=development",
-        "--dart-define=API_BASE_URL=http://10.0.2.2:28080",
-        "--dart-define=WS_BASE_URL=ws://10.0.2.2:28080/ws"
+        "--dart-define=API_BASE_URL=http://20.2.136.12:28080",
+        "--dart-define=WS_BASE_URL=ws://20.2.136.12:28080/ws",
+        "--dart-define=GOOGLE_SERVER_CLIENT_ID=821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com"
       ]
     },
     {
@@ -30,7 +30,13 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/main.dart",
-      "deviceId": "chrome"
+      "deviceId": "chrome",
+      "args": [
+        "--dart-define=ENVIRONMENT=development",
+        "--dart-define=API_BASE_URL=http://localhost:28080",
+        "--dart-define=WS_BASE_URL=ws://localhost:28080/ws",
+        "--dart-define=GOOGLE_SERVER_CLIENT_ID=821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com"
+      ]
     },
     {
       "name": "Flutter: Debug (Profile Mode)",
