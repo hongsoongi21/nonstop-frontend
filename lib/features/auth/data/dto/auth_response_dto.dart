@@ -8,6 +8,9 @@ class TokenResponseDto with _$TokenResponseDto {
   const factory TokenResponseDto({
     required String accessToken,
     required String refreshToken,
+    int? userId,
+    @Default(false) bool emailVerified,
+    @Default(false) bool hasAgreedAllMandatory,
   }) = _TokenResponseDto;
 
   factory TokenResponseDto.fromJson(Map<String, dynamic> json) =>

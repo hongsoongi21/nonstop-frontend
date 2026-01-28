@@ -124,6 +124,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
     final result = await _signUpUseCase(
@@ -133,6 +134,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         nickname: nickname,
         universityId: universityId,
         majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
       ),
     );
     result.fold(
@@ -158,6 +160,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true);
     await _authRepository.signOut();
     state = const AuthState();
+  }
+
+  /// 정책 동의를 백엔드에 저장합니다.
+  Future<void> agreePolicies(List<int> policyIds) async {
+    await _authRepository.agreePolicies(policyIds);
   }
 
   /// 발생한 에러 상태를 초기화합니다.

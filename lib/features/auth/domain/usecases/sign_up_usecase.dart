@@ -21,6 +21,7 @@ class SignUpUseCase implements UseCase<User, SignUpParams> {
       nickname: params.nickname,
       universityId: params.universityId,
       majorId: params.majorId,
+      agreedPolicyIds: params.agreedPolicyIds,
     );
   }
 }
@@ -32,6 +33,7 @@ class SignUpParams {
   final String nickname;
   final int? universityId;
   final int? majorId;
+  final List<int>? agreedPolicyIds;
 
   const SignUpParams({
     required this.email,
@@ -39,5 +41,6 @@ class SignUpParams {
     required this.nickname,
     this.universityId,
     this.majorId,
+    this.agreedPolicyIds,
   });
 }

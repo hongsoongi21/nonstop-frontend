@@ -10,6 +10,7 @@ import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
 import '../dto/google_login_request_dto.dart';
+import '../dto/policy_request_dto.dart';
 import '../dto/policy_response_dto.dart';
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
@@ -107,6 +108,7 @@ class AuthApiImpl implements AuthApi {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     try {
       final response = await _dioClient.post(
@@ -117,6 +119,7 @@ class AuthApiImpl implements AuthApi {
           nickname: nickname,
           universityId: universityId,
           majorId: majorId,
+          agreedPolicyIds: agreedPolicyIds,
         ).toJson(),
       );
 
@@ -297,7 +300,7 @@ class AuthApiImpl implements AuthApi {
   Future<List<PolicyResponseDto>> getPolicies() async {
     try {
       final response = await _dioClient.get('/api/v1/policies');
-      
+
       // JSON Array 응답 처리
       final List<dynamic> list = response.data;
       return list.map((e) => PolicyResponseDto.fromJson(e)).toList();
@@ -307,8 +310,27 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Stream<User?> get authStateChanges => _authStateController.stream;
+  Future<void> agreePolicies(List<int> policyIds) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/policies/agree',
+        data: PolicyAgreeRequestDto(policyIds: policyIds).toJson(),
+      );
 
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '정책 동의 저장 실패',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Stream<User?> get authStateChanges => _authStateController.stream;
   Future<User> _fetchAndEmitUserInfo() async {
     try {
       final response = await _dioClient.get('/api/v1/users/me');

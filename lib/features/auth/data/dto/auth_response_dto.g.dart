@@ -11,6 +11,9 @@ _$TokenResponseDtoImpl _$$TokenResponseDtoImplFromJson(
 ) => _$TokenResponseDtoImpl(
   accessToken: json['accessToken'] as String,
   refreshToken: json['refreshToken'] as String,
+  userId: (json['userId'] as num?)?.toInt(),
+  emailVerified: json['emailVerified'] as bool? ?? false,
+  hasAgreedAllMandatory: json['hasAgreedAllMandatory'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$TokenResponseDtoImplToJson(
@@ -18,4 +21,7 @@ Map<String, dynamic> _$$TokenResponseDtoImplToJson(
 ) => <String, dynamic>{
   'accessToken': instance.accessToken,
   'refreshToken': instance.refreshToken,
+  'userId': instance.userId,
+  'emailVerified': instance.emailVerified,
+  'hasAgreedAllMandatory': instance.hasAgreedAllMandatory,
 };

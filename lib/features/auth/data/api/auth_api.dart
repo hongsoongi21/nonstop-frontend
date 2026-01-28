@@ -16,6 +16,7 @@ abstract class AuthApi {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Sign out current user
@@ -61,6 +62,9 @@ abstract class AuthApi {
 
   /// Get policy list
   Future<List<PolicyResponseDto>> getPolicies();
+
+  /// Submit policy agreements
+  Future<void> agreePolicies(List<int> policyIds);
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;

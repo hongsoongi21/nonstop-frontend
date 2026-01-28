@@ -142,6 +142,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           password: _passwordController.text.trim(),
           nickname: _nicknameController.text.trim(),
           universityId: _selectedUniversityId,
+          agreedPolicyIds: _agreedPolicyIds.toList(),
         );
 
     // 위젯이 마운트된 상태인지 확인
@@ -158,8 +159,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         ),
       );
     } else if (authState.isAuthenticated) {
-      // 성공 시 홈 화면으로 이동
-      context.go(Routes.home);
+      // 가입 시 정책 동의가 함께 처리되므로 즉시 홈 화면으로 이동
+      if (mounted) {
+        context.go(Routes.home);
+      }
     }
   }
 

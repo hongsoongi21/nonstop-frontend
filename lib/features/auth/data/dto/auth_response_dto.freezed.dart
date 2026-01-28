@@ -23,6 +23,9 @@ TokenResponseDto _$TokenResponseDtoFromJson(Map<String, dynamic> json) {
 mixin _$TokenResponseDto {
   String get accessToken => throw _privateConstructorUsedError;
   String get refreshToken => throw _privateConstructorUsedError;
+  int? get userId => throw _privateConstructorUsedError;
+  bool get emailVerified => throw _privateConstructorUsedError;
+  bool get hasAgreedAllMandatory => throw _privateConstructorUsedError;
 
   /// Serializes this TokenResponseDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +44,13 @@ abstract class $TokenResponseDtoCopyWith<$Res> {
     $Res Function(TokenResponseDto) then,
   ) = _$TokenResponseDtoCopyWithImpl<$Res, TokenResponseDto>;
   @useResult
-  $Res call({String accessToken, String refreshToken});
+  $Res call({
+    String accessToken,
+    String refreshToken,
+    int? userId,
+    bool emailVerified,
+    bool hasAgreedAllMandatory,
+  });
 }
 
 /// @nodoc
@@ -58,7 +67,13 @@ class _$TokenResponseDtoCopyWithImpl<$Res, $Val extends TokenResponseDto>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? accessToken = null, Object? refreshToken = null}) {
+  $Res call({
+    Object? accessToken = null,
+    Object? refreshToken = null,
+    Object? userId = freezed,
+    Object? emailVerified = null,
+    Object? hasAgreedAllMandatory = null,
+  }) {
     return _then(
       _value.copyWith(
             accessToken: null == accessToken
@@ -69,6 +84,18 @@ class _$TokenResponseDtoCopyWithImpl<$Res, $Val extends TokenResponseDto>
                 ? _value.refreshToken
                 : refreshToken // ignore: cast_nullable_to_non_nullable
                       as String,
+            userId: freezed == userId
+                ? _value.userId
+                : userId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            emailVerified: null == emailVerified
+                ? _value.emailVerified
+                : emailVerified // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            hasAgreedAllMandatory: null == hasAgreedAllMandatory
+                ? _value.hasAgreedAllMandatory
+                : hasAgreedAllMandatory // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -84,7 +111,13 @@ abstract class _$$TokenResponseDtoImplCopyWith<$Res>
   ) = __$$TokenResponseDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String accessToken, String refreshToken});
+  $Res call({
+    String accessToken,
+    String refreshToken,
+    int? userId,
+    bool emailVerified,
+    bool hasAgreedAllMandatory,
+  });
 }
 
 /// @nodoc
@@ -100,7 +133,13 @@ class __$$TokenResponseDtoImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? accessToken = null, Object? refreshToken = null}) {
+  $Res call({
+    Object? accessToken = null,
+    Object? refreshToken = null,
+    Object? userId = freezed,
+    Object? emailVerified = null,
+    Object? hasAgreedAllMandatory = null,
+  }) {
     return _then(
       _$TokenResponseDtoImpl(
         accessToken: null == accessToken
@@ -111,6 +150,18 @@ class __$$TokenResponseDtoImplCopyWithImpl<$Res>
             ? _value.refreshToken
             : refreshToken // ignore: cast_nullable_to_non_nullable
                   as String,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        emailVerified: null == emailVerified
+            ? _value.emailVerified
+            : emailVerified // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        hasAgreedAllMandatory: null == hasAgreedAllMandatory
+            ? _value.hasAgreedAllMandatory
+            : hasAgreedAllMandatory // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -122,6 +173,9 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
   const _$TokenResponseDtoImpl({
     required this.accessToken,
     required this.refreshToken,
+    this.userId,
+    this.emailVerified = false,
+    this.hasAgreedAllMandatory = false,
   });
 
   factory _$TokenResponseDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -131,10 +185,18 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
   final String accessToken;
   @override
   final String refreshToken;
+  @override
+  final int? userId;
+  @override
+  @JsonKey()
+  final bool emailVerified;
+  @override
+  @JsonKey()
+  final bool hasAgreedAllMandatory;
 
   @override
   String toString() {
-    return 'TokenResponseDto(accessToken: $accessToken, refreshToken: $refreshToken)';
+    return 'TokenResponseDto(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, emailVerified: $emailVerified, hasAgreedAllMandatory: $hasAgreedAllMandatory)';
   }
 
   @override
@@ -145,12 +207,24 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
             (identical(other.accessToken, accessToken) ||
                 other.accessToken == accessToken) &&
             (identical(other.refreshToken, refreshToken) ||
-                other.refreshToken == refreshToken));
+                other.refreshToken == refreshToken) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.emailVerified, emailVerified) ||
+                other.emailVerified == emailVerified) &&
+            (identical(other.hasAgreedAllMandatory, hasAgreedAllMandatory) ||
+                other.hasAgreedAllMandatory == hasAgreedAllMandatory));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, accessToken, refreshToken);
+  int get hashCode => Object.hash(
+    runtimeType,
+    accessToken,
+    refreshToken,
+    userId,
+    emailVerified,
+    hasAgreedAllMandatory,
+  );
 
   /// Create a copy of TokenResponseDto
   /// with the given fields replaced by the non-null parameter values.
@@ -173,6 +247,9 @@ abstract class _TokenResponseDto implements TokenResponseDto {
   const factory _TokenResponseDto({
     required final String accessToken,
     required final String refreshToken,
+    final int? userId,
+    final bool emailVerified,
+    final bool hasAgreedAllMandatory,
   }) = _$TokenResponseDtoImpl;
 
   factory _TokenResponseDto.fromJson(Map<String, dynamic> json) =
@@ -182,6 +259,12 @@ abstract class _TokenResponseDto implements TokenResponseDto {
   String get accessToken;
   @override
   String get refreshToken;
+  @override
+  int? get userId;
+  @override
+  bool get emailVerified;
+  @override
+  bool get hasAgreedAllMandatory;
 
   /// Create a copy of TokenResponseDto
   /// with the given fields replaced by the non-null parameter values.
