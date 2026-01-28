@@ -52,4 +52,64 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selectCommunity => 'Выбрать сообщество';
+
+  @override
+  String get chat => 'Чат';
+
+  @override
+  String get chatListEmpty => 'Пока нет чатов';
+
+  @override
+  String get chatListEmptyHint => 'Нажмите + чтобы начать разговор';
+
+  @override
+  String get chatLoadError => 'Не удалось загрузить чаты';
+
+  @override
+  String get newChat => 'Новый чат';
+
+  @override
+  String get searchUsers => 'Поиск пользователей...';
+
+  @override
+  String selectedCount(int count) {
+    return '$count выбрано';
+  }
+
+  @override
+  String get startChat => 'Начать чат';
+
+  @override
+  String get createGroup => 'Создать группу';
+
+  @override
+  String get groupName => 'Название группы';
+
+  @override
+  String get groupNameHint => 'Введите название группы';
+
+  @override
+  String get camera => 'Камера';
+
+  @override
+  String get gallery => 'Галерея';
+
+  @override
+  String get connectionConnected => 'Подключено';
+
+  @override
+  String get connectionConnecting => 'Подключение...';
+
+  @override
+  String get connectionDisconnected =>
+      'Отключено - нажмите для переподключения';
+
+  @override
+  String get today => 'Сегодня';
+
+  @override
+  String get yesterday => 'Вчера';
+
+  @override
+  String get messageHint => 'Введите сообщение...';
 }

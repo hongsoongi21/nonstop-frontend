@@ -1,86 +1,86 @@
 {
-  "@@locale": "uz",
-  "helloWorld": "Salom, dunyo!",
+  "@@locale": "ko",
+  "helloWorld": "안녕하세요!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"
   },
-  "editPost": "Postni tahrirlash",
+  "editPost": "게시물 수정",
   "@editPost": {
     "description": "Button text for editing a post"
   },
-  "cancel": "Bekor qilish",
+  "cancel": "취소",
   "@cancel": {
     "description": "Button text for canceling an action"
   },
-  "save": "Saqlash",
+  "save": "저장",
   "@save": {
     "description": "Button text for saving changes"
   },
-  "deletePost": "Postni o'chirish",
+  "deletePost": "게시물 삭제",
   "@deletePost": {
     "description": "Button text for deleting a post"
   },
-  "confirmDeletePost": "Bu postni o'chirishga ishonchingiz komilmi?",
+  "confirmDeletePost": "이 게시물을 삭제하시겠습니까?",
   "@confirmDeletePost": {
     "description": "Confirmation message for deleting a post"
   },
-  "editComment": "Sharhni tahrirlash",
+  "editComment": "댓글 수정",
   "@editComment": {
     "description": "Button text for editing a comment"
   },
-  "deleteComment": "Sharhni o'chirish",
+  "deleteComment": "댓글 삭제",
   "@deleteComment": {
     "description": "Button text for deleting a comment"
   },
-  "confirmDeleteComment": "Bu sharhni o'chirishga ishonchingiz komilmi?",
+  "confirmDeleteComment": "이 댓글을 삭제하시겠습니까?",
   "@confirmDeleteComment": {
     "description": "Confirmation message for deleting a comment"
   },
-  "universityVerificationRequired": "Universitet tekshiruvi talab qilinadi",
+  "universityVerificationRequired": "대학교 인증이 필요합니다",
   "@universityVerificationRequired": {
     "description": "Message indicating university verification is needed"
   },
-  "universityVerificationRequiredAccess": "Bu jamiyatga kirish uchun universitet tekshiruvi talab qilinadi",
+  "universityVerificationRequiredAccess": "이 커뮤니티에 접근하려면 대학교 인증이 필요합니다",
   "@universityVerificationRequiredAccess": {
     "description": "Message for community access requiring university verification"
   },
-  "title": "Sarlavha",
+  "title": "제목",
   "@title": {
     "description": "Label for title field"
   },
-  "content": "Tarkib",
-    "@content": {
+  "content": "내용",
+  "@content": {
     "description": "Label for content field"
   },
-  "selectCommunity": "Jamiyatni tanlang",
+  "selectCommunity": "커뮤니티 선택",
   "@selectCommunity": {
     "description": "Title for community selection modal"
   },
-  "chat": "Chat",
+  "chat": "채팅",
   "@chat": {
     "description": "Chat screen title"
   },
-  "chatListEmpty": "Hozircha suhbatlar yo'q",
+  "chatListEmpty": "채팅이 없습니다",
   "@chatListEmpty": {
     "description": "Message when chat list is empty"
   },
-  "chatListEmptyHint": "Suhbat boshlash uchun + tugmasini bosing",
+  "chatListEmptyHint": "+ 버튼을 눌러 대화를 시작하세요",
   "@chatListEmptyHint": {
     "description": "Hint for empty chat list"
   },
-  "chatLoadError": "Suhbatlarni yuklashda xatolik",
+  "chatLoadError": "채팅 목록을 불러오지 못했습니다",
   "@chatLoadError": {
     "description": "Error message when chat list fails to load"
   },
-  "newChat": "Yangi suhbat",
+  "newChat": "새 채팅",
   "@newChat": {
     "description": "Title for new chat sheet"
   },
-  "searchUsers": "Foydalanuvchilarni qidirish...",
+  "searchUsers": "사용자 검색...",
   "@searchUsers": {
     "description": "Placeholder for user search"
   },
-  "selectedCount": "{count} tanlangan",
+  "selectedCount": "{count}명 선택됨",
   "@selectedCount": {
     "description": "Shows number of selected users",
     "placeholders": {
@@ -89,51 +89,51 @@
       }
     }
   },
-  "startChat": "Suhbatni boshlash",
+  "startChat": "채팅 시작",
   "@startChat": {
     "description": "Button to start a chat"
   },
-  "createGroup": "Guruh yaratish",
+  "createGroup": "그룹 만들기",
   "@createGroup": {
     "description": "Button to create a group"
   },
-  "groupName": "Guruh nomi",
+  "groupName": "그룹 이름",
   "@groupName": {
     "description": "Label for group name"
   },
-  "groupNameHint": "Guruh nomini kiriting",
+  "groupNameHint": "그룹 이름을 입력하세요",
   "@groupNameHint": {
     "description": "Placeholder for group name input"
   },
-  "camera": "Kamera",
+  "camera": "카메라",
   "@camera": {
     "description": "Camera option label"
   },
-  "gallery": "Galereya",
+  "gallery": "갤러리",
   "@gallery": {
     "description": "Gallery option label"
   },
-  "connectionConnected": "Ulangan",
+  "connectionConnected": "연결됨",
   "@connectionConnected": {
     "description": "Connection status connected"
   },
-  "connectionConnecting": "Ulanmoqda...",
+  "connectionConnecting": "연결 중...",
   "@connectionConnecting": {
     "description": "Connection status connecting"
   },
-  "connectionDisconnected": "Uzildi - qayta ulash uchun bosing",
+  "connectionDisconnected": "연결 끊김 - 탭하여 재연결",
   "@connectionDisconnected": {
     "description": "Connection status disconnected"
   },
-  "today": "Bugun",
+  "today": "오늘",
   "@today": {
     "description": "Today label for date separator"
   },
-  "yesterday": "Kecha",
+  "yesterday": "어제",
   "@yesterday": {
     "description": "Yesterday label for date separator"
   },
-  "messageHint": "Xabar yozing...",
+  "messageHint": "메시지를 입력하세요...",
   "@messageHint": {
     "description": "Placeholder for message input"
   }

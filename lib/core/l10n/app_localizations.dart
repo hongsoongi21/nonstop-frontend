@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_ko.dart';
 import 'app_localizations_ru.dart';
 import 'app_localizations_uz.dart';
 
@@ -96,6 +97,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('ko'),
     Locale('ru'),
     Locale('uz'),
   ];
@@ -183,6 +185,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Community'**
   String get selectCommunity;
+
+  /// Chat screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chat;
+
+  /// Message when chat list is empty
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get chatListEmpty;
+
+  /// Hint for empty chat list
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to start a conversation'**
+  String get chatListEmptyHint;
+
+  /// Error message when chat list fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load conversations'**
+  String get chatLoadError;
+
+  /// Title for new chat sheet
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get newChat;
+
+  /// Placeholder for user search
+  ///
+  /// In en, this message translates to:
+  /// **'Search users...'**
+  String get searchUsers;
+
+  /// Shows number of selected users
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(int count);
+
+  /// Button to start a chat
+  ///
+  /// In en, this message translates to:
+  /// **'Start Chat'**
+  String get startChat;
+
+  /// Button to create a group
+  ///
+  /// In en, this message translates to:
+  /// **'Create Group'**
+  String get createGroup;
+
+  /// Label for group name
+  ///
+  /// In en, this message translates to:
+  /// **'Group Name'**
+  String get groupName;
+
+  /// Placeholder for group name input
+  ///
+  /// In en, this message translates to:
+  /// **'Enter group name'**
+  String get groupNameHint;
+
+  /// Camera option label
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// Gallery option label
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// Connection status connected
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connectionConnected;
+
+  /// Connection status connecting
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get connectionConnecting;
+
+  /// Connection status disconnected
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected - Tap to reconnect'**
+  String get connectionDisconnected;
+
+  /// Today label for date separator
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// Yesterday label for date separator
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// Placeholder for message input
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get messageHint;
 }
 
 class _AppLocalizationsDelegate
@@ -196,7 +312,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'ru', 'uz'].contains(locale.languageCode);
+      <String>['en', 'ko', 'ru', 'uz'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -207,6 +323,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'ko':
+      return AppLocalizationsKo();
     case 'ru':
       return AppLocalizationsRu();
     case 'uz':

@@ -100,4 +100,36 @@ class ChatApiMock implements ChatApi {
       updatedAt: DateTime.now(),
     );
   }
+
+  @override
+  Future<void> leaveRoom(int roomId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  @override
+  Future<void> inviteToGroup(int roomId, List<int> userIds) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  @override
+  Future<void> kickFromGroup(int roomId, int userId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  @override
+  Future<List<int>> getGroupMembers(int roomId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return [1, 2, 3]; // Mock member IDs
+  }
+
+  @override
+  Future<void> markAsRead(int roomId, int messageId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  @override
+  Future<String> uploadChatImage(int roomId, String localFilePath) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return 'https://example.com/mock-image.jpg';
+  }
 }
