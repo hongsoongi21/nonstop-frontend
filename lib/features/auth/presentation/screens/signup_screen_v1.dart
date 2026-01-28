@@ -31,7 +31,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   final _confirmPasswordController = TextEditingController();
 
   int? _selectedUniversityId;
-  
+  DateTime? _selectedBirthDate;
+
   // 동의한 정책 ID들을 저장하는 Set
   final Set<int> _agreedPolicyIds = {};
 
@@ -136,12 +137,26 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // 4. 회원가입 프로세스 실행
+    // 4. 생년월일 검증
+    if (_selectedBirthDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('생년월일을 선택해주세요'),
+          backgroundColor: AppColors.error,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // 5. 회원가입 프로세스 실행
     await ref.read(authProvider.notifier).signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
           nickname: _nicknameController.text.trim(),
+          birthDate: _selectedBirthDate!,
           universityId: _selectedUniversityId,
+          agreedPolicyIds: _agreedPolicyIds.toList(),
         );
 
     // 위젯이 마운트된 상태인지 확인
@@ -266,6 +281,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   // 대학교 선택 드롭다운
                                   _buildUniversityDropdown(universitiesAsync),
+
+                                  SizedBox(height: 20.h),
+
+                                  // 생년월일 선택
+                                  _buildBirthDatePicker(),
 
                                   SizedBox(height: 20.h),
 
@@ -476,6 +496,84 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             const Center(child: Icon(Icons.error_outline, color: Colors.red)),
       ),
     );
+  }
+
+  Widget _buildBirthDatePicker() {
+    final formattedDate = _selectedBirthDate != null
+        ? '${_selectedBirthDate!.year}-${_selectedBirthDate!.month.toString().padLeft(2, '0')}-${_selectedBirthDate!.day.toString().padLeft(2, '0')}'
+        : null;
+
+    return GestureDetector(
+      onTap: _selectBirthDate,
+      child: Container(
+        width: 275.w,
+        height: 55.h,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE9F0FE),
+          borderRadius: BorderRadius.circular(15.r),
+          border: Border.all(color: const Color(0xFFFFFFFF), width: 1.w),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Row(
+          children: [
+            Icon(
+              Icons.cake_outlined,
+              size: 24.sp,
+              color: Colors.black.withValues(alpha: 0.5),
+            ),
+            SizedBox(width: 12.w),
+            Expanded(
+              child: Text(
+                formattedDate ?? 'Select Birth Date',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: formattedDate != null
+                      ? Colors.black87
+                      : Colors.black.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+            Icon(
+              Icons.calendar_today,
+              size: 20.sp,
+              color: Colors.black.withValues(alpha: 0.5),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _selectBirthDate() async {
+    final now = DateTime.now();
+    final initialDate = _selectedBirthDate ?? DateTime(now.year - 20, 1, 1);
+    final firstDate = DateTime(1900);
+    final lastDate = DateTime(now.year - 14, 12, 31);
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      helpText: 'Select your birth date',
+      fieldLabelText: 'Birth Date',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: AppColors.primary,
+                ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedBirthDate = picked;
+      });
+    }
   }
 
   Widget _buildPolicyAgreementSection(AsyncValue<List<Policy>> policiesAsync) {

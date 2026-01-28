@@ -122,8 +122,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
     final result = await _signUpUseCase(
@@ -131,8 +133,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         email: email,
         password: password,
         nickname: nickname,
+        birthDate: birthDate,
         universityId: universityId,
         majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
       ),
     );
     result.fold(

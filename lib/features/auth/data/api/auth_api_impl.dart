@@ -105,18 +105,27 @@ class AuthApiImpl implements AuthApi {
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     try {
+      // Format birthDate as "YYYY-MM-DD"
+      final birthDateString = '${birthDate.year.toString().padLeft(4, '0')}-'
+          '${birthDate.month.toString().padLeft(2, '0')}-'
+          '${birthDate.day.toString().padLeft(2, '0')}';
+
       final response = await _dioClient.post(
         '/api/v1/auth/signup',
         data: SignUpRequestDto(
           email: email,
           password: password,
           nickname: nickname,
+          birthDate: birthDateString,
           universityId: universityId,
           majorId: majorId,
+          agreedPolicyIds: agreedPolicyIds,
         ).toJson(),
       );
 

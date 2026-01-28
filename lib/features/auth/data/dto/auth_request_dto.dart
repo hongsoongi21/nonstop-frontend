@@ -20,8 +20,10 @@ class SignUpRequestDto with _$SignUpRequestDto {
     required String email,
     required String password,
     required String nickname,
+    required String birthDate, // Format: "YYYY-MM-DD"
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) = _SignUpRequestDto;
 
   factory SignUpRequestDto.fromJson(Map<String, dynamic> json) =>

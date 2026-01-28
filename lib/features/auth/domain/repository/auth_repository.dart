@@ -17,13 +17,15 @@ abstract class AuthRepository {
     required String idToken,
   });
 
-  /// Signs up a new user with email, password, and nickname.
+  /// Signs up a new user with email, password, nickname, and birthDate.
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Sign out current user
