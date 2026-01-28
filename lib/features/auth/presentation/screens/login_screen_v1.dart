@@ -25,13 +25,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId:
-        '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
-    scopes: ['email', 'profile'],
-  );
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  bool _googleSignInInitialized = false;
 
   @override
   void initState() {
@@ -44,6 +40,16 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
     _animationController.forward();
+    _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    if (_googleSignInInitialized) return;
+    await GoogleSignIn.instance.initialize(
+      serverClientId:
+          '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
+    );
+    _googleSignInInitialized = true;
   }
 
   @override
@@ -75,23 +81,22 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
   Future<void> _handleGoogleLogin() async {
     try {
-      // Google Sign-In
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // Ensure Google Sign-In is initialized
+      await _initGoogleSignIn();
 
-      if (googleUser == null) return;
+      // Google Sign-In using new API (v7.x)
+      final GoogleSignInAccount googleUser =
+          await GoogleSignIn.instance.authenticate();
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final googleIdToken = googleAuth.idToken;
-      final googleAccessToken = googleAuth.accessToken;
 
       if (googleIdToken == null) return;
 
       // Exchange Google token for a Firebase ID token.
       final credential = GoogleAuthProvider.credential(
         idToken: googleIdToken,
-        accessToken: googleAccessToken,
       );
       final userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
@@ -107,6 +112,14 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         if (authState.isAuthenticated && !authState.hasError) {
           context.go(Routes.home);
         }
+      }
+    } on GoogleSignInException catch (e) {
+      // User cancelled the sign-in
+      if (e.code == GoogleSignInExceptionCode.canceled) return;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google Sign-In failed: ${e.description}')),
+        );
       }
     } catch (error) {
       if (mounted) {

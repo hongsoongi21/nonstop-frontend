@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
+import 'package:nonstop/core/services/analytics_service.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
@@ -26,9 +27,11 @@ import 'package:nonstop/shared/components/main_scaffold.dart';
 /// Main router with authentication guard and bottom navigation
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
+  final analyticsService = ref.watch(analyticsServiceProvider);
 
   return GoRouter(
     initialLocation: authState.isAuthenticated ? Routes.board : Routes.login,
+    observers: [analyticsService.observer],
     redirect: (context, state) {
       final isAuthenticated = authState.isAuthenticated;
       final isGoingToAuth =
