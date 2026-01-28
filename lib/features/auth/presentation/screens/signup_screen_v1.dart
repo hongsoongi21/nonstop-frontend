@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   final _formKey = GlobalKey<FormState>();
   final _nicknameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _verificationCodeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -35,13 +37,41 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   // 동의한 정책 ID들을 저장하는 Set
   final Set<int> _agreedPolicyIds = {};
 
+  // 타이머 관련 변수
+  Timer? _verificationTimer;
+  int _remainingSeconds = 300; // 5분
+
   @override
   void dispose() {
     _nicknameController.dispose();
     _emailController.dispose();
+    _verificationCodeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _verificationTimer?.cancel();
     super.dispose();
+  }
+
+  void _startTimer() {
+    _verificationTimer?.cancel();
+    setState(() {
+      _remainingSeconds = 300;
+    });
+    _verificationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      } else {
+        _verificationTimer?.cancel();
+      }
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
   void _handleAllAgreedChanged(bool? value, List<Policy> policies) {
@@ -136,7 +166,19 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // 4. 회원가입 프로세스 실행
+    // 4. 이메일 인증 여부 확인
+    final authState = ref.read(authProvider);
+    if (!authState.isEmailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Iltimos, avval pochtangizni tasdiqlang'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    // 5. 회원가입 프로세스 실행
     await ref.read(authProvider.notifier).signUp(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
@@ -148,8 +190,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 위젯이 마운트된 상태인지 확인
     if (!mounted) return;
 
-    // 5. 실행 결과에 따른 처리
-    final authState = ref.read(authProvider);
+    // 6. 실행 결과에 따른 처리
     if (authState.hasError) {
       // 실패 시 에러 메시지 노출
       ScaffoldMessenger.of(context).showSnackBar(
@@ -166,6 +207,67 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     }
   }
 
+  Future<void> _handleSendVerification() async {
+    final email = _emailController.text.trim();
+    if (email.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+    await ref.read(authProvider.notifier).sendVerificationEmail(email);
+    
+    if (mounted) {
+      final authState = ref.read(authProvider);
+      if (authState.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.failure?.message ?? 'Failed to send code'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      } else {
+        _startTimer(); // 타이머 시작
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Verification code sent!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleVerifyCode() async {
+    final code = _verificationCodeController.text.trim();
+    if (code.isEmpty) return;
+    
+    await ref.read(authProvider.notifier).verifyEmail(code);
+    
+    if (mounted) {
+      final authState = ref.read(authProvider);
+      if (authState.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authState.failure?.message ?? 'Invalid code'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      } else if (authState.isEmailVerified) {
+        _verificationTimer?.cancel(); // 인증 성공 시 타이머 정지
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email verified successfully!'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
+  }
+
   void _handleLogin() {
     context.go(Routes.login);
   }
@@ -173,7 +275,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   @override
   Widget build(BuildContext context) {
     // 로딩 상태 및 대학 목록 데이터를 Watch 합니다.
-    final isLoading = ref.watch(isLoadingProvider);
+    final authState = ref.watch(authProvider);
+    final isLoading = authState.isLoading;
     final universitiesAsync = ref.watch(universitiesProvider);
     // 정책 목록 데이터를 Watch 합니다.
     final policiesAsync = ref.watch(policiesProvider);
@@ -272,23 +375,121 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   SizedBox(height: 20.h),
 
-                                  // 이메일 입력 필드
-                                  CustomAuthTextField(
-                                    controller: _emailController,
-                                    hintText: 'Email',
-                                    prefixIcon: Icons.email_outlined,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your email';
-                                      }
-                                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                          .hasMatch(value)) {
-                                        return 'Please enter a valid email';
-                                      }
-                                      return null;
-                                    },
+                                  // 이메일 입력 필드 및 인증 버튼
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: CustomAuthTextField(
+                                          controller: _emailController,
+                                          hintText: 'Email',
+                                          prefixIcon: Icons.email_outlined,
+                                          keyboardType: TextInputType.emailAddress,
+                                          readOnly: authState.isEmailVerified,
+                                          validator: (value) {
+                                            if (value == null || value.isEmpty) {
+                                              return 'Please enter your email';
+                                            }
+                                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                                                .hasMatch(value)) {
+                                              return 'Please enter a valid email';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                      if (!authState.isEmailVerified) ...[
+                                        SizedBox(width: 8.w),
+                                        SizedBox(
+                                          height: 55.h,
+                                          child: TextButton(
+                                            onPressed: isLoading ? null : _handleSendVerification,
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: const Color(0xFFE9F0FE),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(15.r),
+                                              ),
+                                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                            ),
+                                            child: Text(
+                                              authState.isEmailVerificationSent ? 'Resend' : 'Send',
+                                              style: TextStyle(
+                                                color: const Color(0xFF7C3BEE),
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
                                   ),
+
+                                  if (authState.isEmailVerificationSent && !authState.isEmailVerified) ...[
+                                    SizedBox(height: 12.h),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                          child: CustomAuthTextField(
+                                            controller: _verificationCodeController,
+                                            hintText: '6-digit code',
+                                            prefixIcon: Icons.lock_clock_outlined,
+                                            keyboardType: TextInputType.number,
+                                            suffix: Text(
+                                              _formatTime(_remainingSeconds),
+                                              style: TextStyle(
+                                                color: AppColors.error,
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w),
+                                        SizedBox(
+                                          height: 55.h,
+                                          child: TextButton(
+                                            onPressed: isLoading ? null : _handleVerifyCode,
+                                            style: TextButton.styleFrom(
+                                              backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(15.r),
+                                              ),
+                                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                            ),
+                                            child: Text(
+                                              'Verify',
+                                              style: TextStyle(
+                                                color: const Color(0xFF10B981),
+                                                fontSize: 12.sp,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+
+                                  if (authState.isEmailVerified)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 8.h, left: 4.w),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.check_circle, color: const Color(0xFF10B981), size: 16.sp),
+                                          SizedBox(width: 4.w),
+                                          Text(
+                                            'Email verified',
+                                            style: TextStyle(
+                                              color: const Color(0xFF10B981),
+                                              fontSize: 12.sp,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
 
                                   SizedBox(height: 20.h),
 

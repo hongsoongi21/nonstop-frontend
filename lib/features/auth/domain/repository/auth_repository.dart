@@ -36,6 +36,9 @@ abstract class AuthRepository {
   /// Send password reset email
   Future<Either<Failure, Unit>> sendPasswordResetEmail(String email);
 
+  /// Send verification code to email
+  Future<Either<Failure, Unit>> sendVerificationEmail(String email);
+
   /// Verify email with confirmation code
   Future<Either<Failure, Unit>> verifyEmail(String code);
 

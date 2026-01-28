@@ -28,6 +28,9 @@ abstract class AuthApi {
   /// Send password reset email
   Future<void> sendPasswordResetEmail(String email);
 
+  /// Send verification code to email
+  Future<void> sendVerificationEmail(String email);
+
   /// Verify email with confirmation code
   Future<void> verifyEmail(String code);
 

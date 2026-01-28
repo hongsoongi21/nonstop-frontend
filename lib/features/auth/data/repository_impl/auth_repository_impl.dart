@@ -125,6 +125,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> sendVerificationEmail(String email) async {
+    try {
+      await _authApi.sendVerificationEmail(email);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, Unit>> verifyEmail(String code) async {
     try {
       await _authApi.verifyEmail(code);
