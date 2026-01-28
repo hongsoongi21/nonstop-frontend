@@ -1,0 +1,5 @@
+# Android Appfile for Fastlane
+# https://docs.fastlane.tools/actions/supply/
+
+json_key_file(ENV["GOOGLE_PLAY_JSON_KEY_FILE"] || "fastlane/google-play-key.json")
+package_name("com.example.nonstop")

@@ -1,0 +1,147 @@
+# Android Fastfile for Nonstop App
+# https://docs.fastlane.tools
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    Dir.chdir("..") do
+      sh("flutter", "test")
+    end
+  end
+
+  desc "Build debug APK"
+  lane :build_debug do
+    Dir.chdir("..") do
+      sh("flutter", "build", "apk", "--debug")
+    end
+  end
+
+  desc "Build release APK"
+  lane :build_release do
+    Dir.chdir("..") do
+      sh("flutter", "build", "apk", "--release")
+    end
+  end
+
+  desc "Build release App Bundle"
+  lane :build_bundle do
+    Dir.chdir("..") do
+      sh("flutter", "build", "appbundle", "--release")
+    end
+  end
+
+  desc "Deploy to Firebase App Distribution (Internal Testing)"
+  lane :firebase_internal do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "apk", "--release", "--build-number=#{build_number}")
+    end
+
+    firebase_app_distribution(
+      app: ENV["FIREBASE_ANDROID_APP_ID"],
+      groups: "internal-testers",
+      release_notes: options[:notes] || "Internal test build #{build_number}",
+      apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
+    )
+  end
+
+  desc "Deploy to Google Play Store (Internal Testing)"
+  lane :internal do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "appbundle", "--release", "--build-number=#{build_number}")
+    end
+
+    upload_to_play_store(
+      track: "internal",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Deploy to Google Play Store (Alpha/Closed Testing)"
+  lane :alpha do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "appbundle", "--release", "--build-number=#{build_number}")
+    end
+
+    upload_to_play_store(
+      track: "alpha",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Deploy to Google Play Store (Beta/Open Testing)"
+  lane :beta do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "appbundle", "--release", "--build-number=#{build_number}")
+    end
+
+    upload_to_play_store(
+      track: "beta",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Deploy to Google Play Store (Production)"
+  lane :production do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "appbundle", "--release", "--build-number=#{build_number}")
+    end
+
+    upload_to_play_store(
+      track: "production",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Promote from internal to beta"
+  lane :promote_to_beta do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "beta",
+      skip_upload_changelogs: true
+    )
+  end
+
+  desc "Promote from beta to production"
+  lane :promote_to_production do
+    upload_to_play_store(
+      track: "beta",
+      track_promote_to: "production",
+      skip_upload_changelogs: true
+    )
+  end
+
+  # Error handling
+  error do |lane, exception|
+    # Slack notification on failure (optional)
+    # slack(
+    #   message: "Android build failed: #{exception.message}",
+    #   success: false,
+    #   slack_url: ENV["SLACK_WEBHOOK_URL"]
+    # )
+  end
+end

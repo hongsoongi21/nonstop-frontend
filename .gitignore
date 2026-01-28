@@ -55,3 +55,21 @@ app.*.map.json
 
 # Gemini clipboard
 .gemini-clipboard/
+
+# Fastlane
+android/fastlane/google-play-key.json
+android/fastlane/report.xml
+android/fastlane/README.md
+ios/fastlane/report.xml
+ios/fastlane/README.md
+**/fastlane/.env*
+
+# Android signing
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+
+# Ruby
+**/Gemfile.lock
+**/.bundle/
+**/vendor/bundle/

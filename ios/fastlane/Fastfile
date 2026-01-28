@@ -1,0 +1,129 @@
+# iOS Fastfile for Nonstop App
+# https://docs.fastlane.tools
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Runs all the tests"
+  lane :test do
+    Dir.chdir("..") do
+      sh("flutter", "test")
+    end
+  end
+
+  desc "Build iOS app (Debug)"
+  lane :build_debug do
+    Dir.chdir("..") do
+      sh("flutter", "build", "ios", "--debug", "--no-codesign")
+    end
+  end
+
+  desc "Build iOS app (Release)"
+  lane :build_release do
+    Dir.chdir("..") do
+      sh("flutter", "build", "ios", "--release", "--no-codesign")
+    end
+  end
+
+  desc "Sync certificates and profiles with match"
+  lane :sync_certs do
+    match(type: "appstore", readonly: true)
+    match(type: "adhoc", readonly: true)
+    match(type: "development", readonly: true)
+  end
+
+  desc "Deploy to Firebase App Distribution (Internal Testing)"
+  lane :firebase_internal do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    # Sync certificates
+    match(type: "adhoc", readonly: true)
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "ipa", "--release", "--build-number=#{build_number}", "--export-options-plist=ios/ExportOptions-adhoc.plist")
+    end
+
+    firebase_app_distribution(
+      app: ENV["FIREBASE_IOS_APP_ID"],
+      groups: "internal-testers",
+      release_notes: options[:notes] || "Internal test build #{build_number}",
+      ipa_path: "../build/ios/ipa/nonstop.ipa",
+      firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
+    )
+  end
+
+  desc "Deploy to TestFlight"
+  lane :testflight_internal do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    # Sync certificates
+    match(type: "appstore", readonly: true)
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "ipa", "--release", "--build-number=#{build_number}", "--export-options-plist=ios/ExportOptions-appstore.plist")
+    end
+
+    upload_to_testflight(
+      ipa: "../build/ios/ipa/nonstop.ipa",
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV["APPLE_ID"],
+      skip_submission: true,
+      distribute_external: false
+    )
+  end
+
+  desc "Deploy to TestFlight (External Beta)"
+  lane :testflight_beta do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    # Sync certificates
+    match(type: "appstore", readonly: true)
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "ipa", "--release", "--build-number=#{build_number}", "--export-options-plist=ios/ExportOptions-appstore.plist")
+    end
+
+    upload_to_testflight(
+      ipa: "../build/ios/ipa/nonstop.ipa",
+      skip_waiting_for_build_processing: false,
+      distribute_external: true,
+      groups: ["Beta Testers"],
+      changelog: options[:notes] || "Beta build #{build_number}"
+    )
+  end
+
+  desc "Deploy to App Store"
+  lane :production do |options|
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+
+    # Sync certificates
+    match(type: "appstore", readonly: true)
+
+    Dir.chdir("..") do
+      sh("flutter", "build", "ipa", "--release", "--build-number=#{build_number}", "--export-options-plist=ios/ExportOptions-appstore.plist")
+    end
+
+    upload_to_app_store(
+      ipa: "../build/ios/ipa/nonstop.ipa",
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false
+    )
+  end
+
+  desc "Increment build number"
+  lane :bump_build do
+    increment_build_number(xcodeproj: "Runner.xcodeproj")
+  end
+
+  # Error handling
+  error do |lane, exception|
+    # Slack notification on failure (optional)
+    # slack(
+    #   message: "iOS build failed: #{exception.message}",
+    #   success: false,
+    #   slack_url: ENV["SLACK_WEBHOOK_URL"]
+    # )
+  end
+end
