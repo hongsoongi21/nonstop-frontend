@@ -10,6 +10,7 @@ import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
 import '../dto/google_login_request_dto.dart';
+import '../dto/policy_request_dto.dart';
 import '../dto/policy_response_dto.dart';
 import '../dto/user_dto.dart';
 import 'auth_api.dart';
@@ -25,6 +26,9 @@ class AuthApiImpl implements AuthApi {
   final DioClient _dioClient;
   final SecureStorageService _secureStorageService;
   final _authStateController = StreamController<User?>.broadcast();
+  
+  // 인증 확인을 위해 마지막으로 인증번호를 보낸 이메일을 저장합니다.
+  String? _lastVerificationEmail;
 
   AuthApiImpl(this._dioClient, this._secureStorageService);
 
@@ -34,6 +38,7 @@ class AuthApiImpl implements AuthApi {
       final response = await _dioClient.post(
         '/api/v1/auth/login',
         data: LoginRequestDto(email: email, password: password).toJson(),
+        options: Options(extra: {'no-auth': true}),
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
@@ -71,6 +76,7 @@ class AuthApiImpl implements AuthApi {
       final response = await _dioClient.post(
         '/api/v1/auth/google',
         data: GoogleLoginRequestDto(idToken: idToken).toJson(),
+        options: Options(extra: {'no-auth': true}),
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
@@ -107,6 +113,7 @@ class AuthApiImpl implements AuthApi {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     try {
       final response = await _dioClient.post(
@@ -117,7 +124,9 @@ class AuthApiImpl implements AuthApi {
           nickname: nickname,
           universityId: universityId,
           majorId: majorId,
+          agreedPolicyIds: agreedPolicyIds,
         ).toJson(),
+        options: Options(extra: {'no-auth': true}),
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
@@ -144,6 +153,7 @@ class AuthApiImpl implements AuthApi {
         await _dioClient.post(
           '/api/v1/auth/logout',
           data: RefreshRequestDto(refreshToken: refreshToken).toJson(),
+          // 로그아웃 시에는 기존 액세스 토큰을 함께 보내야 할 수 있으므로 no-auth를 쓰지 않거나 상황에 맞춰 결정
         );
       }
     } catch (e) {
@@ -173,26 +183,97 @@ class AuthApiImpl implements AuthApi {
 
   @override
   Future<void> sendPasswordResetEmail(String email) async {
-    // 백엔드 API 제공 시 구현
-    throw UnimplementedError(
-      'sendPasswordResetEmail not implemented',
-    ); // Add explicit error
+    try {
+      await _dioClient.post(
+        '/api/v1/auth/password/reset/request',
+        data: {'email': email},
+        options: Options(extra: {'no-auth': true}),
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> sendVerificationEmail(String email) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/email/send-verification',
+        data: {'email': email},
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        _lastVerificationEmail = email;
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '인증 이메일 발송에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<void> verifyEmail(String code) async {
-    // 백엔드 API 제공 시 구현
-    throw UnimplementedError(
-      'verifyEmail not implemented',
-    ); // Add explicit error
+    if (_lastVerificationEmail == null) {
+      throw const ServerException(
+        message: '인증할 이메일 정보가 없습니다. 먼저 이메일을 발송해주세요.',
+        statusCode: 400,
+      );
+    }
+
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/email/verify',
+        data: {
+          'email': _lastVerificationEmail,
+          'code': code,
+        },
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '인증번호가 일치하지 않습니다.',
+          statusCode: response.statusCode ?? 400,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
   Future<void> resendEmailVerification() async {
-    // 백엔드 API 제공 시 구현
-    throw UnimplementedError(
-      'resendEmailVerification not implemented',
-    ); // Add explicit error
+    if (_lastVerificationEmail == null) {
+      throw const ServerException(
+        message: '재발송할 이메일 정보가 없습니다.',
+        statusCode: 400,
+      );
+    }
+
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/signup/resend',
+        data: {'email': _lastVerificationEmail},
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '인증번호 재발송에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
   }
 
   @override
@@ -201,6 +282,7 @@ class AuthApiImpl implements AuthApi {
       final response = await _dioClient.post(
         '/api/v1/auth/email/check',
         data: {'email': email},
+        options: Options(extra: {'no-auth': true}),
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
@@ -221,6 +303,7 @@ class AuthApiImpl implements AuthApi {
       final response = await _dioClient.post(
         '/api/v1/auth/nickname/check',
         data: {'nickname': nickname},
+        options: Options(extra: {'no-auth': true}),
       );
 
       final apiResponse = response.data as Map<String, dynamic>;
@@ -297,7 +380,7 @@ class AuthApiImpl implements AuthApi {
   Future<List<PolicyResponseDto>> getPolicies() async {
     try {
       final response = await _dioClient.get('/api/v1/policies');
-      
+
       // JSON Array 응답 처리
       final List<dynamic> list = response.data;
       return list.map((e) => PolicyResponseDto.fromJson(e)).toList();
@@ -307,8 +390,27 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Stream<User?> get authStateChanges => _authStateController.stream;
+  Future<void> agreePolicies(List<int> policyIds) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/policies/agree',
+        data: PolicyAgreeRequestDto(policyIds: policyIds).toJson(),
+      );
 
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '정책 동의 저장 실패',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Stream<User?> get authStateChanges => _authStateController.stream;
   Future<User> _fetchAndEmitUserInfo() async {
     try {
       final response = await _dioClient.get('/api/v1/users/me');

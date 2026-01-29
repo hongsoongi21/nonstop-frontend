@@ -16,6 +16,7 @@ abstract class AuthApi {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Sign out current user
@@ -26,6 +27,9 @@ abstract class AuthApi {
 
   /// Send password reset email
   Future<void> sendPasswordResetEmail(String email);
+
+  /// Send verification code to email
+  Future<void> sendVerificationEmail(String email);
 
   /// Verify email with confirmation code
   Future<void> verifyEmail(String code);
@@ -61,6 +65,9 @@ abstract class AuthApi {
 
   /// Get policy list
   Future<List<PolicyResponseDto>> getPolicies();
+
+  /// Submit policy agreements
+  Future<void> agreePolicies(List<int> policyIds);
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;

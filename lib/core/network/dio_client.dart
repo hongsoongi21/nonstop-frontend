@@ -189,6 +189,12 @@ class _AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // extra['no-auth'] 플래그가 설정된 경우 토큰 주입을 건너뜁니다.
+    if (options.extra['no-auth'] == true) {
+      super.onRequest(options, handler);
+      return;
+    }
+
     // 보안 저장소에서 JWT 토큰을 가져와 헤더에 주입
     final token = await _secureStorageService.getAccessToken();
     if (token != null) {

@@ -55,14 +55,31 @@ class AuthState {
   final bool isLoading;
   final User? user;
   final Failure? failure;
+  final bool isEmailVerificationSent;
+  final bool isEmailVerified;
 
-  const AuthState({this.isLoading = false, this.user, this.failure});
+  const AuthState({
+    this.isLoading = false,
+    this.user,
+    this.failure,
+    this.isEmailVerificationSent = false,
+    this.isEmailVerified = false,
+  });
 
-  AuthState copyWith({bool? isLoading, User? user, Failure? failure}) {
+  AuthState copyWith({
+    bool? isLoading,
+    User? user,
+    Failure? failure,
+    bool? isEmailVerificationSent,
+    bool? isEmailVerified,
+  }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
       failure: failure ?? this.failure,
+      isEmailVerificationSent:
+          isEmailVerificationSent ?? this.isEmailVerificationSent,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
   }
 
@@ -124,6 +141,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     state = state.copyWith(isLoading: true, failure: null);
     final result = await _signUpUseCase(
@@ -133,11 +151,35 @@ class AuthNotifier extends StateNotifier<AuthState> {
         nickname: nickname,
         universityId: universityId,
         majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
       ),
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
       (user) => state = state.copyWith(isLoading: false, user: user),
+    );
+  }
+
+  /// 이메일 인증 코드를 발송합니다.
+  Future<void> sendVerificationEmail(String email) async {
+    state = state.copyWith(isLoading: true, failure: null);
+    final result = await _authRepository.sendVerificationEmail(email);
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (_) => state = state.copyWith(
+        isLoading: false,
+        isEmailVerificationSent: true,
+      ),
+    );
+  }
+
+  /// 이메일 인증 코드를 확인합니다.
+  Future<void> verifyEmail(String code) async {
+    state = state.copyWith(isLoading: true, failure: null);
+    final result = await _authRepository.verifyEmail(code);
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (_) => state = state.copyWith(isLoading: false, isEmailVerified: true),
     );
   }
 
@@ -158,6 +200,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true);
     await _authRepository.signOut();
     state = const AuthState();
+  }
+
+  /// 정책 동의를 백엔드에 저장합니다.
+  Future<void> agreePolicies(List<int> policyIds) async {
+    await _authRepository.agreePolicies(policyIds);
   }
 
   /// 발생한 에러 상태를 초기화합니다.

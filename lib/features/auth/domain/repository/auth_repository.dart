@@ -24,6 +24,7 @@ abstract class AuthRepository {
     required String nickname,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Sign out current user
@@ -34,6 +35,9 @@ abstract class AuthRepository {
 
   /// Send password reset email
   Future<Either<Failure, Unit>> sendPasswordResetEmail(String email);
+
+  /// Send verification code to email
+  Future<Either<Failure, Unit>> sendVerificationEmail(String email);
 
   /// Verify email with confirmation code
   Future<Either<Failure, Unit>> verifyEmail(String code);
@@ -64,6 +68,9 @@ abstract class AuthRepository {
   
   /// Get policy list
   Future<Either<Failure, List<Policy>>> getPolicies();
+
+  /// Submit policy agreements
+  Future<Either<Failure, Unit>> agreePolicies(List<int> policyIds);
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;

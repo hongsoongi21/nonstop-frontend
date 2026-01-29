@@ -15,6 +15,8 @@ class CustomAuthTextField extends StatelessWidget {
   final bool obscureText;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
+  final bool readOnly;
+  final Widget? suffix;
 
   const CustomAuthTextField({
     super.key,
@@ -24,6 +26,8 @@ class CustomAuthTextField extends StatelessWidget {
     this.obscureText = false,
     this.keyboardType,
     this.validator,
+    this.readOnly = false,
+    this.suffix,
   });
 
   @override
@@ -43,6 +47,7 @@ class CustomAuthTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         keyboardType: keyboardType,
+        readOnly: readOnly,
         style: TextStyle(
           fontSize: 14.sp,
           color: Colors.black87,
@@ -58,6 +63,17 @@ class CustomAuthTextField extends StatelessWidget {
                   prefixIcon,
                   color: const Color(0xFF7C3BEE), // #7C3BEE
                   size: 20.sp,
+                )
+              : null,
+          suffixIcon: suffix != null
+              ? Padding(
+                  padding: EdgeInsets.only(right: 12.w),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      suffix!,
+                    ],
+                  ),
                 )
               : null,
           border: InputBorder.none,
