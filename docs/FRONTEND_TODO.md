@@ -37,7 +37,7 @@
 
 | Feature | Mock File | Provider Usage | Backend Status |
 |---------|-----------|----------------|----------------|
-| **Chat** | `chat_api_mock.dart` | `chat_provider.dart:21` | BE 완료 (STOMP/Kafka) - API 연동 진행 중 |
+| ~~**Chat**~~ | ~~`chat_api_mock.dart`~~ | ~~`chat_provider.dart:21`~~ | ✅ **완료** - Real API 연동 완료 |
 | **Profile** | `profile_api_mock.dart` | `profile_provider.dart:338` | BE 완료 |
 | **Posts** | `profile_post_card.dart` (MockPosts) | `profile_screen.dart:130` | Board API 부분 완료 |
 
@@ -68,6 +68,11 @@
 - [x] Backend API integration (reset request, verify, confirm)
 - [x] Route and navigation from login screen
 
+### Chat Real API Migration (2026-01-30):
+- [x] Removed mock API usage from `chat_provider.dart`
+- [x] Now uses `ChatApiImpl` with real backend (STOMP/Kafka)
+- [x] Full functionality: messages, images, read receipts, pagination
+
 ---
 
 ## 4. Branches Status
@@ -77,7 +82,7 @@
 | `feature/chat-full-implementation` | Merged to dev | birthDate + chat |
 | `feat/firebase-crashlytics-analytics` | Merged to dev | Crashlytics/Analytics |
 | `feat/fastlane-deployment` | Merged to dev | CI/CD |
-| `feat/forgot-password-screen` | Ready for merge | Password reset flow |
+| `feat/forgot-password-screen` | Merged to dev | Password reset flow |
 | `origin/dylan` | Not merged | Dev environment, Google sign-out |
 | `origin/feat/initial-stage` | Not merged | .vscode removal, profile stats |
 
@@ -103,6 +108,7 @@
 ## 6. Recommended Next Tasks
 
 1. ~~**비밀번호 찾기 화면**~~ - ✅ Done (`feat/forgot-password-screen`)
-2. **Profile Mock → Real API** - BE complete, just replace mock
-3. **FCM Push Notification** - Firebase already configured
-4. **i18n Language Support** - FE only, no backend dependency
+2. ~~**Chat Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
+3. **Profile Mock → Real API** - BE complete, just replace mock
+4. **FCM Push Notification** - Firebase already configured
+5. **i18n Language Support** - FE only, no backend dependency
