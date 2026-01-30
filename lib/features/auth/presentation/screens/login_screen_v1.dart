@@ -131,7 +131,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   }
 
   void _handleForgotPassword() {
-    // TODO: 비밀번호 찾기 화면으로 이동 필요
+    context.push(Routes.forgotPassword);
   }
 
   void _handleSignup() {

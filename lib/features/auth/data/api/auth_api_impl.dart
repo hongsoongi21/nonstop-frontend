@@ -191,11 +191,68 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      await _dioClient.post(
+      final response = await _dioClient.post(
         '/api/v1/auth/password/reset/request',
         data: {'email': email},
         options: Options(extra: {'no-auth': true}),
       );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '비밀번호 재설정 이메일 발송에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> verifyPasswordResetCode(String email, String code) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/password/reset/verify',
+        data: {
+          'email': email,
+          'code': code,
+        },
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '인증 코드가 일치하지 않습니다.',
+          statusCode: response.statusCode ?? 400,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<void> confirmPasswordReset(String email, String code, String newPassword) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/password/reset/confirm',
+        data: {
+          'email': email,
+          'code': code,
+          'newPassword': newPassword,
+        },
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] != true) {
+        throw ServerException(
+          message: apiResponse['message'] ?? '비밀번호 변경에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
     } on DioException catch (e) {
       throw _handleDioError(e);
     }

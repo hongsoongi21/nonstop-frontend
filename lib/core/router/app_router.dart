@@ -6,7 +6,7 @@ import 'package:nonstop/core/services/analytics_service.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
-// import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
+import 'package:nonstop/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
@@ -37,8 +37,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final path = state.uri.path;
       
-      // 현재 페이지가 로그인 또는 회원가입 페이지인지 확인
-      final isAuthPage = path == Routes.login || path == Routes.register;
+      // 현재 페이지가 로그인, 회원가입, 비밀번호 찾기 페이지인지 확인
+      final isAuthPage = path == Routes.login ||
+          path == Routes.register ||
+          path == Routes.forgotPassword;
 
       // 인증되지 않은 상태에서 보호된 경로에 접근하려고 하면 로그인으로 리다이렉트
       if (!isAuthenticated && !isAuthPage) {
@@ -69,11 +71,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-      // GoRoute(
-      //   path: Routes.forgotPassword,
-      //   builder: (context, state) =>
-      //       const EmailVerificationScreen(), // TODO: Create forgot password screen
-      // ),
+      GoRoute(
+        path: Routes.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
 
       // Main app with bottom navigation
       StatefulShellRoute.indexedStack(
