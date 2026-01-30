@@ -51,7 +51,9 @@ class ProfileHeader extends StatelessWidget {
         // Content overlay
         Positioned.fill(
           child: SafeArea(
+            bottom: false,
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Top bar with actions
                 Padding(
