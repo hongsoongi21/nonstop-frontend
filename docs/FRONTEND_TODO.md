@@ -38,7 +38,7 @@
 | Feature | Mock File | Provider Usage | Backend Status |
 |---------|-----------|----------------|----------------|
 | ~~**Chat**~~ | ~~`chat_api_mock.dart`~~ | ~~`chat_provider.dart:21`~~ | ✅ **완료** - Real API 연동 완료 |
-| **Profile** | `profile_api_mock.dart` | `profile_provider.dart:338` | BE 완료 |
+| **Profile** | `profile_api_mock.dart` | `profile_provider.dart:338` | 🔄 **진행 중** - `feat/profile-real-api` |
 | **Posts** | `profile_post_card.dart` (MockPosts) | `profile_screen.dart:130` | Board API 부분 완료 |
 
 ---
@@ -73,16 +73,20 @@
 - [x] Now uses `ChatApiImpl` with real backend (STOMP/Kafka)
 - [x] Full functionality: messages, images, read receipts, pagination
 
+### Profile Real API Migration (2026-01-30) - In Progress:
+- [x] Created `ProfileApiImpl` with real backend API calls
+- [x] Updated `profile_provider.dart` to use `ProfileApiImpl`
+- [x] Uses current user ID from auth provider
+- [ ] Settings API (backend pending) - using local defaults
+- [ ] Profile Stats API (backend pending) - using placeholder
+
 ---
 
 ## 4. Branches Status
 
 | Branch | Status | Notes |
 |--------|--------|-------|
-| `feature/chat-full-implementation` | Merged to dev | birthDate + chat |
-| `feat/firebase-crashlytics-analytics` | Merged to dev | Crashlytics/Analytics |
-| `feat/fastlane-deployment` | Merged to dev | CI/CD |
-| `feat/forgot-password-screen` | Merged to dev | Password reset flow |
+| `feat/profile-real-api` | In Progress | Profile real API integration |
 | `origin/dylan` | Not merged | Dev environment, Google sign-out |
 | `origin/feat/initial-stage` | Not merged | .vscode removal, profile stats |
 
@@ -109,6 +113,7 @@
 
 1. ~~**비밀번호 찾기 화면**~~ - ✅ Done (`feat/forgot-password-screen`)
 2. ~~**Chat Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-3. **Profile Mock → Real API** - BE complete, just replace mock
-4. **FCM Push Notification** - Firebase already configured
-5. **i18n Language Support** - FE only, no backend dependency
+3. **Profile Mock → Real API** - 🔄 In Progress (`feat/profile-real-api`)
+4. **Posts Mock → Real API** - Board API 부분 완료, 연동 필요
+5. **FCM Push Notification** - Firebase already configured
+6. **i18n Language Support** - FE only, no backend dependency
