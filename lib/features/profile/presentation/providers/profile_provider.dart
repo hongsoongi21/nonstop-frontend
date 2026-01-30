@@ -4,6 +4,8 @@ import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/network/dio_client.dart' show dioClientProvider;
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
+import 'package:nonstop/features/board/data/repositories/board_repository_impl.dart';
+import 'package:nonstop/features/board/domain/entities/post.entity.dart';
 import '../../data/api/profile_api.dart';
 import '../../data/api/profile_api_impl.dart';
 import '../../data/repository_impl/profile_repository_impl.dart';
@@ -427,4 +429,14 @@ final isProfileEditingProvider = Provider<bool>((ref) {
 
 final profileCompletionProvider = Provider<int>((ref) {
   return ref.watch(profileProvider).profileCompletion;
+});
+
+/// Provider for current user's posts
+final myPostsProvider = FutureProvider<List<PostEntity>>((ref) async {
+  final boardRepo = ref.watch(boardRepositoryProvider);
+  final result = await boardRepo.getMyPosts(page: 1, size: 20);
+  return result.fold(
+    (error) => <PostEntity>[],
+    (posts) => posts,
+  );
 });
