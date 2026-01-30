@@ -9,7 +9,7 @@
 
 | Location | Description | Backend Status | Related Branch |
 |----------|-------------|----------------|----------------|
-| `login_screen_v1.dart:134` | 비밀번호 찾기 화면 | BE API 완료 (`/auth/password-reset`) | - |
+| ~~`login_screen_v1.dart:134`~~ | ~~비밀번호 찾기 화면~~ | ~~BE API 완료~~ | `feat/forgot-password-screen` (Done) |
 | `signup_screen.dart:305-317` | Google/Apple 회원가입 | BE 완료 | Merged |
 | `chat_screen.dart:26` | 1:1 채팅방 생성 (User picker) | BE 완료 (STOMP/Kafka) | Merged |
 
@@ -62,6 +62,12 @@
 - [x] iOS Fastlane setup
 - [x] GitHub Actions CI/CD workflows
 
+### From `feat/forgot-password-screen`:
+- [x] ForgotPasswordScreen with 3-step flow (email → code → new password)
+- [x] ForgotPasswordProvider for state management
+- [x] Backend API integration (reset request, verify, confirm)
+- [x] Route and navigation from login screen
+
 ---
 
 ## 4. Branches Status
@@ -71,6 +77,7 @@
 | `feature/chat-full-implementation` | Merged to dev | birthDate + chat |
 | `feat/firebase-crashlytics-analytics` | Merged to dev | Crashlytics/Analytics |
 | `feat/fastlane-deployment` | Merged to dev | CI/CD |
+| `feat/forgot-password-screen` | Ready for merge | Password reset flow |
 | `origin/dylan` | Not merged | Dev environment, Google sign-out |
 | `origin/feat/initial-stage` | Not merged | .vscode removal, profile stats |
 
@@ -95,7 +102,7 @@
 
 ## 6. Recommended Next Tasks
 
-1. **비밀번호 찾기 화면** - BE API ready, straightforward implementation
+1. ~~**비밀번호 찾기 화면**~~ - ✅ Done (`feat/forgot-password-screen`)
 2. **Profile Mock → Real API** - BE complete, just replace mock
 3. **FCM Push Notification** - Firebase already configured
 4. **i18n Language Support** - FE only, no backend dependency
