@@ -14,6 +14,7 @@ abstract class AuthApi {
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
     List<int>? agreedPolicyIds,

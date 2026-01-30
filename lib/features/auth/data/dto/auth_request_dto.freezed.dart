@@ -196,6 +196,8 @@ mixin _$SignUpRequestDto {
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
+  String get birthDate =>
+      throw _privateConstructorUsedError; // Format: "YYYY-MM-DD"
   int? get universityId => throw _privateConstructorUsedError;
   int? get majorId => throw _privateConstructorUsedError;
   List<int>? get agreedPolicyIds => throw _privateConstructorUsedError;
@@ -221,6 +223,7 @@ abstract class $SignUpRequestDtoCopyWith<$Res> {
     String email,
     String password,
     String nickname,
+    String birthDate,
     int? universityId,
     int? majorId,
     List<int>? agreedPolicyIds,
@@ -245,6 +248,7 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? birthDate = null,
     Object? universityId = freezed,
     Object? majorId = freezed,
     Object? agreedPolicyIds = freezed,
@@ -262,6 +266,10 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
             nickname: null == nickname
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
+                      as String,
+            birthDate: null == birthDate
+                ? _value.birthDate
+                : birthDate // ignore: cast_nullable_to_non_nullable
                       as String,
             universityId: freezed == universityId
                 ? _value.universityId
@@ -294,6 +302,7 @@ abstract class _$$SignUpRequestDtoImplCopyWith<$Res>
     String email,
     String password,
     String nickname,
+    String birthDate,
     int? universityId,
     int? majorId,
     List<int>? agreedPolicyIds,
@@ -317,6 +326,7 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? birthDate = null,
     Object? universityId = freezed,
     Object? majorId = freezed,
     Object? agreedPolicyIds = freezed,
@@ -334,6 +344,10 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
         nickname: null == nickname
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
+                  as String,
+        birthDate: null == birthDate
+            ? _value.birthDate
+            : birthDate // ignore: cast_nullable_to_non_nullable
                   as String,
         universityId: freezed == universityId
             ? _value.universityId
@@ -359,6 +373,7 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
     required this.email,
     required this.password,
     required this.nickname,
+    required this.birthDate,
     this.universityId,
     this.majorId,
     final List<int>? agreedPolicyIds,
@@ -373,6 +388,9 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
   final String password;
   @override
   final String nickname;
+  @override
+  final String birthDate;
+  // Format: "YYYY-MM-DD"
   @override
   final int? universityId;
   @override
@@ -389,7 +407,7 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
 
   @override
   String toString() {
-    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname, universityId: $universityId, majorId: $majorId, agreedPolicyIds: $agreedPolicyIds)';
+    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname, birthDate: $birthDate, universityId: $universityId, majorId: $majorId, agreedPolicyIds: $agreedPolicyIds)';
   }
 
   @override
@@ -402,6 +420,8 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
                 other.password == password) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
+            (identical(other.birthDate, birthDate) ||
+                other.birthDate == birthDate) &&
             (identical(other.universityId, universityId) ||
                 other.universityId == universityId) &&
             (identical(other.majorId, majorId) || other.majorId == majorId) &&
@@ -418,6 +438,7 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
     email,
     password,
     nickname,
+    birthDate,
     universityId,
     majorId,
     const DeepCollectionEquality().hash(_agreedPolicyIds),
@@ -445,6 +466,7 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
     required final String email,
     required final String password,
     required final String nickname,
+    required final String birthDate,
     final int? universityId,
     final int? majorId,
     final List<int>? agreedPolicyIds,
@@ -459,6 +481,8 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
   String get password;
   @override
   String get nickname;
+  @override
+  String get birthDate; // Format: "YYYY-MM-DD"
   @override
   int? get universityId;
   @override

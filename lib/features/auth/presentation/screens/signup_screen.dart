@@ -26,6 +26,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
   final _universityController = TextEditingController();
   final _majorController = TextEditingController();
 
+  DateTime? _selectedBirthDate;
+
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -56,33 +58,66 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
   Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedBirthDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select your birth date')),
+      );
+      return;
+    }
+
     final fullName = _fullNameController.text.trim();
     final email = _emailController.text.trim();
     final password = _passwordController.text;
-    final university = _universityController.text.trim().isNotEmpty
-        ? _universityController.text.trim()
-        : null;
-    final major = _majorController.text.trim().isNotEmpty
-        ? _majorController.text.trim()
-        : null;
 
     await ref
         .read(authProvider.notifier)
         .signUp(
           email: email,
           password: password,
-          nickname: fullName, // 기존 fullName을 nickname으로 사용
-          universityId: null, // 새로운 구조에 맞춰 ID로 보내야 하므로 임시 null 처리
-          majorId: null,      // 새로운 구조에 맞춰 ID로 보내야 하므로 임시 null 처리
+          nickname: fullName,
+          birthDate: _selectedBirthDate!,
+          universityId: null,
+          majorId: null,
         );
 
     // Check if signup was successful
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
       if (mounted) {
-        // context.go('/email-verification');
         context.go('/onboarding');
       }
+    }
+  }
+
+  Future<void> _selectBirthDate() async {
+    final now = DateTime.now();
+    final initialDate = _selectedBirthDate ?? DateTime(now.year - 20, 1, 1);
+    final firstDate = DateTime(1900);
+    final lastDate = DateTime(now.year - 14, 12, 31); // At least 14 years old
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      helpText: 'Select your birth date',
+      fieldLabelText: 'Birth Date',
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: Theme.of(context).colorScheme.copyWith(
+                  primary: AppColors.primary,
+                ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedBirthDate = picked;
+      });
     }
   }
 
@@ -186,6 +221,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
                             return null;
                           },
                         ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // Birth Date Picker
+                        _buildBirthDatePicker(),
 
                         const SizedBox(height: AppSpacing.lg),
 
@@ -452,6 +492,38 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
             // TODO: Add onTap for privacy
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBirthDatePicker() {
+    final formattedDate = _selectedBirthDate != null
+        ? '${_selectedBirthDate!.year}-${_selectedBirthDate!.month.toString().padLeft(2, '0')}-${_selectedBirthDate!.day.toString().padLeft(2, '0')}'
+        : null;
+
+    return InkWell(
+      onTap: _selectBirthDate,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Birth Date',
+          hintText: 'Select your birth date',
+          prefixIcon: const Icon(Icons.cake_outlined),
+          suffixIcon: const Icon(Icons.calendar_today),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          ),
+          filled: true,
+          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        ),
+        child: Text(
+          formattedDate ?? 'Select your birth date',
+          style: formattedDate != null
+              ? AppTypography.body1
+              : AppTypography.body1.copyWith(
+                  color: Theme.of(context).hintColor,
+                ),
+        ),
       ),
     );
   }

@@ -52,4 +52,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectCommunity => 'Select Community';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get chatListEmpty => 'No conversations yet';
+
+  @override
+  String get chatListEmptyHint => 'Tap + to start a conversation';
+
+  @override
+  String get chatLoadError => 'Failed to load conversations';
+
+  @override
+  String get newChat => 'New Chat';
+
+  @override
+  String get searchUsers => 'Search users...';
+
+  @override
+  String selectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get startChat => 'Start Chat';
+
+  @override
+  String get createGroup => 'Create Group';
+
+  @override
+  String get groupName => 'Group Name';
+
+  @override
+  String get groupNameHint => 'Enter group name';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get connectionConnected => 'Connected';
+
+  @override
+  String get connectionConnecting => 'Connecting...';
+
+  @override
+  String get connectionDisconnected => 'Disconnected - Tap to reconnect';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get messageHint => 'Type a message...';
 }

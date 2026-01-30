@@ -55,5 +55,86 @@
   "selectCommunity": "Select Community",
   "@selectCommunity": {
     "description": "Title for community selection modal"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "No conversations yet",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Tap + to start a conversation",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Failed to load conversations",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "New Chat",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Search users...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Start Chat",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Create Group",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Group Name",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Enter group name",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Connected",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Connecting...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Disconnected - Tap to reconnect",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Type a message...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
   }
 }

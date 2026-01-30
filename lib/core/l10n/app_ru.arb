@@ -55,5 +55,86 @@
   "selectCommunity": "Выбрать сообщество",
   "@selectCommunity": {
     "description": "Title for community selection modal"
+  },
+  "chat": "Чат",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "Пока нет чатов",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Нажмите + чтобы начать разговор",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Не удалось загрузить чаты",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "Новый чат",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Поиск пользователей...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} выбрано",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Начать чат",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Создать группу",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Название группы",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Введите название группы",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Камера",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Галерея",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Подключено",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Подключение...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Отключено - нажмите для переподключения",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Сегодня",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Вчера",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Введите сообщение...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
   }
 }

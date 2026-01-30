@@ -53,4 +53,63 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get selectCommunity => 'Jamiyatni tanlang';
+
+  @override
+  String get chat => 'Chat';
+
+  @override
+  String get chatListEmpty => 'Hozircha suhbatlar yo\'q';
+
+  @override
+  String get chatListEmptyHint => 'Suhbat boshlash uchun + tugmasini bosing';
+
+  @override
+  String get chatLoadError => 'Suhbatlarni yuklashda xatolik';
+
+  @override
+  String get newChat => 'Yangi suhbat';
+
+  @override
+  String get searchUsers => 'Foydalanuvchilarni qidirish...';
+
+  @override
+  String selectedCount(int count) {
+    return '$count tanlangan';
+  }
+
+  @override
+  String get startChat => 'Suhbatni boshlash';
+
+  @override
+  String get createGroup => 'Guruh yaratish';
+
+  @override
+  String get groupName => 'Guruh nomi';
+
+  @override
+  String get groupNameHint => 'Guruh nomini kiriting';
+
+  @override
+  String get camera => 'Kamera';
+
+  @override
+  String get gallery => 'Galereya';
+
+  @override
+  String get connectionConnected => 'Ulangan';
+
+  @override
+  String get connectionConnecting => 'Ulanmoqda...';
+
+  @override
+  String get connectionDisconnected => 'Uzildi - qayta ulash uchun bosing';
+
+  @override
+  String get today => 'Bugun';
+
+  @override
+  String get yesterday => 'Kecha';
+
+  @override
+  String get messageHint => 'Xabar yozing...';
 }

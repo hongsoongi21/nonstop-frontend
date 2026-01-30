@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
+import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
+import 'package:nonstop/features/chat/presentation/screens/fullscreen_image_viewer.dart';
+import 'package:nonstop/features/chat/presentation/widgets/message_bubble.dart';
+import 'package:nonstop/features/chat/presentation/widgets/chat_input_bar.dart';
+import 'package:nonstop/features/chat/presentation/widgets/date_separator.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   final int roomId;
+  final String? roomName;
 
   const ChatRoomScreen({
     super.key,
     required this.roomId,
+    this.roomName,
   });
 
   @override
@@ -16,100 +25,202 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
-  final _textController = TextEditingController();
+  final _scrollController = ScrollController();
+  bool _showScrollToBottom = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Show scroll-to-bottom button when scrolled up
+    final showButton = _scrollController.offset > 200;
+    if (showButton != _showScrollToBottom) {
+      setState(() => _showScrollToBottom = showButton);
+    }
+
+    // Infinite scroll: load more when near top (list is reversed)
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      ref.read(chatRoomProvider(widget.roomId).notifier).loadMore();
+    }
+  }
+
+  void _scrollToBottom() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(chatRoomProvider(widget.roomId));
-    final notifier = ref.read(chatRoomProvider(widget.roomId).notifier);
+    final currentUserId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Room ${widget.roomId}'),
+        title: Text(widget.roomName ?? AppLocalizations.of(context).chat),
       ),
       body: Column(
         children: [
           Expanded(
-            child: state.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    reverse: true, // Start from bottom
-                    itemCount: state.messages.length,
-                    itemBuilder: (context, index) {
-                      // Reverse index access if messages are ordered NEWEST -> OLDEST
-                      // If messages are OLDEST -> NEWEST, we need to reverse the list or use index.
-                      // Usually we store NEWEST first for reverse list view.
-                      final message = state.messages[index];
-                      return _buildMessageBubble(message);
-                    },
+            child: Stack(
+              children: [
+                _buildMessageList(state, currentUserId),
+                if (_showScrollToBottom)
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: FloatingActionButton.small(
+                      onPressed: _scrollToBottom,
+                      child: const Icon(Icons.keyboard_arrow_down),
+                    ),
                   ),
+              ],
+            ),
           ),
-          _buildInputArea(notifier),
+          ChatInputBar(
+            onSend: (text) {
+              ref.read(chatRoomProvider(widget.roomId).notifier).sendMessage(text);
+            },
+            onAttachmentTap: () => _showImagePicker(context),
+            hintText: AppLocalizations.of(context).messageHint,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
-    final isMe = message.senderId == 0; // Assuming 0 is me for now
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isMe ? Colors.blue : Colors.grey[300],
-          borderRadius: BorderRadius.circular(16),
-        ),
+  Widget _buildMessageList(ChatRoomState state, int? currentUserId) {
+    if (state.isLoading && state.messages.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      itemCount: state.messages.length + (state.isLoadingMore ? 1 : 0),
+      itemBuilder: (context, index) {
+        // Show loading indicator at end (top when reversed)
+        if (state.isLoadingMore && index == state.messages.length) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final message = state.messages[index];
+        final isMe = message.senderId == currentUserId;
+
+        // Check if we need date separator
+        final showDateSeparator = _shouldShowDateSeparator(state.messages, index);
+
+        // Compute read status for sent messages
+        final readStatus = state.readStatusByUser;
+        bool isMessageRead = false;
+        if (isMe && readStatus.isNotEmpty) {
+          // A message is "read" if any other user's lastReadMessageId >= this message id
+          isMessageRead = readStatus.values.any((lastRead) => lastRead >= message.id);
+        }
+
+        return Column(
+          children: [
+            MessageBubble(
+              message: message,
+              isMe: isMe,
+              isRead: isMessageRead,
+              onImageTap: () {
+                if (message.type == MessageType.image) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FullscreenImageViewer(imageUrl: message.content),
+                    ),
+                  );
+                }
+              },
+            ),
+            if (showDateSeparator) DateSeparator(date: message.sentAt),
+          ],
+        );
+      },
+    );
+  }
+
+  bool _shouldShowDateSeparator(List<ChatMessage> messages, int index) {
+    // Since list is reversed, check if current message is from different day than previous
+    if (index == messages.length - 1) return true; // Always show for oldest message
+
+    final current = messages[index];
+    final next = messages[index + 1];
+
+    return !_isSameDay(current.sentAt, next.sentAt);
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  void _showImagePicker(BuildContext context) {
+    // Capture notifier reference before async operations
+    final notifier = ref.read(chatRoomProvider(widget.roomId).notifier);
+    final l10n = AppLocalizations.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              message.content,
-              style: TextStyle(color: isMe ? Colors.white : Colors.black),
+            ListTile(
+              leading: Icon(Icons.camera_alt, color: AppColors.primary),
+              title: Text(l10n.camera),
+              onTap: () async {
+                Navigator.pop(context);
+                final picker = ImagePicker();
+                final file = await picker.pickImage(
+                  source: ImageSource.camera,
+                  maxWidth: 1080,
+                  imageQuality: 85,
+                );
+                if (file != null) {
+                  notifier.sendImageMessage(file.path);
+                }
+              },
             ),
-            if (message.isSending)
-              const Icon(Icons.access_time, size: 12, color: Colors.white70),
-            if (message.hasError)
-              const Icon(Icons.error, size: 12, color: Colors.red),
+            ListTile(
+              leading: Icon(Icons.photo_library, color: AppColors.primary),
+              title: Text(l10n.gallery),
+              onTap: () async {
+                Navigator.pop(context);
+                final picker = ImagePicker();
+                final file = await picker.pickImage(
+                  source: ImageSource.gallery,
+                  maxWidth: 1080,
+                  imageQuality: 85,
+                );
+                if (file != null) {
+                  notifier.sendImageMessage(file.path);
+                }
+              },
+            ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildInputArea(ChatRoomNotifier notifier) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      color: Colors.white,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _textController,
-              decoration: const InputDecoration(
-                hintText: 'Type a message...',
-                border: OutlineInputBorder(),
-              ),
-              onSubmitted: (_) => _sendMessage(notifier),
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.send),
-            onPressed: () => _sendMessage(notifier),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _sendMessage(ChatRoomNotifier notifier) {
-    final text = _textController.text.trim();
-    if (text.isNotEmpty) {
-      notifier.sendMessage(text);
-      _textController.clear();
-    }
   }
 }
