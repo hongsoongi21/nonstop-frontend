@@ -12,6 +12,7 @@ import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../notification/presentation/providers/notification_provider.dart';
 import '../providers/board_provider.dart';
 import '../../domain/entities/community.entity.dart';
 
@@ -41,6 +42,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     final selectedCommunity = boardState.selectedCommunity;
     final boards = boardState.boards;
     final selectedBoard = boardState.selectedBoard;
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
 
     return AppScaffold(
       title: 'Board',
@@ -104,7 +106,51 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                               ),
                           ],
                         ),
-                        GestureDetector(
+                        Row(
+                          children: [
+                            // Notification Icon
+                            Stack(
+                              children: [
+                                IconButton(
+                                  onPressed: () =>
+                                      context.push(Routes.notifications),
+                                  icon: const Icon(
+                                    Icons.notifications_outlined,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                if (unreadCount > 0)
+                                  Positioned(
+                                    right: 8,
+                                    top: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        color: AppColors.error,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      constraints: const BoxConstraints(
+                                        minWidth: 16,
+                                        minHeight: 16,
+                                      ),
+                                      child: Text(
+                                        unreadCount > 99
+                                            ? '99+'
+                                            : unreadCount.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(width: 8),
+                            // Write Button
+                            GestureDetector(
                           onTap: () {
                             if (selectedBoard != null) {
                               context.go(Routes.boardCreatePath());
@@ -156,6 +202,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                               ],
                             ),
                           ),
+                        ),
+                          ],
                         ),
                       ],
                     ),

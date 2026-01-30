@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/app.dart';
+import 'package:nonstop/core/services/fcm_service.dart';
 import 'package:nonstop/core/utils/logger.dart';
 import 'package:nonstop/firebase_options.dart';
 
@@ -17,6 +19,9 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    // FCM background handler 등록
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // Crashlytics 설정
     if (!kDebugMode) {

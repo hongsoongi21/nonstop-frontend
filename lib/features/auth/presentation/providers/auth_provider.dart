@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/services/fcm_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../data/api/auth_api.dart';
 import '../../data/api/auth_api_impl.dart';
@@ -98,16 +100,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final SignUpUseCase _signUpUseCase;
   final GoogleSignInUseCase _googleSignInUseCase;
   final AuthRepository _authRepository;
+  final FcmService _fcmService;
 
   AuthNotifier({
     required SignInUseCase signInUseCase,
     required SignUpUseCase signUpUseCase,
     required GoogleSignInUseCase googleSignInUseCase,
     required AuthRepository authRepository,
+    required FcmService fcmService,
   }) : _signInUseCase = signInUseCase,
        _signUpUseCase = signUpUseCase,
        _googleSignInUseCase = googleSignInUseCase,
        _authRepository = authRepository,
+       _fcmService = fcmService,
        super(const AuthState()) {
     // 앱 시작 시 현재 로그인된 사용자가 있는지 초기화합니다.
     _initializeAuth();
@@ -119,7 +124,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _authRepository.getCurrentUser();
     result.fold((failure) => state = state.copyWith(isLoading: false), (user) {
       state = state.copyWith(isLoading: false, user: user);
+      if (user != null) {
+        _initializeFcm();
+      }
     });
+  }
+
+  /// FCM 서비스를 초기화합니다.
+  Future<void> _initializeFcm() async {
+    try {
+      await _fcmService.initialize();
+      debugPrint('FCM initialized successfully');
+    } catch (e) {
+      debugPrint('FCM initialization failed: $e');
+    }
   }
 
   /// 이메일과 비밀번호로 로그인을 수행합니다.
@@ -130,7 +148,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) => state = state.copyWith(isLoading: false, user: user),
+      (user) {
+        state = state.copyWith(isLoading: false, user: user);
+        _initializeFcm();
+      },
     );
   }
 
@@ -159,7 +180,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) => state = state.copyWith(isLoading: false, user: user),
+      (user) {
+        state = state.copyWith(isLoading: false, user: user);
+        _initializeFcm();
+      },
     );
   }
 
@@ -194,13 +218,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) => state = state.copyWith(isLoading: false, user: user),
+      (user) {
+        state = state.copyWith(isLoading: false, user: user);
+        _initializeFcm();
+      },
     );
   }
 
   /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
+    // FCM 토큰 해제
+    try {
+      await _fcmService.unregisterToken();
+    } catch (e) {
+      debugPrint('FCM unregister failed: $e');
+    }
     await _authRepository.signOut();
     state = const AuthState();
   }
@@ -223,6 +256,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signUpUseCase: ref.watch(signUpUseCaseProvider),
     googleSignInUseCase: ref.watch(googleSignInUseCaseProvider),
     authRepository: ref.watch(authRepositoryProvider),
+    fcmService: ref.watch(fcmServiceProvider),
   );
 });
 
