@@ -52,29 +52,75 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
     super.dispose();
   }
 
-  void _handleSendEmail() {
+  Future<void> _handleSendEmail() async {
     if (!_formKey.currentState!.validate()) return;
-    ref.read(forgotPasswordProvider.notifier).sendResetEmail(
+    await ref.read(forgotPasswordProvider.notifier).sendResetEmail(
           _emailController.text.trim(),
         );
+    if (!mounted) return;
+    final state = ref.read(forgotPasswordProvider);
+    if (state.hasError) {
+      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+    } else if (state.step == ForgotPasswordStep.verification) {
+      _showSuccessSnackBar('Tasdiqlash kodi yuborildi!');
+    }
   }
 
-  void _handleVerifyCode() {
+  Future<void> _handleVerifyCode() async {
     if (!_formKey.currentState!.validate()) return;
-    ref.read(forgotPasswordProvider.notifier).verifyCode(
+    await ref.read(forgotPasswordProvider.notifier).verifyCode(
           _codeController.text.trim(),
         );
+    if (!mounted) return;
+    final state = ref.read(forgotPasswordProvider);
+    if (state.hasError) {
+      _showErrorSnackBar(state.failure?.message ?? 'Kod noto\'g\'ri');
+    } else if (state.step == ForgotPasswordStep.newPassword) {
+      _showSuccessSnackBar('Kod tasdiqlandi!');
+    }
   }
 
-  void _handleResetPassword() {
+  Future<void> _handleResetPassword() async {
     if (!_formKey.currentState!.validate()) return;
-    ref.read(forgotPasswordProvider.notifier).confirmPasswordReset(
+    await ref.read(forgotPasswordProvider.notifier).confirmPasswordReset(
           _passwordController.text,
         );
+    if (!mounted) return;
+    final state = ref.read(forgotPasswordProvider);
+    if (state.hasError) {
+      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+    }
   }
 
-  void _handleResendCode() {
-    ref.read(forgotPasswordProvider.notifier).resendCode();
+  Future<void> _handleResendCode() async {
+    await ref.read(forgotPasswordProvider.notifier).resendCode();
+    if (!mounted) return;
+    final state = ref.read(forgotPasswordProvider);
+    if (state.hasError) {
+      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+    } else {
+      _showSuccessSnackBar('Kod qayta yuborildi!');
+    }
+  }
+
+  void _showSuccessSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   void _handleBack() {
