@@ -67,6 +67,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get chatLoadError => 'Suhbatlarni yuklashda xatolik';
 
   @override
+  String get searchChats => 'Search chats...';
+
+  @override
   String get newChat => 'Yangi suhbat';
 
   @override

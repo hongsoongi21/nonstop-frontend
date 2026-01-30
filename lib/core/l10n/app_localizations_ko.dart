@@ -64,6 +64,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get chatLoadError => '채팅 목록을 불러오지 못했습니다';
 
   @override
+  String get searchChats => '채팅 검색...';
+
+  @override
   String get newChat => '새 채팅';
 
   @override

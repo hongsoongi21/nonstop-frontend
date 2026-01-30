@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
+import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/post_card.dart';
@@ -223,6 +225,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                             // Write Button
                             GestureDetector(
                               onTap: () {
+                                HapticFeedback.lightImpact();
                                 if (selectedBoard != null) {
                                   context.go(Routes.boardCreatePath());
                                 } else {
@@ -300,9 +303,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                 left: isFirst ? 0 : 0,
                               ),
                               child: GestureDetector(
-                                onTap: () => ref
-                                    .read(boardProvider.notifier)
-                                    .selectBoard(board),
+                                onTap: () {
+                                  HapticFeedback.selectionClick();
+                                  ref.read(boardProvider.notifier).selectBoard(board);
+                                },
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 250),
                                   curve: Curves.easeOutCubic,
@@ -462,47 +466,62 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                     child: AppRefreshIndicator(
                       onRefresh: () =>
                           ref.read(boardProvider.notifier).refreshPosts(),
-                      child: posts.isEmpty && !isLoading
-                          ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
-                          : ListView.builder(
+                      child: isLoading && posts.isEmpty
+                          ? ListView.builder(
                               padding: const EdgeInsets.only(
                                 left: AppSpacing.lg,
                                 right: AppSpacing.lg,
                                 top: AppSpacing.md,
                                 bottom: 100,
                               ),
-                              itemCount: posts.length,
-                              itemBuilder: (context, index) {
-                                final post = posts[index];
-                                return Padding(
+                              itemCount: 5,
+                              itemBuilder: (context, index) => Padding(
+                                padding: const EdgeInsets.only(
+                                  bottom: AppSpacing.lg,
+                                ),
+                                child: SkeletonLayouts.post(),
+                              ),
+                            )
+                          : posts.isEmpty
+                              ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
+                              : ListView.builder(
                                   padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.lg,
+                                    left: AppSpacing.lg,
+                                    right: AppSpacing.lg,
+                                    top: AppSpacing.md,
+                                    bottom: 100,
                                   ),
-                                  child: PostCard(
-                                    post: post,
-                                    onTap: () => context.go(
-                                      Routes.boardDetailPath(
-                                        post.id.toString(),
+                                  itemCount: posts.length,
+                                  itemBuilder: (context, index) {
+                                    final post = posts[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: AppSpacing.lg,
                                       ),
-                                    ),
-                                    onLike: () => ref
-                                        .read(boardProvider.notifier)
-                                        .toggleLike(post.id),
-                                    onComment: () => context.go(
-                                      Routes.boardDetailPath(
-                                        post.id.toString(),
+                                      child: PostCard(
+                                        post: post,
+                                        onTap: () => context.go(
+                                          Routes.boardDetailPath(
+                                            post.id.toString(),
+                                          ),
+                                        ),
+                                        onLike: () => ref
+                                            .read(boardProvider.notifier)
+                                            .toggleLike(post.id),
+                                        onComment: () => context.go(
+                                          Routes.boardDetailPath(
+                                            post.id.toString(),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                                    );
+                                  },
+                                ),
                     ),
                   ),
                 ],
               ),
             ),
-            if (isLoading) const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),
@@ -626,6 +645,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                         )
                       : null,
                   onTap: () {
+                    HapticFeedback.selectionClick();
                     if (isLocked) {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -701,7 +721,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton.icon(
-                onPressed: () => context.go(Routes.boardCreatePath()),
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  context.go(Routes.boardCreatePath());
+                },
                 icon: const Icon(Icons.add_rounded, size: 20),
                 label: Text(l10n.createFirstPost),
                 style: ElevatedButton.styleFrom(

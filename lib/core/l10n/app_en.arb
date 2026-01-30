@@ -72,6 +72,10 @@
   "@chatLoadError": {
     "description": "Error message when chat list fails to load"
   },
+  "searchChats": "Search chats...",
+  "@searchChats": {
+    "description": "Placeholder for chat search"
+  },
   "newChat": "New Chat",
   "@newChat": {
     "description": "Title for new chat sheet"

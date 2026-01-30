@@ -72,6 +72,10 @@
   "@chatLoadError": {
     "description": "Error message when chat list fails to load"
   },
+  "searchChats": "채팅 검색...",
+  "@searchChats": {
+    "description": "Placeholder for chat search"
+  },
   "newChat": "새 채팅",
   "@newChat": {
     "description": "Title for new chat sheet"

@@ -66,6 +66,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatLoadError => 'Не удалось загрузить чаты';
 
   @override
+  String get searchChats => 'Search chats...';
+
+  @override
   String get newChat => 'Новый чат';
 
   @override

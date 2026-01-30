@@ -66,6 +66,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatLoadError => 'Failed to load conversations';
 
   @override
+  String get searchChats => 'Search chats...';
+
+  @override
   String get newChat => 'New Chat';
 
   @override

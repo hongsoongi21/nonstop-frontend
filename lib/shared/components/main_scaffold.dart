@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,6 +40,7 @@ class MainScaffold extends ConsumerWidget {
               tooltip: 'Admin Menu',
               backgroundColor: AppColors.secondary,
               onPressed: () {
+                HapticFeedback.lightImpact();
                 // TODO: 관리자 기능 구현
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
@@ -221,7 +223,12 @@ class AppFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: onPressed,
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onPressed!();
+            }
+          : null,
       tooltip: tooltip,
       backgroundColor: backgroundColor ?? AppColors.primary,
       foregroundColor: foregroundColor ?? AppColors.textOnPrimary,

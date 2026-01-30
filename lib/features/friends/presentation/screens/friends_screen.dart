@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
+import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../providers/friend_management_provider.dart';
 import '../../domain/entities/friend.dart';
@@ -282,7 +283,17 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   Widget _buildFriendsList(List<Friend> friends, bool isLoading) {
     final l10n = AppLocalizations.of(context)!;
     if (isLoading && friends.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
+        ),
+      );
     }
 
     if (friends.isEmpty) {
@@ -370,7 +381,17 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   Widget _buildRequestsList(List<Friend> requests, bool isLoading) {
     final l10n = AppLocalizations.of(context)!;
     if (isLoading && requests.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
+        ),
+      );
     }
 
     if (requests.isEmpty) {
@@ -546,7 +567,16 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   subtitle: l10n.typeInSearchBar,
                 )
               : isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
+                  itemCount: 6,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
+                  ),
+                )
               : searchResults.isEmpty
               ? _buildEmptyState(
                   icon: Icons.person_search,

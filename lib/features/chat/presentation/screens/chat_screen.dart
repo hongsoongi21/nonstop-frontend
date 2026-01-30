@@ -1,21 +1,31 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/core/widgets/app_loading_skeleton.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
 import 'package:nonstop/features/chat/presentation/widgets/chat_room_tile.dart';
 import 'package:nonstop/features/chat/presentation/widgets/connection_status_bar.dart';
 import 'package:nonstop/features/chat/presentation/widgets/create_chat_bottom_sheet.dart';
 import 'package:nonstop/shared/components/app_background.dart';
 
-class ChatScreen extends ConsumerWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends ConsumerState<ChatScreen> {
+  @override
+  Widget build(BuildContext context) {
     final chatState = ref.watch(chatListProvider);
     final currentUser = ref.watch(currentUserProvider);
     final currentUserId = currentUser?.id != null ? int.tryParse(currentUser!.id) : null;
@@ -32,22 +42,6 @@ class ChatScreen extends ConsumerWidget {
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.search_rounded, size: 22),
-              color: AppColors.textSecondary,
-              onPressed: () {
-                // TODO: Search chats
-              },
-            ),
-          ),
-        ],
       ),
       body: AppBackground(
         child: Column(
@@ -84,7 +78,10 @@ class ChatScreen extends ConsumerWidget {
           ],
         ),
         child: FloatingActionButton(
-          onPressed: () => _showCreateChatSheet(context),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            _showCreateChatSheet(context);
+          },
           elevation: 0,
           backgroundColor: Colors.transparent,
           child: const Icon(Icons.add_rounded, size: 28),
@@ -95,27 +92,27 @@ class ChatScreen extends ConsumerWidget {
 
   Widget _buildChatList(BuildContext context, ChatListState state, int? currentUserId) {
     if (state.isLoading && state.rooms.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
+      return ListView.separated(
+        padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: 88),
+        itemCount: 6,
+        separatorBuilder: (context, index) => Container(
+          margin: const EdgeInsets.only(left: 76),
+          height: 1,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.border.withValues(alpha: 0.3),
+                AppColors.border.withValues(alpha: 0.1),
+              ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              'Loading chats...',
-              style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
-                fontSize: 14,
-              ),
-            ),
-          ],
+          ),
+        ),
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
         ),
       );
     }
@@ -259,7 +256,10 @@ class ChatScreen extends ConsumerWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => _showCreateChatSheet(context),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _showCreateChatSheet(context);
+                },
                 borderRadius: BorderRadius.circular(12),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

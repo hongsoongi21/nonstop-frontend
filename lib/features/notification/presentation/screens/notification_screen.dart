@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
 
@@ -94,10 +96,22 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
     final l10n = AppLocalizations.of(context)!;
 
     if (state.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
-          strokeWidth: 3.w,
+      return ListView.separated(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
+        itemCount: 6,
+        separatorBuilder: (context, index) => Divider(
+          height: 1.h,
+          thickness: 1,
+          color: AppColors.divider,
+          indent: 80.w,
+        ),
+        itemBuilder: (context, index) => Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+          child: SkeletonLayouts.listItem(
+            hasAvatar: true,
+            hasSubtitle: true,
+            padding: EdgeInsets.all(16.r),
+          ),
         ),
       );
     }

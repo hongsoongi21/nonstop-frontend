@@ -210,6 +210,12 @@ abstract class AppLocalizations {
   /// **'Failed to load conversations'**
   String get chatLoadError;
 
+  /// Placeholder for chat search
+  ///
+  /// In en, this message translates to:
+  /// **'Search chats...'**
+  String get searchChats;
+
   /// Title for new chat sheet
   ///
   /// In en, this message translates to:

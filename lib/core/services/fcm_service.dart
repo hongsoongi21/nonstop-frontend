@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../constants/routes.dart';
 import '../network/dio_client.dart';
+import '../router/app_router.dart';
 
 /// Background message handler - must be top-level function
 @pragma('vm:entry-point')
@@ -19,11 +23,12 @@ class FcmService {
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
   final DioClient _dioClient;
+  final ProviderContainer _container;
 
   String? _fcmToken;
   String get fcmToken => _fcmToken ?? '';
 
-  FcmService(this._dioClient);
+  FcmService(this._dioClient, this._container);
 
   /// Initialize FCM service
   Future<void> initialize() async {
@@ -150,7 +155,7 @@ class FcmService {
         id: message.hashCode,
         title: notification.title ?? '',
         body: notification.body ?? '',
-        payload: message.data.toString(),
+        payload: jsonEncode(message.data),
       );
     }
   }
@@ -188,25 +193,76 @@ class FcmService {
   /// Handle notification tap when app is in background
   void _handleMessageOpenedApp(RemoteMessage message) {
     debugPrint('Message opened app: ${message.data}');
-    // TODO: Navigate to specific screen based on message data
     _navigateToNotification(message.data);
   }
 
   /// Handle local notification tap
   void _onNotificationTapped(NotificationResponse response) {
     debugPrint('Notification tapped: ${response.payload}');
-    // TODO: Navigate to specific screen based on payload
+    if (response.payload == null) return;
+
+    try {
+      // Parse payload string to Map
+      final data = jsonDecode(response.payload!) as Map<String, dynamic>;
+      _navigateToNotification(data);
+    } catch (e) {
+      debugPrint('Error parsing notification payload: $e');
+    }
   }
 
   /// Navigate based on notification data
   void _navigateToNotification(Map<String, dynamic> data) {
-    // Navigation will be handled by the app router
-    // This is a placeholder for future implementation
-    final type = data['type'];
-    final postId = data['postId'];
-    final chatRoomId = data['chatRoomId'];
+    try {
+      final router = _container.read(routerProvider);
+      final type = data['type'] as String?;
+      final id = data['id'] as String?;
 
-    debugPrint('Navigate: type=$type, postId=$postId, chatRoomId=$chatRoomId');
+      if (type == null) {
+        debugPrint('Notification type is null, cannot navigate');
+        return;
+      }
+
+      debugPrint('Navigating: type=$type, id=$id');
+
+      switch (type) {
+        case 'chat':
+          if (id != null) {
+            router.push(Routes.chatRoomPath(id));
+          } else {
+            router.push(Routes.chat);
+          }
+          break;
+
+        case 'board':
+        case 'post':
+          if (id != null) {
+            router.push(Routes.boardDetailPath(id));
+          } else {
+            router.push(Routes.board);
+          }
+          break;
+
+        case 'friend':
+          router.push(Routes.friends);
+          break;
+
+        case 'comment':
+          // Comments are associated with posts
+          if (id != null) {
+            router.push(Routes.boardDetailPath(id));
+          } else {
+            router.push(Routes.board);
+          }
+          break;
+
+        default:
+          // Default fallback to notifications screen
+          router.push(Routes.notifications);
+          debugPrint('Unknown notification type: $type, navigating to notifications screen');
+      }
+    } catch (e) {
+      debugPrint('Error navigating from notification: $e');
+    }
   }
 
   /// Unregister token (call on logout)
@@ -224,5 +280,6 @@ class FcmService {
 /// FCM Service Provider
 final fcmServiceProvider = Provider<FcmService>((ref) {
   final dioClient = ref.watch(dioClientProvider);
-  return FcmService(dioClient);
+  // Pass the ref.container to access the router later
+  return FcmService(dioClient, ref.container);
 });

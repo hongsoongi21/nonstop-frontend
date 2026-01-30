@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_colors.dart';
@@ -145,6 +146,7 @@ class AppBottomNavigationBar extends StatelessWidget {
   }
 
   void _onItemTapped(int index) {
+    HapticFeedback.selectionClick();
     navigationShell.goBranch(
       index,
       initialLocation: index == navigationShell.currentIndex,
@@ -286,7 +288,12 @@ class AppFAB extends StatelessWidget {
   Widget build(BuildContext context) {
     if (extended && label != null) {
       return FloatingActionButton.extended(
-        onPressed: onPressed,
+        onPressed: onPressed != null
+            ? () {
+                HapticFeedback.lightImpact();
+                onPressed!();
+              }
+            : null,
         tooltip: tooltip,
         backgroundColor:
             backgroundColor ?? Theme.of(context).colorScheme.primary,
@@ -305,7 +312,12 @@ class AppFAB extends StatelessWidget {
     }
 
     return FloatingActionButton(
-      onPressed: onPressed,
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onPressed!();
+            }
+          : null,
       tooltip: tooltip,
       backgroundColor: backgroundColor ?? Theme.of(context).colorScheme.primary,
       foregroundColor:
