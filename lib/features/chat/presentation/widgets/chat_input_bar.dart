@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
-import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 
 /// Message input bar with text field, image attachment button, and send button
@@ -61,81 +60,157 @@ class _ChatInputBarState extends State<ChatInputBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 12,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        border: Border(
+          top: BorderSide(
+            color: AppColors.border.withValues(alpha: 0.5),
+            width: 1,
+          ),
+        ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 4,
+            color: AppColors.shadowMedium,
+            blurRadius: 12,
             offset: const Offset(0, -2),
           ),
         ],
       ),
       child: SafeArea(
+        top: false,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             // Attachment button (camera icon)
-            IconButton(
-              onPressed: widget.enabled ? widget.onAttachmentTap : null,
-              icon: const Icon(Icons.camera_alt_outlined),
-              color: AppColors.textSecondary,
-              splashRadius: 20,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(
-                minWidth: 40,
-                minHeight: 40,
+            Container(
+              margin: const EdgeInsets.only(bottom: 2),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                borderRadius: BorderRadius.circular(12),
               ),
-            ),
-
-            SizedBox(width: AppSpacing.xs),
-
-            // Text field
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                enabled: widget.enabled,
-                maxLines: 4,
-                minLines: 1,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  hintText: widget.hintText ?? AppLocalizations.of(context).messageHint,
-                  hintStyle: AppTypography.body2.copyWith(
-                    color: AppColors.textHint,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.background,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                ),
-                onSubmitted: (_) => _handleSend(),
-              ),
-            ),
-
-            SizedBox(width: AppSpacing.xs),
-
-            // Send button
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
               child: IconButton(
-                onPressed: _hasText && widget.enabled ? _handleSend : null,
-                icon: const Icon(Icons.send),
-                color: _hasText ? AppColors.primary : AppColors.textHint,
+                onPressed: widget.enabled ? widget.onAttachmentTap : null,
+                icon: const Icon(Icons.camera_alt_rounded, size: 22),
+                color: AppColors.textSecondary,
                 splashRadius: 20,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(
-                  minWidth: 40,
-                  minHeight: 40,
+                  minWidth: 44,
+                  minHeight: 44,
                 ),
               ),
+            ),
+
+            const SizedBox(width: 10),
+
+            // Text field
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceVariant,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: AppColors.border.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+                child: TextField(
+                  controller: _controller,
+                  enabled: widget.enabled,
+                  maxLines: 5,
+                  minLines: 1,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: AppTypography.body2.copyWith(
+                    fontSize: 15,
+                    height: 1.4,
+                    letterSpacing: 0.1,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: widget.hintText ?? AppLocalizations.of(context).messageHint,
+                    hintStyle: AppTypography.body2.copyWith(
+                      color: AppColors.textHint,
+                      fontSize: 15,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                        width: 1.5,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 12,
+                    ),
+                  ),
+                  onSubmitted: (_) => _handleSend(),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            // Send button with animation
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              tween: Tween(begin: 0.0, end: _hasText ? 1.0 : 0.0),
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: 0.85 + (value * 0.15),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 2),
+                    decoration: BoxDecoration(
+                      gradient: _hasText
+                          ? const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: AppColors.primaryGradient,
+                            )
+                          : null,
+                      color: _hasText ? null : AppColors.surfaceVariant,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: _hasText
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.3 * value),
+                                blurRadius: 8 * value,
+                                offset: Offset(0, 2 * value),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: IconButton(
+                      onPressed: _hasText && widget.enabled ? _handleSend : null,
+                      icon: Icon(
+                        _hasText ? Icons.send_rounded : Icons.send_outlined,
+                        size: 22,
+                      ),
+                      color: _hasText ? Colors.white : AppColors.textHint,
+                      splashRadius: 20,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(
+                        minWidth: 44,
+                        minHeight: 44,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

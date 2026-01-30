@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
 
@@ -13,13 +14,27 @@ class NotificationScreen extends ConsumerStatefulWidget {
   ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends ConsumerState<NotificationScreen> {
+class _NotificationScreenState extends ConsumerState<NotificationScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(notificationProvider.notifier).loadNotifications();
+      _animationController.forward();
     });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -27,15 +42,45 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     final state = ref.watch(notificationProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('알림'),
+        elevation: 0,
+        backgroundColor: AppColors.surface,
+        centerTitle: false,
+        title: Text(
+          '알림',
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
+        ),
         actions: [
           if (state.notifications.isNotEmpty)
-            TextButton(
-              onPressed: () {
-                ref.read(notificationProvider.notifier).markAllAsRead();
-              },
-              child: const Text('모두 읽음'),
+            Padding(
+              padding: EdgeInsets.only(right: 8.w),
+              child: TextButton.icon(
+                onPressed: () {
+                  ref.read(notificationProvider.notifier).markAllAsRead();
+                },
+                icon: Icon(
+                  Icons.done_all,
+                  size: 18.sp,
+                  color: AppColors.primary,
+                ),
+                label: Text(
+                  '모두 읽음',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                ),
+              ),
             ),
         ],
       ),
@@ -45,26 +90,82 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 
   Widget _buildBody(NotificationState state) {
     if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: CircularProgressIndicator(
+          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+          strokeWidth: 3.w,
+        ),
+      );
     }
 
     if (state.error != null) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '알림을 불러오는데 실패했습니다',
-              style: TextStyle(fontSize: 16.sp),
-            ),
-            SizedBox(height: 16.h),
-            ElevatedButton(
-              onPressed: () {
-                ref.read(notificationProvider.notifier).loadNotifications();
-              },
-              child: const Text('다시 시도'),
-            ),
-          ],
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 32.w),
+          padding: EdgeInsets.all(32.r),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20.r),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(16.r),
+                decoration: BoxDecoration(
+                  color: AppColors.errorLight,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.error_outline_rounded,
+                  size: 48.sp,
+                  color: AppColors.error,
+                ),
+              ),
+              SizedBox(height: 20.h),
+              Text(
+                '알림을 불러오는데 실패했습니다',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 24.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ref.read(notificationProvider.notifier).loadNotifications();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textOnPrimary,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    '다시 시도',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -74,17 +175,33 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.notifications_none,
-              size: 64.sp,
-              color: Colors.grey,
+            Container(
+              padding: EdgeInsets.all(24.r),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceVariant,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.notifications_none_rounded,
+                size: 64.sp,
+                color: AppColors.textTertiary,
+              ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 20.h),
             Text(
               '알림이 없습니다',
               style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.grey,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              '새로운 알림이 도착하면 여기에 표시됩니다',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: AppColors.textTertiary,
               ),
             ),
           ],
@@ -95,15 +212,27 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     return RefreshIndicator(
       onRefresh: () async {
         await ref.read(notificationProvider.notifier).loadNotifications();
+        _animationController.reset();
+        _animationController.forward();
       },
+      color: AppColors.primary,
+      backgroundColor: AppColors.surface,
       child: ListView.separated(
+        padding: EdgeInsets.symmetric(vertical: 8.h),
         itemCount: state.notifications.length,
-        separatorBuilder: (context, index) => const Divider(height: 1),
+        separatorBuilder: (context, index) => Divider(
+          height: 1.h,
+          thickness: 1,
+          color: AppColors.divider,
+          indent: 80.w,
+        ),
         itemBuilder: (context, index) {
           final notification = state.notifications[index];
           return _NotificationTile(
             notification: notification,
             onTap: () => _handleNotificationTap(notification),
+            animationController: _animationController,
+            index: index,
           );
         },
       ),
@@ -148,49 +277,146 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
 class _NotificationTile extends StatelessWidget {
   final AppNotification notification;
   final VoidCallback onTap;
+  final AnimationController animationController;
+  final int index;
 
   const _NotificationTile({
     required this.notification,
     required this.onTap,
+    required this.animationController,
+    required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      tileColor: notification.isRead ? null : Colors.blue.withOpacity(0.05),
-      leading: CircleAvatar(
-        backgroundColor: _getIconBackgroundColor(),
-        child: Icon(
-          _getNotificationIcon(),
-          color: Colors.white,
-          size: 20.sp,
+    final animation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Interval(
+          (index * 0.05).clamp(0.0, 1.0),
+          ((index * 0.05) + 0.3).clamp(0.0, 1.0),
+          curve: Curves.easeOutCubic,
         ),
       ),
-      title: Text(
-        notification.message,
-        style: TextStyle(
-          fontSize: 14.sp,
-          fontWeight: notification.isRead ? FontWeight.normal : FontWeight.w600,
+    );
+
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: animation.value,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - animation.value)),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          color: notification.isRead ? AppColors.surface : AppColors.infoLight,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(
+            color: notification.isRead ? AppColors.border : AppColors.info.withValues(alpha: 0.2),
+            width: 1,
+          ),
+          boxShadow: notification.isRead
+              ? null
+              : [
+                  BoxShadow(
+                    color: AppColors.info.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
-      ),
-      subtitle: Text(
-        _formatTime(notification.createdAt),
-        style: TextStyle(
-          fontSize: 12.sp,
-          color: Colors.grey,
-        ),
-      ),
-      trailing: notification.isRead
-          ? null
-          : Container(
-              width: 8.w,
-              height: 8.h,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(16.r),
+            splashColor: AppColors.ripple,
+            child: Padding(
+              padding: EdgeInsets.all(16.r),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 48.w,
+                    height: 48.w,
+                    decoration: BoxDecoration(
+                      color: _getIconBackgroundColor().withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Icon(
+                      _getNotificationIcon(),
+                      color: _getIconBackgroundColor(),
+                      size: 24.sp,
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                notification.message,
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: notification.isRead
+                                      ? FontWeight.w500
+                                      : FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                  height: 1.4,
+                                ),
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (!notification.isRead) ...[
+                              SizedBox(width: 8.w),
+                              Container(
+                                width: 8.w,
+                                height: 8.w,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        SizedBox(height: 6.h),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 12.sp,
+                              color: AppColors.textTertiary,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              _formatTime(notification.createdAt),
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                color: AppColors.textTertiary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -198,18 +424,18 @@ class _NotificationTile extends StatelessWidget {
     switch (notification.type) {
       case NotificationType.postLike:
       case NotificationType.commentLike:
-        return Icons.favorite;
+        return Icons.favorite_rounded;
       case NotificationType.newComment:
       case NotificationType.newReply:
-        return Icons.comment;
+        return Icons.chat_bubble_rounded;
       case NotificationType.chatMessage:
-        return Icons.chat_bubble;
+        return Icons.forum_rounded;
       case NotificationType.friendRequest:
-        return Icons.person_add;
+        return Icons.person_add_alt_1_rounded;
       case NotificationType.friendAccept:
-        return Icons.people;
+        return Icons.group_rounded;
       case NotificationType.announcement:
-        return Icons.campaign;
+        return Icons.campaign_rounded;
     }
   }
 
@@ -217,17 +443,17 @@ class _NotificationTile extends StatelessWidget {
     switch (notification.type) {
       case NotificationType.postLike:
       case NotificationType.commentLike:
-        return Colors.red;
+        return AppColors.accent;
       case NotificationType.newComment:
       case NotificationType.newReply:
-        return Colors.blue;
+        return AppColors.info;
       case NotificationType.chatMessage:
-        return Colors.green;
+        return AppColors.success;
       case NotificationType.friendRequest:
       case NotificationType.friendAccept:
-        return Colors.purple;
+        return AppColors.universityPurple;
       case NotificationType.announcement:
-        return Colors.orange;
+        return AppColors.warning;
     }
   }
 

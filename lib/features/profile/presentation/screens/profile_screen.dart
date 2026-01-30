@@ -31,16 +31,8 @@ class ProfileScreen extends ConsumerWidget {
       showAppBar: false,
       padding: EdgeInsets.zero,
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.primary.withOpacity(0.05),
-              AppColors.surface,
-              AppColors.secondary.withOpacity(0.05),
-            ],
-          ),
+        decoration: const BoxDecoration(
+          color: AppColors.background,
         ),
         child: isLoading && !isLoaded
             ? const Center(child: AppLoadingIndicator())
@@ -106,32 +98,28 @@ class ProfileScreen extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
-            SizedBox(height: AppSpacing.md),
-
-            // Profile Header
+            // Profile Header - Hero section
             ProfileHeader(
               profile: profile,
               onNotificationPressed: () => _showNotifications(context),
               onSettingsPressed: () => _showSettings(context),
             ),
 
-            SizedBox(height: AppSpacing.md),
-
-            // Profile Stats
+            // Profile Stats - positioned just below header
             ProfileStats(
               profile: profile,
               stats: stats,
               onEditProfilePressed: () => _navigateToEditProfile(context),
             ),
 
-            SizedBox(height: AppSpacing.md),
+            SizedBox(height: AppSpacing.sm),
 
             // Filter Tabs
             ProfileFilterTabs(
               onTabChanged: (index) => _onFilterTabChanged(context, index),
             ),
 
-            SizedBox(height: AppSpacing.sm),
+            SizedBox(height: AppSpacing.xs),
 
             // Posts List
             myPostsAsync.when(

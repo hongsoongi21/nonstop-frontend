@@ -63,146 +63,212 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                 children: [
                   // Header & Community Selector
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: AppSpacing.sm,
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      AppSpacing.sm,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Board',
-                              style: AppTypography.headline4.copyWith(
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.textPrimary,
-                              ),
-                            ),
-                            if (communities.isNotEmpty)
-                              GestureDetector(
-                                onTap: () => _showCommunityPicker(
-                                  context,
-                                  communities,
-                                  selectedCommunity,
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Board',
+                                style: AppTypography.headline4.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
+                                  letterSpacing: -0.5,
+                                  height: 1.1,
                                 ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      selectedCommunity?.name ??
-                                          'Select Community',
-                                      style: AppTypography.body2.copyWith(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.bold,
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              if (communities.isNotEmpty)
+                                GestureDetector(
+                                  onTap: () => _showCommunityPicker(
+                                    context,
+                                    communities,
+                                    selectedCommunity,
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary.withValues(alpha: 0.08),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: AppColors.primary.withValues(alpha: 0.15),
+                                        width: 1,
                                       ),
                                     ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.primary,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            selectedCommunity?.name ??
+                                                'Select Community',
+                                            style: AppTypography.body2.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 13,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          Icons.keyboard_arrow_down_rounded,
+                                          color: AppColors.primary,
+                                          size: 18,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Row(
+                          children: [
+                            // Notification Icon
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.surface.withValues(alpha: 0.3),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.textSecondary.withValues(alpha: 0.1),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  IconButton(
+                                    onPressed: () =>
+                                        context.push(Routes.notifications),
+                                    icon: Icon(
+                                      Icons.notifications_outlined,
+                                      color: AppColors.textPrimary,
+                                      size: 22,
+                                    ),
+                                    padding: const EdgeInsets.all(10),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 44,
+                                      minHeight: 44,
+                                    ),
+                                  ),
+                                  if (unreadCount > 0)
+                                    Positioned(
+                                      right: 6,
+                                      top: 6,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.error,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: AppColors.background,
+                                            width: 2,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: AppColors.error.withValues(alpha: 0.4),
+                                              blurRadius: 6,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 18,
+                                          minHeight: 18,
+                                        ),
+                                        child: Text(
+                                          unreadCount > 99
+                                              ? '99+'
+                                              : unreadCount.toString(),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w700,
+                                            height: 1.2,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            // Write Button
+                            GestureDetector(
+                              onTap: () {
+                                if (selectedBoard != null) {
+                                  context.go(Routes.boardCreatePath());
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Please select a board first'),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(alpha: 0.3),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
                                     const Icon(
-                                      Icons.arrow_drop_down,
-                                      color: AppColors.primary,
+                                      Icons.edit_rounded,
+                                      size: 18,
+                                      color: AppColors.textOnPrimary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Write',
+                                      style: AppTypography.button.copyWith(
+                                        color: AppColors.textOnPrimary,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.2,
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            // Notification Icon
-                            Stack(
-                              children: [
-                                IconButton(
-                                  onPressed: () =>
-                                      context.push(Routes.notifications),
-                                  icon: const Icon(
-                                    Icons.notifications_outlined,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                                if (unreadCount > 0)
-                                  Positioned(
-                                    right: 8,
-                                    top: 8,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: const BoxDecoration(
-                                        color: AppColors.error,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      constraints: const BoxConstraints(
-                                        minWidth: 16,
-                                        minHeight: 16,
-                                      ),
-                                      child: Text(
-                                        unreadCount > 99
-                                            ? '99+'
-                                            : unreadCount.toString(),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                              ],
                             ),
-                            const SizedBox(width: 8),
-                            // Write Button
-                            GestureDetector(
-                          onTap: () {
-                            if (selectedBoard != null) {
-                              context.go(Routes.boardCreatePath());
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please select a board first'),
-                                ),
-                              );
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: AppColors.brandGradient,
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFF7C3BEE,
-                                  ).withValues(alpha: 0.25),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.edit_square,
-                                  size: 18,
-                                  color: AppColors.textOnPrimary,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Write',
-                                  style: AppTypography.button.copyWith(
-                                    color: AppColors.textOnPrimary,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
                           ],
                         ),
                       ],
@@ -211,97 +277,135 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
                   // Boards (Chips)
                   if (boards.isNotEmpty)
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                        vertical: AppSpacing.sm,
+                    Container(
+                      margin: const EdgeInsets.only(
+                        top: AppSpacing.xs,
+                        bottom: AppSpacing.sm,
                       ),
-                      child: Row(
-                        children: boards.map((board) {
-                          final isSelected = board.id == selectedBoard?.id;
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              right: AppSpacing.sm,
-                            ),
-                            child: GestureDetector(
-                              onTap: () => ref
-                                  .read(boardProvider.notifier)
-                                  .selectBoard(board),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.surface.withValues(
-                                          alpha: 0.2,
-                                        ),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        child: Row(
+                          children: boards.asMap().entries.map((entry) {
+                            final board = entry.value;
+                            final isSelected = board.id == selectedBoard?.id;
+                            final isFirst = entry.key == 0;
+
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                right: AppSpacing.sm,
+                                left: isFirst ? 0 : 0,
+                              ),
+                              child: GestureDetector(
+                                onTap: () => ref
+                                    .read(boardProvider.notifier)
+                                    .selectBoard(board),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 250),
+                                  curve: Curves.easeOutCubic,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color: isSelected
                                         ? AppColors.primary
-                                        : AppColors.surface.withValues(
-                                            alpha: 0.2,
-                                          ),
+                                        : AppColors.surface.withValues(alpha: 0.4),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : AppColors.textSecondary.withValues(alpha: 0.1),
+                                      width: isSelected ? 1.5 : 1,
+                                    ),
+                                    boxShadow: isSelected
+                                        ? [
+                                            BoxShadow(
+                                              color: AppColors.primary.withValues(alpha: 0.25),
+                                              blurRadius: 12,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                            BoxShadow(
+                                              color: AppColors.primary.withValues(alpha: 0.1),
+                                              blurRadius: 24,
+                                              offset: const Offset(0, 8),
+                                            ),
+                                          ]
+                                        : null,
                                   ),
-                                  boxShadow: [
-                                    if (isSelected)
-                                      BoxShadow(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                  ],
-                                ),
-                                child: Text(
-                                  board.name,
-                                  style: AppTypography.button.copyWith(
-                                    color: isSelected
-                                        ? AppColors.textOnPrimary
-                                        : AppColors.textSecondary,
-                                    fontWeight: FontWeight.bold,
+                                  child: Text(
+                                    board.name,
+                                    style: AppTypography.button.copyWith(
+                                      color: isSelected
+                                          ? AppColors.textOnPrimary
+                                          : AppColors.textSecondary,
+                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                                      fontSize: 14,
+                                      letterSpacing: 0.2,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
 
                   // Search Bar
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
+                      horizontal: AppSpacing.lg,
                       vertical: AppSpacing.sm,
                     ),
-                    child: GlassContainer(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 4,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surface.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: AppColors.textSecondary.withValues(alpha: 0.08),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      borderRadius: BorderRadius.circular(12),
-                      opacity: 0.5,
-                      blur: 15,
                       child: TextField(
                         controller: _searchController,
+                        style: AppTypography.body1.copyWith(
+                          color: AppColors.textPrimary,
+                          fontSize: 15,
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Search posts...',
                           hintStyle: AppTypography.body2.copyWith(
-                            color: AppColors.textSecondary,
+                            color: AppColors.textSecondary.withValues(alpha: 0.6),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
-                          icon: Icon(
-                            Icons.search,
-                            color: AppColors.textSecondary,
+                          prefixIcon: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Icon(
+                              Icons.search_rounded,
+                              color: AppColors.textSecondary.withValues(alpha: 0.5),
+                              size: 22,
+                            ),
+                          ),
+                          prefixIconConstraints: const BoxConstraints(
+                            minWidth: 50,
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          isDense: true,
                         ),
                         onChanged: (value) {
                           // Search functionality not yet implemented
@@ -361,17 +465,17 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           ? _buildEmptyState(selectedBoard?.name ?? 'Board')
                           : ListView.builder(
                               padding: const EdgeInsets.only(
-                                left: AppSpacing.md,
-                                right: AppSpacing.md,
-                                top: AppSpacing.sm,
-                                bottom: 80,
+                                left: AppSpacing.lg,
+                                right: AppSpacing.lg,
+                                top: AppSpacing.md,
+                                bottom: 100,
                               ),
                               itemCount: posts.length,
                               itemBuilder: (context, index) {
                                 final post = posts[index];
                                 return Padding(
                                   padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.md,
+                                    bottom: AppSpacing.lg,
                                   ),
                                   child: PostCard(
                                     post: post,
@@ -417,56 +521,126 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
       useRootNavigator: true,
       backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.md,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.selectCommunity, style: AppTypography.headline6),
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              l10n.selectCommunity,
+              style: AppTypography.headline6.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
             ...communities.map((c) {
               final isLocked = c.universityRequired && user?.university == null;
-              return ListTile(
-                title: Row(
-                  children: [
-                    Text(c.name),
-                    if (isLocked) ...[
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.lock,
-                        size: 16,
-                        color: AppColors.textSecondary,
-                      ),
-                    ],
-                  ],
+              final isSelected = c.id == selectedCommunity?.id;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primary.withValues(alpha: 0.08)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? AppColors.primary.withValues(alpha: 0.2)
+                        : Colors.transparent,
+                    width: 1.5,
+                  ),
                 ),
-                subtitle: isLocked
-                    ? Text(
-                        l10n.universityVerificationRequired,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.error,
-                        ),
-                      )
-                    : null,
-                selected: c.id == selectedCommunity?.id,
-                onTap: () {
-                  if (isLocked) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          l10n.universityVerificationRequiredAccess,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  leading: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textSecondary.withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  title: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          c.name,
+                          style: AppTypography.body1.copyWith(
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                          ),
                         ),
                       ),
-                    );
-                    return;
-                  }
-                  ref.read(boardProvider.notifier).selectCommunity(c);
-                  Navigator.pop(context);
-                },
+                      if (isLocked) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.lock_rounded,
+                          size: 18,
+                          color: AppColors.textSecondary.withValues(alpha: 0.6),
+                        ),
+                      ],
+                    ],
+                  ),
+                  subtitle: isLocked
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            l10n.universityVerificationRequired,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
+                      : null,
+                  onTap: () {
+                    if (isLocked) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            l10n.universityVerificationRequiredAccess,
+                          ),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                      return;
+                    }
+                    ref.read(boardProvider.notifier).selectCommunity(c);
+                    Navigator.pop(context);
+                  },
+                ),
               );
             }),
           ],
@@ -479,20 +653,28 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: GlassContainer(
+        child: Container(
           padding: const EdgeInsets.all(AppSpacing.xl),
+          decoration: BoxDecoration(
+            color: AppColors.surface.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: AppColors.textSecondary.withValues(alpha: 0.1),
+              width: 1,
+            ),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.forum_outlined,
-                  size: 48,
+                  Icons.forum_rounded,
+                  size: 52,
                   color: AppColors.primary,
                 ),
               ),
@@ -500,33 +682,41 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               Text(
                 'No posts in $boardName yet',
                 style: AppTypography.headline6.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: AppSpacing.sm),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 'Be the first to start a conversation!',
                 style: AppTypography.body2.copyWith(
                   color: AppColors.textSecondary,
+                  fontSize: 15,
+                  height: 1.5,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.lg),
               ElevatedButton.icon(
                 onPressed: () => context.go(Routes.boardCreatePath()),
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_rounded, size: 20),
                 label: const Text('Create First Post'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.textOnPrimary,
                   elevation: 0,
+                  shadowColor: AppColors.primary.withValues(alpha: 0.3),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
+                    horizontal: 28,
+                    vertical: 14,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  textStyle: AppTypography.button.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
                   ),
                 ),
               ),

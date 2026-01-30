@@ -8,6 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/policy.dart';
 import '../../domain/entities/university.dart';
 import '../providers/auth_provider.dart';
@@ -299,12 +301,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFFE0DBF8), // #E0DBF8
-              Color(0xFFDEF4EB), // #DEF4EB
-            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: AppColors.backgroundGradient,
           ),
         ),
         child: SafeArea(
@@ -312,11 +311,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             children: [
               SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 40.h,
-                    left: 16.w,
-                    right: 16.w,
-                    bottom: 40.h,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md.w,
+                    vertical: AppSpacing.xl.h,
                   ),
                   child: Center(
                     child: Column(
@@ -325,46 +322,41 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                         // 언어 선택기
                         const LanguageSelector(),
 
-                        SizedBox(height: 16.h),
+                        SizedBox(height: AppSpacing.md.h),
 
                         // 메인 회원가입 폼 컨테이너
                         Container(
                           width: 343.w,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFFFFF),
-                            borderRadius: BorderRadius.circular(40.r),
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusXxl.r),
                             border: Border.all(
-                              color: const Color(0xFFFFFFFF),
-                              width: 1.w,
+                              color: AppColors.border,
+                              width: AppSpacing.borderWidth.w,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF7C3BEE).withValues(alpha: 0.059),
-                                offset: Offset(0, 8.h),
-                                blurRadius: 15.r,
+                                color: AppColors.shadowMedium,
+                                offset: Offset(0, 4.h),
+                                blurRadius: 20.r,
                                 spreadRadius: 0,
                               ),
                             ],
                           ),
                           child: Padding(
-                            padding: EdgeInsets.only(
-                              top: 25.h,
-                              bottom: 40.h,
-                              left: 24.w,
-                              right: 24.w,
-                            ),
+                            padding: EdgeInsets.all(AppSpacing.lg.w),
                             child: Form(
                               key: _formKey,
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  SizedBox(height: 15.h),
+                                  SizedBox(height: AppSpacing.sm.h),
 
                                   // 헤더 타이틀
                                   _buildHeader(),
 
-                                  SizedBox(height: 30.h),
+                                  SizedBox(height: AppSpacing.lg.h),
 
                                   // 닉네임 입력 필드
                                   CustomAuthTextField(
@@ -382,17 +374,17 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                     },
                                   ),
 
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppSpacing.md.h),
 
                                   // 대학교 선택 드롭다운
                                   _buildUniversityDropdown(universitiesAsync),
 
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppSpacing.md.h),
 
                                   // 생년월일 선택
                                   _buildBirthDatePicker(),
 
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppSpacing.md.h),
 
                                   // 이메일 입력 필드 및 인증 버튼
                                   Row(
@@ -418,24 +410,24 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                         ),
                                       ),
                                       if (!authState.isEmailVerified) ...[
-                                        SizedBox(width: 8.w),
+                                        SizedBox(width: AppSpacing.sm.w),
                                         SizedBox(
                                           height: 55.h,
-                                          child: TextButton(
+                                          child: ElevatedButton(
                                             onPressed: isLoading ? null : _handleSendVerification,
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: const Color(0xFFE9F0FE),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppColors.primaryLight,
+                                              foregroundColor: AppColors.textOnPrimary,
+                                              elevation: 0,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15.r),
+                                                borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
                                               ),
-                                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
                                               authState.isEmailVerificationSent ? 'Resend' : 'Send',
-                                              style: TextStyle(
-                                                color: const Color(0xFF7C3BEE),
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w600,
+                                              style: AppTypography.buttonSmall.copyWith(
+                                                color: AppColors.textOnPrimary,
                                               ),
                                             ),
                                           ),
@@ -445,7 +437,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   ),
 
                                   if (authState.isEmailVerificationSent && !authState.isEmailVerified) ...[
-                                    SizedBox(height: 12.h),
+                                    SizedBox(height: AppSpacing.md.h),
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -457,32 +449,31 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                             keyboardType: TextInputType.number,
                                             suffix: Text(
                                               _formatTime(_remainingSeconds),
-                                              style: TextStyle(
+                                              style: AppTypography.caption.copyWith(
                                                 color: AppColors.error,
-                                                fontSize: 12.sp,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
                                           ),
                                         ),
-                                        SizedBox(width: 8.w),
+                                        SizedBox(width: AppSpacing.sm.w),
                                         SizedBox(
                                           height: 55.h,
-                                          child: TextButton(
+                                          child: ElevatedButton(
                                             onPressed: isLoading ? null : _handleVerifyCode,
-                                            style: TextButton.styleFrom(
-                                              backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: AppColors.success,
+                                              foregroundColor: AppColors.textOnPrimary,
+                                              elevation: 0,
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15.r),
+                                                borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
                                               ),
-                                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
                                               'Verify',
-                                              style: TextStyle(
-                                                color: const Color(0xFF10B981),
-                                                fontSize: 12.sp,
-                                                fontWeight: FontWeight.w600,
+                                              style: AppTypography.buttonSmall.copyWith(
+                                                color: AppColors.textOnPrimary,
                                               ),
                                             ),
                                           ),
@@ -493,24 +484,23 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   if (authState.isEmailVerified)
                                     Padding(
-                                      padding: EdgeInsets.only(top: 8.h, left: 4.w),
+                                      padding: EdgeInsets.only(top: AppSpacing.sm.h),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.check_circle, color: const Color(0xFF10B981), size: 16.sp),
-                                          SizedBox(width: 4.w),
+                                          Icon(Icons.check_circle, color: AppColors.success, size: AppSpacing.iconSm.sp),
+                                          SizedBox(width: AppSpacing.xs.w),
                                           Text(
                                             'Email verified',
-                                            style: TextStyle(
-                                              color: const Color(0xFF10B981),
-                                              fontSize: 12.sp,
-                                              fontWeight: FontWeight.w500,
+                                            style: AppTypography.caption.copyWith(
+                                              color: AppColors.success,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ],
                                       ),
                                     ),
 
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppSpacing.md.h),
 
                                   // 비밀번호 입력 필드
                                   CustomAuthTextField(
@@ -529,7 +519,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                     },
                                   ),
 
-                                  SizedBox(height: 20.h),
+                                  SizedBox(height: AppSpacing.md.h),
 
                                   // 비밀번호 확인 필드
                                   CustomAuthTextField(
@@ -548,12 +538,12 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                     },
                                   ),
 
-                                  SizedBox(height: 24.h),
+                                  SizedBox(height: AppSpacing.lg.h),
 
                                   // 약관 동의 섹션 (API 데이터 기반)
                                   _buildPolicyAgreementSection(policiesAsync),
 
-                                  SizedBox(height: 24.h),
+                                  SizedBox(height: AppSpacing.lg.h),
 
                                   // 가입하기 버튼
                                   GradientButton(
@@ -561,7 +551,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                     onPressed: isLoading ? null : _handleSignup,
                                   ),
 
-                                  SizedBox(height: 24.h),
+                                  SizedBox(height: AppSpacing.lg.h),
 
                                   // 로그인 링크
                                   _buildLoginLink(),
@@ -593,38 +583,19 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   Widget _buildHeader() {
     return Column(
       children: [
-        Container(
-          width: 275.w,
-          height: 38.h,
-          alignment: Alignment.center,
-          child: Text(
-            "Ro'yxatdan o'tish",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Noto Sans',
-              fontWeight: FontWeight.w800,
-              fontSize: 24.sp,
-              height: 1.0,
-              letterSpacing: -0.03 * 24.sp,
-              color: const Color(0xFF111827),
-            ),
+        Text(
+          "Ro'yxatdan o'tish",
+          textAlign: TextAlign.center,
+          style: AppTypography.headline2.copyWith(
+            color: AppColors.textPrimary,
           ),
         ),
-        Container(
-          width: 275.w,
-          height: 39.h,
-          alignment: Alignment.center,
-          child: Text(
-            "Ma'lumotlaringizni kiriting",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Noto Sans',
-              fontWeight: FontWeight.w500,
-              fontSize: 14.sp,
-              height: 1.0,
-              letterSpacing: -0.03 * 14.sp,
-              color: const Color(0xFF6B7280),
-            ),
+        SizedBox(height: AppSpacing.xs.h),
+        Text(
+          "Ma'lumotlaringizni kiriting",
+          textAlign: TextAlign.center,
+          style: AppTypography.body2.copyWith(
+            color: AppColors.textSecondary,
           ),
         ),
       ],
@@ -636,52 +607,54 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       width: 275.w,
       height: 55.h,
       decoration: BoxDecoration(
-        color: const Color(0xFFE9F0FE),
-        borderRadius: BorderRadius.circular(15.r),
-        border: Border.all(color: const Color(0xFFFFFFFF), width: 1.w),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
+        border: Border.all(
+          color: AppColors.border,
+          width: AppSpacing.borderWidth.w,
+        ),
       ),
       child: universitiesAsync.when(
         data: (universities) => DropdownButtonFormField<int>(
           initialValue: _selectedUniversityId,
           decoration: InputDecoration(
             hintText: 'Select University',
-            hintStyle: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.black.withValues(alpha: 0.5),
+            hintStyle: AppTypography.body2.copyWith(
+              color: AppColors.textHint,
             ),
             prefixIcon: Icon(
               Icons.school_outlined,
-              color: const Color(0xFF7C3BEE),
-              size: 20.sp,
+              color: AppColors.primary,
+              size: AppSpacing.iconMd.sp,
             ),
             border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 16.h,
+              horizontal: AppSpacing.md.w,
+              vertical: AppSpacing.md.h,
             ),
           ),
           icon: Padding(
-            padding: EdgeInsets.only(right: 12.w),
+            padding: EdgeInsets.only(right: AppSpacing.sm.w),
             child: Icon(
               Icons.arrow_drop_down,
-              color: const Color(0xFF7C3BEE),
-              size: 24.sp,
+              color: AppColors.primary,
+              size: AppSpacing.iconLg.sp,
             ),
           ),
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.black87,
+          style: AppTypography.body2.copyWith(
+            color: AppColors.textPrimary,
           ),
-          dropdownColor: const Color(0xFFE9F0FE),
+          dropdownColor: AppColors.surface,
           isExpanded: true,
           items: universities.map((University university) {
             return DropdownMenuItem<int>(
               value: university.id,
               child: Text(
                 university.name,
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.black87,
+                style: AppTypography.body2.copyWith(
+                  color: AppColors.textPrimary,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -693,10 +666,13 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             });
           },
         ),
-        loading: () => const Center(
-            child: CircularProgressIndicator(strokeWidth: 2)),
+        loading: () => Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primary,
+            )),
         error: (err, stack) =>
-            const Center(child: Icon(Icons.error_outline, color: Colors.red)),
+            Center(child: Icon(Icons.error_outline, color: AppColors.error)),
       ),
     );
   }
@@ -712,34 +688,36 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         width: 275.w,
         height: 55.h,
         decoration: BoxDecoration(
-          color: const Color(0xFFE9F0FE),
-          borderRadius: BorderRadius.circular(15.r),
-          border: Border.all(color: const Color(0xFFFFFFFF), width: 1.w),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
+          border: Border.all(
+            color: AppColors.border,
+            width: AppSpacing.borderWidth.w,
+          ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
         child: Row(
           children: [
             Icon(
               Icons.cake_outlined,
-              size: 24.sp,
-              color: Colors.black.withValues(alpha: 0.5),
+              size: AppSpacing.iconLg.sp,
+              color: AppColors.primary,
             ),
-            SizedBox(width: 12.w),
+            SizedBox(width: AppSpacing.sm.w),
             Expanded(
               child: Text(
                 formattedDate ?? 'Select Birth Date',
-                style: TextStyle(
-                  fontSize: 14.sp,
+                style: AppTypography.body2.copyWith(
                   color: formattedDate != null
-                      ? Colors.black87
-                      : Colors.black.withValues(alpha: 0.5),
+                      ? AppColors.textPrimary
+                      : AppColors.textHint,
                 ),
               ),
             ),
             Icon(
               Icons.calendar_today,
-              size: 20.sp,
-              color: Colors.black.withValues(alpha: 0.5),
+              size: AppSpacing.iconMd.sp,
+              color: AppColors.textSecondary,
             ),
           ],
         ),
@@ -783,11 +761,14 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     return Container(
       width: 275.w,
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.w),
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
+        border: Border.all(
+          color: AppColors.border,
+          width: AppSpacing.borderWidth.w,
+        ),
       ),
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(AppSpacing.md.w),
       child: policiesAsync.when(
         data: (policies) {
           if (policies.isEmpty) {
@@ -811,36 +792,39 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                       child: Checkbox(
                         value: isAllAgreed,
                         onChanged: (value) => _handleAllAgreedChanged(value, policies),
-                        activeColor: const Color(0xFF7C3BEE),
+                        activeColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.r),
+                          borderRadius: BorderRadius.circular(AppSpacing.radiusSm.r),
                         ),
                       ),
                     ),
-                    SizedBox(width: 8.w),
+                    SizedBox(width: AppSpacing.sm.w),
                     Text(
                       'Hammaga roziman',
-                      style: TextStyle(
-                        fontSize: 14.sp,
+                      style: AppTypography.body2.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF111827),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: 8.h),
+              SizedBox(height: AppSpacing.sm.h),
 
               // Divider
-              Divider(color: const Color(0xFFE5E7EB), thickness: 1.h, height: 1.h),
+              Divider(
+                color: AppColors.divider,
+                thickness: AppSpacing.borderWidth.h,
+                height: AppSpacing.borderWidth.h,
+              ),
 
-              SizedBox(height: 12.h),
+              SizedBox(height: AppSpacing.md.h),
 
               // Individual Policies
               ...policies.map((policy) {
                 return Padding(
-                  padding: EdgeInsets.only(bottom: 12.h),
+                  padding: EdgeInsets.only(bottom: AppSpacing.md.h),
                   child: _buildPolicyCheckbox(
                     value: _agreedPolicyIds.contains(policy.id),
                     onChanged: (value) => _handlePolicyToggle(policy.id, value ?? false),
@@ -874,33 +858,29 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           child: Checkbox(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFF7C3BEE),
+            activeColor: AppColors.primary,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm.r),
             ),
           ),
         ),
-        SizedBox(width: 8.w),
+        SizedBox(width: AppSpacing.sm.w),
         Expanded(
           child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
                   text: isRequired ? '[Majburiy] ' : '[Ixtiyoriy] ',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: isRequired
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFF10B981),
+                  style: AppTypography.caption.copyWith(
+                    color: isRequired ? AppColors.error : AppColors.success,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 TextSpan(
                   text: label,
-                  style: TextStyle(
-                    fontSize: 12.sp,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
                     fontWeight: FontWeight.w400,
-                    color: const Color(0xFF6B7280),
                   ),
                 ),
               ],
@@ -910,14 +890,14 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         GestureDetector(
           onTap: onViewPolicy,
           child: Padding(
-            padding: EdgeInsets.only(left: 8.w),
+            padding: EdgeInsets.only(left: AppSpacing.sm.w),
             child: Text(
               "[View]",
-              style: TextStyle(
-                fontSize: 11.sp,
-                color: const Color(0xFF7C3BEE),
-                fontWeight: FontWeight.w500,
+              style: AppTypography.captionSmall.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline,
+                decorationColor: AppColors.primary,
               ),
             ),
           ),
@@ -927,34 +907,22 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   }
 
   Widget _buildLoginLink() {
-    return Container(
-      width: 275.w,
-      height: 41.h,
-      alignment: Alignment.center,
+    return Center(
       child: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          style: TextStyle(
-            fontFamily: 'Noto Sans',
-            fontWeight: FontWeight.w500,
-            fontSize: 14.sp,
-            height: 1.0,
-            letterSpacing: -0.02 * 14.sp,
-            color: Colors.black87,
+          style: AppTypography.body2.copyWith(
+            color: AppColors.textSecondary,
           ),
           children: [
             const TextSpan(text: 'Profiling bormi? '),
             TextSpan(
               text: 'Kirish',
-              style: TextStyle(
-                fontFamily: 'Noto Sans',
-                fontWeight: FontWeight.w500,
-                fontSize: 14.sp,
-                height: 1.0,
-                letterSpacing: -0.02 * 14.sp,
-                color: const Color(0xFF7C3BEE),
+              style: AppTypography.body2.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline,
-                decorationColor: const Color(0xFF7C3BEE),
+                decorationColor: AppColors.primary,
               ),
               recognizer: TapGestureRecognizer()..onTap = _handleLogin,
             ),

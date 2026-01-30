@@ -68,9 +68,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.sm,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,6 +82,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       style: AppTypography.headline4.copyWith(
                         fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
+                        letterSpacing: -1.2,
+                        height: 1.1,
                       ),
                     ),
                   ],
@@ -90,52 +94,95 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: GlassContainer(
-                  padding: const EdgeInsets.all(4),
-                  borderRadius: BorderRadius.circular(12),
-                  opacity: 0.5,
-                  blur: 15,
+                  padding: const EdgeInsets.all(6),
+                  borderRadius: BorderRadius.circular(16),
+                  opacity: 0.3,
+                  blur: 20,
                   child: TabBar(
                     controller: _tabController,
                     indicator: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
                     labelColor: AppColors.textOnPrimary,
                     unselectedLabelColor: AppColors.textSecondary,
-                    labelStyle: AppTypography.button,
+                    labelStyle: AppTypography.button.copyWith(
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
+                    unselectedLabelStyle: AppTypography.button.copyWith(
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
+                    ),
                     tabs: [
                       Tab(
-                        child: Text(
-                          'Do\'stlar (${friends.length})',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      Tab(
+                        height: 44,
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text(
-                              'So\'rovlar',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            if (requests.isNotEmpty) ...[
-                              const SizedBox(width: 4),
+                            const Text('Do\'stlar'),
+                            if (friends.isNotEmpty) ...[
+                              const SizedBox(width: 6),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 6,
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
+                                  color: AppColors.textOnPrimary.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '${friends.length}',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        height: 44,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('So\'rovlar'),
+                            if (requests.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
                                   color: AppColors.error,
                                   borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.error.withValues(alpha: 0.4),
+                                      blurRadius: 6,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
                                 ),
                                 child: Text(
                                   '${requests.length}',
                                   style: const TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 11,
                                     color: Colors.white,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ),
@@ -144,7 +191,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         ),
                       ),
                       const Tab(
-                        child: Text('Qidirish', style: TextStyle(fontSize: 12)),
+                        height: 44,
+                        child: Text('Qidirish'),
                       ),
                     ],
                   ),
@@ -161,21 +209,32 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     vertical: AppSpacing.sm,
                   ),
                   child: GlassContainer(
-                    color: AppColors.error.withValues(alpha: 0.1),
-                    borderColor: AppColors.error.withValues(alpha: 0.3),
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    borderRadius: BorderRadius.circular(14),
+                    color: AppColors.error.withValues(alpha: 0.08),
+                    borderColor: AppColors.error.withValues(alpha: 0.25),
                     child: Row(
                       children: [
-                        const Icon(
-                          Icons.error_outline,
-                          color: AppColors.error,
-                          size: 20,
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.error_outline_rounded,
+                            color: AppColors.error,
+                            size: 18,
+                          ),
                         ),
-                        const SizedBox(width: AppSpacing.sm),
+                        const SizedBox(width: AppSpacing.md),
                         Expanded(
                           child: Text(
                             error,
                             style: AppTypography.body2.copyWith(
                               color: AppColors.error,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: -0.2,
                             ),
                           ),
                         ),
@@ -239,14 +298,47 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     _showDeleteConfirmation(friend);
                   }
                 },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.textSecondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.more_horiz_rounded,
+                    color: AppColors.textSecondary,
+                    size: 20,
+                  ),
+                ),
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.person_remove, color: AppColors.error),
-                        SizedBox(width: 8),
-                        Text('Do\'stlikdan chiqarish'),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.person_remove_rounded,
+                            color: AppColors.error,
+                            size: 18,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Do\'stlikdan chiqarish',
+                          style: AppTypography.body2.copyWith(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -291,35 +383,57 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Accept Button
-                  IconButton(
-                    onPressed: () => _acceptRequest(request),
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.success,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 20,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _acceptRequest(request),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.success,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.success.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                   // Reject Button
-                  IconButton(
-                    onPressed: () => _rejectRequest(request),
-                    icon: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.error,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20,
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _rejectRequest(request),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.error.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ),
                     ),
                   ),
@@ -339,26 +453,66 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: GlassContainer(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            borderRadius: BorderRadius.circular(12),
-            opacity: 0.5,
-            blur: 15,
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Foydalanuvchilarni qidiring...',
-                hintStyle: AppTypography.body2.copyWith(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            borderRadius: BorderRadius.circular(16),
+            opacity: 0.3,
+            blur: 20,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.search_rounded,
                   color: AppColors.textSecondary,
+                  size: 22,
                 ),
-                icon: const Icon(Icons.search, color: AppColors.textSecondary),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-              ),
-              onChanged: (value) {
-                ref
-                    .read(friendManagementProvider.notifier)
-                    .searchUsers(value.trim());
-              },
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    style: AppTypography.body1.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.2,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Foydalanuvchilarni qidiring...',
+                      hintStyle: AppTypography.body2.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: -0.1,
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      ref
+                          .read(friendManagementProvider.notifier)
+                          .searchUsers(value.trim());
+                    },
+                  ),
+                ),
+                if (_searchController.text.isNotEmpty)
+                  GestureDetector(
+                    onTap: () {
+                      _searchController.clear();
+                      ref
+                          .read(friendManagementProvider.notifier)
+                          .searchUsers('');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppColors.textSecondary.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -403,28 +557,72 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildFriendCard({required Friend friend, Widget? trailing}) {
+    // Determine if friend is online (based on status if available)
+    final bool isOnline = friend.status == FriendStatus.accepted;
+
     return GlassContainer(
       padding: const EdgeInsets.all(AppSpacing.md),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
+      opacity: 0.3,
+      blur: 20,
       child: Row(
         children: [
-          // Avatar
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-            backgroundImage: friend.profileImageUrl != null
-                ? NetworkImage(friend.profileImageUrl!)
-                : null,
-            child: friend.profileImageUrl == null
-                ? Text(
-                    friend.nickname.isNotEmpty
-                        ? friend.nickname[0].toUpperCase()
-                        : '?',
-                    style: AppTypography.headline6.copyWith(
-                      color: AppColors.primary,
+          // Avatar with online indicator
+          Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    width: 2,
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                  backgroundImage: friend.profileImageUrl != null
+                      ? NetworkImage(friend.profileImageUrl!)
+                      : null,
+                  child: friend.profileImageUrl == null
+                      ? Text(
+                          friend.nickname.isNotEmpty
+                              ? friend.nickname[0].toUpperCase()
+                              : '?',
+                          style: AppTypography.headline5.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      : null,
+                ),
+              ),
+              // Online status indicator
+              if (isOnline)
+                Positioned(
+                  right: 2,
+                  bottom: 2,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: AppColors.chatOnline,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.surface,
+                        width: 2.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.chatOnline.withValues(alpha: 0.4),
+                          blurRadius: 4,
+                          spreadRadius: 1,
+                        ),
+                      ],
                     ),
-                  )
-                : null,
+                  ),
+                ),
+            ],
           ),
           const SizedBox(width: AppSpacing.md),
 
@@ -436,27 +634,44 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 Text(
                   friend.nickname,
                   style: AppTypography.subtitle1.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                    letterSpacing: -0.3,
                   ),
                 ),
-                if (friend.universityName != null) ...[
-                  const SizedBox(height: 2),
+                const SizedBox(height: 4),
+                if (friend.universityName != null || friend.majorName != null)
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          [
+                            if (friend.universityName != null) friend.universityName!,
+                            if (friend.majorName != null) friend.majorName!,
+                          ].join(' • '),
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                            letterSpacing: -0.1,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  )
+                else
                   Text(
-                    friend.universityName!,
+                    isOnline ? 'Onlayn' : 'Oflayn',
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.textSecondary,
+                      color: isOnline
+                          ? AppColors.chatOnline
+                          : AppColors.textSecondary,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      letterSpacing: -0.1,
                     ),
                   ),
-                ],
-                if (friend.majorName != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    friend.majorName!,
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
               ],
             ),
           ),
@@ -472,60 +687,144 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     switch (user.status) {
       case FriendStatus.accepted:
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.success.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            'Do\'st',
-            style: AppTypography.caption.copyWith(
-              color: AppColors.success,
-              fontWeight: FontWeight.w600,
+            color: AppColors.success.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.success.withValues(alpha: 0.3),
+              width: 1.5,
             ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.check_circle_rounded,
+                size: 16,
+                color: AppColors.success,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Do\'st',
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.success,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
           ),
         );
 
       case FriendStatus.pendingSent:
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: AppColors.warning.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            'Yuborildi',
-            style: AppTypography.caption.copyWith(
-              color: AppColors.warning,
-              fontWeight: FontWeight.w600,
+            color: AppColors.warning.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppColors.warning.withValues(alpha: 0.3),
+              width: 1.5,
             ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.schedule_rounded,
+                size: 16,
+                color: AppColors.warning,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                'Yuborildi',
+                style: AppTypography.caption.copyWith(
+                  color: AppColors.warning,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ],
           ),
         );
 
       case FriendStatus.pendingReceived:
-        return ElevatedButton(
-          onPressed: () => _acceptRequest(user),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _acceptRequest(user),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withValues(alpha: 0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                'Qabul qilish',
+                style: AppTypography.button.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ),
           ),
-          child: const Text('Qabul qilish'),
         );
 
       default:
-        return ElevatedButton(
-          onPressed: () => _sendRequest(user),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            minimumSize: Size.zero,
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _sendRequest(user),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primary.withValues(alpha: 0.8),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Text(
+                'Qo\'shish',
+                style: AppTypography.button.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  letterSpacing: -0.2,
+                ),
+              ),
+            ),
           ),
-          child: const Text('Qo\'shish'),
         );
     }
   }
@@ -539,23 +838,44 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: GlassContainer(
-          padding: const EdgeInsets.all(AppSpacing.xl),
+          padding: const EdgeInsets.all(AppSpacing.xl * 1.5),
+          borderRadius: BorderRadius.circular(24),
+          opacity: 0.2,
+          blur: 30,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+                width: 88,
+                height: 88,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.15),
+                      AppColors.primary.withValues(alpha: 0.05),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    width: 2,
+                  ),
                 ),
-                child: Icon(icon, size: 48, color: AppColors.primary),
+                child: Icon(
+                  icon,
+                  size: 42,
+                  color: AppColors.primary,
+                ),
               ),
-              const SizedBox(height: AppSpacing.lg),
+              const SizedBox(height: AppSpacing.lg * 1.5),
               Text(
                 title,
                 style: AppTypography.headline6.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -564,6 +884,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 subtitle,
                 style: AppTypography.body2.copyWith(
                   color: AppColors.textSecondary,
+                  fontSize: 14,
+                  height: 1.5,
+                  letterSpacing: -0.1,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -580,7 +903,20 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .sendRequest(user.id);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Do\'stlik so\'rovi yuborildi')),
+        SnackBar(
+          content: Text(
+            'Do\'stlik so\'rovi yuborildi',
+            style: AppTypography.body1.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
       // Refresh search to update status
       ref
@@ -595,7 +931,20 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .acceptRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Do\'stlik so\'rovi qabul qilindi')),
+        SnackBar(
+          content: Text(
+            'Do\'stlik so\'rovi qabul qilindi',
+            style: AppTypography.body1.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       );
     }
   }
@@ -605,9 +954,22 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .read(friendManagementProvider.notifier)
         .rejectRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('So\'rov rad etildi')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'So\'rov rad etildi',
+            style: AppTypography.body1.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: AppColors.textSecondary,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     }
   }
 
@@ -615,17 +977,81 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Do\'stlikdan chiqarish'),
-        content: Text('${friend.nickname} bilan do\'stlikni tugatmoqchimisiz?'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        backgroundColor: AppColors.surface,
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.person_remove_rounded,
+                color: AppColors.error,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Do\'stlikdan chiqarish',
+              style: AppTypography.headline6.copyWith(
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          '${friend.nickname} bilan do\'stlikni tugatmoqchimisiz?',
+          style: AppTypography.body1.copyWith(
+            color: AppColors.textSecondary,
+            height: 1.5,
+            letterSpacing: -0.2,
+          ),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Bekor qilish'),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              'Bekor qilish',
+              style: AppTypography.button.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.2,
+              ),
+            ),
           ),
-          TextButton(
+          const SizedBox(width: 8),
+          ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Chiqarish'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              'Chiqarish',
+              style: AppTypography.button.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+              ),
+            ),
           ),
         ],
       ),
@@ -637,7 +1063,20 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           .deleteFriend(friend.id);
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Do\'stlikdan chiqarildi')),
+          SnackBar(
+            content: Text(
+              'Do\'stlikdan chiqarildi',
+              style: AppTypography.body1.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
         );
       }
     }

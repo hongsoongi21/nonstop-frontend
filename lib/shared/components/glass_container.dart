@@ -1,6 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_spacing.dart';
 
+/// Glassmorphic container with Samarkand Modern design
+/// Features refined borders, layered shadows, and subtle backdrop blur
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final double? width;
@@ -13,6 +17,7 @@ class GlassContainer extends StatelessWidget {
   final Color color;
   final Color? borderColor;
   final VoidCallback? onTap;
+  final bool showBorder;
 
   const GlassContainer({
     super.key,
@@ -22,16 +27,18 @@ class GlassContainer extends StatelessWidget {
     this.borderRadius,
     this.padding,
     this.margin,
-    this.blur = 10.0,
-    this.opacity = 0.7,
+    this.blur = 12.0,
+    this.opacity = 0.85,
     this.color = Colors.white,
     this.borderColor,
     this.onTap,
+    this.showBorder = true,
   });
 
   @override
   Widget build(BuildContext context) {
-    final borderR = borderRadius ?? BorderRadius.circular(16);
+    final borderR = borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg);
+    final effectiveBorderColor = borderColor ?? AppColors.border.withValues(alpha: 0.5);
 
     Widget container = Container(
       width: width,
@@ -40,20 +47,24 @@ class GlassContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.withValues(alpha: opacity),
         borderRadius: borderR,
-        border: Border.all(
-          color: borderColor ?? Colors.white.withValues(alpha: 0.4),
-          width: 1.5,
-        ),
+        border: showBorder
+            ? Border.all(
+                color: effectiveBorderColor,
+                width: AppSpacing.borderWidth,
+              )
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 12,
+            color: AppColors.shadow,
+            blurRadius: 16,
             offset: const Offset(0, 2),
+            spreadRadius: 0,
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 24,
+            color: AppColors.shadowMedium,
+            blurRadius: 32,
             offset: const Offset(0, 8),
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -61,9 +72,21 @@ class GlassContainer extends StatelessWidget {
         borderRadius: borderR,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(16.0),
-            child: child,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: 0.1),
+                  Colors.white.withValues(alpha: 0.05),
+                ],
+              ),
+            ),
+            child: Padding(
+              padding: padding ?? EdgeInsets.all(AppSpacing.md),
+              child: child,
+            ),
           ),
         ),
       ),

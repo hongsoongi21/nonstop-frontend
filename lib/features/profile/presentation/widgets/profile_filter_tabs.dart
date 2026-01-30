@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import 'glass_container.dart';
+import '../../../../core/theme/app_typography.dart';
 
-/// Filter tabs for profile content (grid, comments)
+/// Filter tabs for profile content - Bold segmented control design
 class ProfileFilterTabs extends StatefulWidget {
   final Function(int)? onTabChanged;
 
@@ -14,85 +14,132 @@ class ProfileFilterTabs extends StatefulWidget {
   State<ProfileFilterTabs> createState() => _ProfileFilterTabsState();
 }
 
-class _ProfileFilterTabsState extends State<ProfileFilterTabs> {
+class _ProfileFilterTabsState extends State<ProfileFilterTabs>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   void _onTabPressed(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    _animationController.forward(from: 0);
     widget.onTabChanged?.call(index);
   }
 
   @override
   Widget build(BuildContext context) {
-    return GlassContainer(
+    return Container(
       margin: EdgeInsets.all(AppSpacing.md),
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
+        ),
       ),
-      borderRadius: 16,
-      blur: 15,
-      opacity: 0.15,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _FilterTab(
-            icon: Icons.grid_on_outlined,
-            isSelected: _selectedIndex == 0,
-            onPressed: () => _onTabPressed(0),
+          Expanded(
+            child: _FilterTab(
+              icon: Icons.grid_on_outlined,
+              label: 'Posts',
+              isSelected: _selectedIndex == 0,
+              onPressed: () => _onTabPressed(0),
+            ),
           ),
-          _FilterTab(
-            icon: Icons.chat_bubble_outline,
-            isSelected: _selectedIndex == 1,
-            onPressed: () => _onTabPressed(1),
+          Expanded(
+            child: _FilterTab(
+              icon: Icons.chat_bubble_outline,
+              label: 'Comments',
+              isSelected: _selectedIndex == 1,
+              onPressed: () => _onTabPressed(1),
+            ),
           ),
-          // _FilterTab(
-          //   icon: Icons.bookmark_border,
-          //   isSelected: _selectedIndex == 2,
-          //   onPressed: () => _onTabPressed(2),
-          // ),
-          // _FilterTab(
-          //   icon: Icons.favorite_border,
-          //   isSelected: _selectedIndex == 3,
-          //   onPressed: () => _onTabPressed(3),
-          // ),
         ],
       ),
     );
   }
 }
 
-/// Individual filter tab
+/// Individual filter tab with icon and label
 class _FilterTab extends StatelessWidget {
   final IconData icon;
+  final String label;
   final bool isSelected;
   final VoidCallback onPressed;
 
   const _FilterTab({
     required this.icon,
+    required this.label,
     required this.isSelected,
     required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withOpacity(0.15)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.symmetric(
+          vertical: AppSpacing.md,
+          horizontal: AppSpacing.sm,
         ),
-        child: Icon(
-          icon,
-          color: isSelected ? AppColors.primary : AppColors.textSecondary,
-          size: 26,
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.1),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedScale(
+              scale: isSelected ? 1.0 : 0.9,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                icon,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                size: 20,
+              ),
+            ),
+            SizedBox(width: AppSpacing.xs),
+            Text(
+              label,
+              style: AppTypography.labelMedium.copyWith(
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
         ),
       ),
     );

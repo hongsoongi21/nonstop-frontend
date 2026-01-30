@@ -44,6 +44,21 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+      floatingActionButton: entries.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: () => _showCreateEventDialog(context, ref),
+              backgroundColor: AppColors.primary,
+              elevation: 8,
+              icon: Icon(Icons.add_rounded, color: Colors.white),
+              label: Text(
+                'Dars qo\'shish',
+                style: AppTypography.button.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            )
+          : null,
       body: Container(
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
@@ -58,62 +73,103 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              // Simplified header like everytime app
+              // Clean modern header
               Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
-                child: Row(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        Text(
-                          semesterName,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        GestureDetector(
-                          onTap: () => _showTimetableSwitcher(context, ref),
-                          child: Row(
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                currentTimetable?.title ?? 'Dars jadvali',
-                                style: AppTypography.headlineSmall.copyWith(
-                                  color: AppColors.textPrimary,
+                                semesterName.toUpperCase(),
+                                style: AppTypography.overline.copyWith(
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.5,
                                 ),
                               ),
-                              SizedBox(width: 8),
-                              Icon(
-                                Icons.keyboard_arrow_down,
-                                color: AppColors.textPrimary,
-                                size: 24,
+                              SizedBox(height: 6),
+                              GestureDetector(
+                                onTap: () => _showTimetableSwitcher(context, ref),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        currentTimetable?.title ?? 'Dars jadvali',
+                                        style: AppTypography.headline2.copyWith(
+                                          color: AppColors.textPrimary,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.5,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Icon(
+                                        Icons.unfold_more,
+                                        color: AppColors.primary,
+                                        size: 22,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Action buttons with refined styling
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: AppColors.border,
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                onPressed: () => notifier.initializeTimetable(),
+                                icon: Icon(
+                                  Icons.refresh_rounded,
+                                  color: AppColors.primary,
+                                ),
+                                tooltip: 'Yangilash',
+                              ),
+                              Container(
+                                width: 1,
+                                height: 24,
+                                color: AppColors.border,
+                              ),
+                              IconButton(
+                                onPressed: () => _showSettings(context, ref),
+                                icon: Icon(
+                                  Icons.settings_outlined,
+                                  color: AppColors.primary,
+                                ),
+                                tooltip: 'Sozlamalar',
                               ),
                             ],
                           ),
                         ),
                       ],
-                    ),
-                    Spacer(),
-                    IconButton(
-                      onPressed: () => _showCreateEventDialog(context, ref),
-                      icon: Icon(Icons.add, color: AppColors.textPrimary),
-                      tooltip: 'Yangi dars qo\'shish',
-                    ),
-                    IconButton(
-                      onPressed: () => _showSettings(context, ref),
-                      icon: Icon(
-                        Icons.settings_outlined,
-                        color: AppColors.textPrimary,
-                      ),
-                      tooltip: 'Sozlamalar',
-                    ),
-                    IconButton(
-                      onPressed: () => notifier.initializeTimetable(),
-                      icon: Icon(Icons.refresh, color: AppColors.textPrimary),
-                      tooltip: 'Yangilash',
                     ),
                   ],
                 ),
@@ -125,7 +181,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               // Weekly time grid
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                   child: Stack(
                     children: [
                       WeeklyTimeGrid(
@@ -136,38 +192,80 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                       ),
                       if (entries.isEmpty && !state.isLoading)
                         Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_outlined,
-                                size: 64,
-                                color: AppColors.textSecondary.withValues(
-                                  alpha: 0.5,
-                                ),
+                          child: Container(
+                            padding: EdgeInsets.all(AppSpacing.xl),
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: AppColors.border,
+                                width: 2,
                               ),
-                              SizedBox(height: AppSpacing.md),
-                              Text(
-                                'Darslar qo\'shilmagan',
-                                style: AppTypography.titleMedium.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              SizedBox(height: AppSpacing.sm),
-                              ElevatedButton.icon(
-                                onPressed:
-                                    () => _showCreateEventDialog(context, ref),
-                                icon: Icon(Icons.add),
-                                label: Text('Dars qo\'shish'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.calendar_month_outlined,
+                                    size: 64,
+                                    color: AppColors.primary,
                                   ),
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: AppSpacing.lg),
+                                Text(
+                                  'Darslar qo\'shilmagan',
+                                  style: AppTypography.headline3.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  'Haftalik jadval yaratish uchun\ndarslaringizni qo\'shing',
+                                  textAlign: TextAlign.center,
+                                  style: AppTypography.body2.copyWith(
+                                    color: AppColors.textSecondary,
+                                    height: 1.6,
+                                  ),
+                                ),
+                                SizedBox(height: AppSpacing.lg),
+                                ElevatedButton(
+                                  onPressed:
+                                      () => _showCreateEventDialog(context, ref),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.add_rounded, size: 20),
+                                      SizedBox(width: 8),
+                                      Text(
+                                        'Dars qo\'shish',
+                                        style: AppTypography.button.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                     ],
@@ -193,55 +291,93 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     final hasCourses = gpaState.courses.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
       child: GestureDetector(
         onTap: () => context.go(Routes.gpaCalculator),
-        child: GlassContainer(
-          borderColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryDark,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                offset: Offset(0, 4),
+                blurRadius: 16,
+              ),
+            ],
+          ),
           child: Row(
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Grade Calculator',
-                    style: AppTypography.titleMedium.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    hasCourses
-                        ? 'Current GPA: ${gpaState.totalGpa.toStringAsFixed(2)} (${gpaState.totalCredits.toStringAsFixed(0)} credits)'
-                        : 'Calculate your GPA',
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.calculate_outlined,
+                  color: Colors.white,
+                  size: 28,
+                ),
               ),
-              Spacer(),
+              SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'GPA Calculator',
+                      style: AppTypography.titleMedium.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      hasCourses
+                          ? '${gpaState.totalGpa.toStringAsFixed(2)} • ${gpaState.totalCredits.toStringAsFixed(0)} credits'
+                          : 'Hisoblang va kuzating',
+                      style: AppTypography.caption.copyWith(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               if (hasCourses)
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     gpaState.totalGpa.toStringAsFixed(2),
-                    style: AppTypography.titleSmall.copyWith(
+                    style: AppTypography.headline3.copyWith(
                       color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
+                      fontFeatures: [FontFeature.tabularFigures()],
                     ),
                   ),
                 )
               else
                 Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: AppColors.textSecondary,
+                  Icons.arrow_forward_rounded,
+                  color: Colors.white,
+                  size: 24,
                 ),
             ],
           ),

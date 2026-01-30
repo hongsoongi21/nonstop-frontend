@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../domain/entities/day_of_week.dart';
 import '../../domain/entities/timetable_entry.dart';
@@ -199,25 +198,73 @@ class _AddTimetableEntryScreenState
       title: isEditing ? 'Darsni tahrirlash' : 'Yangi dars qo\'shish',
       showBackButton: true,
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Basic Info Card
-              GlassContainer(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                borderRadius: BorderRadius.circular(16),
+              // Header section
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Asosiy ma\'lumotlar'),
-                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      isEditing ? 'TAHRIRLASH' : 'YANGI DARS',
+                      style: AppTypography.overline.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      isEditing
+                          ? 'Dars ma\'lumotlarini yangilang'
+                          : 'Dars jadvali uchun yangi dars yarating',
+                      style: AppTypography.body2.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.md),
+
+              // Basic Info Card
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowMedium,
+                      offset: const Offset(0, 2),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionTitle('Asosiy ma\'lumotlar', Icons.book),
+                    const SizedBox(height: AppSpacing.lg),
                     _buildTextField(
                       controller: _subjectController,
                       label: 'Fan nomi',
                       hint: 'Masalan: Dasturlash asoslari',
-                      icon: Icons.book_outlined,
+                      icon: Icons.school_outlined,
                       validator: (v) =>
                           v == null || v.isEmpty ? 'Fan nomini kiriting' : null,
                     ),
@@ -242,41 +289,95 @@ class _AddTimetableEntryScreenState
               const SizedBox(height: AppSpacing.md),
 
               // Time & Day Card
-              GlassContainer(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                borderRadius: BorderRadius.circular(16),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowMedium,
+                      offset: const Offset(0, 2),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Vaqt va Kun'),
-                    const SizedBox(height: AppSpacing.md),
+                    _buildSectionTitle('Vaqt va Kun', Icons.schedule),
+                    const SizedBox(height: AppSpacing.lg),
 
-                    // Day Selector
-                    DropdownButtonFormField<DayOfWeek>(
-                      initialValue: _selectedDay,
-                      decoration: InputDecoration(
-                        labelText: 'Hafta kuni',
-                        prefixIcon: const Icon(Icons.calendar_today_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                    // Day Selector with clean design
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceVariant,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.border,
+                          width: 1,
                         ),
-                        filled: true,
-                        fillColor: Colors.white.withValues(alpha: 0.5),
                       ),
-                      items: DayOfWeek.values.map((day) {
-                        return DropdownMenuItem(
-                          value: day,
-                          child: Text(day.displayName),
-                        );
-                      }).toList(),
-                      onChanged: (v) {
-                        if (v != null) setState(() => _selectedDay = v);
-                      },
+                      child: DropdownButtonFormField<DayOfWeek>(
+                        value: _selectedDay,
+                        decoration: InputDecoration(
+                          labelText: 'Hafta kuni',
+                          labelStyle: AppTypography.labelSmall.copyWith(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          prefixIcon: Icon(
+                            Icons.calendar_today_rounded,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primary,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        items: DayOfWeek.values.map((day) {
+                          return DropdownMenuItem(
+                            value: day,
+                            child: Text(
+                              day.displayName,
+                              style: AppTypography.body2.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (v) {
+                          if (v != null) setState(() => _selectedDay = v);
+                        },
+                      ),
                     ),
 
                     const SizedBox(height: AppSpacing.md),
 
-                    // Time Range
+                    // Time Range with enhanced design
                     Row(
                       children: [
                         Expanded(
@@ -286,7 +387,14 @@ class _AddTimetableEntryScreenState
                             onTap: () => _selectTime(context, true),
                           ),
                         ),
-                        const SizedBox(width: AppSpacing.md),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                        ),
                         Expanded(
                           child: _buildTimePicker(
                             label: 'Tugash',
@@ -302,41 +410,89 @@ class _AddTimetableEntryScreenState
 
               const SizedBox(height: AppSpacing.md),
 
-              // Color Picker Card
-              GlassContainer(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                borderRadius: BorderRadius.circular(16),
+              // Color Picker Card with better UX
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: AppColors.border,
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowMedium,
+                      offset: const Offset(0, 2),
+                      blurRadius: 12,
+                    ),
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Rang'),
-                    const SizedBox(height: AppSpacing.md),
+                    _buildSectionTitle('Rang', Icons.palette_outlined),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      'Darsni ajratib ko\'rsatish uchun rang tanlang',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
                     Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
+                      spacing: 14,
+                      runSpacing: 14,
                       children: AppColors.courseColors.map((color) {
                         final isSelected = _selectedColor == color;
                         return GestureDetector(
                           onTap: () => setState(() => _selectedColor = color),
-                          child: Container(
-                            width: 48,
-                            height: 48,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            width: isSelected ? 56 : 52,
+                            height: isSelected ? 56 : 52,
                             decoration: BoxDecoration(
-                              color: color,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  color.withValues(alpha: 0.9),
+                                  color,
+                                ],
+                              ),
                               shape: BoxShape.circle,
                               border: isSelected
-                                  ? Border.all(color: Colors.white, width: 4)
-                                  : null,
+                                  ? Border.all(
+                                      color: AppColors.primary,
+                                      width: 3,
+                                    )
+                                  : Border.all(
+                                      color: AppColors.border,
+                                      width: 1,
+                                    ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: color.withValues(alpha: 0.4),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
+                                  color: isSelected
+                                      ? color.withValues(alpha: 0.4)
+                                      : color.withValues(alpha: 0.2),
+                                  blurRadius: isSelected ? 12 : 6,
+                                  offset: Offset(0, isSelected ? 4 : 2),
                                 ),
                               ],
                             ),
                             child: isSelected
-                                ? const Icon(Icons.check, color: Colors.white)
+                                ? Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black.withValues(alpha: 0.15),
+                                    ),
+                                    child: const Icon(
+                                      Icons.check_rounded,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
+                                  )
                                 : null,
                           ),
                         );
@@ -348,44 +504,86 @@ class _AddTimetableEntryScreenState
 
               const SizedBox(height: AppSpacing.xl),
 
-              // Save Button
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isSubmitting ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              // Save Button with modern design
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 58,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                      shadowColor: AppColors.primary.withValues(alpha: 0.3),
                     ),
-                    elevation: 4,
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                isEditing ? Icons.save_rounded : Icons.add_rounded,
+                                size: 22,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                isEditing ? 'O\'zgarishlarni saqlash' : 'Saqlash',
+                                style: AppTypography.button.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
-                  child: _isSubmitting
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          isEditing ? 'O\'zgarishlarni saqlash' : 'Saqlash',
-                          style: AppTypography.button.copyWith(fontSize: 18),
-                        ),
                 ),
               ),
 
               if (isEditing) ...[
                 const SizedBox(height: AppSpacing.md),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton(
-                    onPressed: _isSubmitting ? null : _deleteEntry,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: const BorderSide(color: AppColors.error),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 58,
+                    child: OutlinedButton(
+                      onPressed: _isSubmitting ? null : _deleteEntry,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(
+                          color: AppColors.error,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.delete_outline, size: 22),
+                          const SizedBox(width: 10),
+                          Text(
+                            'Darsni o\'chirish',
+                            style: AppTypography.button.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: const Text('Darsni o\'chirish'),
                   ),
                 ),
               ],
@@ -451,13 +649,31 @@ class _AddTimetableEntryScreenState
     }
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: AppTypography.subtitle1.copyWith(
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            size: 20,
+            color: AppColors.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: AppTypography.titleMedium.copyWith(
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ],
     );
   }
 
@@ -468,27 +684,65 @@ class _AddTimetableEntryScreenState
     required IconData icon,
     String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.textSecondary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.border,
+          width: 1,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.border),
+      ),
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
+        style: AppTypography.body1.copyWith(
+          fontWeight: FontWeight.w600,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: AppTypography.labelSmall.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+          hintText: hint,
+          hintStyle: AppTypography.body2.copyWith(
+            color: AppColors.textTertiary,
+          ),
+          prefixIcon: Icon(
+            icon,
+            color: AppColors.primary,
+            size: 20,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppColors.primary,
+              width: 2,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: AppColors.error,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
-        filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.7),
       ),
     );
   }
@@ -501,33 +755,44 @@ class _AddTimetableEntryScreenState
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.7),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          color: AppColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.border,
+            width: 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.access_time, size: 20, color: AppColors.primary),
-                const SizedBox(width: 8),
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
+                const SizedBox(width: 6),
                 Text(
-                  _formatTimeOfDay(time),
-                  style: AppTypography.subtitle1.copyWith(
-                    fontWeight: FontWeight.bold,
+                  label,
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _formatTimeOfDay(time),
+              style: AppTypography.headline4.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppColors.textPrimary,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
             ),
           ],
         ),
