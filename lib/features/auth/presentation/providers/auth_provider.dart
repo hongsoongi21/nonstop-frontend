@@ -70,13 +70,14 @@ class AuthState {
     bool? isLoading,
     User? user,
     Failure? failure,
+    bool clearFailure = false,
     bool? isEmailVerificationSent,
     bool? isEmailVerified,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
       user: user ?? this.user,
-      failure: failure ?? this.failure,
+      failure: clearFailure ? null : (failure ?? this.failure),
       isEmailVerificationSent:
           isEmailVerificationSent ?? this.isEmailVerificationSent,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
@@ -123,7 +124,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 이메일과 비밀번호로 로그인을 수행합니다.
   Future<void> signIn(String email, String password) async {
-    state = state.copyWith(isLoading: true, failure: null);
+    state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _signInUseCase(
       SignInParams(email: email, password: password),
     );
@@ -144,7 +145,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     int? majorId,
     List<int>? agreedPolicyIds,
   }) async {
-    state = state.copyWith(isLoading: true, failure: null);
+    state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _signUpUseCase(
       SignUpParams(
         email: email,
@@ -164,7 +165,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 이메일 인증 코드를 발송합니다.
   Future<void> sendVerificationEmail(String email) async {
-    state = state.copyWith(isLoading: true, failure: null);
+    state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _authRepository.sendVerificationEmail(email);
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
@@ -177,7 +178,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 이메일 인증 코드를 확인합니다.
   Future<void> verifyEmail(String code) async {
-    state = state.copyWith(isLoading: true, failure: null);
+    state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _authRepository.verifyEmail(code);
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
@@ -187,7 +188,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Google로 로그인을 수행합니다.
   Future<void> signInWithGoogle(String idToken) async {
-    state = state.copyWith(isLoading: true, failure: null);
+    state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _googleSignInUseCase(
       GoogleSignInParams(idToken: idToken),
     );
@@ -211,7 +212,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 발생한 에러 상태를 초기화합니다.
   void clearError() {
-    state = state.copyWith(failure: null);
+    state = state.copyWith(clearFailure: true);
   }
 }
 
