@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/mock/mock_data.dart';
@@ -39,19 +40,33 @@ class UserProfileCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 32,
-                    backgroundImage: user.avatarUrl != null
-                        ? NetworkImage(user.avatarUrl!)
-                        : null,
                     backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                    child: user.avatarUrl == null
-                        ? Text(
+                    child: user.avatarUrl != null
+                        ? ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: user.avatarUrl!,
+                              fit: BoxFit.cover,
+                              width: 64,
+                              height: 64,
+                              placeholder: (context, url) => Container(
+                                color: AppColors.surfaceVariant,
+                                child: const Center(
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                color: AppColors.surfaceVariant,
+                                child: const Icon(Icons.person, color: AppColors.textSecondary),
+                              ),
+                            ),
+                          )
+                        : Text(
                             user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                             style: AppTypography.headline5.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
-                          )
-                        : null,
+                          ),
                   ),
                   if (user.isOnline)
                     Positioned(
@@ -179,19 +194,33 @@ class UserListItem extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundImage: user.avatarUrl != null
-                ? NetworkImage(user.avatarUrl!)
-                : null,
             backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-            child: user.avatarUrl == null
-                ? Text(
+            child: user.avatarUrl != null
+                ? ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: user.avatarUrl!,
+                      fit: BoxFit.cover,
+                      width: 48,
+                      height: 48,
+                      placeholder: (context, url) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        color: AppColors.surfaceVariant,
+                        child: const Icon(Icons.person, color: AppColors.textSecondary),
+                      ),
+                    ),
+                  )
+                : Text(
                     user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                     style: AppTypography.body1.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
-                  )
-                : null,
+                  ),
           ),
           if (user.isOnline)
             Positioned(
@@ -318,9 +347,21 @@ class UniversityCard extends StatelessWidget {
                 child: university.logoUrl.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                        child: Image.network(
-                          university.logoUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: university.logoUrl,
                           fit: BoxFit.cover,
+                          width: 48,
+                          height: 48,
+                          placeholder: (context, url) => Container(
+                            color: AppColors.surfaceVariant,
+                            child: const Center(
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            color: AppColors.surfaceVariant,
+                            child: const Icon(Icons.image, color: AppColors.textSecondary),
+                          ),
                         ),
                       )
                     : Icon(

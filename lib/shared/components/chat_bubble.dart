@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/mock/mock_data.dart';
@@ -34,12 +35,27 @@ class ChatBubble extends StatelessWidget {
           if (!isMe && showAvatar) ...[
             CircleAvatar(
               radius: 16,
-              backgroundImage: message.sender.avatarUrl != null
-                  ? NetworkImage(message.sender.avatarUrl!)
-                  : null,
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              child: message.sender.avatarUrl == null
-                  ? Text(
+              child: message.sender.avatarUrl != null
+                  ? ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: message.sender.avatarUrl!,
+                        fit: BoxFit.cover,
+                        width: 32,
+                        height: 32,
+                        placeholder: (context, url) => Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Icon(Icons.person, color: AppColors.textSecondary),
+                        ),
+                      ),
+                    )
+                  : Text(
                       message.sender.name.isNotEmpty
                           ? message.sender.name[0].toUpperCase()
                           : '?',
@@ -47,8 +63,7 @@ class ChatBubble extends StatelessWidget {
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
-                    )
-                  : null,
+                    ),
             ),
             SizedBox(width: AppSpacing.sm),
           ],
@@ -120,12 +135,27 @@ class ChatBubble extends StatelessWidget {
             SizedBox(width: AppSpacing.sm),
             CircleAvatar(
               radius: 16,
-              backgroundImage: message.sender.avatarUrl != null
-                  ? NetworkImage(message.sender.avatarUrl!)
-                  : null,
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-              child: message.sender.avatarUrl == null
-                  ? Text(
+              child: message.sender.avatarUrl != null
+                  ? ClipOval(
+                      child: CachedNetworkImage(
+                        imageUrl: message.sender.avatarUrl!,
+                        fit: BoxFit.cover,
+                        width: 32,
+                        height: 32,
+                        placeholder: (context, url) => Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Icon(Icons.person, color: AppColors.textSecondary),
+                        ),
+                      ),
+                    )
+                  : Text(
                       message.sender.name.isNotEmpty
                           ? message.sender.name[0].toUpperCase()
                           : '?',
@@ -133,8 +163,7 @@ class ChatBubble extends StatelessWidget {
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
-                    )
-                  : null,
+                    ),
             ),
           ],
         ],
@@ -342,12 +371,27 @@ class ConversationListItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: conversation.conversationAvatar.isNotEmpty
-                      ? NetworkImage(conversation.conversationAvatar)
-                      : null,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  child: conversation.conversationAvatar.isEmpty
-                      ? Text(
+                  child: conversation.conversationAvatar.isNotEmpty
+                      ? ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: conversation.conversationAvatar,
+                            fit: BoxFit.cover,
+                            width: 48,
+                            height: 48,
+                            placeholder: (context, url) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Icon(Icons.person, color: AppColors.textSecondary),
+                            ),
+                          ),
+                        )
+                      : Text(
                           conversation.conversationName.isNotEmpty
                               ? conversation.conversationName[0].toUpperCase()
                               : '?',
@@ -355,8 +399,7 @@ class ConversationListItem extends StatelessWidget {
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
-                        )
-                      : null,
+                        ),
                 ),
                 if (conversation.otherParticipant.isOnline)
                   Positioned(

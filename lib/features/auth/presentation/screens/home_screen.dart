@@ -10,6 +10,8 @@ import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../shared/components/main_scaffold.dart';
+import '../../../board/presentation/providers/board_provider.dart';
+import '../../../notification/presentation/providers/notification_provider.dart';
 import '../../domain/entities/user.dart';
 import '../providers/auth_provider.dart';
 
@@ -44,6 +46,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.dispose();
   }
 
+  Future<void> _onRefresh() async {
+    // Refresh auth user data
+    await ref.read(authRepositoryProvider).getCurrentUser();
+
+    // Refresh board posts
+    await ref.read(boardProvider.notifier).refreshPosts();
+
+    // Refresh notifications
+    await ref.read(notificationProvider.notifier).loadNotifications();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -60,10 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         ),
       ],
       body: AppRefreshIndicator(
-        onRefresh: () async {
-          // TODO: Implement refresh logic
-          await Future.delayed(const Duration(seconds: 1));
-        },
+        onRefresh: _onRefresh,
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           child: FadeTransition(

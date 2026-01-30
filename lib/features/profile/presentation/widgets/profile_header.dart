@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/l10n/app_localizations.dart';
@@ -166,9 +167,21 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   child: ClipOval(
                     child: profile.avatarUrl != null
-                        ? Image.network(
-                            profile.avatarUrl!,
+                        ? CachedNetworkImage(
+                            imageUrl: profile.avatarUrl!,
                             fit: BoxFit.cover,
+                            width: 100,
+                            height: 100,
+                            placeholder: (context, url) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Icon(Icons.person, color: AppColors.textSecondary, size: 40),
+                            ),
                           )
                         : Container(
                             decoration: BoxDecoration(

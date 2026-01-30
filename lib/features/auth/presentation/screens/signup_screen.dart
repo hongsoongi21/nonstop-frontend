@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -118,6 +120,33 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
       setState(() {
         _selectedBirthDate = picked;
       });
+    }
+  }
+
+  Future<void> _handleOpenUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not open $urlString'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening URL: $e'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -480,7 +509,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
               color: AppColors.primary,
               fontWeight: FontWeight.w500,
             ),
-            // TODO: Add onTap for terms
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _handleOpenUrl('https://nonstop.app/terms');
+              },
           ),
           const TextSpan(text: ' and '),
           TextSpan(
@@ -489,7 +521,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen>
               color: AppColors.primary,
               fontWeight: FontWeight.w500,
             ),
-            // TODO: Add onTap for privacy
+            recognizer: TapGestureRecognizer()
+              ..onTap = () {
+                _handleOpenUrl('https://nonstop.app/privacy');
+              },
           ),
         ],
       ),

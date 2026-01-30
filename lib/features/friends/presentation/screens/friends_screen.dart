@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -598,11 +599,26 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 child: CircleAvatar(
                   radius: 28,
                   backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                  backgroundImage: friend.profileImageUrl != null
-                      ? NetworkImage(friend.profileImageUrl!)
-                      : null,
-                  child: friend.profileImageUrl == null
-                      ? Text(
+                  child: friend.profileImageUrl != null
+                      ? ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: friend.profileImageUrl!,
+                            fit: BoxFit.cover,
+                            width: 56,
+                            height: 56,
+                            placeholder: (context, url) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Center(
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: AppColors.surfaceVariant,
+                              child: const Icon(Icons.person, color: AppColors.textSecondary),
+                            ),
+                          ),
+                        )
+                      : Text(
                           friend.nickname.isNotEmpty
                               ? friend.nickname[0].toUpperCase()
                               : '?',
@@ -610,8 +626,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                             color: AppColors.primary,
                             fontWeight: FontWeight.w700,
                           ),
-                        )
-                      : null,
+                        ),
                 ),
               ),
               // Online status indicator
