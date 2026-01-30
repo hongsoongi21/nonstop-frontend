@@ -55,3 +55,8 @@ app.*.map.json
 
 # Gemini clipboard
 .gemini-clipboard/
+
+# Flutter platform-specific generated files
+**/linux/flutter/generated_*
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/windows/flutter/generated_*
