@@ -505,8 +505,9 @@ class AuthApiImpl implements AuthApi {
           statusCode: e.response?.statusCode ?? 500,
         );
       }
+      // 응답이 JSON이 아닌 경우 사용자 친화적 메시지 반환
       return ServerException(
-        message: e.message ?? '서버 오류가 발생했습니다',
+        message: '서버 오류가 발생했습니다',
         statusCode: e.response?.statusCode ?? 500,
       );
     }
