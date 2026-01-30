@@ -26,7 +26,7 @@ class ProfileHeader extends StatelessWidget {
         // Dramatic gradient background with geometric pattern
         Container(
           width: double.infinity,
-          height: 280,
+          height: 320,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -137,12 +137,12 @@ class ProfileHeader extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: AppSpacing.xl),
+                SizedBox(height: AppSpacing.md),
 
                 // Avatar - dramatically elevated
                 Container(
-                  width: 110,
-                  height: 110,
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
