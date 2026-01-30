@@ -18,7 +18,7 @@
 | Location | Description | Backend Status | Related Branch |
 |----------|-------------|----------------|----------------|
 | `main_scaffold.dart:42` | 관리자 기능 구현 | Admin API 부분 완료 | - |
-| `home_screen.dart:191` | 알림(Notifications) 화면 | FCM 연동 필요 | - |
+| ~~`home_screen.dart:191`~~ | ~~알림(Notifications) 화면~~ | ~~FCM 연동 필요~~ | `feat/fcm-push-notification` (Done) |
 | `language_selector.dart:56` | 언어 변경 로직 (i18n) | FE Only | - |
 | `timetable_screen.dart:318` | 새 시간표 생성 화면 | BE 완료 | - |
 
@@ -86,6 +86,25 @@
 - [x] Updated profile_screen.dart to display real user posts
 - [x] Backend: Added GET /users/me/posts endpoint (PR pending)
 
+### FCM Push Notification Implementation (2026-01-30):
+- [x] Added firebase_messaging and flutter_local_notifications packages
+- [x] Created FcmService for push notification handling:
+  - Permission request
+  - Token management with backend registration
+  - Foreground/background message handling
+  - Local notification display
+- [x] Created notification feature structure:
+  - AppNotification entity with freezed
+  - NotificationApi and NotificationApiImpl
+  - NotificationRepository
+  - NotificationProvider with state management
+  - NotificationScreen with read/unread UI
+- [x] Integrated FCM in auth flow:
+  - Initialize FCM after login/signup
+  - Unregister token on logout
+- [x] Added notification icon with badge to BoardScreen
+- [x] Enabled core library desugaring for Android
+
 ---
 
 ## 4. Branches Status
@@ -101,7 +120,7 @@
 
 ### Backend Complete, Frontend Needed
 
-- [ ] Push Notification (FCM) - BE ready, FE implementation needed
+- [x] ~~Push Notification (FCM)~~ - ✅ Done (`feat/fcm-push-notification`)
 - [ ] Board Admin APIs - BE 90% complete
 - [ ] isUniversityVerified refactoring - Use for access control
 - [ ] Policy versioning frontend support
@@ -109,7 +128,7 @@
 ### Both BE & FE Needed
 
 - [ ] Admin Dashboard UI
-- [ ] Real-time notification center
+- [x] ~~Real-time notification center~~ - ✅ Done (NotificationScreen 구현 완료)
 - [ ] Advanced search filters
 
 ---
@@ -120,5 +139,7 @@
 2. ~~**Chat Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
 3. ~~**Profile Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
 4. ~~**Posts Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-5. **FCM Push Notification** - Firebase already configured
+5. ~~**FCM Push Notification**~~ - ✅ Done (`feat/fcm-push-notification`)
 6. **i18n Language Support** - FE only, no backend dependency
+7. **Admin Dashboard UI** - BE Admin APIs 90% complete
+8. **Board Search** - Advanced search filters
