@@ -208,21 +208,33 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.sm,
                   ),
-                  child: GlassContainer(
+                  child: Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
-                    borderRadius: BorderRadius.circular(14),
-                    color: AppColors.error.withValues(alpha: 0.08),
-                    borderColor: AppColors.error.withValues(alpha: 0.25),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.border,
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.shadow,
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.15),
+                            color: AppColors.errorLight,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
-                            Icons.error_outline_rounded,
+                            Icons.wifi_off_rounded,
                             color: AppColors.error,
                             size: 18,
                           ),
@@ -232,8 +244,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                           child: Text(
                             error,
                             style: AppTypography.body2.copyWith(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w600,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w500,
                               letterSpacing: -0.2,
                             ),
                           ),
