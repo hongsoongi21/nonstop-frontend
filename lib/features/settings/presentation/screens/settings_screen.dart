@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -24,16 +25,16 @@ class SettingsScreen extends ConsumerWidget {
     final error = ref.watch(profileErrorProvider);
 
     return scaffold.AppScaffold(
-      title: 'Settings',
+      title: AppLocalizations.of(context)!.settings,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.primary.withOpacity(0.05),
+              AppColors.primary.withValues(alpha: 0.05),
               AppColors.surface,
-              AppColors.secondary.withOpacity(0.05),
+              AppColors.secondary.withValues(alpha: 0.05),
             ],
           ),
         ),
@@ -43,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
             ? _buildErrorView(context, ref, error)
             : isLoaded && state.settings != null
             ? _buildSettingsView(context, ref, state.settings!)
-            : const Center(child: Text('Settings not loaded')),
+            : Center(child: Text(AppLocalizations.of(context)!.settingsNotLoaded)),
       ),
     );
   }
@@ -56,11 +57,11 @@ class SettingsScreen extends ConsumerWidget {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: AppColors.error.withOpacity(0.5),
+            color: AppColors.error.withValues(alpha: 0.5),
           ),
           SizedBox(height: AppSpacing.md),
           Text(
-            'Error occurred',
+            AppLocalizations.of(context)!.errorOccurred,
             style: AppTypography.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -76,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.lg),
           ElevatedButton(
             onPressed: () => ref.read(profileProvider.notifier).refresh(),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -91,123 +92,216 @@ class SettingsScreen extends ConsumerWidget {
     final notifier = ref.read(profileProvider.notifier);
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(AppSpacing.md),
+      padding: EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Notifications
-          _buildSectionHeader('Notifications'),
-          _buildSwitchTile(
-            title: 'Push Notifications',
-            value: settings.enablePushNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(push: value),
-          ),
-          _buildSwitchTile(
-            title: 'Email Notifications',
-            value: settings.enableEmailNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(email: value),
-          ),
-          _buildSwitchTile(
-            title: 'Board Notifications',
-            value: settings.enableBoardNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(board: value),
-          ),
-          _buildSwitchTile(
-            title: 'Chat Notifications',
-            value: settings.enableChatNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(chat: value),
-          ),
-          _buildSwitchTile(
-            title: 'Timetable Notifications',
-            value: settings.enableTimetableNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(timetable: value),
-          ),
-          _buildSwitchTile(
-            title: 'Sound Notifications',
-            value: settings.enableSoundNotifications,
-            onChanged: (value) =>
-                notifier.updateNotificationSettings(sound: value),
+          // Notifications Section
+          _buildSectionHeader(AppLocalizations.of(context)!.notifications),
+          SizedBox(height: AppSpacing.sm),
+          _buildSettingsCard(
+            children: [
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.notifications_active_outlined,
+                title: AppLocalizations.of(context)!.pushNotifications,
+                subtitle: AppLocalizations.of(context)!.pushNotificationsSubtitle,
+                value: settings.enablePushNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(push: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.email_outlined,
+                title: AppLocalizations.of(context)!.emailNotifications,
+                subtitle: AppLocalizations.of(context)!.emailNotificationsSubtitle,
+                value: settings.enableEmailNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(email: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.dashboard_outlined,
+                title: AppLocalizations.of(context)!.boardNotifications,
+                subtitle: AppLocalizations.of(context)!.boardNotificationsSubtitle,
+                value: settings.enableBoardNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(board: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.chat_bubble_outline,
+                title: AppLocalizations.of(context)!.chatNotifications,
+                subtitle: AppLocalizations.of(context)!.chatNotificationsSubtitle,
+                value: settings.enableChatNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(chat: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.calendar_today_outlined,
+                title: AppLocalizations.of(context)!.timetableNotifications,
+                subtitle: AppLocalizations.of(context)!.timetableNotificationsSubtitle,
+                value: settings.enableTimetableNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(timetable: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.volume_up_outlined,
+                title: AppLocalizations.of(context)!.soundNotifications,
+                subtitle: AppLocalizations.of(context)!.soundNotificationsSubtitle,
+                value: settings.enableSoundNotifications,
+                onChanged: (value) =>
+                    notifier.updateNotificationSettings(sound: value),
+              ),
+            ],
           ),
 
-          SizedBox(height: AppSpacing.lg),
+          SizedBox(height: AppSpacing.xl),
 
-          // Privacy
-          _buildSectionHeader('Privacy'),
-          _buildSwitchTile(
-            title: 'Allow Friend Requests',
-            value: settings.allowFriendRequests,
-            onChanged: (value) =>
-                notifier.updatePrivacySettings(friendRequests: value),
-          ),
-          _buildSwitchTile(
-            title: 'Show Online Status',
-            value: settings.showOnlineStatus,
-            onChanged: (value) =>
-                notifier.updatePrivacySettings(onlineStatus: value),
-          ),
-          _buildSwitchTile(
-            title: 'Allow Message Requests',
-            value: settings.allowMessageRequests,
-            onChanged: (value) =>
-                notifier.updatePrivacySettings(messageRequests: value),
-          ),
-          _buildSwitchTile(
-            title: 'Show Profile to Strangers',
-            value: settings.showProfileToStrangers,
-            onChanged: (value) =>
-                notifier.updatePrivacySettings(profileVisibility: value),
+          // Privacy Section
+          _buildSectionHeader(AppLocalizations.of(context)!.privacy),
+          SizedBox(height: AppSpacing.sm),
+          _buildSettingsCard(
+            children: [
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.person_add_outlined,
+                title: AppLocalizations.of(context)!.allowFriendRequests,
+                subtitle: AppLocalizations.of(context)!.allowFriendRequestsSubtitle,
+                value: settings.allowFriendRequests,
+                onChanged: (value) =>
+                    notifier.updatePrivacySettings(friendRequests: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.circle,
+                title: AppLocalizations.of(context)!.showOnlineStatus,
+                subtitle: AppLocalizations.of(context)!.showOnlineStatusSubtitle,
+                value: settings.showOnlineStatus,
+                onChanged: (value) =>
+                    notifier.updatePrivacySettings(onlineStatus: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.message_outlined,
+                title: AppLocalizations.of(context)!.allowMessageRequests,
+                subtitle: AppLocalizations.of(context)!.allowMessageRequestsSubtitle,
+                value: settings.allowMessageRequests,
+                onChanged: (value) =>
+                    notifier.updatePrivacySettings(messageRequests: value),
+              ),
+              _buildDivider(),
+              _buildSwitchTile(
+                context: context,
+                icon: Icons.public,
+                title: AppLocalizations.of(context)!.showProfileToStrangers,
+                subtitle: AppLocalizations.of(context)!.showProfileToStrangersSubtitle,
+                value: settings.showProfileToStrangers,
+                onChanged: (value) =>
+                    notifier.updatePrivacySettings(profileVisibility: value),
+              ),
+            ],
           ),
 
           SizedBox(height: AppSpacing.xl),
 
           // Account Section
-          _buildSectionHeader('Account'),
-          _buildLogoutButton(context, ref),
+          _buildSectionHeader(AppLocalizations.of(context)!.account),
+          SizedBox(height: AppSpacing.sm),
+          _buildSettingsCard(
+            children: [
+              _buildLogoutButton(context, ref),
+            ],
+          ),
 
-          SizedBox(height: AppSpacing.xxxl),
+          SizedBox(height: AppSpacing.xl),
+
+          // Version Info
+          _buildVersionInfo(),
+
+          SizedBox(height: AppSpacing.xl),
         ],
       ),
     );
   }
 
   Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: EdgeInsets.only(bottom: AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.3), width: 1),
-      ),
-      child: ListTile(
-        leading: Icon(Icons.logout, color: AppColors.error),
-        title: Text(
-          'Logout',
-          style: AppTypography.bodyLarge.copyWith(
-            color: AppColors.error,
-            fontWeight: FontWeight.w600,
-          ),
+    return InkWell(
+      onTap: () => _showLogoutDialog(context, ref),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
         ),
-        trailing: Icon(Icons.chevron_right, color: AppColors.error),
-        onTap: () => _showLogoutDialog(context, ref),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.textTertiary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Icon(
+                Icons.logout_outlined,
+                color: AppColors.textSecondary,
+                size: AppSpacing.iconMd,
+              ),
+            ),
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.logout,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    AppLocalizations.of(context)!.logoutSubtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: AppColors.textTertiary,
+              size: AppSpacing.iconMd,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(l10n.logout),
+        content: Text(l10n.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -218,7 +312,7 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Logout'),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -226,38 +320,159 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: AppSpacing.sm),
-      child: Text(
-        title,
-        style: AppTypography.headlineSmall.copyWith(
-          color: AppColors.textPrimary,
-          fontWeight: FontWeight.w700,
+    return Text(
+      title,
+      style: AppTypography.titleLarge.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.3,
+      ),
+    );
+  }
+
+  Widget _buildSettingsCard({required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.5),
+          width: 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: children,
       ),
     );
   }
 
   Widget _buildSwitchTile({
+    required BuildContext context,
+    required IconData icon,
     required String title,
+    required String subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: AppSpacing.sm),
-      decoration: BoxDecoration(
-        color: AppColors.surface.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border.withOpacity(0.3), width: 1),
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
-      child: SwitchListTile(
-        title: Text(
-          title,
-          style: AppTypography.bodyLarge.copyWith(color: AppColors.textPrimary),
-        ),
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: AppColors.primary,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: value
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : AppColors.textTertiary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            ),
+            child: Icon(
+              icon,
+              color: value ? AppColors.primary : AppColors.textSecondary,
+              size: AppSpacing.iconMd,
+            ),
+          ),
+          SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: AppSpacing.xxs),
+                Text(
+                  subtitle,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: AppSpacing.sm),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withValues(alpha: 0.3),
+            inactiveThumbColor: AppColors.textTertiary,
+            inactiveTrackColor: AppColors.border,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: AppColors.border.withValues(alpha: 0.3),
+      indent: AppSpacing.md + 40 + AppSpacing.md, // Align with text
+    );
+  }
+
+  Widget _buildVersionInfo() {
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+              border: Border.all(
+                color: AppColors.border.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: AppSpacing.iconSm,
+                  color: AppColors.textTertiary,
+                ),
+                SizedBox(width: AppSpacing.xs),
+                Text(
+                  'Version 1.0.0',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: AppSpacing.sm),
+          Text(
+            '© 2024 NonStop',
+            style: AppTypography.captionSmall.copyWith(
+              color: AppColors.textTertiary,
+            ),
+          ),
+        ],
       ),
     );
   }

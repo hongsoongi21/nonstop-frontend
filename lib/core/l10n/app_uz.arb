@@ -49,7 +49,7 @@
     "description": "Label for title field"
   },
   "content": "Tarkib",
-    "@content": {
+  "@content": {
     "description": "Label for content field"
   },
   "selectCommunity": "Jamiyatni tanlang",
@@ -136,5 +136,710 @@
   "messageHint": "Xabar yozing...",
   "@messageHint": {
     "description": "Placeholder for message input"
-  }
+  },
+  "notifications": "Bildirishnomalar",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "Hammasini o'qilgan qilish",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "Hozircha bildirishnomalar yo'q",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "Yangi bildirishnomalar shu yerda ko'rinadi",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Bildirishnomalarni yuklashda xatolik",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "Qayta urinish",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "Hozir",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} daqiqa oldin",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} soat oldin",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} kun oldin",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "login": "Kirish",
+  "@login": {
+    "description": "login label/message"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "email label/message"
+  },
+  "password": "Parol",
+  "@password": {
+    "description": "password label/message"
+  },
+  "forgotPassword": "Parolni unutdingizmi?",
+  "@forgotPassword": {
+    "description": "forgotPassword label/message"
+  },
+  "welcomeBack": "Xush Kelibsiz!",
+  "@welcomeBack": {
+    "description": "welcomeBack label/message"
+  },
+  "loginToContinue": "Davom etish uchun tizimga kiring",
+  "@loginToContinue": {
+    "description": "loginToContinue label/message"
+  },
+  "continueWithGoogle": "Google orqali davom eting",
+  "@continueWithGoogle": {
+    "description": "continueWithGoogle label/message"
+  },
+  "orSocialMedia": "Yoki ijtimoly tarmoqlar orqali",
+  "@orSocialMedia": {
+    "description": "orSocialMedia label/message"
+  },
+  "noAccount": "Profiling yo'qmi?",
+  "@noAccount": {
+    "description": "noAccount label/message"
+  },
+  "signUpLink": "Ro'yxatdan o'tish",
+  "@signUpLink": {
+    "description": "signUpLink label/message"
+  },
+  "validationEmailRequired": "Emailingizni kiriting",
+  "@validationEmailRequired": {
+    "description": "validationEmailRequired label/message"
+  },
+  "validationEmailInvalid": "To'g'ri email kiriting",
+  "@validationEmailInvalid": {
+    "description": "validationEmailInvalid label/message"
+  },
+  "validationPasswordRequired": "Parolingizni kiriting",
+  "@validationPasswordRequired": {
+    "description": "validationPasswordRequired label/message"
+  },
+  "validationPasswordMin6": "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
+  "@validationPasswordMin6": {
+    "description": "validationPasswordMin6 label/message"
+  },
+  "validationPasswordMin8": "Parol kamida 8 ta belgidan iborat bo'lishi kerak",
+  "@validationPasswordMin8": {
+    "description": "validationPasswordMin8 label/message"
+  },
+  "googleSignInFailed": "Google kirish xatosi: {error}",
+  "@googleSignInFailed": {
+    "description": "googleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Ro'yxatdan o'tish",
+  "@createAccount": {
+    "description": "createAccount label/message"
+  },
+  "enterYourInfo": "Ma'lumotlaringizni kiriting",
+  "@enterYourInfo": {
+    "description": "enterYourInfo label/message"
+  },
+  "nickname": "Taxallus",
+  "@nickname": {
+    "description": "nickname label/message"
+  },
+  "selectUniversity": "Universitetni tanlang",
+  "@selectUniversity": {
+    "description": "selectUniversity label/message"
+  },
+  "selectBirthDate": "Tug'ilgan kunni tanlang",
+  "@selectBirthDate": {
+    "description": "selectBirthDate label/message"
+  },
+  "confirmPassword": "Parolni tasdiqlang",
+  "@confirmPassword": {
+    "description": "confirmPassword label/message"
+  },
+  "agreeToAll": "Hammaga roziman",
+  "@agreeToAll": {
+    "description": "agreeToAll label/message"
+  },
+  "required": "[Majburiy]",
+  "@required": {
+    "description": "required label/message"
+  },
+  "optional": "[Ixtiyoriy]",
+  "@optional": {
+    "description": "optional label/message"
+  },
+  "view": "[Ko'rish]",
+  "@view": {
+    "description": "view label/message"
+  },
+  "haveAccount": "Profiling bormi?",
+  "@haveAccount": {
+    "description": "haveAccount label/message"
+  },
+  "loginLink": "Kirish",
+  "@loginLink": {
+    "description": "loginLink label/message"
+  },
+  "validationNicknameRequired": "Taxallusingizni kiriting",
+  "@validationNicknameRequired": {
+    "description": "validationNicknameRequired label/message"
+  },
+  "validationNickname2to20": "Taxallus 2-20 ta belgidan iborat bo'lishi kerak",
+  "@validationNickname2to20": {
+    "description": "validationNickname2to20 label/message"
+  },
+  "validationPasswordsNoMatch": "Parollar mos kelmaydi",
+  "@validationPasswordsNoMatch": {
+    "description": "validationPasswordsNoMatch label/message"
+  },
+  "validationConfirmPassword": "Parolni tasdiqlang",
+  "@validationConfirmPassword": {
+    "description": "validationConfirmPassword label/message"
+  },
+  "send": "Yuborish",
+  "@send": {
+    "description": "send label/message"
+  },
+  "resend": "Qayta yuborish",
+  "@resend": {
+    "description": "resend label/message"
+  },
+  "verify": "Tasdiqlash",
+  "@verify": {
+    "description": "verify label/message"
+  },
+  "sixDigitCode": "6 raqamli kod",
+  "@sixDigitCode": {
+    "description": "sixDigitCode label/message"
+  },
+  "emailVerified": "Email tasdiqlandi",
+  "@emailVerified": {
+    "description": "emailVerified label/message"
+  },
+  "verificationCodeSent": "Tasdiqlash kodi yuborildi!",
+  "@verificationCodeSent": {
+    "description": "verificationCodeSent label/message"
+  },
+  "emailVerifiedSuccess": "Email muvaffaqiyatli tasdiqlandi!",
+  "@emailVerifiedSuccess": {
+    "description": "emailVerifiedSuccess label/message"
+  },
+  "invalidCode": "Noto'g'ri kod",
+  "@invalidCode": {
+    "description": "invalidCode label/message"
+  },
+  "failedToSendCode": "Kodni yuborib bo'lmadi",
+  "@failedToSendCode": {
+    "description": "failedToSendCode label/message"
+  },
+  "pleaseVerifyEmail": "Iltimos, avval pochtangizni tasdiqlang",
+  "@pleaseVerifyEmail": {
+    "description": "pleaseVerifyEmail label/message"
+  },
+  "pleaseWaitPoliciesLoad": "Shartlar yuklanishini kuting",
+  "@pleaseWaitPoliciesLoad": {
+    "description": "pleaseWaitPoliciesLoad label/message"
+  },
+  "agreeMandatoryPolicies": "Majburiy shartlarni qabul qiling",
+  "@agreeMandatoryPolicies": {
+    "description": "agreeMandatoryPolicies label/message"
+  },
+  "pleaseSelectUniversity": "Universitetni tanlang",
+  "@pleaseSelectUniversity": {
+    "description": "pleaseSelectUniversity label/message"
+  },
+  "pleaseSelectBirthDate": "Tug'ilgan kuningizni tanlang",
+  "@pleaseSelectBirthDate": {
+    "description": "pleaseSelectBirthDate label/message"
+  },
+  "signupFailed": "Ro'yxatdan o'ta olmadi",
+  "@signupFailed": {
+    "description": "signupFailed label/message"
+  },
+  "couldNotLaunch": "{url} ochilmadi",
+  "@couldNotLaunch": {
+    "description": "couldNotLaunch with placeholders",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLaunchingUrl": "URL ochishda xato: {error}",
+  "@errorLaunchingUrl": {
+    "description": "errorLaunchingUrl with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectYourBirthDate": "Tug'ilgan kuningizni tanlang",
+  "@selectYourBirthDate": {
+    "description": "selectYourBirthDate label/message"
+  },
+  "noPoliciesAvailable": "Shartlar mavjud emas",
+  "@noPoliciesAvailable": {
+    "description": "noPoliciesAvailable label/message"
+  },
+  "resetPassword": "Parolni tiklash",
+  "@resetPassword": {
+    "description": "resetPassword label/message"
+  },
+  "enterRegisteredEmail": "Ro'yxatdan o'tgan email manzilingizni kiriting",
+  "@enterRegisteredEmail": {
+    "description": "enterRegisteredEmail label/message"
+  },
+  "sendCode": "Kod yuborish",
+  "@sendCode": {
+    "description": "sendCode label/message"
+  },
+  "verifyCode": "Kodni tasdiqlash",
+  "@verifyCode": {
+    "description": "verifyCode label/message"
+  },
+  "codeVerified": "Kod tasdiqlandi!",
+  "@codeVerified": {
+    "description": "codeVerified label/message"
+  },
+  "verificationCodeLabel": "Tasdiqlash kodi",
+  "@verificationCodeLabel": {
+    "description": "verificationCodeLabel label/message"
+  },
+  "resendCode": "Kodni qayta yuborish",
+  "@resendCode": {
+    "description": "resendCode label/message"
+  },
+  "newPassword": "Yangi parol",
+  "@newPassword": {
+    "description": "newPassword label/message"
+  },
+  "enterNewPassword": "Yangi parolingizni kiriting",
+  "@enterNewPassword": {
+    "description": "enterNewPassword label/message"
+  },
+  "updatePassword": "Parolni yangilash",
+  "@updatePassword": {
+    "description": "updatePassword label/message"
+  },
+  "success": "Muvaffaqiyatli!",
+  "@success": {
+    "description": "success label/message"
+  },
+  "passwordChangedSuccess": "Parolingiz muvaffaqiyatli o'zgartirildi. Endi yangi parol bilan tizimga kirishingiz mumkin.",
+  "@passwordChangedSuccess": {
+    "description": "passwordChangedSuccess label/message"
+  },
+  "stepEmail": "Email",
+  "@stepEmail": {
+    "description": "stepEmail label/message"
+  },
+  "stepVerification": "Tasdiqlash",
+  "@stepVerification": {
+    "description": "stepVerification label/message"
+  },
+  "stepNewPassword": "Yangi parol",
+  "@stepNewPassword": {
+    "description": "stepNewPassword label/message"
+  },
+  "validationEnterEmail": "Email kiriting",
+  "@validationEnterEmail": {
+    "description": "validationEnterEmail label/message"
+  },
+  "validationEnterValidEmail": "To'g'ri email kiriting",
+  "@validationEnterValidEmail": {
+    "description": "validationEnterValidEmail label/message"
+  },
+  "validationEnterCode": "Kodni kiriting",
+  "@validationEnterCode": {
+    "description": "validationEnterCode label/message"
+  },
+  "validationCodeMinLength": "Kod kamida 4 ta raqamdan iborat bo'lishi kerak",
+  "@validationCodeMinLength": {
+    "description": "validationCodeMinLength label/message"
+  },
+  "validationEnterPassword": "Parol kiriting",
+  "@validationEnterPassword": {
+    "description": "validationEnterPassword label/message"
+  },
+  "validationPasswordMinLength": "Parol kamida 8 ta belgidan iborat bo'lishi kerak",
+  "@validationPasswordMinLength": {
+    "description": "validationPasswordMinLength label/message"
+  },
+  "validationConfirmNewPassword": "Parolni tasdiqlang",
+  "@validationConfirmNewPassword": {
+    "description": "validationConfirmNewPassword label/message"
+  },
+  "codeResent": "Kod qayta yuborildi!",
+  "@codeResent": {
+    "description": "codeResent label/message"
+  },
+  "profile": "Profil",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Sozlamalar",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "Profilni tahrirlash",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "Postlar",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "Sharhlar",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "Do'stlar",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "Barcha postlar",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "Xatcho'plar",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "Sevimlilar",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "privacy": "Maxfiylik",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "Hisob",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "Chiqish",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "Push bildirishnomalar",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "Bu qurilmada push bildirishnomalarni olish",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "Email bildirishnomalar",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Email orqali yangilanishlarni olish",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "Taxta bildirishnomalari",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "Yangi postlar va sharhlar",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "Chat bildirishnomalari",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "Yangi xabarlar va javoblar",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "Jadval bildirishnomalari",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "Dars eslatmalari va yangilanishlar",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "Ovozli bildirishnomalar",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "Bildirishnomalar uchun ovoz chalish",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "Do'stlik so'rovlariga ruxsat berish",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "Boshqalarga sizga do'stlik so'rovi yuborishga ruxsat berish",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "Onlayn holatini ko'rsatish",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "Do'stlaringizga onlayn ekanligingizni ko'rsatish",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "Xabar so'rovlariga ruxsat berish",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "Do'st bo'lmaganlardan xabar qabul qilish",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "Profilni hamma uchun ko'rsatish",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "Profilingizni barchaga ko'rinadigan qilish",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "Hisobingizdan chiqish",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "Chiqishni xohlaysizmi?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "Xatolik yuz berdi",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "notificationsComingSoon": "Bildirishnomalar - tez orada!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "Profilni tahrirlash - tez orada!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "filterPrefix": "Filtr: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "Profil ma'lumotlari yuklanmadi",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "Sozlamalar yuklanmadi",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "Postlarni yuklashda xatolik",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "Hozircha postlar yo'q",
+  "@noPostsYet": {
+    "description": "No posts message"
+  },
+  "friendsTitle": "Do'stlar",
+  "@friendsTitle": {
+    "description": "Friends screen title"
+  },
+  "requests": "So'rovlar",
+  "@requests": {
+    "description": "Friend requests tab label"
+  },
+  "search": "Qidirish",
+  "@search": {
+    "description": "Search tab label"
+  },
+  "noFriendsYet": "Hali do'stlaringiz yo'q",
+  "@noFriendsYet": {
+    "description": "Empty state title when user has no friends"
+  },
+  "addFriendsViaSearch": "Qidiruv orqali do'stlar qo'shing",
+  "@addFriendsViaSearch": {
+    "description": "Empty state subtitle for no friends"
+  },
+  "friend": "Do'st",
+  "@friend": {
+    "description": "Friend status label"
+  },
+  "sent": "Yuborildi",
+  "@sent": {
+    "description": "Friend request sent status label"
+  },
+  "accept": "Qabul qilish",
+  "@accept": {
+    "description": "Accept friend request button"
+  },
+  "reject": "Rad etish",
+  "@reject": {
+    "description": "Reject friend request button"
+  },
+  "removeFriend": "Do'stlikdan chiqarish",
+  "@removeFriend": {
+    "description": "Remove friend menu option"
+  },
+  "confirmRemoveFriend": "{name} bilan do'stlikni tugatmoqchimisiz?",
+  "@confirmRemoveFriend": {
+    "description": "Confirmation message for removing friend",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Chiqarish",
+  "@remove": {
+    "description": "Remove button"
+  },
+  "noRequests": "So'rovlar yo'q",
+  "@noRequests": {
+    "description": "Empty state title when there are no friend requests"
+  },
+  "requestsAppearHere": "Do'stlik so'rovlari bu yerda ko'rinadi",
+  "@requestsAppearHere": {
+    "description": "Empty state subtitle for no requests"
+  },
+  "searchUsersHint": "Foydalanuvchilarni qidiring...",
+  "@searchUsersHint": {
+    "description": "Search input placeholder"
+  },
+  "startSearching": "Qidirishni boshlang",
+  "@startSearching": {
+    "description": "Empty state title for search"
+  },
+  "typeInSearchBar": "Yuqoridagi qidiruv qatoriga yozing",
+  "@typeInSearchBar": {
+    "description": "Empty state subtitle for search"
+  },
+  "noResults": "Natija topilmadi",
+  "@noResults": {
+    "description": "Empty state title when search returns no results"
+  },
+  "tryDifferentName": "Boshqa ism bilan qidirib ko'ring",
+  "@tryDifferentName": {
+    "description": "Empty state subtitle for no search results"
+  },
+  "online": "Onlayn",
+  "@online": {
+    "description": "Online status label"
+  },
+  "offline": "Oflayn",
+  "@offline": {
+    "description": "Offline status label"
+  },
+  "friendRequestSent": "Do'stlik so'rovi yuborildi",
+  "@friendRequestSent": {
+    "description": "Success message after sending friend request"
+  },
+  "friendRequestAccepted": "Do'stlik so'rovi qabul qilindi",
+  "@friendRequestAccepted": {
+    "description": "Success message after accepting friend request"
+  },
+  "requestRejected": "So'rov rad etildi",
+  "@requestRejected": {
+    "description": "Success message after rejecting friend request"
+  },
+  "removedFromFriends": "Do'stlikdan chiqarildi",
+  "@removedFromFriends": {
+    "description": "Success message after removing friend"
+  },
+  "addFriend": "Qo'shish",
+  "@addFriend": {
+    "description": "Add friend button"
+  },
+  "timetable": "Dars jadvali",
+  "addCourse": "Dars qo'shish",
+  "editCourse": "Darsni tahrirlash",
+  "dayMonday": "Dushanba",
+  "dayTuesday": "Seshanba",
+  "dayWednesday": "Chorshanba",
+  "dayThursday": "Payshanba",
+  "dayFriday": "Juma",
+  "daySaturday": "Shanba",
+  "daySunday": "Yakshanba",
+  "dayMondayShort": "DU",
+  "dayTuesdayShort": "SE",
+  "dayWednesdayShort": "CHO",
+  "dayThursdayShort": "PAY",
+  "dayFridayShort": "JU",
+  "daySaturdayShort": "SHA",
+  "daySundayShort": "YAK",
+  "semester": "Semestr",
+  "semesterSpring": "Bahor",
+  "semesterFall": "Kuz",
+  "semesterSummer": "Yoz",
+  "semesterWinter": "Qish",
+  "gpaCalculator": "GPA Kalkulyatori",
+  "creditHours": "Kredit soatlar",
+  "credits": "kredit",
+  "calculateAndTrack": "Hisoblang va kuzating",
+  "courseName": "Fan nomi",
+  "courseNameHint": "Masalan: Dasturlash asoslari",
+  "courseNameRequired": "Fan nomini kiriting",
+  "professor": "O'qituvchi",
+  "professorHint": "Masalan: Prof. Kim",
+  "room": "Xona / Joy",
+  "roomHint": "Masalan: 301-xona",
+  "color": "Rang",
+  "colorDescription": "Darsni ajratib ko'rsatish uchun rang tanlang",
+  "startTime": "Boshlanish",
+  "endTime": "Tugash",
+  "selectDay": "Kunni tanlang",
+  "dayOfWeek": "Hafta kuni",
+  "timeAndDay": "Vaqt va Kun",
+  "basicInfo": "Asosiy ma'lumotlar",
+  "delete": "O'chirish",
+  "deleteCourse": "Darsni o'chirish",
+  "confirmDeleteCourse": "Haqiqatan ham ushbu darsni o'chirmoqchimisiz?",
+  "courseDeleted": "Dars o'chirildi",
+  "courseAdded": "Dars muvaffaqiyatli qo'shildi",
+  "courseUpdated": "Dars o'zgartirildi",
+  "saveChanges": "O'zgarishlarni saqlash",
+  "noCoursesAdded": "Darslar qo'shilmagan",
+  "noCoursesDescription": "Haftalik jadval yaratish uchun\ndarslaringizni qo'shing",
+  "loading": "Yuklanmoqda...",
+  "refresh": "Yangilash",
+  "myTimetables": "Jadvallarim",
+  "createNewTimetable": "Yangi jadval yaratish",
+  "untitledTimetable": "Nomsiz jadval",
+  "newCourse": "YANGI DARS",
+  "editCourseTitle": "TAHRIRLASH",
+  "createNewCourse": "Dars jadvali uchun yangi dars yarating",
+  "updateCourseInfo": "Dars ma'lumotlarini yangilang",
+  "conflict": "KONFLIKT",
+  "confirmNewPassword": "Yangi parolni tasdiqlang",
+  "birthDate": "Tug'ilgan sana"
 }

@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
-import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 
@@ -21,29 +20,38 @@ class ChatRoomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}'),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: AppColors.border.withValues(alpha: 0.3),
-              width: 0.5,
-            ),
+    final hasUnread = room.unreadCount > 0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
           ),
-        ),
-        child: Row(
-          children: [
-            _buildAvatar(),
-            SizedBox(width: AppSpacing.md),
-            Expanded(child: _buildContent()),
-            SizedBox(width: AppSpacing.sm),
-            _buildTrailing(context),
-          ],
+          decoration: BoxDecoration(
+            gradient: hasUnread
+                ? LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      AppColors.primary.withValues(alpha: 0.03),
+                      Colors.transparent,
+                    ],
+                  )
+                : null,
+          ),
+          child: Row(
+            children: [
+              _buildAvatar(),
+              const SizedBox(width: 14),
+              Expanded(child: _buildContent()),
+              const SizedBox(width: 10),
+              _buildTrailing(context),
+            ],
+          ),
         ),
       ),
     );
@@ -53,13 +61,14 @@ class ChatRoomTile extends StatelessWidget {
     final isGroup = room.type == ChatRoomType.group;
     final displayName = room.name ?? 'Chat';
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
+    final hasUnread = room.unreadCount > 0;
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Container(
-          width: 52,
-          height: 52,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: LinearGradient(
@@ -69,9 +78,9 @@ class ChatRoomTile extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.15),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: _getAvatarGradient(displayName)[0].withValues(alpha: 0.3),
+                blurRadius: hasUnread ? 12 : 8,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -80,38 +89,68 @@ class ChatRoomTile extends StatelessWidget {
               initial,
               style: AppTypography.headline4.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
+                fontWeight: FontWeight.w800,
+                fontSize: 22,
+                letterSpacing: 0,
               ),
             ),
           ),
         ),
         if (isGroup)
           Positioned(
-            right: -2,
-            bottom: -2,
+            right: -1,
+            bottom: -1,
             child: Container(
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: AppColors.primaryGradient,
+                ),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: AppColors.surface,
-                  width: 2,
+                  width: 2.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: const Icon(
-                Icons.people,
-                size: 11,
+                Icons.people_rounded,
+                size: 12,
                 color: Colors.white,
+              ),
+            ),
+          ),
+        // Online indicator (example - would need actual online status)
+        if (!isGroup && hasUnread)
+          Positioned(
+            right: 2,
+            top: 2,
+            child: Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                color: AppColors.chatOnline,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.surface,
+                  width: 2.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.chatOnline.withValues(alpha: 0.5),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
             ),
           ),
@@ -124,6 +163,7 @@ class ChatRoomTile extends StatelessWidget {
     final hasLastMessage = room.lastMessage != null;
     final lastMessageContent = hasLastMessage ? room.lastMessage!.content : '';
     final isGroup = room.type == ChatRoomType.group;
+    final hasUnread = room.unreadCount > 0;
 
     // For group chats, show sender prefix
     String messagePreview = lastMessageContent;
@@ -137,36 +177,33 @@ class ChatRoomTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Room name with bold geometric styling
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                displayName,
-                style: AppTypography.body1.copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  letterSpacing: -0.3,
-                  height: 1.2,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+        Text(
+          displayName,
+          style: AppTypography.body1.copyWith(
+            fontWeight: hasUnread ? FontWeight.w800 : FontWeight.w700,
+            fontSize: 17,
+            letterSpacing: -0.4,
+            height: 1.2,
+            color: hasUnread ? AppColors.textPrimary : AppColors.textPrimary,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
 
-        SizedBox(height: 4),
+        const SizedBox(height: 5),
 
         // Last message preview
         if (hasLastMessage)
           Text(
             messagePreview,
             style: AppTypography.body2.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 14,
+              color: hasUnread ? AppColors.textSecondary : AppColors.textTertiary,
+              fontSize: 14.5,
               height: 1.3,
+              fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400,
+              letterSpacing: 0.1,
             ),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
           )
         else
@@ -193,31 +230,38 @@ class ChatRoomTile extends StatelessWidget {
         // Timestamp with geometric styling
         if (timestamp != null)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: hasUnread
-                  ? AppColors.primary.withValues(alpha: 0.08)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(4),
+              gradient: hasUnread
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.12),
+                        AppColors.primary.withValues(alpha: 0.06),
+                      ],
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               _formatTimestamp(timestamp),
               style: AppTypography.caption.copyWith(
-                color: hasUnread ? AppColors.primary : AppColors.textHint,
-                fontSize: 11,
-                fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w400,
+                color: hasUnread ? AppColors.primary : AppColors.textTertiary,
+                fontSize: 12,
+                fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w500,
                 letterSpacing: 0.3,
               ),
             ),
           ),
 
         if (hasUnread) ...[
-          SizedBox(height: 6),
-          // Unread badge with gradient
+          const SizedBox(height: 8),
+          // Unread badge with gradient and glow
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: room.unreadCount > 99 ? 6 : 7,
-              vertical: 4,
+              horizontal: room.unreadCount > 99 ? 7 : 8,
+              vertical: 5,
             ),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -225,32 +269,34 @@ class ChatRoomTile extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: [
                   Color(0xFFFF6B6B),
-                  Color(0xFFFF5252),
+                  Color(0xFFEF4444),
                 ],
               ),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF5252).withValues(alpha: 0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: const Color(0xFFEF4444).withValues(alpha: 0.5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                  spreadRadius: 1,
                 ),
               ],
             ),
             constraints: const BoxConstraints(
-              minWidth: 22,
-              minHeight: 22,
+              minWidth: 24,
+              minHeight: 24,
             ),
-            child: Text(
-              room.unreadCount > 99 ? '99+' : room.unreadCount.toString(),
-              style: AppTypography.caption.copyWith(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                height: 1.2,
-                letterSpacing: 0.2,
+            child: Center(
+              child: Text(
+                room.unreadCount > 99 ? '99+' : room.unreadCount.toString(),
+                style: AppTypography.caption.copyWith(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  height: 1.0,
+                  letterSpacing: 0.2,
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ],

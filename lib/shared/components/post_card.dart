@@ -27,19 +27,33 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border.withAlpha(100),
-            width: 0.5,
-          ),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(
+          color: AppColors.border,
+          width: AppSpacing.borderWidth,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: AppColors.shadowMedium,
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.lg,
-      ),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -156,19 +170,45 @@ class PostCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(top: AppSpacing.md),
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.primary.withAlpha(20),
-        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-      ),
-      child: Text(
-        'General', // Fallback category
-        style: AppTypography.caption.copyWith(
-          color: AppColors.primary,
-          fontWeight: FontWeight.w600,
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primary.withValues(alpha: 0.12),
+            AppColors.tertiary.withValues(alpha: 0.08),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.3),
+          width: AppSpacing.borderWidth,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppColors.tertiary,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            'General', // Fallback category
+            style: AppTypography.caption.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -222,29 +262,41 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _buildFooter() {
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.lg),
+    return Container(
+      margin: const EdgeInsets.only(top: AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.5),
+          width: AppSpacing.borderWidthThin,
+        ),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Views
           _StatItem(
-            icon: Icons.remove_red_eye,
+            icon: Icons.remove_red_eye_outlined,
             count: post.viewCount.toInt(),
             color: AppColors.textSecondary,
           ),
 
-          SizedBox(width: AppSpacing.lg),
+          SizedBox(width: AppSpacing.xl),
 
           // Likes
           _StatItem(
             icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
             count: post.likeCount,
-            color: post.isLiked ? AppColors.error : AppColors.textSecondary,
+            color: post.isLiked ? AppColors.accent : AppColors.textSecondary,
             onTap: onLike,
           ),
 
-          SizedBox(width: AppSpacing.lg),
+          SizedBox(width: AppSpacing.xl),
 
           // Comments
           _StatItem(
@@ -276,18 +328,24 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      splashColor: AppColors.ripple,
+      highlightColor: AppColors.ripple.withValues(alpha: 0.5),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xs,
+        ),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: color),
-            SizedBox(width: 6),
+            Icon(icon, size: 20, color: color),
+            const SizedBox(width: AppSpacing.sm),
             Text(
               '$count',
               style: AppTypography.caption.copyWith(
                 color: AppColors.textSecondary,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
               ),
             ),
           ],

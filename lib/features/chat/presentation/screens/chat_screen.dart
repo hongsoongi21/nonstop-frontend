@@ -23,15 +23,29 @@ class ChatScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).chat),
+        title: Text(
+          AppLocalizations.of(context).chat,
+          style: AppTypography.headline3.copyWith(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.5,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: Search chats
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.search_rounded, size: 22),
+              color: AppColors.textSecondary,
+              onPressed: () {
+                // TODO: Search chats
+              },
+            ),
           ),
         ],
       ),
@@ -41,30 +55,99 @@ class ChatScreen extends ConsumerWidget {
             // Connection status at top
             const ConnectionStatusBar(),
 
-            // Chat list
+            // Chat list with fade-in animation
             Expanded(
               child: RefreshIndicator(
                 onRefresh: () => ref.read(chatListProvider.notifier).loadRooms(),
+                color: AppColors.primary,
+                backgroundColor: AppColors.surface,
                 child: _buildChatList(context, chatState, currentUserId),
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateChatSheet(context),
-        child: const Icon(Icons.add),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: AppColors.primaryGradient,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.4),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () => _showCreateChatSheet(context),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: const Icon(Icons.add_rounded, size: 28),
+        ),
       ),
     );
   }
 
   Widget _buildChatList(BuildContext context, ChatListState state, int? currentUserId) {
     if (state.isLoading && state.rooms.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Loading chats...',
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     if (state.error != null && state.rooms.isEmpty) {
-      return Center(child: Text(AppLocalizations.of(context).chatLoadError));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.errorLight,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              AppLocalizations.of(context).chatLoadError,
+              style: AppTypography.body1.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     if (state.rooms.isEmpty) {
@@ -72,14 +155,39 @@ class ChatScreen extends ConsumerWidget {
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.only(top: AppSpacing.sm, bottom: 80),
+      padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: 88),
       itemCount: state.rooms.length,
-      separatorBuilder: (context, index) => const Divider(height: 1, indent: 72),
+      separatorBuilder: (context, index) => Container(
+        margin: const EdgeInsets.only(left: 76),
+        height: 1,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.border.withValues(alpha: 0.3),
+              AppColors.border.withValues(alpha: 0.1),
+            ],
+          ),
+        ),
+      ),
       itemBuilder: (context, index) {
         final room = state.rooms[index];
-        return ChatRoomTile(
-          room: room,
-          currentUserId: currentUserId,
+        return TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 300 + (index * 50)),
+          curve: Curves.easeOutCubic,
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 20 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: ChatRoomTile(
+            room: room,
+            currentUserId: currentUserId,
+          ),
         );
       },
     );
@@ -91,16 +199,94 @@ class ChatScreen extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.chat_bubble_outline, size: 64, color: AppColors.textHint),
-          const SizedBox(height: AppSpacing.md),
+          Container(
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.08),
+                  AppColors.tertiary.withValues(alpha: 0.05),
+                ],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.chat_bubble_outline_rounded,
+              size: 72,
+              color: AppColors.primary.withValues(alpha: 0.4),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
           Text(
             l10n.chatListEmpty,
-            style: AppTypography.body1.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.headline4.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            l10n.chatListEmptyHint,
-            style: AppTypography.body2.copyWith(color: AppColors.textHint),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            child: Text(
+              l10n.chatListEmptyHint,
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: AppColors.primaryGradient,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _showCreateChatSheet(context),
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.add_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Start a conversation',
+                        style: AppTypography.button.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -1,0 +1,195 @@
+{
+  "@@locale": "uz",
+  "helloWorld": "Salom, dunyo!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "Postni tahrirlash",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "Bekor qilish",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "Saqlash",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "Postni o'chirish",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "Bu postni o'chirishga ishonchingiz komilmi?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "Sharhni tahrirlash",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "Sharhni o'chirish",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "Bu sharhni o'chirishga ishonchingiz komilmi?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "Universitet tekshiruvi talab qilinadi",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "Bu jamiyatga kirish uchun universitet tekshiruvi talab qilinadi",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "Sarlavha",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "Tarkib",
+    "@content": {
+    "description": "Label for content field"
+  },
+  "selectCommunity": "Jamiyatni tanlang",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "Hozircha suhbatlar yo'q",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Suhbat boshlash uchun + tugmasini bosing",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Suhbatlarni yuklashda xatolik",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "Yangi suhbat",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Foydalanuvchilarni qidirish...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} tanlangan",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Suhbatni boshlash",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Guruh yaratish",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Guruh nomi",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Guruh nomini kiriting",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Kamera",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Galereya",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Ulangan",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Ulanmoqda...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Uzildi - qayta ulash uchun bosing",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Bugun",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Kecha",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Xabar yozing...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
+  },
+  "notifications": "Bildirishnomalar",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "Hammasini o'qilgan qilish",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "Hozircha bildirishnomalar yo'q",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "Yangi bildirishnomalar shu yerda ko'rinadi",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Bildirishnomalarni yuklashda xatolik",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "Qayta urinish",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "Hozir",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} daqiqa oldin",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} soat oldin",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} kun oldin",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

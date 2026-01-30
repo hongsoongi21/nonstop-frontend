@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/profile_stats.dart' as domain;
 import '../../domain/entities/user_profile.dart';
-import 'glass_container.dart';
 
-/// Profile statistics widget with glassmorphism design
+/// Profile statistics widget - Clean numeric styling with bold edit button
 class ProfileStats extends StatelessWidget {
   final UserProfile profile;
   final domain.ProfileStats stats;
@@ -22,68 +22,131 @@ class ProfileStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassContainer(
-      margin: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      padding: EdgeInsets.all(AppSpacing.lg),
-      borderRadius: 20,
-      blur: 15,
-      opacity: 0.15,
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: AppSpacing.md)
+          .copyWith(top: AppSpacing.md),
       child: Column(
         children: [
-          // Stats Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _StatItem(
-                value: '24',
-                label: 'My Posts',
-              ),
-              Container(
+          // Stats Row - Clean card design
+          Container(
+            padding: EdgeInsets.symmetric(
+              vertical: AppSpacing.xl,
+              horizontal: AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppColors.border,
                 width: 1,
-                height: 40,
-                color: AppColors.textSecondary.withOpacity(0.2),
               ),
-              _StatItem(
-                value: '156',
-                label: 'My Comments',
-              ),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.textSecondary.withOpacity(0.2),
-              ),
-              _StatItem(
-                value: '48',
-                label: 'Friends',
-              ),
-            ],
-          ),
-
-          SizedBox(height: AppSpacing.lg),
-
-          // Edit Profile Button
-          InkWell(
-            onTap: onEditProfilePressed,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: double.infinity,
-              padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withOpacity(0.04),
+                  blurRadius: 24,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 4),
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  'Edit Profile',
-                  style: AppTypography.bodyLarge.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _StatItem(
+                  value: '24',
+                  label: AppLocalizations.of(context)!.posts,
+                  color: AppColors.primary,
+                ),
+                Container(
+                  width: 1,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        AppColors.border,
+                        Colors.transparent,
+                      ],
+                    ),
                   ),
                 ),
+                _StatItem(
+                  value: '156',
+                  label: AppLocalizations.of(context)!.comments,
+                  color: AppColors.tertiary,
+                ),
+                Container(
+                  width: 1,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        AppColors.border,
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+                _StatItem(
+                  value: '48',
+                  label: AppLocalizations.of(context)!.friends,
+                  color: AppColors.secondary,
+                ),
+              ],
+            ),
+          ),
+
+          SizedBox(height: AppSpacing.md),
+
+          // Edit Profile Button - Bold and prominent
+          InkWell(
+            onTap: onEditProfilePressed,
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(vertical: AppSpacing.md + 2),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primaryDark,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 16,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.edit_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  SizedBox(width: AppSpacing.sm),
+                  Text(
+                    AppLocalizations.of(context)!.editProfile,
+                    style: AppTypography.button.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -93,32 +156,47 @@ class ProfileStats extends StatelessWidget {
   }
 }
 
-/// Individual stat item widget
+/// Individual stat item widget with numeric typography
 class _StatItem extends StatelessWidget {
   final String value;
   final String label;
+  final Color color;
 
   const _StatItem({
     required this.value,
     required this.label,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          value,
-          style: AppTypography.headlineSmall.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+        // Number with accent color
+        Container(
+          padding: EdgeInsets.all(AppSpacing.xs),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            value,
+            style: AppTypography.numeric.copyWith(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: 28,
+              height: 1,
+            ),
           ),
         ),
-        SizedBox(height: AppSpacing.xxs),
+        SizedBox(height: AppSpacing.sm),
+        // Label
         Text(
           label,
-          style: AppTypography.bodyMedium.copyWith(
+          style: AppTypography.caption.copyWith(
             color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
           textAlign: TextAlign.center,
         ),

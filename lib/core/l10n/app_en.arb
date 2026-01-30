@@ -14,7 +14,7 @@
   },
   "save": "Save",
   "@save": {
-    "description": "Button text for saving changes"
+    "description": "Save button label"
   },
   "deletePost": "Delete Post",
   "@deletePost": {
@@ -136,5 +136,1021 @@
   "messageHint": "Type a message...",
   "@messageHint": {
     "description": "Placeholder for message input"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "Posts",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "Comments",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "Friends",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "All Posts",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "Bookmarks",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications section header"
+  },
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "Account",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "Push Notifications",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "Receive push notifications on this device",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "Email Notifications",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Get updates via email",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "Board Notifications",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "New posts and comments",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "Chat Notifications",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "New messages and replies",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "Timetable Notifications",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "Class reminders and updates",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "Sound Notifications",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "Play sound for notifications",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "Allow Friend Requests",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "Let others send you friend requests",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "Show Online Status",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "Let friends see when you're online",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "Allow Message Requests",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "Receive messages from non-friends",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "Show Profile to Strangers",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "Make your profile visible to everyone",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "Sign out of your account",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "Are you sure you want to logout?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "Error occurred",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "notificationsComingSoon": "Notifications - coming soon!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "Edit Profile - coming soon!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "filterPrefix": "Filter: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "Profile information not loaded",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "Settings not loaded",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "Failed to load posts",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "No posts yet",
+  "@noPostsYet": {
+    "description": "No posts message"
+  },
+  "markAllAsRead": "Mark all as read",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "No notifications yet",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "New notifications will appear here",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Failed to load notifications",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "board": "Board",
+  "@board": {
+    "description": "Board screen title"
+  },
+  "write": "Write",
+  "@write": {
+    "description": "Write button text"
+  },
+  "searchPosts": "Search posts...",
+  "@searchPosts": {
+    "description": "Search posts placeholder"
+  },
+  "pleaseSelectBoardFirst": "Please select a board first",
+  "@pleaseSelectBoardFirst": {
+    "description": "Message when no board is selected"
+  },
+  "noPostsInBoard": "No posts in {boardName} yet",
+  "@noPostsInBoard": {
+    "description": "Empty state message for no posts in board",
+    "placeholders": {
+      "boardName": {
+        "type": "String"
+      }
+    }
+  },
+  "beFirstToPost": "Be the first to start a conversation!",
+  "@beFirstToPost": {
+    "description": "Empty state encouragement message"
+  },
+  "createFirstPost": "Create First Post",
+  "@createFirstPost": {
+    "description": "Button to create first post"
+  },
+  "student": "Student",
+  "@student": {
+    "description": "Student badge label"
+  },
+  "post": "Post",
+  "@post": {
+    "description": "Post label/button"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "anonymous": "Anonymous",
+  "@anonymous": {
+    "description": "Anonymous user label"
+  },
+  "replyingToComment": "Replying to comment",
+  "@replyingToComment": {
+    "description": "Label when replying to a comment"
+  },
+  "noCommentsYet": "No comments yet",
+  "@noCommentsYet": {
+    "description": "Empty state for no comments"
+  },
+  "beFirstToComment": "Be the first to share your thoughts",
+  "@beFirstToComment": {
+    "description": "Empty state encouragement for comments"
+  },
+  "writeComment": "Write a comment...",
+  "@writeComment": {
+    "description": "Comment input placeholder"
+  },
+  "postAnonymously": "Post Anonymously",
+  "@postAnonymously": {
+    "description": "Anonymous posting option"
+  },
+  "comment": "Comment",
+  "@comment": {
+    "description": "Comment button label"
+  },
+  "like": "Like",
+  "@like": {
+    "description": "Like button label"
+  },
+  "reply": "Reply",
+  "@reply": {
+    "description": "Reply button label"
+  },
+  "createPost": "Create Post",
+  "@createPost": {
+    "description": "Create post screen title"
+  },
+  "noBoardsAvailable": "No boards available. Please select a community first.",
+  "@noBoardsAvailable": {
+    "description": "Message when no boards are available"
+  },
+  "writeClearTitle": "Write a clear, engaging title...",
+  "@writeClearTitle": {
+    "description": "Title field placeholder"
+  },
+  "pleaseEnterTitle": "Please enter a title",
+  "@pleaseEnterTitle": {
+    "description": "Title validation error"
+  },
+  "titleTooShort": "Title is too short",
+  "@titleTooShort": {
+    "description": "Title length validation error"
+  },
+  "shareYourThoughts": "Share your thoughts...",
+  "@shareYourThoughts": {
+    "description": "Content field placeholder"
+  },
+  "pleaseEnterContent": "Please enter some content",
+  "@pleaseEnterContent": {
+    "description": "Content validation error"
+  },
+  "pleaseSelectBoard": "Please select a board",
+  "@pleaseSelectBoard": {
+    "description": "Board selection error message"
+  },
+  "hideIdentity": "Hide your identity from others",
+  "@hideIdentity": {
+    "description": "Anonymous posting description"
+  },
+  "secretPost": "Secret Post",
+  "@secretPost": {
+    "description": "Secret post option"
+  },
+  "onlyVisibleToAuthorized": "Only visible to authorized users",
+  "@onlyVisibleToAuthorized": {
+    "description": "Secret post description"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "login label/message"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "email label/message"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "password label/message"
+  },
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "forgotPassword label/message"
+  },
+  "welcomeBack": "Welcome Back!",
+  "@welcomeBack": {
+    "description": "welcomeBack label/message"
+  },
+  "loginToContinue": "Sign in to continue",
+  "@loginToContinue": {
+    "description": "loginToContinue label/message"
+  },
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {
+    "description": "continueWithGoogle label/message"
+  },
+  "orSocialMedia": "Or via social networks",
+  "@orSocialMedia": {
+    "description": "orSocialMedia label/message"
+  },
+  "noAccount": "No account?",
+  "@noAccount": {
+    "description": "noAccount label/message"
+  },
+  "signUpLink": "Sign Up",
+  "@signUpLink": {
+    "description": "signUpLink label/message"
+  },
+  "validationEmailRequired": "Please enter your email",
+  "@validationEmailRequired": {
+    "description": "validationEmailRequired label/message"
+  },
+  "validationEmailInvalid": "Please enter a valid email",
+  "@validationEmailInvalid": {
+    "description": "validationEmailInvalid label/message"
+  },
+  "validationPasswordRequired": "Please enter your password",
+  "@validationPasswordRequired": {
+    "description": "validationPasswordRequired label/message"
+  },
+  "validationPasswordMin6": "Password must be at least 6 characters",
+  "@validationPasswordMin6": {
+    "description": "validationPasswordMin6 label/message"
+  },
+  "validationPasswordMin8": "Password must be at least 8 characters",
+  "@validationPasswordMin8": {
+    "description": "validationPasswordMin8 label/message"
+  },
+  "googleSignInFailed": "Google Sign-In failed: {error}",
+  "@googleSignInFailed": {
+    "description": "googleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "createAccount label/message"
+  },
+  "enterYourInfo": "Enter your information",
+  "@enterYourInfo": {
+    "description": "enterYourInfo label/message"
+  },
+  "nickname": "Nickname",
+  "@nickname": {
+    "description": "nickname label/message"
+  },
+  "selectUniversity": "Select University",
+  "@selectUniversity": {
+    "description": "selectUniversity label/message"
+  },
+  "selectBirthDate": "Select Birth Date",
+  "@selectBirthDate": {
+    "description": "selectBirthDate label/message"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "confirmPassword label/message"
+  },
+  "agreeToAll": "Agree to all",
+  "@agreeToAll": {
+    "description": "agreeToAll label/message"
+  },
+  "required": "[Required]",
+  "@required": {
+    "description": "required label/message"
+  },
+  "optional": "[Optional]",
+  "@optional": {
+    "description": "optional label/message"
+  },
+  "view": "[View]",
+  "@view": {
+    "description": "view label/message"
+  },
+  "haveAccount": "Have an account?",
+  "@haveAccount": {
+    "description": "haveAccount label/message"
+  },
+  "loginLink": "Login",
+  "@loginLink": {
+    "description": "loginLink label/message"
+  },
+  "validationNicknameRequired": "Please enter your nickname",
+  "@validationNicknameRequired": {
+    "description": "validationNicknameRequired label/message"
+  },
+  "validationNickname2to20": "Nickname must be 2-20 characters",
+  "@validationNickname2to20": {
+    "description": "validationNickname2to20 label/message"
+  },
+  "validationPasswordsNoMatch": "Passwords do not match",
+  "@validationPasswordsNoMatch": {
+    "description": "validationPasswordsNoMatch label/message"
+  },
+  "validationConfirmPassword": "Please confirm your password",
+  "@validationConfirmPassword": {
+    "description": "validationConfirmPassword label/message"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "send label/message"
+  },
+  "resend": "Resend",
+  "@resend": {
+    "description": "resend label/message"
+  },
+  "verify": "Verify",
+  "@verify": {
+    "description": "verify label/message"
+  },
+  "sixDigitCode": "6-digit code",
+  "@sixDigitCode": {
+    "description": "sixDigitCode label/message"
+  },
+  "emailVerified": "Email verified",
+  "@emailVerified": {
+    "description": "emailVerified label/message"
+  },
+  "verificationCodeSent": "Verification code sent!",
+  "@verificationCodeSent": {
+    "description": "verificationCodeSent label/message"
+  },
+  "emailVerifiedSuccess": "Email verified successfully!",
+  "@emailVerifiedSuccess": {
+    "description": "emailVerifiedSuccess label/message"
+  },
+  "invalidCode": "Invalid code",
+  "@invalidCode": {
+    "description": "invalidCode label/message"
+  },
+  "failedToSendCode": "Failed to send code",
+  "@failedToSendCode": {
+    "description": "failedToSendCode label/message"
+  },
+  "pleaseVerifyEmail": "Please verify your email first",
+  "@pleaseVerifyEmail": {
+    "description": "pleaseVerifyEmail label/message"
+  },
+  "pleaseWaitPoliciesLoad": "Please wait for policies to load",
+  "@pleaseWaitPoliciesLoad": {
+    "description": "pleaseWaitPoliciesLoad label/message"
+  },
+  "agreeMandatoryPolicies": "Please agree to all mandatory policies",
+  "@agreeMandatoryPolicies": {
+    "description": "agreeMandatoryPolicies label/message"
+  },
+  "pleaseSelectUniversity": "Please select a university",
+  "@pleaseSelectUniversity": {
+    "description": "pleaseSelectUniversity label/message"
+  },
+  "pleaseSelectBirthDate": "Please select your birth date",
+  "@pleaseSelectBirthDate": {
+    "description": "pleaseSelectBirthDate label/message"
+  },
+  "signupFailed": "Sign up failed",
+  "@signupFailed": {
+    "description": "signupFailed label/message"
+  },
+  "couldNotLaunch": "Could not launch {url}",
+  "@couldNotLaunch": {
+    "description": "couldNotLaunch with placeholders",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLaunchingUrl": "Error launching URL: {error}",
+  "@errorLaunchingUrl": {
+    "description": "errorLaunchingUrl with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectYourBirthDate": "Select your birth date",
+  "@selectYourBirthDate": {
+    "description": "selectYourBirthDate label/message"
+  },
+  "noPoliciesAvailable": "No policies available",
+  "@noPoliciesAvailable": {
+    "description": "noPoliciesAvailable label/message"
+  },
+  "resetPassword": "Reset Password",
+  "@resetPassword": {
+    "description": "resetPassword label/message"
+  },
+  "enterRegisteredEmail": "Enter your registered email address",
+  "@enterRegisteredEmail": {
+    "description": "enterRegisteredEmail label/message"
+  },
+  "sendCode": "Send Code",
+  "@sendCode": {
+    "description": "sendCode label/message"
+  },
+  "verifyCode": "Verify Code",
+  "@verifyCode": {
+    "description": "verifyCode label/message"
+  },
+  "codeVerified": "Code verified!",
+  "@codeVerified": {
+    "description": "codeVerified label/message"
+  },
+  "verificationCodeLabel": "Verification code",
+  "@verificationCodeLabel": {
+    "description": "verificationCodeLabel label/message"
+  },
+  "resendCode": "Resend Code",
+  "@resendCode": {
+    "description": "resendCode label/message"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "newPassword label/message"
+  },
+  "enterNewPassword": "Enter your new password",
+  "@enterNewPassword": {
+    "description": "enterNewPassword label/message"
+  },
+  "updatePassword": "Update Password",
+  "@updatePassword": {
+    "description": "updatePassword label/message"
+  },
+  "success": "Success!",
+  "@success": {
+    "description": "success label/message"
+  },
+  "passwordChangedSuccess": "Your password has been successfully changed. You can now login with your new password.",
+  "@passwordChangedSuccess": {
+    "description": "passwordChangedSuccess label/message"
+  },
+  "stepEmail": "Email",
+  "@stepEmail": {
+    "description": "stepEmail label/message"
+  },
+  "stepVerification": "Verification",
+  "@stepVerification": {
+    "description": "stepVerification label/message"
+  },
+  "stepNewPassword": "New Password",
+  "@stepNewPassword": {
+    "description": "stepNewPassword label/message"
+  },
+  "validationEnterEmail": "Enter email",
+  "@validationEnterEmail": {
+    "description": "validationEnterEmail label/message"
+  },
+  "validationEnterValidEmail": "Enter valid email",
+  "@validationEnterValidEmail": {
+    "description": "validationEnterValidEmail label/message"
+  },
+  "validationEnterCode": "Enter code",
+  "@validationEnterCode": {
+    "description": "validationEnterCode label/message"
+  },
+  "validationCodeMinLength": "Code must be at least 4 digits",
+  "@validationCodeMinLength": {
+    "description": "validationCodeMinLength label/message"
+  },
+  "validationEnterPassword": "Enter password",
+  "@validationEnterPassword": {
+    "description": "validationEnterPassword label/message"
+  },
+  "validationPasswordMinLength": "Password must be at least 8 characters",
+  "@validationPasswordMinLength": {
+    "description": "validationPasswordMinLength label/message"
+  },
+  "validationConfirmNewPassword": "Confirm password",
+  "@validationConfirmNewPassword": {
+    "description": "validationConfirmNewPassword label/message"
+  },
+  "codeResent": "Code resent!",
+  "@codeResent": {
+    "description": "codeResent label/message"
+  },
+  "friendsTitle": "Friends",
+  "@friendsTitle": {
+    "description": "Friends screen title"
+  },
+  "requests": "Requests",
+  "@requests": {
+    "description": "Friend requests tab label"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search tab label"
+  },
+  "noFriendsYet": "No friends yet",
+  "@noFriendsYet": {
+    "description": "Empty state title when user has no friends"
+  },
+  "addFriendsViaSearch": "Add friends via search",
+  "@addFriendsViaSearch": {
+    "description": "Empty state subtitle for no friends"
+  },
+  "friend": "Friend",
+  "@friend": {
+    "description": "Friend status label"
+  },
+  "sent": "Sent",
+  "@sent": {
+    "description": "Friend request sent status label"
+  },
+  "accept": "Accept",
+  "@accept": {
+    "description": "Accept friend request button"
+  },
+  "reject": "Reject",
+  "@reject": {
+    "description": "Reject friend request button"
+  },
+  "removeFriend": "Remove Friend",
+  "@removeFriend": {
+    "description": "Remove friend menu option"
+  },
+  "confirmRemoveFriend": "Are you sure you want to remove {name}?",
+  "@confirmRemoveFriend": {
+    "description": "Confirmation message for removing friend",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove button"
+  },
+  "noRequests": "No requests",
+  "@noRequests": {
+    "description": "Empty state title when there are no friend requests"
+  },
+  "requestsAppearHere": "Friend requests appear here",
+  "@requestsAppearHere": {
+    "description": "Empty state subtitle for no requests"
+  },
+  "searchUsersHint": "Search users...",
+  "@searchUsersHint": {
+    "description": "Search input placeholder"
+  },
+  "startSearching": "Start searching",
+  "@startSearching": {
+    "description": "Empty state title for search"
+  },
+  "typeInSearchBar": "Type in the search bar above",
+  "@typeInSearchBar": {
+    "description": "Empty state subtitle for search"
+  },
+  "noResults": "No results",
+  "@noResults": {
+    "description": "Empty state title when search returns no results"
+  },
+  "tryDifferentName": "Try a different name",
+  "@tryDifferentName": {
+    "description": "Empty state subtitle for no search results"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status label"
+  },
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status label"
+  },
+  "friendRequestSent": "Friend request sent",
+  "@friendRequestSent": {
+    "description": "Success message after sending friend request"
+  },
+  "friendRequestAccepted": "Friend request accepted",
+  "@friendRequestAccepted": {
+    "description": "Success message after accepting friend request"
+  },
+  "requestRejected": "Request rejected",
+  "@requestRejected": {
+    "description": "Success message after rejecting friend request"
+  },
+  "removedFromFriends": "Removed from friends",
+  "@removedFromFriends": {
+    "description": "Success message after removing friend"
+  },
+  "addFriend": "Add",
+  "@addFriend": {
+    "description": "Add friend button"
+  },
+  "timetable": "Timetable",
+  "@timetable": {
+    "description": "Timetable screen title"
+  },
+  "addCourse": "Add Course",
+  "@addCourse": {
+    "description": "Button text for adding a course"
+  },
+  "editCourse": "Edit Course",
+  "@editCourse": {
+    "description": "Button text for editing a course"
+  },
+  "dayMonday": "Monday",
+  "@dayMonday": {
+    "description": "Monday full name"
+  },
+  "dayTuesday": "Tuesday",
+  "@dayTuesday": {
+    "description": "Tuesday full name"
+  },
+  "dayWednesday": "Wednesday",
+  "@dayWednesday": {
+    "description": "Wednesday full name"
+  },
+  "dayThursday": "Thursday",
+  "@dayThursday": {
+    "description": "Thursday full name"
+  },
+  "dayFriday": "Friday",
+  "@dayFriday": {
+    "description": "Friday full name"
+  },
+  "daySaturday": "Saturday",
+  "@daySaturday": {
+    "description": "Saturday full name"
+  },
+  "daySunday": "Sunday",
+  "@daySunday": {
+    "description": "Sunday full name"
+  },
+  "dayMondayShort": "MON",
+  "@dayMondayShort": {
+    "description": "Monday short name"
+  },
+  "dayTuesdayShort": "TUE",
+  "@dayTuesdayShort": {
+    "description": "Tuesday short name"
+  },
+  "dayWednesdayShort": "WED",
+  "@dayWednesdayShort": {
+    "description": "Wednesday short name"
+  },
+  "dayThursdayShort": "THU",
+  "@dayThursdayShort": {
+    "description": "Thursday short name"
+  },
+  "dayFridayShort": "FRI",
+  "@dayFridayShort": {
+    "description": "Friday short name"
+  },
+  "daySaturdayShort": "SAT",
+  "@daySaturdayShort": {
+    "description": "Saturday short name"
+  },
+  "daySundayShort": "SUN",
+  "@daySundayShort": {
+    "description": "Sunday short name"
+  },
+  "semester": "Semester",
+  "@semester": {
+    "description": "Semester label"
+  },
+  "semesterSpring": "Spring",
+  "@semesterSpring": {
+    "description": "Spring semester name"
+  },
+  "semesterFall": "Fall",
+  "@semesterFall": {
+    "description": "Fall semester name"
+  },
+  "semesterSummer": "Summer",
+  "@semesterSummer": {
+    "description": "Summer semester name"
+  },
+  "semesterWinter": "Winter",
+  "@semesterWinter": {
+    "description": "Winter semester name"
+  },
+  "gpaCalculator": "GPA Calculator",
+  "@gpaCalculator": {
+    "description": "GPA Calculator title"
+  },
+  "creditHours": "Credit Hours",
+  "@creditHours": {
+    "description": "Credit hours label"
+  },
+  "credits": "credits",
+  "@credits": {
+    "description": "Credits text"
+  },
+  "calculateAndTrack": "Calculate and track",
+  "@calculateAndTrack": {
+    "description": "GPA calculator subtitle when empty"
+  },
+  "courseName": "Course Name",
+  "@courseName": {
+    "description": "Course name field label"
+  },
+  "courseNameHint": "e.g., Programming Fundamentals",
+  "@courseNameHint": {
+    "description": "Course name field hint"
+  },
+  "courseNameRequired": "Please enter course name",
+  "@courseNameRequired": {
+    "description": "Course name required validation message"
+  },
+  "professor": "Professor",
+  "@professor": {
+    "description": "Professor field label"
+  },
+  "professorHint": "e.g., Prof. Kim",
+  "@professorHint": {
+    "description": "Professor field hint"
+  },
+  "room": "Room / Location",
+  "@room": {
+    "description": "Room/location field label"
+  },
+  "roomHint": "e.g., Room 301",
+  "@roomHint": {
+    "description": "Room field hint"
+  },
+  "color": "Color",
+  "@color": {
+    "description": "Color selection label"
+  },
+  "colorDescription": "Choose a color to highlight the course",
+  "@colorDescription": {
+    "description": "Color selection description"
+  },
+  "startTime": "Start Time",
+  "@startTime": {
+    "description": "Start time label"
+  },
+  "endTime": "End Time",
+  "@endTime": {
+    "description": "End time label"
+  },
+  "selectDay": "Select Day",
+  "@selectDay": {
+    "description": "Day selection label"
+  },
+  "dayOfWeek": "Day of Week",
+  "@dayOfWeek": {
+    "description": "Day of week label"
+  },
+  "timeAndDay": "Time and Day",
+  "@timeAndDay": {
+    "description": "Time and day section title"
+  },
+  "basicInfo": "Basic Information",
+  "@basicInfo": {
+    "description": "Basic information section title"
+  },
+  "deleteCourse": "Delete Course",
+  "@deleteCourse": {
+    "description": "Delete course button text"
+  },
+  "confirmDeleteCourse": "Are you sure you want to delete this course?",
+  "@confirmDeleteCourse": {
+    "description": "Confirm delete course message"
+  },
+  "courseDeleted": "Course deleted",
+  "@courseDeleted": {
+    "description": "Course deleted success message"
+  },
+  "courseAdded": "Course added successfully",
+  "@courseAdded": {
+    "description": "Course added success message"
+  },
+  "courseUpdated": "Course updated",
+  "@courseUpdated": {
+    "description": "Course updated success message"
+  },
+  "saveChanges": "Save Changes",
+  "@saveChanges": {
+    "description": "Save changes button text"
+  },
+  "noCoursesAdded": "No courses added",
+  "@noCoursesAdded": {
+    "description": "Empty state title when no courses"
+  },
+  "noCoursesDescription": "Add your courses to create\na weekly schedule",
+  "@noCoursesDescription": {
+    "description": "Empty state description when no courses"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading state text"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh tooltip"
+  },
+  "myTimetables": "My Timetables",
+  "@myTimetables": {
+    "description": "My timetables sheet title"
+  },
+  "createNewTimetable": "Create New Timetable",
+  "@createNewTimetable": {
+    "description": "Create new timetable button text"
+  },
+  "untitledTimetable": "Untitled Timetable",
+  "@untitledTimetable": {
+    "description": "Default name for timetable without title"
+  },
+  "newCourse": "NEW COURSE",
+  "@newCourse": {
+    "description": "New course section label"
+  },
+  "editCourseTitle": "EDIT",
+  "@editCourseTitle": {
+    "description": "Edit course section label"
+  },
+  "createNewCourse": "Create a new course for your timetable",
+  "@createNewCourse": {
+    "description": "New course description"
+  },
+  "updateCourseInfo": "Update course information",
+  "@updateCourseInfo": {
+    "description": "Edit course description"
+  },
+  "conflict": "CONFLICT",
+  "@conflict": {
+    "description": "Time conflict label"
+  },
+  "confirmNewPassword": "Confirm New Password",
+  "@confirmNewPassword": {
+    "description": "Confirm new password field label"
+  },
+  "birthDate": "Birth Date",
+  "@birthDate": {
+    "description": "Birth date field label"
   }
 }

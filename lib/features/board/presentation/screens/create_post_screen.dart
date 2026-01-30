@@ -54,11 +54,13 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   }
 
   Future<void> _createPost() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
     if (_selectedBoard == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a board')));
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseSelectBoard)));
       return;
     }
 
@@ -95,7 +97,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
-      title: 'Create Post',
+      title: l10n.createPost,
       backgroundColor: Colors.transparent,
       padding: EdgeInsets.zero,
       body: Container(
@@ -122,7 +124,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   children: [
                     // Board Selection
-                    _buildBoardSelector(boards),
+                    _buildBoardSelector(context, boards),
 
                     const SizedBox(height: AppSpacing.lg),
 
@@ -133,14 +135,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       child: AppTextField(
                         controller: _titleController,
                         labelText: l10n.title,
-                        hintText: 'Write a clear, engaging title...',
+                        hintText: l10n.writeClearTitle,
                         maxLines: 2,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a title';
+                            return l10n.pleaseEnterTitle;
                           }
                           if (value.trim().length < 2) {
-                            return 'Title is too short';
+                            return l10n.titleTooShort;
                           }
                           return null;
                         },
@@ -156,11 +158,11 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       child: AppTextField(
                         controller: _contentController,
                         labelText: l10n.content,
-                        hintText: 'Share your thoughts...',
+                        hintText: l10n.shareYourThoughts,
                         maxLines: 8,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter some content';
+                            return l10n.pleaseEnterContent;
                           }
                           return null;
                         },
@@ -170,7 +172,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                     const SizedBox(height: AppSpacing.lg),
 
                     // Toggles
-                    _buildToggles(),
+                    _buildToggles(context),
 
                     const SizedBox(height: AppSpacing.xl),
                   ],
@@ -196,7 +198,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: AppButton(
-                          text: 'Post',
+                          text: l10n.post,
                           onPressed: _isLoading ? null : _createPost,
                           isLoading: _isLoading,
                           variant: ButtonVariant.primary,
@@ -213,14 +215,15 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     );
   }
 
-  Widget _buildBoardSelector(List<Board> boards) {
+  Widget _buildBoardSelector(BuildContext context, List<Board> boards) {
+    final l10n = AppLocalizations.of(context)!;
     return GlassContainer(
       borderColor: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Board',
+            l10n.board,
             style: AppTypography.body2.copyWith(
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.onSurface,
@@ -228,7 +231,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           ),
           const SizedBox(height: AppSpacing.md),
           if (boards.isEmpty)
-            const Text('No boards available. Please select a community first.')
+            Text(l10n.noBoardsAvailable)
           else
             Wrap(
               spacing: AppSpacing.sm,
@@ -267,21 +270,22 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     );
   }
 
-  Widget _buildToggles() {
+  Widget _buildToggles(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         _buildToggleItem(
           icon: Icons.visibility_off_outlined,
-          title: 'Post Anonymously',
-          subtitle: 'Hide your identity from others',
+          title: l10n.postAnonymously,
+          subtitle: l10n.hideIdentity,
           value: _isAnonymous,
           onChanged: (val) => setState(() => _isAnonymous = val),
         ),
         const SizedBox(height: AppSpacing.md),
         _buildToggleItem(
           icon: Icons.lock_outline,
-          title: 'Secret Post',
-          subtitle: 'Only visible to authorized users',
+          title: l10n.secretPost,
+          subtitle: l10n.onlyVisibleToAuthorized,
           value: _isSecret,
           onChanged: (val) => setState(() => _isSecret = val),
         ),

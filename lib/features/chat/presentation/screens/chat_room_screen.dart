@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
+import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
 import 'package:nonstop/features/chat/presentation/screens/fullscreen_image_viewer.dart';
@@ -70,55 +71,159 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.roomName ?? AppLocalizations.of(context).chat),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                _buildMessageList(state, currentUserId),
-                if (_showScrollToBottom)
-                  Positioned(
-                    right: 16,
-                    bottom: 16,
-                    child: FloatingActionButton.small(
-                      onPressed: _scrollToBottom,
-                      child: const Icon(Icons.keyboard_arrow_down),
-                    ),
-                  ),
-              ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          widget.roomName ?? AppLocalizations.of(context).chat,
+          style: AppTypography.headline4.copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
+          ),
+        ),
+        elevation: 0,
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+        shadowColor: AppColors.shadow,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.more_vert_rounded, size: 22),
+              color: AppColors.textSecondary,
+              onPressed: () {
+                // TODO: Show chat options
+              },
             ),
           ),
-          ChatInputBar(
-            onSend: (text) {
-              ref.read(chatRoomProvider(widget.roomId).notifier).sendMessage(text);
-            },
-            onAttachmentTap: () => _showImagePicker(context),
-            hintText: AppLocalizations.of(context).messageHint,
-          ),
         ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.background,
+              AppColors.surfaceVariant.withValues(alpha: 0.3),
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
+                children: [
+                  _buildMessageList(state, currentUserId),
+                  if (_showScrollToBottom)
+                    Positioned(
+                      right: 16,
+                      bottom: 16,
+                      child: TweenAnimationBuilder<double>(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOutCubic,
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: child,
+                          );
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: AppColors.primaryGradient,
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: FloatingActionButton.small(
+                            onPressed: _scrollToBottom,
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            child: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            ChatInputBar(
+              onSend: (text) {
+                ref.read(chatRoomProvider(widget.roomId).notifier).sendMessage(text);
+              },
+              onAttachmentTap: () => _showImagePicker(context),
+              hintText: AppLocalizations.of(context).messageHint,
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildMessageList(ChatRoomState state, int? currentUserId) {
     if (state.isLoading && state.messages.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading messages...',
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return ListView.builder(
       controller: _scrollController,
       reverse: true,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
       itemCount: state.messages.length + (state.isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         // Show loading indicator at end (top when reversed)
         if (state.isLoadingMore && index == state.messages.length) {
-          return const Center(
+          return Center(
             child: Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(),
+              padding: const EdgeInsets.all(16),
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                ),
+              ),
             ),
           );
         }
@@ -137,25 +242,40 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           isMessageRead = readStatus.values.any((lastRead) => lastRead >= message.id);
         }
 
-        return Column(
-          children: [
-            MessageBubble(
-              message: message,
-              isMe: isMe,
-              isRead: isMessageRead,
-              onImageTap: () {
-                if (message.type == MessageType.image) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => FullscreenImageViewer(imageUrl: message.content),
-                    ),
-                  );
-                }
-              },
-            ),
-            if (showDateSeparator) DateSeparator(date: message.sentAt),
-          ],
+        return TweenAnimationBuilder<double>(
+          key: ValueKey(message.id),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOutCubic,
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Opacity(
+              opacity: value,
+              child: Transform.translate(
+                offset: Offset(0, 15 * (1 - value)),
+                child: child,
+              ),
+            );
+          },
+          child: Column(
+            children: [
+              MessageBubble(
+                message: message,
+                isMe: isMe,
+                isRead: isMessageRead,
+                onImageTap: () {
+                  if (message.type == MessageType.image) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FullscreenImageViewer(imageUrl: message.content),
+                      ),
+                    );
+                  }
+                },
+              ),
+              if (showDateSeparator) DateSeparator(date: message.sentAt),
+            ],
+          ),
         );
       },
     );
@@ -182,43 +302,120 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
     showModalBottomSheet(
       context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.camera_alt, color: AppColors.primary),
-              title: Text(l10n.camera),
-              onTap: () async {
-                Navigator.pop(context);
-                final picker = ImagePicker();
-                final file = await picker.pickImage(
-                  source: ImageSource.camera,
-                  maxWidth: 1080,
-                  imageQuality: 85,
-                );
-                if (file != null) {
-                  notifier.sendImageMessage(file.path);
-                }
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.photo_library, color: AppColors.primary),
-              title: Text(l10n.gallery),
-              onTap: () async {
-                Navigator.pop(context);
-                final picker = ImagePicker();
-                final file = await picker.pickImage(
-                  source: ImageSource.gallery,
-                  maxWidth: 1080,
-                  imageQuality: 85,
-                );
-                if (file != null) {
-                  notifier.sendImageMessage(file.path);
-                }
-              },
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primary.withValues(alpha: 0.1),
+                        AppColors.tertiary.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.camera_alt_rounded,
+                    color: AppColors.primary,
+                    size: 24,
+                  ),
+                ),
+                title: Text(
+                  l10n.camera,
+                  style: AppTypography.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  'Take a photo',
+                  style: AppTypography.body2.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final file = await picker.pickImage(
+                    source: ImageSource.camera,
+                    maxWidth: 1080,
+                    imageQuality: 85,
+                  );
+                  if (file != null) {
+                    notifier.sendImageMessage(file.path);
+                  }
+                },
+              ),
+              const Divider(height: 1, indent: 72),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.tertiary.withValues(alpha: 0.1),
+                        AppColors.primary.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.photo_library_rounded,
+                    color: AppColors.tertiary,
+                    size: 24,
+                  ),
+                ),
+                title: Text(
+                  l10n.gallery,
+                  style: AppTypography.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  'Choose from gallery',
+                  style: AppTypography.body2.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final picker = ImagePicker();
+                  final file = await picker.pickImage(
+                    source: ImageSource.gallery,
+                    maxWidth: 1080,
+                    imageQuality: 85,
+                  );
+                  if (file != null) {
+                    notifier.sendImageMessage(file.path);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
