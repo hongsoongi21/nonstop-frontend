@@ -218,4 +218,18 @@ class BoardRepositoryImpl implements BoardRepository {
       return Left(e.toString());
     }
   }
+
+  @override
+  Future<Either<String, List<PostEntity>>> getMyPosts({
+    int page = 1,
+    int size = 20,
+  }) async {
+    try {
+      final result = await _dataSource.getMyPosts(page: page, size: size);
+      return Right(result);
+    } catch (e) {
+      log('getMyPosts error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
 }

@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
 import '../../../../shared/components/main_scaffold.dart' as scaffold;
+import '../../../board/domain/entities/post.entity.dart';
 import '../../domain/entities/user_profile.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile_filter_tabs.dart';
@@ -94,9 +95,13 @@ class ProfileScreen extends ConsumerWidget {
     stats,
   ) {
     final notifier = ref.read(profileProvider.notifier);
+    final myPostsAsync = ref.watch(myPostsProvider);
 
     return RefreshIndicator(
-      onRefresh: () => notifier.refresh(),
+      onRefresh: () async {
+        await notifier.refresh();
+        ref.invalidate(myPostsProvider);
+      },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -129,10 +134,49 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: AppSpacing.sm),
 
             // Posts List
-            ...MockPosts.posts.map((post) => ProfilePostCard(
-              post: post,
-              onTap: () => _onPostTapped(context, post),
-            )),
+            myPostsAsync.when(
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32),
+                  child: AppLoadingIndicator(),
+                ),
+              ),
+              error: (error, stack) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Text(
+                    '게시글을 불러오지 못했습니다',
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+              data: (posts) => posts.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Text(
+                          '작성한 게시글이 없습니다',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: posts.map((post) => ProfilePostCard(
+                        post: ProfilePost(
+                          title: post.title,
+                          preview: post.content,
+                          views: post.viewCount,
+                          likes: post.likeCount,
+                          comments: post.commentCount,
+                        ),
+                        onTap: () => _onRealPostTapped(context, post),
+                      )).toList(),
+                    ),
+            ),
 
             // Bottom padding
             SizedBox(height: AppSpacing.xxxl),
@@ -169,5 +213,10 @@ class ProfileScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Opened: ${post.title}')),
     );
+  }
+
+  void _onRealPostTapped(BuildContext context, PostEntity post) {
+    // Navigate to post detail screen
+    context.push('/board/post/${post.id}');
   }
 }
