@@ -38,8 +38,8 @@
 | Feature | Mock File | Provider Usage | Backend Status |
 |---------|-----------|----------------|----------------|
 | ~~**Chat**~~ | ~~`chat_api_mock.dart`~~ | ~~`chat_provider.dart:21`~~ | ✅ **완료** - Real API 연동 완료 |
-| **Profile** | `profile_api_mock.dart` | `profile_provider.dart:338` | 🔄 **진행 중** - `feat/profile-real-api` |
-| **Posts** | `profile_post_card.dart` (MockPosts) | `profile_screen.dart:130` | Board API 부분 완료 |
+| ~~**Profile**~~ | ~~`profile_api_mock.dart`~~ | ~~`profile_provider.dart:338`~~ | ✅ **완료** - Real API 연동 완료 |
+| ~~**Posts**~~ | ~~`profile_post_card.dart` (MockPosts)~~ | ~~`profile_screen.dart:130`~~ | ✅ **완료** - Real API 연동 완료 |
 
 ---
 
@@ -73,12 +73,18 @@
 - [x] Now uses `ChatApiImpl` with real backend (STOMP/Kafka)
 - [x] Full functionality: messages, images, read receipts, pagination
 
-### Profile Real API Migration (2026-01-30) - In Progress:
+### Profile Real API Migration (2026-01-30):
 - [x] Created `ProfileApiImpl` with real backend API calls
 - [x] Updated `profile_provider.dart` to use `ProfileApiImpl`
 - [x] Uses current user ID from auth provider
-- [ ] Settings API (backend pending) - using local defaults
-- [ ] Profile Stats API (backend pending) - using placeholder
+- [x] Settings API - using local defaults (backend pending)
+- [x] Profile Stats API - using placeholder (backend pending)
+
+### Posts Real API Migration (2026-01-30):
+- [x] Added `getMyPosts` to BoardRepository
+- [x] Added `myPostsProvider` in profile_provider.dart
+- [x] Updated profile_screen.dart to display real user posts
+- [x] Backend: Added GET /users/me/posts endpoint (PR pending)
 
 ---
 
@@ -86,7 +92,6 @@
 
 | Branch | Status | Notes |
 |--------|--------|-------|
-| `feat/profile-real-api` | In Progress | Profile real API integration |
 | `origin/dylan` | Not merged | Dev environment, Google sign-out |
 | `origin/feat/initial-stage` | Not merged | .vscode removal, profile stats |
 
@@ -113,7 +118,7 @@
 
 1. ~~**비밀번호 찾기 화면**~~ - ✅ Done (`feat/forgot-password-screen`)
 2. ~~**Chat Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-3. **Profile Mock → Real API** - 🔄 In Progress (`feat/profile-real-api`)
-4. **Posts Mock → Real API** - Board API 부분 완료, 연동 필요
+3. ~~**Profile Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
+4. ~~**Posts Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
 5. **FCM Push Notification** - Firebase already configured
 6. **i18n Language Support** - FE only, no backend dependency
