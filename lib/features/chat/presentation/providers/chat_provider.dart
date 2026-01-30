@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nonstop/core/config/env_config.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/network/dio_client.dart' show dioClientProvider;
 import 'package:nonstop/core/network/stomp_service.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart' hide dioClientProvider;
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
-import 'package:nonstop/features/chat/data/api/chat_api_mock.dart';
 import 'package:nonstop/features/chat/data/repository_impl/chat_repository_impl.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
@@ -21,10 +19,6 @@ final stompServiceProvider = Provider<StompService>((ref) {
 });
 
 final chatApiProvider = Provider<ChatApi>((ref) {
-  // Use Mock for development, Real API for production
-  if (EnvConfig.isDevelopment) {
-    return ChatApiMock();
-  }
   final dioClient = ref.read(dioClientProvider);
   return ChatApiImpl(dioClient);
 });
