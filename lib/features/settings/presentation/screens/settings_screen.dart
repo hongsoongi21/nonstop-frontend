@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
 import '../../../../shared/components/main_scaffold.dart' as scaffold;
+import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../profile/domain/entities/user_settings.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 
@@ -160,7 +163,63 @@ class SettingsScreen extends ConsumerWidget {
                 notifier.updatePrivacySettings(profileVisibility: value),
           ),
 
+          SizedBox(height: AppSpacing.xl),
+
+          // Account Section
+          _buildSectionHeader('Account'),
+          _buildLogoutButton(context, ref),
+
           SizedBox(height: AppSpacing.xxxl),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: EdgeInsets.only(bottom: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3), width: 1),
+      ),
+      child: ListTile(
+        leading: Icon(Icons.logout, color: AppColors.error),
+        title: Text(
+          'Logout',
+          style: AppTypography.bodyLarge.copyWith(
+            color: AppColors.error,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        trailing: Icon(Icons.chevron_right, color: AppColors.error),
+        onTap: () => _showLogoutDialog(context, ref),
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await ref.read(authProvider.notifier).signOut();
+              if (context.mounted) {
+                context.go(Routes.login);
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Logout'),
+          ),
         ],
       ),
     );
