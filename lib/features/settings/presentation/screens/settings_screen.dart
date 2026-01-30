@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -24,7 +25,7 @@ class SettingsScreen extends ConsumerWidget {
     final error = ref.watch(profileErrorProvider);
 
     return scaffold.AppScaffold(
-      title: 'Settings',
+      title: AppLocalizations.of(context)!.settings,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -43,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
             ? _buildErrorView(context, ref, error)
             : isLoaded && state.settings != null
             ? _buildSettingsView(context, ref, state.settings!)
-            : const Center(child: Text('Settings not loaded')),
+            : Center(child: Text(AppLocalizations.of(context)!.settingsNotLoaded)),
       ),
     );
   }
@@ -60,7 +61,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           SizedBox(height: AppSpacing.md),
           Text(
-            'Error occurred',
+            AppLocalizations.of(context)!.errorOccurred,
             style: AppTypography.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -76,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.lg),
           ElevatedButton(
             onPressed: () => ref.read(profileProvider.notifier).refresh(),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -96,59 +97,65 @@ class SettingsScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Notifications Section
-          _buildSectionHeader('Notifications'),
+          _buildSectionHeader(AppLocalizations.of(context)!.notifications),
           SizedBox(height: AppSpacing.sm),
           _buildSettingsCard(
             children: [
               _buildSwitchTile(
+                context: context,
                 icon: Icons.notifications_active_outlined,
-                title: 'Push Notifications',
-                subtitle: 'Receive push notifications on this device',
+                title: AppLocalizations.of(context)!.pushNotifications,
+                subtitle: AppLocalizations.of(context)!.pushNotificationsSubtitle,
                 value: settings.enablePushNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(push: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.email_outlined,
-                title: 'Email Notifications',
-                subtitle: 'Get updates via email',
+                title: AppLocalizations.of(context)!.emailNotifications,
+                subtitle: AppLocalizations.of(context)!.emailNotificationsSubtitle,
                 value: settings.enableEmailNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(email: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.dashboard_outlined,
-                title: 'Board Notifications',
-                subtitle: 'New posts and comments',
+                title: AppLocalizations.of(context)!.boardNotifications,
+                subtitle: AppLocalizations.of(context)!.boardNotificationsSubtitle,
                 value: settings.enableBoardNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(board: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.chat_bubble_outline,
-                title: 'Chat Notifications',
-                subtitle: 'New messages and replies',
+                title: AppLocalizations.of(context)!.chatNotifications,
+                subtitle: AppLocalizations.of(context)!.chatNotificationsSubtitle,
                 value: settings.enableChatNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(chat: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.calendar_today_outlined,
-                title: 'Timetable Notifications',
-                subtitle: 'Class reminders and updates',
+                title: AppLocalizations.of(context)!.timetableNotifications,
+                subtitle: AppLocalizations.of(context)!.timetableNotificationsSubtitle,
                 value: settings.enableTimetableNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(timetable: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.volume_up_outlined,
-                title: 'Sound Notifications',
-                subtitle: 'Play sound for notifications',
+                title: AppLocalizations.of(context)!.soundNotifications,
+                subtitle: AppLocalizations.of(context)!.soundNotificationsSubtitle,
                 value: settings.enableSoundNotifications,
                 onChanged: (value) =>
                     notifier.updateNotificationSettings(sound: value),
@@ -159,41 +166,45 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.xl),
 
           // Privacy Section
-          _buildSectionHeader('Privacy'),
+          _buildSectionHeader(AppLocalizations.of(context)!.privacy),
           SizedBox(height: AppSpacing.sm),
           _buildSettingsCard(
             children: [
               _buildSwitchTile(
+                context: context,
                 icon: Icons.person_add_outlined,
-                title: 'Allow Friend Requests',
-                subtitle: 'Let others send you friend requests',
+                title: AppLocalizations.of(context)!.allowFriendRequests,
+                subtitle: AppLocalizations.of(context)!.allowFriendRequestsSubtitle,
                 value: settings.allowFriendRequests,
                 onChanged: (value) =>
                     notifier.updatePrivacySettings(friendRequests: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.circle,
-                title: 'Show Online Status',
-                subtitle: 'Let friends see when you\'re online',
+                title: AppLocalizations.of(context)!.showOnlineStatus,
+                subtitle: AppLocalizations.of(context)!.showOnlineStatusSubtitle,
                 value: settings.showOnlineStatus,
                 onChanged: (value) =>
                     notifier.updatePrivacySettings(onlineStatus: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.message_outlined,
-                title: 'Allow Message Requests',
-                subtitle: 'Receive messages from non-friends',
+                title: AppLocalizations.of(context)!.allowMessageRequests,
+                subtitle: AppLocalizations.of(context)!.allowMessageRequestsSubtitle,
                 value: settings.allowMessageRequests,
                 onChanged: (value) =>
                     notifier.updatePrivacySettings(messageRequests: value),
               ),
               _buildDivider(),
               _buildSwitchTile(
+                context: context,
                 icon: Icons.public,
-                title: 'Show Profile to Strangers',
-                subtitle: 'Make your profile visible to everyone',
+                title: AppLocalizations.of(context)!.showProfileToStrangers,
+                subtitle: AppLocalizations.of(context)!.showProfileToStrangersSubtitle,
                 value: settings.showProfileToStrangers,
                 onChanged: (value) =>
                     notifier.updatePrivacySettings(profileVisibility: value),
@@ -204,7 +215,7 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.xl),
 
           // Account Section
-          _buildSectionHeader('Account'),
+          _buildSectionHeader(AppLocalizations.of(context)!.account),
           SizedBox(height: AppSpacing.sm),
           _buildSettingsCard(
             children: [
@@ -253,7 +264,7 @@ class SettingsScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Logout',
+                    AppLocalizations.of(context)!.logout,
                     style: AppTypography.bodyLarge.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -261,7 +272,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: AppSpacing.xxs),
                   Text(
-                    'Sign out of your account',
+                    AppLocalizations.of(context)!.logoutSubtitle,
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -281,15 +292,16 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        title: Text(l10n.logout),
+        content: Text(l10n.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -300,7 +312,7 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Logout'),
+            child: Text(l10n.logout),
           ),
         ],
       ),
@@ -342,6 +354,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSwitchTile({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,

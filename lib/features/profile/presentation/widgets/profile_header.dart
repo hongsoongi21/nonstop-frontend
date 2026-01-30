@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -62,7 +63,7 @@ class ProfileHeader extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Profile',
+                        AppLocalizations.of(context)!.profile,
                         style: AppTypography.headlineMedium.copyWith(
                           fontWeight: FontWeight.w800,
                           color: Colors.white,

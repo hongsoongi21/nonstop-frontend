@@ -1,0 +1,496 @@
+{
+  "@@locale": "en",
+  "helloWorld": "Hello World!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "Edit Post",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "Delete Post",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "Are you sure you want to delete this post?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "Edit Comment",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "Delete Comment",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "Are you sure you want to delete this comment?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "University verification required",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "University verification required to access this community",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "Title",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "Content",
+  "@content": {
+    "description": "Label for content field"
+  },
+  "selectCommunity": "Select Community",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "No conversations yet",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Tap + to start a conversation",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Failed to load conversations",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "New Chat",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Search users...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Start Chat",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Create Group",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Group Name",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Enter group name",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Connected",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Connecting...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Disconnected - Tap to reconnect",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Type a message...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "Posts",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "Comments",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "Friends",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "All Posts",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "Bookmarks",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications section header"
+  },
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "Account",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "Push Notifications",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "Receive push notifications on this device",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "Email Notifications",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Get updates via email",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "Board Notifications",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "New posts and comments",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "Chat Notifications",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "New messages and replies",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "Timetable Notifications",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "Class reminders and updates",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "Sound Notifications",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "Play sound for notifications",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "Allow Friend Requests",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "Let others send you friend requests",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "Show Online Status",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "Let friends see when you're online",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "Allow Message Requests",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "Receive messages from non-friends",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "Show Profile to Strangers",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "Make your profile visible to everyone",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "Sign out of your account",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "Are you sure you want to logout?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "Error occurred",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  "notificationsComingSoon": "Notifications - coming soon!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "Edit Profile - coming soon!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "filterPrefix": "Filter: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "Profile information not loaded",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "Settings not loaded",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "Failed to load posts",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "No posts yet",
+  "@noPostsYet": {
+    "description": "No posts message"
+  },
+  "markAllAsRead": "Mark all as read",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "No notifications yet",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "New notifications will appear here",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Failed to load notifications",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "board": "Board",
+  "@board": {
+    "description": "Board screen title"
+  },
+  "write": "Write",
+  "@write": {
+    "description": "Write button text"
+  },
+  "searchPosts": "Search posts...",
+  "@searchPosts": {
+    "description": "Search posts placeholder"
+  },
+  "pleaseSelectBoardFirst": "Please select a board first",
+  "@pleaseSelectBoardFirst": {
+    "description": "Message when no board is selected"
+  },
+  "noPostsInBoard": "No posts in {boardName} yet",
+  "@noPostsInBoard": {
+    "description": "Empty state message for no posts in board",
+    "placeholders": {
+      "boardName": {
+        "type": "String"
+      }
+    }
+  },
+  "beFirstToPost": "Be the first to start a conversation!",
+  "@beFirstToPost": {
+    "description": "Empty state encouragement message"
+  },
+  "createFirstPost": "Create First Post",
+  "@createFirstPost": {
+    "description": "Button to create first post"
+  },
+  "student": "Student",
+  "@student": {
+    "description": "Student badge label"
+  },
+  "post": "Post",
+  "@post": {
+    "description": "Post label/button"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "anonymous": "Anonymous",
+  "@anonymous": {
+    "description": "Anonymous user label"
+  },
+  "replyingToComment": "Replying to comment",
+  "@replyingToComment": {
+    "description": "Label when replying to a comment"
+  },
+  "noCommentsYet": "No comments yet",
+  "@noCommentsYet": {
+    "description": "Empty state for no comments"
+  },
+  "beFirstToComment": "Be the first to share your thoughts",
+  "@beFirstToComment": {
+    "description": "Empty state encouragement for comments"
+  },
+  "writeComment": "Write a comment...",
+  "@writeComment": {
+    "description": "Comment input placeholder"
+  },
+  "postAnonymously": "Post Anonymously",
+  "@postAnonymously": {
+    "description": "Anonymous posting option"
+  },
+  "comment": "Comment",
+  "@comment": {
+    "description": "Comment button label"
+  },
+  "like": "Like",
+  "@like": {
+    "description": "Like button label"
+  },
+  "reply": "Reply",
+  "@reply": {
+    "description": "Reply button label"
+  },
+  "createPost": "Create Post",
+  "@createPost": {
+    "description": "Create post screen title"
+  },
+  "noBoardsAvailable": "No boards available. Please select a community first.",
+  "@noBoardsAvailable": {
+    "description": "Message when no boards are available"
+  },
+  "writeClearTitle": "Write a clear, engaging title...",
+  "@writeClearTitle": {
+    "description": "Title field placeholder"
+  },
+  "pleaseEnterTitle": "Please enter a title",
+  "@pleaseEnterTitle": {
+    "description": "Title validation error"
+  },
+  "titleTooShort": "Title is too short",
+  "@titleTooShort": {
+    "description": "Title length validation error"
+  },
+  "shareYourThoughts": "Share your thoughts...",
+  "@shareYourThoughts": {
+    "description": "Content field placeholder"
+  },
+  "pleaseEnterContent": "Please enter some content",
+  "@pleaseEnterContent": {
+    "description": "Content validation error"
+  },
+  "pleaseSelectBoard": "Please select a board",
+  "@pleaseSelectBoard": {
+    "description": "Board selection error message"
+  },
+  "hideIdentity": "Hide your identity from others",
+  "@hideIdentity": {
+    "description": "Anonymous posting description"
+  },
+  "secretPost": "Secret Post",
+  "@secretPost": {
+    "description": "Secret post option"
+  },
+  "onlyVisibleToAuthorized": "Only visible to authorized users",
+  "@onlyVisibleToAuthorized": {
+    "description": "Secret post description"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button label"
+  }
+}

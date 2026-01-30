@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../data/dto/semester_dto.dart';
 
 part 'semester.freezed.dart';
@@ -36,16 +38,18 @@ class Semester with _$Semester {
 
 /// Extension for SemesterType display names
 extension SemesterTypeExtension on SemesterType {
-  String get displayName {
+  /// Get localized display name
+  String displayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (this) {
       case SemesterType.first:
-        return 'Bahor'; // Spring
+        return l10n.semesterSpring; // Spring
       case SemesterType.second:
-        return 'Kuz'; // Fall
+        return l10n.semesterFall; // Fall
       case SemesterType.summer:
-        return 'Yoz'; // Summer
+        return l10n.semesterSummer; // Summer
       case SemesterType.winter:
-        return 'Qish'; // Winter
+        return l10n.semesterWinter; // Winter
     }
   }
 }

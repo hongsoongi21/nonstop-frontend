@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -40,7 +41,7 @@ class ProfileScreen extends ConsumerWidget {
                 ? _buildErrorView(context, ref, error)
                 : isLoaded
                     ? _buildProfileView(context, ref, state.profile!, state.stats!)
-                    : const Center(child: Text('Profil ma\'lumotlari yuklanmadi')),
+                    : Center(child: Text(AppLocalizations.of(context)!.profileNotLoaded)),
       ),
     );
   }
@@ -57,7 +58,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           SizedBox(height: AppSpacing.md),
           Text(
-            'Error occurred',
+            AppLocalizations.of(context)!.errorOccurred,
             style: AppTypography.headlineSmall.copyWith(
               color: AppColors.textPrimary,
             ),
@@ -73,7 +74,7 @@ class ProfileScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.lg),
           ElevatedButton(
             onPressed: () => ref.read(profileProvider.notifier).refresh(),
-            child: const Text('Retry'),
+            child: Text(AppLocalizations.of(context)!.retry),
           ),
         ],
       ),
@@ -133,7 +134,7 @@ class ProfileScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(32),
                   child: Text(
-                    '게시글을 불러오지 못했습니다',
+                    AppLocalizations.of(context)!.postsLoadError,
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -145,7 +146,7 @@ class ProfileScreen extends ConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          '작성한 게시글이 없습니다',
+                          AppLocalizations.of(context)!.noPostsYet,
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.textSecondary,
                           ),
@@ -176,7 +177,7 @@ class ProfileScreen extends ConsumerWidget {
 
   void _showNotifications(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Notifications - coming soon!')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.notificationsComingSoon)),
     );
   }
 
@@ -186,14 +187,15 @@ class ProfileScreen extends ConsumerWidget {
 
   void _navigateToEditProfile(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Edit Profile - coming soon!')),
+      SnackBar(content: Text(AppLocalizations.of(context)!.editProfileComingSoon)),
     );
   }
 
   void _onFilterTabChanged(BuildContext context, int index) {
-    final filters = ['All Posts', 'Comments', 'Bookmarks', 'Favorites'];
+    final l10n = AppLocalizations.of(context)!;
+    final filters = [l10n.allPosts, l10n.comments, l10n.bookmarks, l10n.favorites];
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Filter: ${filters[index]}')),
+      SnackBar(content: Text('${l10n.filterPrefix}${filters[index]}')),
     );
   }
 

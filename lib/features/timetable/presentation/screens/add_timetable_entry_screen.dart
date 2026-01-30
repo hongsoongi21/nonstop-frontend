@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -168,8 +169,8 @@ class _AddTimetableEntryScreenState
           SnackBar(
             content: Text(
               widget.initialEntry != null
-                  ? 'Dars o\'zgartirildi'
-                  : 'Dars muvaffaqiyatli qo\'shildi',
+                  ? AppLocalizations.of(context)!.courseUpdated
+                  : AppLocalizations.of(context)!.courseAdded,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -179,7 +180,7 @@ class _AddTimetableEntryScreenState
           SnackBar(
             content: Text(
               ref.read(timetableManagementProvider).error ??
-                  'Xatolik yuz berdi',
+                  AppLocalizations.of(context)!.errorOccurred,
             ),
             backgroundColor: AppColors.error,
           ),
@@ -192,10 +193,11 @@ class _AddTimetableEntryScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEditing = widget.initialEntry != null;
 
     return AppScaffold(
-      title: isEditing ? 'Darsni tahrirlash' : 'Yangi dars qo\'shish',
+      title: isEditing ? l10n.editCourse : l10n.addCourse,
       showBackButton: true,
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -214,7 +216,7 @@ class _AddTimetableEntryScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isEditing ? 'TAHRIRLASH' : 'YANGI DARS',
+                      isEditing ? l10n.editCourseTitle : l10n.newCourse,
                       style: AppTypography.overline.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
@@ -224,8 +226,8 @@ class _AddTimetableEntryScreenState
                     const SizedBox(height: 4),
                     Text(
                       isEditing
-                          ? 'Dars ma\'lumotlarini yangilang'
-                          : 'Dars jadvali uchun yangi dars yarating',
+                          ? l10n.updateCourseInfo
+                          : l10n.createNewCourse,
                       style: AppTypography.body2.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -258,28 +260,28 @@ class _AddTimetableEntryScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Asosiy ma\'lumotlar', Icons.book),
+                    _buildSectionTitle(l10n.basicInfo, Icons.book),
                     const SizedBox(height: AppSpacing.lg),
                     _buildTextField(
                       controller: _subjectController,
-                      label: 'Fan nomi',
-                      hint: 'Masalan: Dasturlash asoslari',
+                      label: l10n.courseName,
+                      hint: l10n.courseNameHint,
                       icon: Icons.school_outlined,
                       validator: (v) =>
-                          v == null || v.isEmpty ? 'Fan nomini kiriting' : null,
+                          v == null || v.isEmpty ? l10n.courseNameRequired : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _buildTextField(
                       controller: _professorController,
-                      label: 'O\'qituvchi',
-                      hint: 'Masalan: Prof. Kim',
+                      label: l10n.professor,
+                      hint: l10n.professorHint,
                       icon: Icons.person_outline,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     _buildTextField(
                       controller: _placeController,
-                      label: 'Xona / Joy',
-                      hint: 'Masalan: 301-xona',
+                      label: l10n.room,
+                      hint: l10n.roomHint,
                       icon: Icons.location_on_outlined,
                     ),
                   ],
@@ -310,7 +312,7 @@ class _AddTimetableEntryScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Vaqt va Kun', Icons.schedule),
+                    _buildSectionTitle(l10n.timeAndDay, Icons.schedule),
                     const SizedBox(height: AppSpacing.lg),
 
                     // Day Selector with clean design
@@ -326,7 +328,7 @@ class _AddTimetableEntryScreenState
                       child: DropdownButtonFormField<DayOfWeek>(
                         value: _selectedDay,
                         decoration: InputDecoration(
-                          labelText: 'Hafta kuni',
+                          labelText: l10n.dayOfWeek,
                           labelStyle: AppTypography.labelSmall.copyWith(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -362,7 +364,7 @@ class _AddTimetableEntryScreenState
                           return DropdownMenuItem(
                             value: day,
                             child: Text(
-                              day.displayName,
+                              day.displayName(context),
                               style: AppTypography.body2.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -382,7 +384,7 @@ class _AddTimetableEntryScreenState
                       children: [
                         Expanded(
                           child: _buildTimePicker(
-                            label: 'Boshlanish',
+                            label: l10n.startTime,
                             time: _startTime,
                             onTap: () => _selectTime(context, true),
                           ),
@@ -397,7 +399,7 @@ class _AddTimetableEntryScreenState
                         ),
                         Expanded(
                           child: _buildTimePicker(
-                            label: 'Tugash',
+                            label: l10n.endTime,
                             time: _endTime,
                             onTap: () => _selectTime(context, false),
                           ),
@@ -432,10 +434,10 @@ class _AddTimetableEntryScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionTitle('Rang', Icons.palette_outlined),
+                    _buildSectionTitle(l10n.color, Icons.palette_outlined),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
-                      'Darsni ajratib ko\'rsatish uchun rang tanlang',
+                      l10n.colorDescription,
                       style: AppTypography.caption.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -539,7 +541,7 @@ class _AddTimetableEntryScreenState
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                isEditing ? 'O\'zgarishlarni saqlash' : 'Saqlash',
+                                isEditing ? l10n.saveChanges : l10n.save,
                                 style: AppTypography.button.copyWith(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
@@ -576,7 +578,7 @@ class _AddTimetableEntryScreenState
                           const Icon(Icons.delete_outline, size: 22),
                           const SizedBox(width: 10),
                           Text(
-                            'Darsni o\'chirish',
+                            l10n.deleteCourse,
                             style: AppTypography.button.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -597,20 +599,21 @@ class _AddTimetableEntryScreenState
   }
 
   void _deleteEntry() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Darsni o\'chirish'),
-        content: const Text('Haqiqatan ham ushbu darsni o\'chirmoqchimisiz?'),
+        title: Text(l10n.deleteCourse),
+        content: Text(l10n.confirmDeleteCourse),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Bekor qilish'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('O\'chirish'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -628,8 +631,8 @@ class _AddTimetableEntryScreenState
       if (success && mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Dars o\'chirildi'),
+          SnackBar(
+            content: Text(l10n.courseDeleted),
             backgroundColor: AppColors.success,
           ),
         );
@@ -638,7 +641,7 @@ class _AddTimetableEntryScreenState
           SnackBar(
             content: Text(
               ref.read(timetableManagementProvider).error ??
-                  'Xatolik yuz berdi',
+                  l10n.errorOccurred,
             ),
             backgroundColor: AppColors.error,
           ),

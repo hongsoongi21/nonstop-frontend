@@ -57,12 +57,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.surface,
-      appBar: _buildAppBar(),
-      body: _buildBody(post, comments, postId),
+      appBar: _buildAppBar(context),
+      body: _buildBody(context, post, comments, postId),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       backgroundColor: AppColors.surface,
       elevation: 0,
@@ -73,7 +74,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         onPressed: () => context.pop(),
       ),
       title: Text(
-        'Post',
+        l10n.post,
         style: AppTypography.headline5.copyWith(
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
@@ -99,7 +100,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildBody(PostEntity post, List<CommentEntity> comments, int postId) {
+  Widget _buildBody(BuildContext context, PostEntity post, List<CommentEntity> comments, int postId) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         Expanded(
@@ -108,7 +110,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildPostHeader(post),
+                _buildPostHeader(context, post),
                 const SizedBox(height: 20),
                 _buildPostContent(post),
                 const SizedBox(height: 24),
@@ -125,7 +127,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildActionButtons(post, postId),
+                _buildActionButtons(context, post, postId),
                 const SizedBox(height: 8),
                 Container(
                   height: 1,
@@ -140,7 +142,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildCommentsSection(comments, postId),
+                _buildCommentsSection(context, comments, postId),
               ],
             ),
           ),
@@ -166,7 +168,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Replying to comment',
+                  l10n.replyingToComment,
                   style: AppTypography.body2.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,
@@ -188,7 +190,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               ],
             ),
           ),
-        _buildInputArea(postId),
+        _buildInputArea(context, postId),
       ],
     );
   }
@@ -282,7 +284,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildActionButtons(PostEntity post, int postId) {
+  Widget _buildActionButtons(BuildContext context, PostEntity post, int postId) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
@@ -290,7 +293,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         children: [
           _ActionButton(
             icon: Icons.chat_bubble_outline_rounded,
-            label: 'Comment',
+            label: l10n.comment,
             onTap: () {
               setState(() => _replyingToId = null);
               _commentFocusNode.requestFocus();
@@ -301,7 +304,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             icon: post.isLiked
                 ? Icons.favorite_rounded
                 : Icons.favorite_border_rounded,
-            label: 'Like',
+            label: l10n.like,
             color: post.isLiked ? AppColors.primary : null,
             isActive: post.isLiked,
             onTap: () =>
@@ -310,7 +313,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           const SizedBox(width: 24),
           _ActionButton(
             icon: Icons.bookmark_border_rounded,
-            label: 'Save',
+            label: l10n.save,
             onTap: () {},
           ),
         ],
@@ -318,14 +321,15 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildCommentsSection(List<CommentEntity> comments, int postId) {
+  Widget _buildCommentsSection(BuildContext context, List<CommentEntity> comments, int postId) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Comments',
+              l10n.comments,
               style: AppTypography.headline4.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
@@ -362,7 +366,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'No comments yet',
+                    l10n.noCommentsYet,
                     style: AppTypography.body1.copyWith(
                       color: AppColors.textTertiary,
                       fontWeight: FontWeight.w500,
@@ -370,7 +374,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Be the first to share your thoughts',
+                    l10n.beFirstToComment,
                     style: AppTypography.body2.copyWith(
                       color: AppColors.textTertiary,
                     ),
@@ -424,7 +428,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return list;
   }
 
-  Widget _buildPostHeader(PostEntity post) {
+  Widget _buildPostHeader(BuildContext context, PostEntity post) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -464,7 +469,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                post.isWriterAnonymous ? 'Anonymous' : post.writerNickname,
+                post.isWriterAnonymous ? l10n.anonymous : post.writerNickname,
                 style: AppTypography.body1.copyWith(
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -484,7 +489,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      'Student',
+                      l10n.student,
                       style: AppTypography.caption.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
@@ -524,10 +529,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(value: 'edit', child: Text('Edit')),
-              const PopupMenuItem(
+              PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+              PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete', style: TextStyle(color: AppColors.error)),
+                child: Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
               ),
             ],
           )
@@ -677,7 +682,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildInputArea(int postId) {
+  Widget _buildInputArea(BuildContext context, int postId) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       decoration: BoxDecoration(
@@ -729,7 +735,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 InkWell(
                   onTap: () => setState(() => _isAnonymous = !_isAnonymous),
                   child: Text(
-                    'Post Anonymously',
+                    l10n.postAnonymously,
                     style: AppTypography.body2.copyWith(
                       color: _isAnonymous
                           ? AppColors.textPrimary
@@ -761,7 +767,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       maxLines: null,
                       style: AppTypography.body2,
                       decoration: InputDecoration(
-                        hintText: 'Write a comment...',
+                        hintText: l10n.writeComment,
                         hintStyle: AppTypography.body2.copyWith(
                           color: AppColors.textTertiary,
                         ),
@@ -901,6 +907,7 @@ class _CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.only(left: isReply ? 48.0 : 0, bottom: 16),
       child: Row(
@@ -961,7 +968,7 @@ class _CommentItem extends StatelessWidget {
                           Expanded(
                             child: Text(
                               comment.isWriterAnonymous
-                                  ? 'Anonymous'
+                                  ? l10n.anonymous
                                   : comment.writerNickname,
                               style: AppTypography.body2.copyWith(
                                 fontWeight: FontWeight.w700,
@@ -1013,7 +1020,7 @@ class _CommentAuthorMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return PopupMenuButton<String>(
       icon: Icon(
         Icons.more_horiz_rounded,
@@ -1061,6 +1068,7 @@ class _CommentStatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(left: 4),
       child: Row(
@@ -1122,7 +1130,7 @@ class _CommentStatsRow extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Reply',
+                      l10n.reply,
                       style: AppTypography.caption.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textTertiary,

@@ -34,6 +34,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final boardState = ref.watch(boardProvider);
     final posts = boardState.posts;
     final isLoading = boardState.isLoading;
@@ -45,7 +46,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     final unreadCount = ref.watch(unreadNotificationCountProvider);
 
     return AppScaffold(
-      title: 'Board',
+      title: l10n.board,
       showAppBar: false,
       backgroundColor: AppColors.surface,
       padding: EdgeInsets.zero,
@@ -78,7 +79,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Board',
+                                l10n.board,
                                 style: AppTypography.headline4.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: AppColors.textPrimary,
@@ -122,7 +123,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                         Flexible(
                                           child: Text(
                                             selectedCommunity?.name ??
-                                                'Select Community',
+                                                l10n.selectCommunity,
                                             style: AppTypography.body2.copyWith(
                                               color: AppColors.primary,
                                               fontWeight: FontWeight.w600,
@@ -226,8 +227,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                   context.go(Routes.boardCreatePath());
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Please select a board first'),
+                                    SnackBar(
+                                      content: Text(l10n.pleaseSelectBoardFirst),
                                     ),
                                   );
                                 }
@@ -258,7 +259,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Write',
+                                      l10n.write,
                                       style: AppTypography.button.copyWith(
                                         color: AppColors.textOnPrimary,
                                         fontWeight: FontWeight.w700,
@@ -383,7 +384,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           fontSize: 15,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Search posts...',
+                          hintText: l10n.searchPosts,
                           hintStyle: AppTypography.body2.copyWith(
                             color: AppColors.textSecondary.withValues(alpha: 0.6),
                             fontSize: 15,
@@ -462,7 +463,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                       onRefresh: () =>
                           ref.read(boardProvider.notifier).refreshPosts(),
                       child: posts.isEmpty && !isLoading
-                          ? _buildEmptyState(selectedBoard?.name ?? 'Board')
+                          ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
                           : ListView.builder(
                               padding: const EdgeInsets.only(
                                 left: AppSpacing.lg,
@@ -649,7 +650,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     );
   }
 
-  Widget _buildEmptyState(String boardName) {
+  Widget _buildEmptyState(BuildContext context, String boardName) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -680,7 +682,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                'No posts in $boardName yet',
+                l10n.noPostsInBoard(boardName),
                 style: AppTypography.headline6.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.3,
@@ -689,7 +691,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'Be the first to start a conversation!',
+                l10n.beFirstToPost,
                 style: AppTypography.body2.copyWith(
                   color: AppColors.textSecondary,
                   fontSize: 15,
@@ -701,7 +703,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ElevatedButton.icon(
                 onPressed: () => context.go(Routes.boardCreatePath()),
                 icon: const Icon(Icons.add_rounded, size: 20),
-                label: const Text('Create First Post'),
+                label: Text(l10n.createFirstPost),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: AppColors.textOnPrimary,

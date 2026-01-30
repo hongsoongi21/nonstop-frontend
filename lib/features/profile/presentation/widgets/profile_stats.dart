@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -53,7 +54,7 @@ class ProfileStats extends StatelessWidget {
               children: [
                 _StatItem(
                   value: '24',
-                  label: 'Posts',
+                  label: AppLocalizations.of(context)!.posts,
                   color: AppColors.primary,
                 ),
                 Container(
@@ -73,7 +74,7 @@ class ProfileStats extends StatelessWidget {
                 ),
                 _StatItem(
                   value: '156',
-                  label: 'Comments',
+                  label: AppLocalizations.of(context)!.comments,
                   color: AppColors.tertiary,
                 ),
                 Container(
@@ -93,7 +94,7 @@ class ProfileStats extends StatelessWidget {
                 ),
                 _StatItem(
                   value: '48',
-                  label: 'Friends',
+                  label: AppLocalizations.of(context)!.friends,
                   color: AppColors.secondary,
                 ),
               ],
@@ -138,7 +139,7 @@ class ProfileStats extends StatelessWidget {
                   ),
                   SizedBox(width: AppSpacing.sm),
                   Text(
-                    'Edit Profile',
+                    AppLocalizations.of(context)!.editProfile,
                     style: AppTypography.button.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,

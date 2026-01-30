@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -134,8 +135,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 데이터가 아직 로드되지 않았거나 에러인 경우 처리
     if (!policiesAsync.hasValue) {
        ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please wait for policies to load'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseWaitPoliciesLoad),
           backgroundColor: AppColors.error,
         ),
       );
@@ -148,10 +149,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
     if (!isAllMandatoryAgreed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Majburiy shartlarni qabul qiling'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.agreeMandatoryPolicies),
           backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -160,10 +161,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 3. 대학교 선택 여부 확인
     if (_selectedUniversityId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Universitetni tanlang'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectUniversity),
           backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -172,10 +173,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     // 4. 생년월일 검증
     if (_selectedBirthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('생년월일을 선택해주세요'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseSelectBirthDate),
           backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
       return;
@@ -185,8 +186,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     final authState = ref.read(authProvider);
     if (!authState.isEmailVerified) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Iltimos, avval pochtangizni tasdiqlang'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.pleaseVerifyEmail),
           backgroundColor: AppColors.error,
         ),
       );
@@ -211,7 +212,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       // 실패 시 에러 메시지 노출
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authState.failure?.message ?? '회원가입 실패'),
+          content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.signupFailed),
           backgroundColor: AppColors.error,
         ),
       );
@@ -227,8 +228,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     final email = _emailController.text.trim();
     if (email.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.validationEmailInvalid),
           backgroundColor: AppColors.error,
         ),
       );
@@ -241,15 +242,15 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       if (authState.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authState.failure?.message ?? 'Failed to send code'),
+            content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.failedToSendCode),
             backgroundColor: AppColors.error,
           ),
         );
       } else {
         _startTimer(); // 타이머 시작
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Verification code sent!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.verificationCodeSent),
             backgroundColor: AppColors.success,
           ),
         );
@@ -268,15 +269,15 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       if (authState.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authState.failure?.message ?? 'Invalid code'),
+            content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.invalidCode),
             backgroundColor: AppColors.error,
           ),
         );
       } else if (authState.isEmailVerified) {
         _verificationTimer?.cancel(); // 인증 성공 시 타이머 정지
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Email verified successfully!'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.emailVerifiedSuccess),
             backgroundColor: AppColors.success,
           ),
         );
@@ -361,14 +362,14 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   // 닉네임 입력 필드
                                   CustomAuthTextField(
                                     controller: _nicknameController,
-                                    hintText: 'Nickname',
+                                    hintText: AppLocalizations.of(context)!.nickname,
                                     prefixIcon: Icons.person_outline,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter your nickname';
+                                        return AppLocalizations.of(context)!.validationNicknameRequired;
                                       }
                                       if (value.length < 2 || value.length > 20) {
-                                        return 'Nickname must be 2-20 characters';
+                                        return AppLocalizations.of(context)!.validationNickname2to20;
                                       }
                                       return null;
                                     },
@@ -393,17 +394,17 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                       Expanded(
                                         child: CustomAuthTextField(
                                           controller: _emailController,
-                                          hintText: 'Email',
+                                          hintText: AppLocalizations.of(context)!.email,
                                           prefixIcon: Icons.email_outlined,
                                           keyboardType: TextInputType.emailAddress,
                                           readOnly: authState.isEmailVerified,
                                           validator: (value) {
                                             if (value == null || value.isEmpty) {
-                                              return 'Please enter your email';
+                                              return AppLocalizations.of(context)!.validationEmailRequired;
                                             }
                                             if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                                                 .hasMatch(value)) {
-                                              return 'Please enter a valid email';
+                                              return AppLocalizations.of(context)!.validationEmailInvalid;
                                             }
                                             return null;
                                           },
@@ -425,7 +426,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                               padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
-                                              authState.isEmailVerificationSent ? 'Resend' : 'Send',
+                                              authState.isEmailVerificationSent ? AppLocalizations.of(context)!.resend : AppLocalizations.of(context)!.send,
                                               style: AppTypography.buttonSmall.copyWith(
                                                 color: AppColors.textOnPrimary,
                                               ),
@@ -444,7 +445,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                         Expanded(
                                           child: CustomAuthTextField(
                                             controller: _verificationCodeController,
-                                            hintText: '6-digit code',
+                                            hintText: AppLocalizations.of(context)!.sixDigitCode,
                                             prefixIcon: Icons.lock_clock_outlined,
                                             keyboardType: TextInputType.number,
                                             suffix: Text(
@@ -471,7 +472,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                               padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
-                                              'Verify',
+                                              AppLocalizations.of(context)!.verify,
                                               style: AppTypography.buttonSmall.copyWith(
                                                 color: AppColors.textOnPrimary,
                                               ),
@@ -490,7 +491,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                           Icon(Icons.check_circle, color: AppColors.success, size: AppSpacing.iconSm.sp),
                                           SizedBox(width: AppSpacing.xs.w),
                                           Text(
-                                            'Email verified',
+                                            AppLocalizations.of(context)!.emailVerified,
                                             style: AppTypography.caption.copyWith(
                                               color: AppColors.success,
                                               fontWeight: FontWeight.w600,
@@ -505,15 +506,15 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   // 비밀번호 입력 필드
                                   CustomAuthTextField(
                                     controller: _passwordController,
-                                    hintText: 'Password',
+                                    hintText: AppLocalizations.of(context)!.password,
                                     prefixIcon: Icons.lock_outline,
                                     obscureText: true,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please enter your password';
+                                        return AppLocalizations.of(context)!.validationPasswordRequired;
                                       }
                                       if (value.length < 8) {
-                                        return 'Password must be at least 8 characters';
+                                        return AppLocalizations.of(context)!.validationPasswordMin8;
                                       }
                                       return null;
                                     },
@@ -524,15 +525,15 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   // 비밀번호 확인 필드
                                   CustomAuthTextField(
                                     controller: _confirmPasswordController,
-                                    hintText: 'Confirm Password',
+                                    hintText: AppLocalizations.of(context)!.confirmPassword,
                                     prefixIcon: Icons.lock_outline,
                                     obscureText: true,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return 'Please confirm your password';
+                                        return AppLocalizations.of(context)!.validationConfirmPassword;
                                       }
                                       if (value != _passwordController.text) {
-                                        return 'Passwords do not match';
+                                        return AppLocalizations.of(context)!.validationPasswordsNoMatch;
                                       }
                                       return null;
                                     },
@@ -547,7 +548,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
                                   // 가입하기 버튼
                                   GradientButton(
-                                    text: "Ro'yxatdan o'tish",
+                                    text: AppLocalizations.of(context)!.createAccount,
                                     onPressed: isLoading ? null : _handleSignup,
                                   ),
 
@@ -584,7 +585,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     return Column(
       children: [
         Text(
-          "Ro'yxatdan o'tish",
+          AppLocalizations.of(context)!.createAccount,
           textAlign: TextAlign.center,
           style: AppTypography.headline2.copyWith(
             color: AppColors.textPrimary,
@@ -592,7 +593,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         ),
         SizedBox(height: AppSpacing.xs.h),
         Text(
-          "Ma'lumotlaringizni kiriting",
+          AppLocalizations.of(context)!.enterYourInfo,
           textAlign: TextAlign.center,
           style: AppTypography.body2.copyWith(
             color: AppColors.textSecondary,
@@ -618,7 +619,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         data: (universities) => DropdownButtonFormField<int>(
           initialValue: _selectedUniversityId,
           decoration: InputDecoration(
-            hintText: 'Select University',
+            hintText: AppLocalizations.of(context)!.selectUniversity,
             hintStyle: AppTypography.body2.copyWith(
               color: AppColors.textHint,
             ),
@@ -706,7 +707,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             SizedBox(width: AppSpacing.sm.w),
             Expanded(
               child: Text(
-                formattedDate ?? 'Select Birth Date',
+                formattedDate ?? AppLocalizations.of(context)!.selectBirthDate,
                 style: AppTypography.body2.copyWith(
                   color: formattedDate != null
                       ? AppColors.textPrimary
@@ -736,8 +737,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
-      helpText: 'Select your birth date',
-      fieldLabelText: 'Birth Date',
+      helpText: AppLocalizations.of(context)!.selectYourBirthDate,
+      fieldLabelText: AppLocalizations.of(context)!.birthDate,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -772,7 +773,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       child: policiesAsync.when(
         data: (policies) {
           if (policies.isEmpty) {
-            return const Text('No policies available');
+            return Text(AppLocalizations.of(context)!.noPoliciesAvailable);
           }
           
           final isAllAgreed = policies.every((p) => _agreedPolicyIds.contains(p.id));
@@ -800,7 +801,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                     ),
                     SizedBox(width: AppSpacing.sm.w),
                     Text(
-                      'Hammaga roziman',
+                      AppLocalizations.of(context)!.agreeToAll,
                       style: AppTypography.body2.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -870,7 +871,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             TextSpan(
               children: [
                 TextSpan(
-                  text: isRequired ? '[Majburiy] ' : '[Ixtiyoriy] ',
+                  text: isRequired ? '${AppLocalizations.of(context)!.required} ' : '${AppLocalizations.of(context)!.optional} ',
                   style: AppTypography.caption.copyWith(
                     color: isRequired ? AppColors.error : AppColors.success,
                     fontWeight: FontWeight.w600,
@@ -892,7 +893,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           child: Padding(
             padding: EdgeInsets.only(left: AppSpacing.sm.w),
             child: Text(
-              "[View]",
+              AppLocalizations.of(context)!.view,
               style: AppTypography.captionSmall.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -915,9 +916,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             color: AppColors.textSecondary,
           ),
           children: [
-            const TextSpan(text: 'Profiling bormi? '),
+            TextSpan(text: AppLocalizations.of(context)!.haveAccount),
             TextSpan(
-              text: 'Kirish',
+              text: AppLocalizations.of(context)!.loginLink,
               style: AppTypography.body2.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,

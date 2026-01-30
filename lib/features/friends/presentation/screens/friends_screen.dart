@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -41,6 +42,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final friendState = ref.watch(friendManagementProvider);
     final friends = friendState.friends;
     final requests = friendState.requests;
@@ -78,7 +80,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Do\'stlar',
+                      l10n.friendsTitle,
                       style: AppTypography.headline4.copyWith(
                         fontWeight: FontWeight.w900,
                         color: AppColors.textPrimary,
@@ -129,7 +131,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('Do\'stlar'),
+                            Text(l10n.friendsTitle),
                             if (friends.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               Container(
@@ -158,7 +160,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Text('So\'rovlar'),
+                            Text(l10n.requests),
                             if (requests.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               Container(
@@ -190,9 +192,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                           ],
                         ),
                       ),
-                      const Tab(
+                      Tab(
                         height: 44,
-                        child: Text('Qidirish'),
+                        child: Text(l10n.search),
                       ),
                     ],
                   ),
@@ -277,6 +279,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildFriendsList(List<Friend> friends, bool isLoading) {
+    final l10n = AppLocalizations.of(context)!;
     if (isLoading && friends.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -284,8 +287,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     if (friends.isEmpty) {
       return _buildEmptyState(
         icon: Icons.people_outline,
-        title: 'Hali do\'stlaringiz yo\'q',
-        subtitle: 'Qidiruv orqali do\'stlar qo\'shing',
+        title: l10n.noFriendsYet,
+        subtitle: l10n.addFriendsViaSearch,
       );
     }
 
@@ -344,7 +347,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'Do\'stlikdan chiqarish',
+                          AppLocalizations.of(context)!.removeFriend,
                           style: AppTypography.body2.copyWith(
                             color: AppColors.error,
                             fontWeight: FontWeight.w600,
@@ -364,6 +367,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildRequestsList(List<Friend> requests, bool isLoading) {
+    final l10n = AppLocalizations.of(context)!;
     if (isLoading && requests.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -371,8 +375,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     if (requests.isEmpty) {
       return _buildEmptyState(
         icon: Icons.mail_outline,
-        title: 'So\'rovlar yo\'q',
-        subtitle: 'Do\'stlik so\'rovlari bu yerda ko\'rinadi',
+        title: l10n.noRequests,
+        subtitle: l10n.requestsAppearHere,
       );
     }
 
@@ -459,6 +463,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildSearch(List<Friend> searchResults, bool isLoading) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         // Search Bar
@@ -486,7 +491,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       letterSpacing: -0.2,
                     ),
                     decoration: InputDecoration(
-                      hintText: 'Foydalanuvchilarni qidiring...',
+                      hintText: l10n.searchUsersHint,
                       hintStyle: AppTypography.body2.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w400,
@@ -536,16 +541,16 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           child: _searchController.text.isEmpty
               ? _buildEmptyState(
                   icon: Icons.search,
-                  title: 'Qidirishni boshlang',
-                  subtitle: 'Yuqoridagi qidiruv qatoriga yozing',
+                  title: l10n.startSearching,
+                  subtitle: l10n.typeInSearchBar,
                 )
               : isLoading
               ? const Center(child: CircularProgressIndicator())
               : searchResults.isEmpty
               ? _buildEmptyState(
                   icon: Icons.person_search,
-                  title: 'Natija topilmadi',
-                  subtitle: 'Boshqa ism bilan qidirib ko\'ring',
+                  title: l10n.noResults,
+                  subtitle: l10n.tryDifferentName,
                 )
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(
@@ -674,7 +679,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   )
                 else
                   Text(
-                    isOnline ? 'Onlayn' : 'Oflayn',
+                    isOnline ? AppLocalizations.of(context)!.online : AppLocalizations.of(context)!.offline,
                     style: AppTypography.caption.copyWith(
                       color: isOnline
                           ? AppColors.chatOnline
@@ -696,6 +701,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildActionButton(Friend user) {
+    final l10n = AppLocalizations.of(context)!;
     switch (user.status) {
       case FriendStatus.accepted:
         return Container(
@@ -718,7 +724,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               ),
               const SizedBox(width: 6),
               Text(
-                'Do\'st',
+                l10n.friend,
                 style: AppTypography.caption.copyWith(
                   color: AppColors.success,
                   fontWeight: FontWeight.w700,
@@ -750,7 +756,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               ),
               const SizedBox(width: 6),
               Text(
-                'Yuborildi',
+                l10n.sent,
                 style: AppTypography.caption.copyWith(
                   color: AppColors.warning,
                   fontWeight: FontWeight.w700,
@@ -788,7 +794,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 ],
               ),
               child: Text(
-                'Qabul qilish',
+                l10n.accept,
                 style: AppTypography.button.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -827,7 +833,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 ],
               ),
               child: Text(
-                'Qo\'shish',
+                l10n.addFriend,
                 style: AppTypography.button.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -914,10 +920,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .read(friendManagementProvider.notifier)
         .sendRequest(user.id);
     if (success && mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Do\'stlik so\'rovi yuborildi',
+            l10n.friendRequestSent,
             style: AppTypography.body1.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -942,10 +949,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .read(friendManagementProvider.notifier)
         .acceptRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Do\'stlik so\'rovi qabul qilindi',
+            l10n.friendRequestAccepted,
             style: AppTypography.body1.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -966,10 +974,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         .read(friendManagementProvider.notifier)
         .rejectRequest(user.relationshipId ?? user.id);
     if (success && mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'So\'rov rad etildi',
+            l10n.requestRejected,
             style: AppTypography.body1.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -986,6 +995,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Future<void> _showDeleteConfirmation(Friend friend) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -1009,7 +1019,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             ),
             const SizedBox(width: 12),
             Text(
-              'Do\'stlikdan chiqarish',
+              l10n.removeFriend,
               style: AppTypography.headline6.copyWith(
                 fontWeight: FontWeight.w800,
                 letterSpacing: -0.5,
@@ -1018,7 +1028,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           ],
         ),
         content: Text(
-          '${friend.nickname} bilan do\'stlikni tugatmoqchimisiz?',
+          l10n.confirmRemoveFriend(friend.nickname),
           style: AppTypography.body1.copyWith(
             color: AppColors.textSecondary,
             height: 1.5,
@@ -1036,7 +1046,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               ),
             ),
             child: Text(
-              'Bekor qilish',
+              AppLocalizations.of(context)!.cancel,
               style: AppTypography.button.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w600,
@@ -1057,7 +1067,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               elevation: 0,
             ),
             child: Text(
-              'Chiqarish',
+              AppLocalizations.of(context)!.remove,
               style: AppTypography.button.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -1074,10 +1084,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           .read(friendManagementProvider.notifier)
           .deleteFriend(friend.id);
       if (success && mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Do\'stlikdan chiqarildi',
+              l10n.removedFromFriends,
               style: AppTypography.body1.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

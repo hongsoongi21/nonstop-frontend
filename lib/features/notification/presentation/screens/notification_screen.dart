@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_provider.dart';
@@ -40,6 +41,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(notificationProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -48,7 +50,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
         backgroundColor: AppColors.surface,
         centerTitle: false,
         title: Text(
-          '알림',
+          l10n.notifications,
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
@@ -69,7 +71,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                   color: AppColors.primary,
                 ),
                 label: Text(
-                  '모두 읽음',
+                  l10n.markAllAsRead,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -89,6 +91,8 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
   }
 
   Widget _buildBody(NotificationState state) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (state.isLoading) {
       return Center(
         child: CircularProgressIndicator(
@@ -131,7 +135,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
               ),
               SizedBox(height: 20.h),
               Text(
-                '알림을 불러오는데 실패했습니다',
+                l10n.notificationLoadError,
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -156,7 +160,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                     elevation: 0,
                   ),
                   child: Text(
-                    '다시 시도',
+                    l10n.retry,
                     style: TextStyle(
                       fontSize: 15.sp,
                       fontWeight: FontWeight.w600,
@@ -189,7 +193,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
             ),
             SizedBox(height: 20.h),
             Text(
-              '알림이 없습니다',
+              l10n.noNotificationsYet,
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -198,7 +202,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
             ),
             SizedBox(height: 8.h),
             Text(
-              '새로운 알림이 도착하면 여기에 표시됩니다',
+              l10n.noNotificationsHint,
               style: TextStyle(
                 fontSize: 14.sp,
                 color: AppColors.textTertiary,
@@ -399,7 +403,7 @@ class _NotificationTile extends StatelessWidget {
                             ),
                             SizedBox(width: 4.w),
                             Text(
-                              _formatTime(notification.createdAt),
+                              _formatTime(notification.createdAt, context),
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 color: AppColors.textTertiary,
@@ -457,18 +461,19 @@ class _NotificationTile extends StatelessWidget {
     }
   }
 
-  String _formatTime(DateTime dateTime) {
+  String _formatTime(DateTime dateTime, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inMinutes < 1) {
-      return '방금 전';
+      return l10n.justNow;
     } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}분 전';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inDays < 1) {
-      return '${difference.inHours}시간 전';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}일 전';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return '${dateTime.month}/${dateTime.day}';
     }

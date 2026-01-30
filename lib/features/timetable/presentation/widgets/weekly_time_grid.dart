@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/timetable_entry.dart';
@@ -45,13 +46,16 @@ class WeeklyTimeGrid extends StatelessWidget {
   }
 
   Widget _buildDaysHeader(int today) {
-    final weekDays = [
-      {'short': 'MON', 'full': 'Monday', 'day': 1},
-      {'short': 'TUE', 'full': 'Tuesday', 'day': 2},
-      {'short': 'WED', 'full': 'Wednesday', 'day': 3},
-      {'short': 'THU', 'full': 'Thursday', 'day': 4},
-      {'short': 'FRI', 'full': 'Friday', 'day': 5},
-    ];
+    return Builder(
+      builder: (context) {
+        final l10n = AppLocalizations.of(context)!;
+        final weekDays = [
+          {'short': l10n.dayMondayShort, 'full': l10n.dayMonday, 'day': 1},
+          {'short': l10n.dayTuesdayShort, 'full': l10n.dayTuesday, 'day': 2},
+          {'short': l10n.dayWednesdayShort, 'full': l10n.dayWednesday, 'day': 3},
+          {'short': l10n.dayThursdayShort, 'full': l10n.dayThursday, 'day': 4},
+          {'short': l10n.dayFridayShort, 'full': l10n.dayFriday, 'day': 5},
+        ];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -126,6 +130,8 @@ class WeeklyTimeGrid extends StatelessWidget {
           }),
         ],
       ),
+    );
+      },
     );
   }
 
@@ -381,7 +387,7 @@ class WeeklyTimeGrid extends StatelessWidget {
                                                   ),
                                                   const SizedBox(width: 3),
                                                   Text(
-                                                    'CONFLICT',
+                                                    AppLocalizations.of(context)!.conflict,
                                                     style: AppTypography
                                                         .overline
                                                         .copyWith(

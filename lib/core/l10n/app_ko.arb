@@ -136,5 +136,710 @@
   "messageHint": "메시지를 입력하세요...",
   "@messageHint": {
     "description": "Placeholder for message input"
-  }
+  },
+  "notifications": "알림",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "모두 읽음",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "알림이 없습니다",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "새로운 알림이 도착하면 여기에 표시됩니다",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "알림을 불러오는데 실패했습니다",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "다시 시도",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "방금 전",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count}분 전",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count}시간 전",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}일 전",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile": "프로필",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "설정",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "프로필 수정",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "게시물",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "댓글",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "친구",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "모든 게시물",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "북마크",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "즐겨찾기",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "privacy": "개인정보",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "계정",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "로그아웃",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "푸시 알림",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "이 기기에서 푸시 알림 받기",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "이메일 알림",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "이메일로 업데이트 받기",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "게시판 알림",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "새 게시물 및 댓글",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "채팅 알림",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "새 메시지 및 답장",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "시간표 알림",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "수업 알림 및 업데이트",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "알림음",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "알림 시 소리 재생",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "친구 요청 허용",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "다른 사용자가 친구 요청을 보낼 수 있도록 허용",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "온라인 상태 표시",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "친구들에게 온라인 상태 표시",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "메시지 요청 허용",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "친구가 아닌 사람의 메시지 받기",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "모두에게 프로필 공개",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "모든 사람에게 프로필 표시",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "계정에서 로그아웃",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "로그아웃 하시겠습니까?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "오류가 발생했습니다",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "notificationsComingSoon": "알림 - 곧 출시 예정!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "프로필 수정 - 곧 출시 예정!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "filterPrefix": "필터: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "프로필 정보를 불러오지 못했습니다",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "설정을 불러오지 못했습니다",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "게시물을 불러오지 못했습니다",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "작성한 게시물이 없습니다",
+  "@noPostsYet": {
+    "description": "No posts message"
+  },
+  "login": "로그인",
+  "@login": {
+    "description": "login label/message"
+  },
+  "email": "이메일",
+  "@email": {
+    "description": "email label/message"
+  },
+  "password": "비밀번호",
+  "@password": {
+    "description": "password label/message"
+  },
+  "forgotPassword": "비밀번호를 잊으셨나요?",
+  "@forgotPassword": {
+    "description": "forgotPassword label/message"
+  },
+  "welcomeBack": "환영합니다!",
+  "@welcomeBack": {
+    "description": "welcomeBack label/message"
+  },
+  "loginToContinue": "계속하려면 로그인하세요",
+  "@loginToContinue": {
+    "description": "loginToContinue label/message"
+  },
+  "continueWithGoogle": "Google로 계속하기",
+  "@continueWithGoogle": {
+    "description": "continueWithGoogle label/message"
+  },
+  "orSocialMedia": "또는 소셜 네트워크로",
+  "@orSocialMedia": {
+    "description": "orSocialMedia label/message"
+  },
+  "noAccount": "계정이 없으신가요?",
+  "@noAccount": {
+    "description": "noAccount label/message"
+  },
+  "signUpLink": "회원가입",
+  "@signUpLink": {
+    "description": "signUpLink label/message"
+  },
+  "validationEmailRequired": "이메일을 입력하세요",
+  "@validationEmailRequired": {
+    "description": "validationEmailRequired label/message"
+  },
+  "validationEmailInvalid": "올바른 이메일을 입력하세요",
+  "@validationEmailInvalid": {
+    "description": "validationEmailInvalid label/message"
+  },
+  "validationPasswordRequired": "비밀번호를 입력하세요",
+  "@validationPasswordRequired": {
+    "description": "validationPasswordRequired label/message"
+  },
+  "validationPasswordMin6": "비밀번호는 최소 6자 이상이어야 합니다",
+  "@validationPasswordMin6": {
+    "description": "validationPasswordMin6 label/message"
+  },
+  "validationPasswordMin8": "비밀번호는 최소 8자 이상이어야 합니다",
+  "@validationPasswordMin8": {
+    "description": "validationPasswordMin8 label/message"
+  },
+  "googleSignInFailed": "Google 로그인 실패: {error}",
+  "@googleSignInFailed": {
+    "description": "googleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "계정 만들기",
+  "@createAccount": {
+    "description": "createAccount label/message"
+  },
+  "enterYourInfo": "정보를 입력하세요",
+  "@enterYourInfo": {
+    "description": "enterYourInfo label/message"
+  },
+  "nickname": "닉네임",
+  "@nickname": {
+    "description": "nickname label/message"
+  },
+  "selectUniversity": "대학교 선택",
+  "@selectUniversity": {
+    "description": "selectUniversity label/message"
+  },
+  "selectBirthDate": "생년월일 선택",
+  "@selectBirthDate": {
+    "description": "selectBirthDate label/message"
+  },
+  "confirmPassword": "비밀번호 확인",
+  "@confirmPassword": {
+    "description": "confirmPassword label/message"
+  },
+  "agreeToAll": "모두 동의",
+  "@agreeToAll": {
+    "description": "agreeToAll label/message"
+  },
+  "required": "[필수]",
+  "@required": {
+    "description": "required label/message"
+  },
+  "optional": "[선택]",
+  "@optional": {
+    "description": "optional label/message"
+  },
+  "view": "[보기]",
+  "@view": {
+    "description": "view label/message"
+  },
+  "haveAccount": "계정이 있으신가요?",
+  "@haveAccount": {
+    "description": "haveAccount label/message"
+  },
+  "loginLink": "로그인",
+  "@loginLink": {
+    "description": "loginLink label/message"
+  },
+  "validationNicknameRequired": "닉네임을 입력하세요",
+  "@validationNicknameRequired": {
+    "description": "validationNicknameRequired label/message"
+  },
+  "validationNickname2to20": "닉네임은 2-20자 이어야 합니다",
+  "@validationNickname2to20": {
+    "description": "validationNickname2to20 label/message"
+  },
+  "validationPasswordsNoMatch": "비밀번호가 일치하지 않습니다",
+  "@validationPasswordsNoMatch": {
+    "description": "validationPasswordsNoMatch label/message"
+  },
+  "validationConfirmPassword": "비밀번호를 확인하세요",
+  "@validationConfirmPassword": {
+    "description": "validationConfirmPassword label/message"
+  },
+  "send": "전송",
+  "@send": {
+    "description": "send label/message"
+  },
+  "resend": "재전송",
+  "@resend": {
+    "description": "resend label/message"
+  },
+  "verify": "확인",
+  "@verify": {
+    "description": "verify label/message"
+  },
+  "sixDigitCode": "6자리 코드",
+  "@sixDigitCode": {
+    "description": "sixDigitCode label/message"
+  },
+  "emailVerified": "이메일 인증 완료",
+  "@emailVerified": {
+    "description": "emailVerified label/message"
+  },
+  "verificationCodeSent": "인증 코드가 전송되었습니다!",
+  "@verificationCodeSent": {
+    "description": "verificationCodeSent label/message"
+  },
+  "emailVerifiedSuccess": "이메일이 성공적으로 인증되었습니다!",
+  "@emailVerifiedSuccess": {
+    "description": "emailVerifiedSuccess label/message"
+  },
+  "invalidCode": "잘못된 코드",
+  "@invalidCode": {
+    "description": "invalidCode label/message"
+  },
+  "failedToSendCode": "코드 전송 실패",
+  "@failedToSendCode": {
+    "description": "failedToSendCode label/message"
+  },
+  "pleaseVerifyEmail": "먼저 이메일을 인증해주세요",
+  "@pleaseVerifyEmail": {
+    "description": "pleaseVerifyEmail label/message"
+  },
+  "pleaseWaitPoliciesLoad": "정책을 불러오는 중입니다",
+  "@pleaseWaitPoliciesLoad": {
+    "description": "pleaseWaitPoliciesLoad label/message"
+  },
+  "agreeMandatoryPolicies": "모든 필수 정책에 동의해주세요",
+  "@agreeMandatoryPolicies": {
+    "description": "agreeMandatoryPolicies label/message"
+  },
+  "pleaseSelectUniversity": "대학교를 선택해주세요",
+  "@pleaseSelectUniversity": {
+    "description": "pleaseSelectUniversity label/message"
+  },
+  "pleaseSelectBirthDate": "생년월일을 선택해주세요",
+  "@pleaseSelectBirthDate": {
+    "description": "pleaseSelectBirthDate label/message"
+  },
+  "signupFailed": "회원가입 실패",
+  "@signupFailed": {
+    "description": "signupFailed label/message"
+  },
+  "couldNotLaunch": "{url}을 열 수 없습니다",
+  "@couldNotLaunch": {
+    "description": "couldNotLaunch with placeholders",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLaunchingUrl": "URL 열기 오류: {error}",
+  "@errorLaunchingUrl": {
+    "description": "errorLaunchingUrl with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectYourBirthDate": "생년월일을 선택하세요",
+  "@selectYourBirthDate": {
+    "description": "selectYourBirthDate label/message"
+  },
+  "noPoliciesAvailable": "사용 가능한 정책이 없습니다",
+  "@noPoliciesAvailable": {
+    "description": "noPoliciesAvailable label/message"
+  },
+  "resetPassword": "비밀번호 재설정",
+  "@resetPassword": {
+    "description": "resetPassword label/message"
+  },
+  "enterRegisteredEmail": "등록된 이메일 주소를 입력하세요",
+  "@enterRegisteredEmail": {
+    "description": "enterRegisteredEmail label/message"
+  },
+  "sendCode": "코드 전송",
+  "@sendCode": {
+    "description": "sendCode label/message"
+  },
+  "verifyCode": "코드 확인",
+  "@verifyCode": {
+    "description": "verifyCode label/message"
+  },
+  "codeVerified": "코드가 확인되었습니다!",
+  "@codeVerified": {
+    "description": "codeVerified label/message"
+  },
+  "verificationCodeLabel": "인증 코드",
+  "@verificationCodeLabel": {
+    "description": "verificationCodeLabel label/message"
+  },
+  "resendCode": "코드 재전송",
+  "@resendCode": {
+    "description": "resendCode label/message"
+  },
+  "newPassword": "새 비밀번호",
+  "@newPassword": {
+    "description": "newPassword label/message"
+  },
+  "enterNewPassword": "새 비밀번호를 입력하세요",
+  "@enterNewPassword": {
+    "description": "enterNewPassword label/message"
+  },
+  "updatePassword": "비밀번호 업데이트",
+  "@updatePassword": {
+    "description": "updatePassword label/message"
+  },
+  "success": "성공!",
+  "@success": {
+    "description": "success label/message"
+  },
+  "passwordChangedSuccess": "비밀번호가 성공적으로 변경되었습니다. 이제 새 비밀번호로 로그인할 수 있습니다.",
+  "@passwordChangedSuccess": {
+    "description": "passwordChangedSuccess label/message"
+  },
+  "stepEmail": "이메일",
+  "@stepEmail": {
+    "description": "stepEmail label/message"
+  },
+  "stepVerification": "인증",
+  "@stepVerification": {
+    "description": "stepVerification label/message"
+  },
+  "stepNewPassword": "새 비밀번호",
+  "@stepNewPassword": {
+    "description": "stepNewPassword label/message"
+  },
+  "validationEnterEmail": "이메일 입력",
+  "@validationEnterEmail": {
+    "description": "validationEnterEmail label/message"
+  },
+  "validationEnterValidEmail": "올바른 이메일 입력",
+  "@validationEnterValidEmail": {
+    "description": "validationEnterValidEmail label/message"
+  },
+  "validationEnterCode": "코드 입력",
+  "@validationEnterCode": {
+    "description": "validationEnterCode label/message"
+  },
+  "validationCodeMinLength": "코드는 최소 4자리여야 합니다",
+  "@validationCodeMinLength": {
+    "description": "validationCodeMinLength label/message"
+  },
+  "validationEnterPassword": "비밀번호 입력",
+  "@validationEnterPassword": {
+    "description": "validationEnterPassword label/message"
+  },
+  "validationPasswordMinLength": "비밀번호는 최소 8자 이상이어야 합니다",
+  "@validationPasswordMinLength": {
+    "description": "validationPasswordMinLength label/message"
+  },
+  "validationConfirmNewPassword": "비밀번호 확인",
+  "@validationConfirmNewPassword": {
+    "description": "validationConfirmNewPassword label/message"
+  },
+  "codeResent": "코드가 재전송되었습니다!",
+  "@codeResent": {
+    "description": "codeResent label/message"
+  },
+  "friendsTitle": "친구",
+  "@friendsTitle": {
+    "description": "Friends screen title"
+  },
+  "requests": "요청",
+  "@requests": {
+    "description": "Friend requests tab label"
+  },
+  "search": "검색",
+  "@search": {
+    "description": "Search tab label"
+  },
+  "noFriendsYet": "아직 친구가 없습니다",
+  "@noFriendsYet": {
+    "description": "Empty state title when user has no friends"
+  },
+  "addFriendsViaSearch": "검색을 통해 친구를 추가하세요",
+  "@addFriendsViaSearch": {
+    "description": "Empty state subtitle for no friends"
+  },
+  "friend": "친구",
+  "@friend": {
+    "description": "Friend status label"
+  },
+  "sent": "전송됨",
+  "@sent": {
+    "description": "Friend request sent status label"
+  },
+  "accept": "수락",
+  "@accept": {
+    "description": "Accept friend request button"
+  },
+  "reject": "거절",
+  "@reject": {
+    "description": "Reject friend request button"
+  },
+  "removeFriend": "친구 삭제",
+  "@removeFriend": {
+    "description": "Remove friend menu option"
+  },
+  "confirmRemoveFriend": "{name}님을 친구에서 삭제하시겠습니까?",
+  "@confirmRemoveFriend": {
+    "description": "Confirmation message for removing friend",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "삭제",
+  "@remove": {
+    "description": "Remove button"
+  },
+  "noRequests": "요청 없음",
+  "@noRequests": {
+    "description": "Empty state title when there are no friend requests"
+  },
+  "requestsAppearHere": "친구 요청이 여기에 표시됩니다",
+  "@requestsAppearHere": {
+    "description": "Empty state subtitle for no requests"
+  },
+  "searchUsersHint": "사용자 검색...",
+  "@searchUsersHint": {
+    "description": "Search input placeholder"
+  },
+  "startSearching": "검색 시작",
+  "@startSearching": {
+    "description": "Empty state title for search"
+  },
+  "typeInSearchBar": "위 검색창에 입력하세요",
+  "@typeInSearchBar": {
+    "description": "Empty state subtitle for search"
+  },
+  "noResults": "결과 없음",
+  "@noResults": {
+    "description": "Empty state title when search returns no results"
+  },
+  "tryDifferentName": "다른 이름으로 검색해보세요",
+  "@tryDifferentName": {
+    "description": "Empty state subtitle for no search results"
+  },
+  "online": "온라인",
+  "@online": {
+    "description": "Online status label"
+  },
+  "offline": "오프라인",
+  "@offline": {
+    "description": "Offline status label"
+  },
+  "friendRequestSent": "친구 요청이 전송되었습니다",
+  "@friendRequestSent": {
+    "description": "Success message after sending friend request"
+  },
+  "friendRequestAccepted": "친구 요청을 수락했습니다",
+  "@friendRequestAccepted": {
+    "description": "Success message after accepting friend request"
+  },
+  "requestRejected": "요청을 거절했습니다",
+  "@requestRejected": {
+    "description": "Success message after rejecting friend request"
+  },
+  "removedFromFriends": "친구에서 삭제되었습니다",
+  "@removedFromFriends": {
+    "description": "Success message after removing friend"
+  },
+  "addFriend": "추가",
+  "@addFriend": {
+    "description": "Add friend button"
+  },
+  "timetable": "시간표",
+  "addCourse": "과목 추가",
+  "editCourse": "과목 수정",
+  "dayMonday": "월요일",
+  "dayTuesday": "화요일",
+  "dayWednesday": "수요일",
+  "dayThursday": "목요일",
+  "dayFriday": "금요일",
+  "daySaturday": "토요일",
+  "daySunday": "일요일",
+  "dayMondayShort": "월",
+  "dayTuesdayShort": "화",
+  "dayWednesdayShort": "수",
+  "dayThursdayShort": "목",
+  "dayFridayShort": "금",
+  "daySaturdayShort": "토",
+  "daySundayShort": "일",
+  "semester": "학기",
+  "semesterSpring": "봄",
+  "semesterFall": "가을",
+  "semesterSummer": "여름",
+  "semesterWinter": "겨울",
+  "gpaCalculator": "학점 계산기",
+  "creditHours": "학점",
+  "credits": "학점",
+  "calculateAndTrack": "계산하고 추적하기",
+  "courseName": "과목명",
+  "courseNameHint": "예: 프로그래밍 기초",
+  "courseNameRequired": "과목명을 입력하세요",
+  "professor": "교수",
+  "professorHint": "예: 김 교수",
+  "room": "강의실 / 장소",
+  "roomHint": "예: 301호",
+  "color": "색상",
+  "colorDescription": "과목을 강조할 색상을 선택하세요",
+  "startTime": "시작 시간",
+  "endTime": "종료 시간",
+  "selectDay": "요일 선택",
+  "dayOfWeek": "요일",
+  "timeAndDay": "시간 및 요일",
+  "basicInfo": "기본 정보",
+  "delete": "삭제",
+  "deleteCourse": "과목 삭제",
+  "confirmDeleteCourse": "이 과목을 삭제하시겠습니까?",
+  "courseDeleted": "과목이 삭제되었습니다",
+  "courseAdded": "과목이 추가되었습니다",
+  "courseUpdated": "과목이 수정되었습니다",
+  "saveChanges": "변경사항 저장",
+  "noCoursesAdded": "추가된 과목이 없습니다",
+  "noCoursesDescription": "주간 시간표를 만들기 위해\n과목을 추가하세요",
+  "loading": "로딩 중...",
+  "refresh": "새로고침",
+  "myTimetables": "내 시간표",
+  "createNewTimetable": "새 시간표 만들기",
+  "untitledTimetable": "제목 없는 시간표",
+  "newCourse": "새 과목",
+  "editCourseTitle": "수정",
+  "createNewCourse": "시간표에 새 과목을 만드세요",
+  "updateCourseInfo": "과목 정보를 업데이트하세요",
+  "conflict": "충돌",
+  "confirmNewPassword": "새 비밀번호 확인",
+  "birthDate": "생년월일"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -60,7 +61,7 @@ class _ProfileFilterTabsState extends State<ProfileFilterTabs>
           Expanded(
             child: _FilterTab(
               icon: Icons.grid_on_outlined,
-              label: 'Posts',
+              label: AppLocalizations.of(context)!.posts,
               isSelected: _selectedIndex == 0,
               onPressed: () => _onTabPressed(0),
             ),
@@ -68,7 +69,7 @@ class _ProfileFilterTabsState extends State<ProfileFilterTabs>
           Expanded(
             child: _FilterTab(
               icon: Icons.chat_bubble_outline,
-              label: 'Comments',
+              label: AppLocalizations.of(context)!.comments,
               isSelected: _selectedIndex == 1,
               onPressed: () => _onTabPressed(1),
             ),

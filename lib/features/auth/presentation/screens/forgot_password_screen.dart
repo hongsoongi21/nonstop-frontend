@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../providers/forgot_password_provider.dart';
@@ -60,9 +61,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
     if (!mounted) return;
     final state = ref.read(forgotPasswordProvider);
     if (state.hasError) {
-      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+      _showErrorSnackBar(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred);
     } else if (state.step == ForgotPasswordStep.verification) {
-      _showSuccessSnackBar('Tasdiqlash kodi yuborildi!');
+      _showSuccessSnackBar(AppLocalizations.of(context)!.verificationCodeSent);
     }
   }
 
@@ -74,9 +75,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
     if (!mounted) return;
     final state = ref.read(forgotPasswordProvider);
     if (state.hasError) {
-      _showErrorSnackBar(state.failure?.message ?? 'Kod noto\'g\'ri');
+      _showErrorSnackBar(state.failure?.message ?? AppLocalizations.of(context)!.invalidCode);
     } else if (state.step == ForgotPasswordStep.newPassword) {
-      _showSuccessSnackBar('Kod tasdiqlandi!');
+      _showSuccessSnackBar(AppLocalizations.of(context)!.codeVerified);
     }
   }
 
@@ -88,7 +89,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
     if (!mounted) return;
     final state = ref.read(forgotPasswordProvider);
     if (state.hasError) {
-      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+      _showErrorSnackBar(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred);
     }
   }
 
@@ -97,9 +98,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
     if (!mounted) return;
     final state = ref.read(forgotPasswordProvider);
     if (state.hasError) {
-      _showErrorSnackBar(state.failure?.message ?? 'Xatolik yuz berdi');
+      _showErrorSnackBar(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred);
     } else {
-      _showSuccessSnackBar('Kod qayta yuborildi!');
+      _showSuccessSnackBar(AppLocalizations.of(context)!.codeResent);
     }
   }
 
@@ -322,7 +323,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
             ),
             Expanded(
               child: Text(
-                'Parolni tiklash',
+                AppLocalizations.of(context)!.resetPassword,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Noto Sans',
@@ -342,9 +343,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
   Widget _buildStepIndicator(ForgotPasswordState state) {
     final steps = [
-      {'title': 'Email', 'step': ForgotPasswordStep.email},
-      {'title': 'Tasdiqlash', 'step': ForgotPasswordStep.verification},
-      {'title': 'Yangi parol', 'step': ForgotPasswordStep.newPassword},
+      {'title': AppLocalizations.of(context)!.stepEmail, 'step': ForgotPasswordStep.email},
+      {'title': AppLocalizations.of(context)!.stepVerification, 'step': ForgotPasswordStep.verification},
+      {'title': AppLocalizations.of(context)!.stepNewPassword, 'step': ForgotPasswordStep.newPassword},
     ];
 
     final currentStepIndex = steps.indexWhere((s) => s['step'] == state.step);
@@ -493,7 +494,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Title
         Text(
-          'Parolni tiklash',
+          AppLocalizations.of(context)!.resetPassword,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -509,7 +510,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Description
         Text(
-          "Ro'yxatdan o'tgan email manzilingizni kiriting",
+          AppLocalizations.of(context)!.enterRegisteredEmail,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -526,15 +527,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Email Input
         CustomAuthTextField(
           controller: _emailController,
-          hintText: 'Email',
+          hintText: AppLocalizations.of(context)!.stepEmail,
           prefixIcon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Email kiriting';
+              return AppLocalizations.of(context)!.validationEnterEmail;
             }
             if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-              return "To'g'ri email kiriting";
+              return AppLocalizations.of(context)!.validationEnterValidEmail;
             }
             return null;
           },
@@ -544,7 +545,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Submit Button
         GradientButton(
-          text: "Kod yuborish",
+          text: AppLocalizations.of(context)!.sendCode,
           onPressed: _handleSendEmail,
           isLoading: state.isLoading,
         ),
@@ -552,7 +553,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Error Message
         if (state.hasError) ...[
           SizedBox(height: 16.h),
-          _buildErrorMessage(state.failure?.message ?? 'Xatolik yuz berdi'),
+          _buildErrorMessage(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred),
         ],
       ],
     );
@@ -576,7 +577,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Title
         Text(
-          'Kodni tasdiqlash',
+          AppLocalizations.of(context)!.verifyCode,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -609,15 +610,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Code Input
         CustomAuthTextField(
           controller: _codeController,
-          hintText: 'Tasdiqlash kodi',
+          hintText: AppLocalizations.of(context)!.verificationCodeLabel,
           prefixIcon: Icons.pin_outlined,
           keyboardType: TextInputType.number,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Kodni kiriting';
+              return AppLocalizations.of(context)!.validationEnterCode;
             }
             if (value.length < 4) {
-              return "Kod kamida 4 ta raqamdan iborat bo'lishi kerak";
+              return AppLocalizations.of(context)!.validationCodeMinLength;
             }
             return null;
           },
@@ -627,7 +628,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Submit Button
         GradientButton(
-          text: 'Tasdiqlash',
+          text: AppLocalizations.of(context)!.stepVerification,
           onPressed: _handleVerifyCode,
           isLoading: state.isLoading,
         ),
@@ -639,7 +640,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
           child: TextButton(
             onPressed: state.isLoading ? null : _handleResendCode,
             child: Text(
-              'Kodni qayta yuborish',
+              AppLocalizations.of(context)!.resendCode,
               style: AppTypography.body2.copyWith(
                 color: const Color(0xFF7C3BEE),
                 fontWeight: FontWeight.w500,
@@ -651,7 +652,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Error Message
         if (state.hasError) ...[
           SizedBox(height: 16.h),
-          _buildErrorMessage(state.failure?.message ?? 'Xatolik yuz berdi'),
+          _buildErrorMessage(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred),
         ],
       ],
     );
@@ -675,7 +676,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Title
         Text(
-          'Yangi parol',
+          AppLocalizations.of(context)!.stepNewPassword,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -691,7 +692,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Description
         Text(
-          'Yangi parolingizni kiriting',
+          AppLocalizations.of(context)!.enterNewPassword,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -708,15 +709,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // New Password Input
         CustomAuthTextField(
           controller: _passwordController,
-          hintText: 'Yangi parol',
+          hintText: AppLocalizations.of(context)!.stepNewPassword,
           prefixIcon: Icons.lock_outline,
           obscureText: true,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Parol kiriting';
+              return AppLocalizations.of(context)!.validationEnterPassword;
             }
             if (value.length < 8) {
-              return "Parol kamida 8 ta belgidan iborat bo'lishi kerak";
+              return AppLocalizations.of(context)!.validationPasswordMinLength;
             }
             return null;
           },
@@ -727,15 +728,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Confirm Password Input
         CustomAuthTextField(
           controller: _confirmPasswordController,
-          hintText: 'Parolni tasdiqlang',
+          hintText: AppLocalizations.of(context)!.confirmNewPassword,
           prefixIcon: Icons.lock_outline,
           obscureText: true,
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Parolni tasdiqlang';
+              return AppLocalizations.of(context)!.validationConfirmNewPassword;
             }
             if (value != _passwordController.text) {
-              return 'Parollar mos kelmaydi';
+              return AppLocalizations.of(context)!.validationPasswordsNoMatch;
             }
             return null;
           },
@@ -745,7 +746,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Submit Button
         GradientButton(
-          text: 'Parolni yangilash',
+          text: AppLocalizations.of(context)!.updatePassword,
           onPressed: _handleResetPassword,
           isLoading: state.isLoading,
         ),
@@ -753,7 +754,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
         // Error Message
         if (state.hasError) ...[
           SizedBox(height: 16.h),
-          _buildErrorMessage(state.failure?.message ?? 'Xatolik yuz berdi'),
+          _buildErrorMessage(state.failure?.message ?? AppLocalizations.of(context)!.errorOccurred),
         ],
       ],
     );
@@ -777,7 +778,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Title
         Text(
-          'Muvaffaqiyatli!',
+          AppLocalizations.of(context)!.success,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -793,7 +794,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Description
         Text(
-          "Parolingiz muvaffaqiyatli o'zgartirildi. Endi yangi parol bilan tizimga kirishingiz mumkin.",
+          AppLocalizations.of(context)!.passwordChangedSuccess,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Noto Sans',
@@ -809,7 +810,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
 
         // Login Button
         GradientButton(
-          text: 'Kirish',
+          text: AppLocalizations.of(context)!.login,
           onPressed: _handleComplete,
           isLoading: false,
         ),

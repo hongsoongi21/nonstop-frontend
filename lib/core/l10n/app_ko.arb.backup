@@ -1,0 +1,363 @@
+{
+  "@@locale": "ko",
+  "helloWorld": "안녕하세요!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "게시물 수정",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "취소",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "저장",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "게시물 삭제",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "이 게시물을 삭제하시겠습니까?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "댓글 수정",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "댓글 삭제",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "이 댓글을 삭제하시겠습니까?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "대학교 인증이 필요합니다",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "이 커뮤니티에 접근하려면 대학교 인증이 필요합니다",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "제목",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "내용",
+  "@content": {
+    "description": "Label for content field"
+  },
+  "selectCommunity": "커뮤니티 선택",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
+  },
+  "chat": "채팅",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "채팅이 없습니다",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "+ 버튼을 눌러 대화를 시작하세요",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "채팅 목록을 불러오지 못했습니다",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "새 채팅",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "사용자 검색...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count}명 선택됨",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "채팅 시작",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "그룹 만들기",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "그룹 이름",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "그룹 이름을 입력하세요",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "카메라",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "갤러리",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "연결됨",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "연결 중...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "연결 끊김 - 탭하여 재연결",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "오늘",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "어제",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "메시지를 입력하세요...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
+  },
+  "notifications": "알림",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "모두 읽음",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "알림이 없습니다",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "새로운 알림이 도착하면 여기에 표시됩니다",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "알림을 불러오는데 실패했습니다",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "다시 시도",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "방금 전",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count}분 전",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count}시간 전",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count}일 전",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profile": "프로필",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "설정",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "프로필 수정",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "게시물",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "댓글",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "친구",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "모든 게시물",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "북마크",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "즐겨찾기",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "privacy": "개인정보",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "계정",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "로그아웃",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "푸시 알림",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "이 기기에서 푸시 알림 받기",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "이메일 알림",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "이메일로 업데이트 받기",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "게시판 알림",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "새 게시물 및 댓글",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "채팅 알림",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "새 메시지 및 답장",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "시간표 알림",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "수업 알림 및 업데이트",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "알림음",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "알림 시 소리 재생",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "친구 요청 허용",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "다른 사용자가 친구 요청을 보낼 수 있도록 허용",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "온라인 상태 표시",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "친구들에게 온라인 상태 표시",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "메시지 요청 허용",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "친구가 아닌 사람의 메시지 받기",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "모두에게 프로필 공개",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "모든 사람에게 프로필 표시",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "계정에서 로그아웃",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "로그아웃 하시겠습니까?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "오류가 발생했습니다",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "notificationsComingSoon": "알림 - 곧 출시 예정!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "프로필 수정 - 곧 출시 예정!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "filterPrefix": "필터: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "프로필 정보를 불러오지 못했습니다",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "설정을 불러오지 못했습니다",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "게시물을 불러오지 못했습니다",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "작성한 게시물이 없습니다",
+  "@noPostsYet": {
+    "description": "No posts message"
+  }
+}

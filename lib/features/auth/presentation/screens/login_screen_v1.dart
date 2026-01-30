@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
@@ -159,13 +160,13 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google Sign-In failed: ${e.description}')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(e.description ?? ''))),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google Sign-In failed: $error')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString()))),
         );
       }
     }
@@ -305,7 +306,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                   children: [
                                     // Title
                                     Text(
-                                      'Xush Kelibsiz!',
+                                      AppLocalizations.of(context)!.welcomeBack,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Noto Sans',
@@ -320,7 +321,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                     SizedBox(height: 8.h),
 
                                     Text(
-                                      'Davom etish uchun tizimga kiring',
+                                      AppLocalizations.of(context)!.loginToContinue,
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Noto Sans',
@@ -337,17 +338,17 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                     // Email Input
                                     CustomAuthTextField(
                                       controller: _emailController,
-                                      hintText: 'Email',
+                                      hintText: AppLocalizations.of(context)!.email,
                                       prefixIcon: Icons.email_outlined,
                                       keyboardType: TextInputType.emailAddress,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your email';
+                                          return AppLocalizations.of(context)!.validationEmailRequired;
                                         }
                                         if (!RegExp(
                                           r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                                         ).hasMatch(value)) {
-                                          return 'Please enter a valid email';
+                                          return AppLocalizations.of(context)!.validationEmailInvalid;
                                         }
                                         return null;
                                       },
@@ -358,15 +359,15 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                     // Password Input
                                     CustomAuthTextField(
                                       controller: _passwordController,
-                                      hintText: 'Password',
+                                      hintText: AppLocalizations.of(context)!.password,
                                       prefixIcon: Icons.lock_outline,
                                       obscureText: true,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
-                                          return 'Please enter your password';
+                                          return AppLocalizations.of(context)!.validationPasswordRequired;
                                         }
                                         if (value.length < 6) {
-                                          return 'Password must be at least 6 characters';
+                                          return AppLocalizations.of(context)!.validationPasswordMin6;
                                         }
                                         return null;
                                       },
@@ -392,7 +393,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                               .withValues(alpha: 0.1),
                                         ),
                                         child: Text(
-                                          'Forgot Password?',
+                                          AppLocalizations.of(context)!.forgotPassword,
                                           style: TextStyle(
                                             fontFamily: 'Noto Sans',
                                             fontWeight: FontWeight.w600,
@@ -438,7 +439,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                               Expanded(
                                                 child: Text(
                                                   authState.failure?.message ??
-                                                      'An error occurred',
+                                                      AppLocalizations.of(context)!.errorOccurred,
                                                   style: TextStyle(
                                                     fontFamily: 'Noto Sans',
                                                     fontWeight: FontWeight.w500,
@@ -501,7 +502,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                                 ),
                                               )
                                             : Text(
-                                                'Login',
+                                                AppLocalizations.of(context)!.login,
                                                 style: TextStyle(
                                                   fontFamily: 'Noto Sans',
                                                   fontWeight: FontWeight.w700,
@@ -530,7 +531,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                             horizontal: 16.w,
                                           ),
                                           child: Text(
-                                            'Yoki ijtimoly tarmoqlar orqali',
+                                            AppLocalizations.of(context)!.orSocialMedia,
                                             style: TextStyle(
                                               fontFamily: 'Noto Sans',
                                               fontWeight: FontWeight.w500,
@@ -599,7 +600,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                             ),
                                             SizedBox(width: 12.w),
                                             Text(
-                                              'Continue with Google',
+                                              AppLocalizations.of(context)!.continueWithGoogle,
                                               style: TextStyle(
                                                 fontFamily: 'Noto Sans',
                                                 fontWeight: FontWeight.w600,
@@ -622,7 +623,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          "Profiling yo'qmi?",
+                                          AppLocalizations.of(context)!.noAccount,
                                           style: TextStyle(
                                             fontFamily: 'Noto Sans',
                                             fontWeight: FontWeight.w500,
@@ -648,7 +649,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                                 .withValues(alpha: 0.1),
                                           ),
                                           child: Text(
-                                            "Ro'yxatdan o'tish",
+                                            AppLocalizations.of(context)!.signUpLink,
                                             style: TextStyle(
                                               fontFamily: 'Noto Sans',
                                               fontWeight: FontWeight.w700,

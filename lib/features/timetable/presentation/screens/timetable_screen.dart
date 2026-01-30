@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
 
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -32,6 +33,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(timetableManagementProvider);
     final notifier = ref.read(timetableManagementProvider.notifier);
     final currentTimetable = state.selectedTimetable;
@@ -39,8 +41,8 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     // Find current semester name (if any) or generic date
     final semesterName = currentTimetable != null
-        ? '${currentTimetable.year} - ${currentTimetable.semesterType.displayName}'
-        : 'Yuklanmoqda...';
+        ? '${currentTimetable.year} - ${currentTimetable.semesterType.displayName(context)}'
+        : l10n.loading;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -51,7 +53,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               elevation: 8,
               icon: Icon(Icons.add_rounded, color: Colors.white),
               label: Text(
-                'Dars qo\'shish',
+                l10n.addCourse,
                 style: AppTypography.button.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -112,7 +114,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        currentTimetable?.title ?? 'Dars jadvali',
+                                        currentTimetable?.title ?? l10n.timetable,
                                         style: AppTypography.headline2.copyWith(
                                           color: AppColors.textPrimary,
                                           fontWeight: FontWeight.w800,
@@ -151,7 +153,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                   Icons.refresh_rounded,
                                   color: AppColors.primary,
                                 ),
-                                tooltip: 'Yangilash',
+                                tooltip: l10n.refresh,
                               ),
                               Container(
                                 width: 1,
@@ -164,7 +166,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                   Icons.settings_outlined,
                                   color: AppColors.primary,
                                 ),
-                                tooltip: 'Sozlamalar',
+                                tooltip: l10n.settings,
                               ),
                             ],
                           ),
@@ -219,7 +221,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 ),
                                 SizedBox(height: AppSpacing.lg),
                                 Text(
-                                  'Darslar qo\'shilmagan',
+                                  l10n.noCoursesAdded,
                                   style: AppTypography.headline3.copyWith(
                                     color: AppColors.textPrimary,
                                     fontWeight: FontWeight.w700,
@@ -227,7 +229,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 ),
                                 SizedBox(height: AppSpacing.xs),
                                 Text(
-                                  'Haftalik jadval yaratish uchun\ndarslaringizni qo\'shing',
+                                  l10n.noCoursesDescription,
                                   textAlign: TextAlign.center,
                                   style: AppTypography.body2.copyWith(
                                     color: AppColors.textSecondary,
@@ -256,7 +258,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                       Icon(Icons.add_rounded, size: 20),
                                       SizedBox(width: 8),
                                       Text(
-                                        'Dars qo\'shish',
+                                        l10n.addCourse,
                                         style: AppTypography.button.copyWith(
                                           fontWeight: FontWeight.w700,
                                         ),
@@ -287,6 +289,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   }
 
   Widget _buildGPACalculator(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final gpaState = ref.watch(gpaProvider);
     final hasCourses = gpaState.courses.isNotEmpty;
 
@@ -334,7 +337,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'GPA Calculator',
+                      l10n.gpaCalculator,
                       style: AppTypography.titleMedium.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
@@ -344,8 +347,8 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                     SizedBox(height: 2),
                     Text(
                       hasCourses
-                          ? '${gpaState.totalGpa.toStringAsFixed(2)} • ${gpaState.totalCredits.toStringAsFixed(0)} credits'
-                          : 'Hisoblang va kuzating',
+                          ? '${gpaState.totalGpa.toStringAsFixed(2)} • ${gpaState.totalCredits.toStringAsFixed(0)} ${l10n.credits}'
+                          : l10n.calculateAndTrack,
                       style: AppTypography.caption.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
                         fontWeight: FontWeight.w500,
@@ -395,6 +398,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   }
 
   void _showTimetableSwitcher(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.read(timetableManagementProvider);
     final notifier = ref.read(timetableManagementProvider.notifier);
 
@@ -409,7 +413,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Jadvallarim',
+                l10n.myTimetables,
                 style: AppTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -429,12 +433,12 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                         color: isSelected ? AppColors.primary : AppColors.textSecondary,
                       ),
                       title: Text(
-                        tt.title ?? 'Nomsiz jadval',
+                        tt.title ?? l10n.untitledTimetable,
                         style: TextStyle(
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
-                      subtitle: Text('${tt.year} - ${tt.semesterType.displayName}'),
+                      subtitle: Text('${tt.year} - ${tt.semesterType.displayName(context)}'),
                       onTap: () {
                         notifier.selectTimetable(tt.id);
                         Navigator.pop(context);
@@ -460,7 +464,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Yangi jadval yaratish'),
+                    child: Text(l10n.createNewTimetable),
                   ),
                 ),
               ),
