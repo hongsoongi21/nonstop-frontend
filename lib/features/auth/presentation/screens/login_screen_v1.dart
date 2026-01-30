@@ -25,6 +25,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   bool _googleSignInInitialized = false;
@@ -45,7 +46,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
   Future<void> _initGoogleSignIn() async {
     if (_googleSignInInitialized) return;
-    await GoogleSignIn.instance.initialize(
+    await _googleSignIn.initialize(
       serverClientId:
           '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
     );
@@ -85,8 +86,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       await _initGoogleSignIn();
 
       // Google Sign-In using new API (v7.x)
-      final GoogleSignInAccount googleUser =
-          await GoogleSignIn.instance.authenticate();
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
@@ -95,9 +95,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       if (googleIdToken == null) return;
 
       // Exchange Google token for a Firebase ID token.
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleIdToken,
-      );
+      final credential = GoogleAuthProvider.credential(idToken: googleIdToken);
       final userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );

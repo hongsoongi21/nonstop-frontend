@@ -13,9 +13,7 @@ abstract class AuthRepository {
   });
 
   /// Sign in with Google
-  Future<Either<Failure, User>> signInWithGoogle({
-    required String idToken,
-  });
+  Future<Either<Failure, User>> signInWithGoogle({required String idToken});
 
   /// Signs up a new user with email, password, nickname, and birthDate.
   Future<Either<Failure, User>> signUp({
@@ -30,6 +28,9 @@ abstract class AuthRepository {
 
   /// Sign out current user
   Future<Either<Failure, Unit>> signOut();
+
+  /// Sign out current user and Google
+  Future<Either<Failure, Unit>> signOutFull();
 
   /// Get current authenticated user
   Future<Either<Failure, User?>> getCurrentUser();
@@ -72,7 +73,7 @@ abstract class AuthRepository {
 
   /// Get current access token
   Future<Either<Failure, String?>> getAccessToken();
-  
+
   /// Get policy list
   Future<Either<Failure, List<Policy>>> getPolicies();
 

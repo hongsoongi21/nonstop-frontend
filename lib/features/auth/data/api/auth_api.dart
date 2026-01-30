@@ -4,10 +4,7 @@ import '../dto/policy_response_dto.dart';
 /// API interface for authentication operations
 abstract class AuthApi {
   /// Sign in with email and password
-  Future<User> signIn({
-    required String email,
-    required String password,
-  });
+  Future<User> signIn({required String email, required String password});
 
   /// Sign up with email, password, and user details
   Future<User> signUp({
@@ -22,6 +19,9 @@ abstract class AuthApi {
 
   /// Sign out current user
   Future<void> signOut();
+
+  /// Sign out current user and Google
+  Future<void> signOutFull();
 
   /// Get current authenticated user
   Future<User?> getCurrentUser();
@@ -66,9 +66,7 @@ abstract class AuthApi {
   Future<String?> getAccessToken();
 
   /// Sign in with Google
-  Future<User> signInWithGoogle({
-    required String idToken,
-  });
+  Future<User> signInWithGoogle({required String idToken});
 
   /// Get policy list
   Future<List<PolicyResponseDto>> getPolicies();

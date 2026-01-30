@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
@@ -26,9 +27,9 @@ class AuthApiImpl implements AuthApi {
   final DioClient _dioClient;
   final SecureStorageService _secureStorageService;
   final _authStateController = StreamController<User?>.broadcast();
-  
   // 인증 확인을 위해 마지막으로 인증번호를 보낸 이메일을 저장합니다.
   String? _lastVerificationEmail;
+  final _googleSignIn = GoogleSignIn.instance;
 
   AuthApiImpl(this._dioClient, this._secureStorageService);
 
@@ -118,7 +119,8 @@ class AuthApiImpl implements AuthApi {
   }) async {
     try {
       // Format birthDate as "YYYY-MM-DD"
-      final birthDateString = '${birthDate.year.toString().padLeft(4, '0')}-'
+      final birthDateString =
+          '${birthDate.year.toString().padLeft(4, '0')}-'
           '${birthDate.month.toString().padLeft(2, '0')}-'
           '${birthDate.day.toString().padLeft(2, '0')}';
 
@@ -174,6 +176,12 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
+  Future<void> signOutFull() async {
+    await signOut();
+    await _googleSignIn.signOut();
+  }
+
+  @override
   Future<User?> getCurrentUser() async {
     try {
       // Avoid calling `/users/me` when we don't have a token yet.
@@ -214,10 +222,7 @@ class AuthApiImpl implements AuthApi {
     try {
       final response = await _dioClient.post(
         '/api/v1/auth/password/reset/verify',
-        data: {
-          'email': email,
-          'code': code,
-        },
+        data: {'email': email, 'code': code},
         options: Options(extra: {'no-auth': true}),
       );
 
@@ -234,15 +239,15 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Future<void> confirmPasswordReset(String email, String code, String newPassword) async {
+  Future<void> confirmPasswordReset(
+    String email,
+    String code,
+    String newPassword,
+  ) async {
     try {
       final response = await _dioClient.post(
         '/api/v1/auth/password/reset/confirm',
-        data: {
-          'email': email,
-          'code': code,
-          'newPassword': newPassword,
-        },
+        data: {'email': email, 'code': code, 'newPassword': newPassword},
         options: Options(extra: {'no-auth': true}),
       );
 
@@ -293,10 +298,7 @@ class AuthApiImpl implements AuthApi {
     try {
       final response = await _dioClient.post(
         '/api/v1/auth/email/verify',
-        data: {
-          'email': _lastVerificationEmail,
-          'code': code,
-        },
+        data: {'email': _lastVerificationEmail, 'code': code},
         options: Options(extra: {'no-auth': true}),
       );
 

@@ -73,3 +73,8 @@ android/app/*.keystore
 **/Gemfile.lock
 **/.bundle/
 **/vendor/bundle/
+
+# Flutter platform-specific generated files
+**/linux/flutter/generated_*
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/windows/flutter/generated_*
