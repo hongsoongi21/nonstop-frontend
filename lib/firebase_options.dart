@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -53,10 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAnQifahPaUYB5r8nJcnEZw0yybn2pvZo0',
-    appId: '1:821831827536:android:a6600b3475c23f976f1155',
-    messagingSenderId: '821831827536',
-    projectId: 'nonstop-firebase',
-    storageBucket: 'nonstop-firebase.firebasestorage.app',
+    apiKey: 'AIzaSyCI6rc9gbOlJoyxOhgnPOzXU6XBRyuoI14',
+    appId: '1:127473148279:android:2109fc50be2bbc3ec2c172',
+    messagingSenderId: '127473148279',
+    projectId: 'nonstop-c2aa4',
+    storageBucket: 'nonstop-c2aa4.firebasestorage.app',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyBiFwKYSRc8lDTsNmwGmZBZiyA6YSy0IpU',
+    appId: '1:127473148279:ios:1fe527d213701a6dc2c172',
+    messagingSenderId: '127473148279',
+    projectId: 'nonstop-c2aa4',
+    storageBucket: 'nonstop-c2aa4.firebasestorage.app',
+    iosBundleId: 'uz.merge4.nonstop',
+  );
+
 }

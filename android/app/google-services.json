@@ -1,51 +1,26 @@
 {
   "project_info": {
-    "project_number": "821831827536",
-    "project_id": "nonstop-firebase",
-    "storage_bucket": "nonstop-firebase.firebasestorage.app"
+    "project_number": "127473148279",
+    "project_id": "nonstop-c2aa4",
+    "storage_bucket": "nonstop-c2aa4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:821831827536:android:a6600b3475c23f976f1155",
+        "mobilesdk_app_id": "1:127473148279:android:2109fc50be2bbc3ec2c172",
         "android_client_info": {
           "package_name": "uz.merge4.nonstop"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "821831827536-tlh5ecdm1s2fui5aj215l3bt3scostst.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "uz.merge4.nonstop",
-            "certificate_hash": "e3c054f5e7eabe39199e434e2e0871fbde80c387"
-          }
-        },
-        {
-          "client_id": "821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAnQifahPaUYB5r8nJcnEZw0yybn2pvZo0"
+          "current_key": "AIzaSyCI6rc9gbOlJoyxOhgnPOzXU6XBRyuoI14"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "821831827536-avd7n94gochej1vogomvcq7fkuro5tk9.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "uz.merge4.nonstop"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
