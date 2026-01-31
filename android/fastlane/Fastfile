@@ -34,15 +34,14 @@ platform :android do
 
   desc "Deploy to Firebase App Distribution (Internal Testing)"
   lane :firebase_internal do |options|
-    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
+    build_number = options[:build_number] || "2"
 
     Dir.chdir("..") do
       sh("flutter", "build", "apk", "--release", "--build-number=#{build_number}")
     end
 
     firebase_app_distribution(
-      app: ENV["FIREBASE_ANDROID_APP_ID"],
-      groups: "internal-testers",
+      app: ENV["FIREBASE_ANDROID_APP_ID"] || "1:127473148279:android:2109fc50be2bbc3ec2c172",
       release_notes: options[:notes] || "Internal test build #{build_number}",
       apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
       firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"]
