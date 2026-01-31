@@ -1,6 +1,6 @@
 # Frontend TODO List
 
-> Last updated: 2026-01-30
+> Last updated: 2026-01-31
 > Based on codebase analysis and PRD review
 
 ## 1. TODO Items (UI Only - No Real Implementation)
@@ -10,8 +10,8 @@
 | Location | Description | Backend Status | Related Branch |
 |----------|-------------|----------------|----------------|
 | ~~`login_screen_v1.dart:134`~~ | ~~비밀번호 찾기 화면~~ | ~~BE API 완료~~ | `feat/forgot-password-screen` (Done) |
-| `signup_screen.dart:305-317` | Google/Apple 회원가입 | BE 완료 | Merged |
-| `chat_screen.dart:26` | 1:1 채팅방 생성 (User picker) | BE 완료 (STOMP/Kafka) | Merged |
+| ~~`signup_screen.dart:305-317`~~ | ~~Google/Apple 회원가입~~ | ~~BE 완료~~ | ✅ Merged |
+| ~~`chat_screen.dart:26`~~ | ~~1:1 채팅방 생성 (User picker)~~ | ~~BE 완료 (STOMP/Kafka)~~ | ✅ Merged |
 
 ### MEDIUM Priority
 
@@ -19,14 +19,14 @@
 |----------|-------------|----------------|----------------|
 | `main_scaffold.dart:42` | 관리자 기능 구현 | Admin API 부분 완료 | - |
 | ~~`home_screen.dart:191`~~ | ~~알림(Notifications) 화면~~ | ~~FCM 연동 필요~~ | `feat/fcm-push-notification` (Done) |
-| `language_selector.dart:56` | 언어 변경 로직 (i18n) | FE Only | - |
+| ~~`language_selector.dart:56`~~ | ~~언어 변경 로직 (i18n)~~ | ~~FE Only~~ | ✅ Done (`feat/i18n-full-localization`) |
 | `timetable_screen.dart:318` | 새 시간표 생성 화면 | BE 완료 | - |
 
 ### LOW Priority
 
 | Location | Description | Backend Status | Related Branch |
 |----------|-------------|----------------|----------------|
-| `home_screen.dart:64` | Pull-to-refresh 로직 | - | - |
+| ~~`home_screen.dart:64`~~ | ~~Pull-to-refresh 로직~~ | - | ✅ Done (UX improvements) |
 | `dio_client.dart:35` | SSL 인증서 고정 | - | - |
 | `app_router.dart:193` | Auth guard redirect 로직 | - | - |
 | `signup_screen.dart:443-452` | Terms/Privacy onTap | FE Only | - |
@@ -43,7 +43,57 @@
 
 ---
 
-## 3. Recently Merged Features (2026-01-30)
+## 3. Recently Completed Features (2026-01-31)
+
+### Design System - "Samarkand Modern" Theme
+- [x] Complete app redesign with new color palette
+- [x] Primary: #1E3A5F, Secondary: #D4AF37
+- [x] Pretendard font family
+- [x] Consistent component styling
+
+### i18n Full Localization (2026-01-30)
+- [x] Complete Korean localization (app_ko.arb)
+- [x] Complete Uzbek localization (app_uz.arb)
+- [x] Complete Russian localization (app_ru.arb)
+- [x] Complete English localization (app_en.arb)
+- [x] Language switching in settings
+
+### UX Improvements (2026-01-30)
+- [x] Skeleton loaders for lists (shimmer effect)
+- [x] Pull-to-refresh on all list screens
+- [x] Haptic feedback on interactions
+- [x] Chat search functionality
+- [x] Image error handlers with placeholders
+
+### Report & Block Feature (2026-01-31)
+- [x] Report posts/comments/users/chat messages
+- [x] Block/Unblock users
+- [x] Blocked users management screen
+- [x] Report dialog with reason selection
+- [x] Backend API integration (PR #29)
+
+### University Verification (2026-01-31)
+- [x] Student ID photo upload verification
+- [x] School email verification with 6-digit code
+- [x] Verification status tracking
+- [x] Dual-tab UI (Student ID / Email)
+
+### App Configuration (2026-01-31)
+- [x] Package name: `uz.merge4.nonstop`
+- [x] Firebase project: `nonstop-c2aa4`
+- [x] iOS minimum version: 15.0
+- [x] New app icon (blue gradient N logo)
+- [x] Android adaptive icon support
+
+### Deployment Setup (2026-01-31)
+- [x] Firebase App Distribution configured
+- [x] Fastlane Android deployment working
+- [x] Fastlane iOS deployment working
+- [x] Development export options for iOS
+
+---
+
+## 4. Previous Completed Features
 
 ### From `feature/chat-full-implementation`:
 - [x] birthDate field in signup flow
@@ -68,78 +118,53 @@
 - [x] Backend API integration (reset request, verify, confirm)
 - [x] Route and navigation from login screen
 
-### Chat Real API Migration (2026-01-30):
-- [x] Removed mock API usage from `chat_provider.dart`
-- [x] Now uses `ChatApiImpl` with real backend (STOMP/Kafka)
-- [x] Full functionality: messages, images, read receipts, pagination
-
-### Profile Real API Migration (2026-01-30):
-- [x] Created `ProfileApiImpl` with real backend API calls
-- [x] Updated `profile_provider.dart` to use `ProfileApiImpl`
-- [x] Uses current user ID from auth provider
-- [x] Settings API - using local defaults (backend pending)
-- [x] Profile Stats API - using placeholder (backend pending)
-
-### Posts Real API Migration (2026-01-30):
-- [x] Added `getMyPosts` to BoardRepository
-- [x] Added `myPostsProvider` in profile_provider.dart
-- [x] Updated profile_screen.dart to display real user posts
-- [x] Backend: Added GET /users/me/posts endpoint (PR pending)
-
-### FCM Push Notification Implementation (2026-01-30):
+### FCM Push Notification Implementation:
 - [x] Added firebase_messaging and flutter_local_notifications packages
-- [x] Created FcmService for push notification handling:
-  - Permission request
-  - Token management with backend registration
-  - Foreground/background message handling
-  - Local notification display
-- [x] Created notification feature structure:
-  - AppNotification entity with freezed
-  - NotificationApi and NotificationApiImpl
-  - NotificationRepository
-  - NotificationProvider with state management
-  - NotificationScreen with read/unread UI
-- [x] Integrated FCM in auth flow:
-  - Initialize FCM after login/signup
-  - Unregister token on logout
-- [x] Added notification icon with badge to BoardScreen
-- [x] Enabled core library desugaring for Android
+- [x] FcmService for push notification handling
+- [x] NotificationScreen with read/unread UI
+- [x] FCM token registration on login/signup
 
 ---
 
-## 4. Branches Status
+## 5. Remaining TODO
 
-| Branch | Status | Notes |
-|--------|--------|-------|
-| `origin/dylan` | Not merged | Dev environment, Google sign-out |
-| `origin/feat/initial-stage` | Not merged | .vscode removal, profile stats |
+### Backend PR Pending
+- [ ] Merge PR #29 (report/block API) to main branch
 
----
+### Code Quality
+- [ ] Fix `unnecessary_non_null_assertion` warnings (10+ files)
+- [ ] Remove unused imports (fcm_service.dart, chat_screen.dart)
+- [ ] Complete remaining i18n translations (ko: 30, ru: 31, uz: 31 messages)
 
-## 5. From Backend PRD (v2.5.17)
+### Store Release Preparation
+- [ ] iOS Launch Image (replace placeholder)
+- [ ] Privacy Policy URL
+- [ ] Terms of Service URL
+- [ ] Store screenshots (4 languages)
+- [ ] App descriptions (4 languages)
+- [ ] iOS Ad-Hoc/App Store certificates (for production release)
 
-### Backend Complete, Frontend Needed
-
-- [x] ~~Push Notification (FCM)~~ - ✅ Done (`feat/fcm-push-notification`)
-- [ ] Board Admin APIs - BE 90% complete
-- [ ] isUniversityVerified refactoring - Use for access control
-- [ ] Policy versioning frontend support
-
-### Both BE & FE Needed
-
+### Future Features
 - [ ] Admin Dashboard UI
-- [x] ~~Real-time notification center~~ - ✅ Done (NotificationScreen 구현 완료)
 - [ ] Advanced search filters
+- [ ] New timetable creation screen
 
 ---
 
-## 6. Recommended Next Tasks
+## 6. Git Commit History (Recent)
 
-1. ~~**비밀번호 찾기 화면**~~ - ✅ Done (`feat/forgot-password-screen`)
-2. ~~**Chat Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-3. ~~**Profile Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-4. ~~**Posts Mock → Real API**~~ - ✅ Done (Real API 연동 완료)
-5. ~~**FCM Push Notification**~~ - ✅ Done (`feat/fcm-push-notification`)
-6. **i18n Language Support** - FE only, no backend dependency
-7. **Admin Dashboard UI** - BE Admin APIs 90% complete
-8. **Board Search** - Advanced search filters
+```
+732c945 chore: update fastlane config for Firebase App Distribution
+2cc4836 feat: update app icon for Android and iOS
+93c1716 docs: add development summary document
+a8d1c26 chore(ios): update minimum iOS version to 15.0 for Firebase compatibility
+ce48b16 chore: update Firebase config for uz.merge4.nonstop
+25a465d feat: implement university verification feature
+c64743a chore: change package name to uz.merge4.nonstop
+fb633d1 feat: implement report and block functionality
+ffcb286 feat: implement UX improvements (skeleton, haptic, chat search)
+0ef0b7e feat: implement FE-only improvements (image handlers, refresh, etc.)
+5736df2 Merge branch 'feat/i18n-full-localization' into dev
+47d6ec8 feat: complete full app localization for 4 languages (uz/ru/en/ko)
+3b830dc feat: redesign entire app with "Samarkand Modern" theme
+```
