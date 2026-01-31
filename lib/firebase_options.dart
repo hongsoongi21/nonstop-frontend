@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '127473148279',
     projectId: 'nonstop-c2aa4',
     storageBucket: 'nonstop-c2aa4.firebasestorage.app',
+    iosClientId: '127473148279-2o8t8nbv7tru4audjcu98bg9qce548kd.apps.googleusercontent.com',
     iosBundleId: 'uz.merge4.nonstop',
   );
 

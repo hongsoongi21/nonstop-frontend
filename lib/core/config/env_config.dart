@@ -87,11 +87,12 @@ class EnvConfig {
   static bool get isDevelopment => environment == 'development';
 
   /// Google Server Client ID for OAuth
+  /// Firebase project: nonstop-c2aa4 (127473148279)
   static String get googleServerClientId {
     return const String.fromEnvironment(
       _googleServerClientIdKey,
       defaultValue:
-          '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
+          '127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com',
     );
   }
 }
