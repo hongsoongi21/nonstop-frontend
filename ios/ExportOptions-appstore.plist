@@ -10,8 +10,8 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.example.nonstop</key>
-        <string>match AppStore com.example.nonstop</string>
+        <key>uz.merge4.nonstop</key>
+        <string>match AppStore uz.merge4.nonstop</string>
     </dict>
     <key>uploadSymbols</key>
     <true/>
