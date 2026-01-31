@@ -1156,5 +1156,102 @@
   "birthDate": "Birth Date",
   "@birthDate": {
     "description": "Birth date field label"
+  },
+  "report": "Report",
+  "@report": {
+    "description": "Report button/dialog title"
+  },
+  "reportReason": "Select report reason",
+  "@reportReason": {
+    "description": "Report reason selection label"
+  },
+  "reportReasonSpam": "Spam/Inappropriate promotion",
+  "@reportReasonSpam": {
+    "description": "Spam report reason"
+  },
+  "reportReasonAbuse": "Profanity/Insult",
+  "@reportReasonAbuse": {
+    "description": "Abuse report reason"
+  },
+  "reportReasonSexual": "Sexual content",
+  "@reportReasonSexual": {
+    "description": "Sexual content report reason"
+  },
+  "reportReasonHate": "Hate speech",
+  "@reportReasonHate": {
+    "description": "Hate speech report reason"
+  },
+  "reportReasonIllegal": "Illegal content",
+  "@reportReasonIllegal": {
+    "description": "Illegal content report reason"
+  },
+  "reportReasonPrivacy": "Privacy violation",
+  "@reportReasonPrivacy": {
+    "description": "Privacy violation report reason"
+  },
+  "reportReasonImpersonation": "Impersonation",
+  "@reportReasonImpersonation": {
+    "description": "Impersonation report reason"
+  },
+  "reportReasonOther": "Other",
+  "@reportReasonOther": {
+    "description": "Other report reason"
+  },
+  "reportDescription": "Additional details (optional)",
+  "@reportDescription": {
+    "description": "Report description field placeholder"
+  },
+  "reportSubmit": "Submit report",
+  "@reportSubmit": {
+    "description": "Submit report button text"
+  },
+  "reportSuccess": "Report submitted successfully",
+  "@reportSuccess": {
+    "description": "Report success message"
+  },
+  "reportAlreadyReported": "You have already reported this",
+  "@reportAlreadyReported": {
+    "description": "Already reported error message"
+  },
+  "blockUser": "Block user",
+  "@blockUser": {
+    "description": "Block user dialog title"
+  },
+  "blockUserConfirm": "Are you sure you want to block {name}?",
+  "@blockUserConfirm": {
+    "description": "Block user confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserDescription": "You will no longer receive messages or friend requests from this user.",
+  "@blockUserDescription": {
+    "description": "Block user description text"
+  },
+  "block": "Block",
+  "@block": {
+    "description": "Block button text"
+  },
+  "unblock": "Unblock",
+  "@unblock": {
+    "description": "Unblock button text"
+  },
+  "blockedUsers": "Blocked users",
+  "@blockedUsers": {
+    "description": "Blocked users screen title"
+  },
+  "noBlockedUsers": "No blocked users",
+  "@noBlockedUsers": {
+    "description": "Empty state message for blocked users"
+  },
+  "userBlocked": "User blocked",
+  "@userBlocked": {
+    "description": "Success message after blocking user"
+  },
+  "userUnblocked": "User unblocked",
+  "@userUnblocked": {
+    "description": "Success message after unblocking user"
   }
 }

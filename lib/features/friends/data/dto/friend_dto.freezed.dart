@@ -664,3 +664,191 @@ abstract class _FriendRequestDto implements FriendRequestDto {
   _$$FriendRequestDtoImplCopyWith<_$FriendRequestDtoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+BlockedUserDto _$BlockedUserDtoFromJson(Map<String, dynamic> json) {
+  return _BlockedUserDto.fromJson(json);
+}
+
+/// @nodoc
+mixin _$BlockedUserDto {
+  UserInfoDto get blockedUser => throw _privateConstructorUsedError;
+  String? get blockedAt => throw _privateConstructorUsedError;
+
+  /// Serializes this BlockedUserDto to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $BlockedUserDtoCopyWith<BlockedUserDto> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $BlockedUserDtoCopyWith<$Res> {
+  factory $BlockedUserDtoCopyWith(
+    BlockedUserDto value,
+    $Res Function(BlockedUserDto) then,
+  ) = _$BlockedUserDtoCopyWithImpl<$Res, BlockedUserDto>;
+  @useResult
+  $Res call({UserInfoDto blockedUser, String? blockedAt});
+
+  $UserInfoDtoCopyWith<$Res> get blockedUser;
+}
+
+/// @nodoc
+class _$BlockedUserDtoCopyWithImpl<$Res, $Val extends BlockedUserDto>
+    implements $BlockedUserDtoCopyWith<$Res> {
+  _$BlockedUserDtoCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? blockedUser = null, Object? blockedAt = freezed}) {
+    return _then(
+      _value.copyWith(
+            blockedUser: null == blockedUser
+                ? _value.blockedUser
+                : blockedUser // ignore: cast_nullable_to_non_nullable
+                      as UserInfoDto,
+            blockedAt: freezed == blockedAt
+                ? _value.blockedAt
+                : blockedAt // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $UserInfoDtoCopyWith<$Res> get blockedUser {
+    return $UserInfoDtoCopyWith<$Res>(_value.blockedUser, (value) {
+      return _then(_value.copyWith(blockedUser: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$BlockedUserDtoImplCopyWith<$Res>
+    implements $BlockedUserDtoCopyWith<$Res> {
+  factory _$$BlockedUserDtoImplCopyWith(
+    _$BlockedUserDtoImpl value,
+    $Res Function(_$BlockedUserDtoImpl) then,
+  ) = __$$BlockedUserDtoImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({UserInfoDto blockedUser, String? blockedAt});
+
+  @override
+  $UserInfoDtoCopyWith<$Res> get blockedUser;
+}
+
+/// @nodoc
+class __$$BlockedUserDtoImplCopyWithImpl<$Res>
+    extends _$BlockedUserDtoCopyWithImpl<$Res, _$BlockedUserDtoImpl>
+    implements _$$BlockedUserDtoImplCopyWith<$Res> {
+  __$$BlockedUserDtoImplCopyWithImpl(
+    _$BlockedUserDtoImpl _value,
+    $Res Function(_$BlockedUserDtoImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? blockedUser = null, Object? blockedAt = freezed}) {
+    return _then(
+      _$BlockedUserDtoImpl(
+        blockedUser: null == blockedUser
+            ? _value.blockedUser
+            : blockedUser // ignore: cast_nullable_to_non_nullable
+                  as UserInfoDto,
+        blockedAt: freezed == blockedAt
+            ? _value.blockedAt
+            : blockedAt // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$BlockedUserDtoImpl implements _BlockedUserDto {
+  const _$BlockedUserDtoImpl({required this.blockedUser, this.blockedAt});
+
+  factory _$BlockedUserDtoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$BlockedUserDtoImplFromJson(json);
+
+  @override
+  final UserInfoDto blockedUser;
+  @override
+  final String? blockedAt;
+
+  @override
+  String toString() {
+    return 'BlockedUserDto(blockedUser: $blockedUser, blockedAt: $blockedAt)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$BlockedUserDtoImpl &&
+            (identical(other.blockedUser, blockedUser) ||
+                other.blockedUser == blockedUser) &&
+            (identical(other.blockedAt, blockedAt) ||
+                other.blockedAt == blockedAt));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, blockedUser, blockedAt);
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$BlockedUserDtoImplCopyWith<_$BlockedUserDtoImpl> get copyWith =>
+      __$$BlockedUserDtoImplCopyWithImpl<_$BlockedUserDtoImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$BlockedUserDtoImplToJson(this);
+  }
+}
+
+abstract class _BlockedUserDto implements BlockedUserDto {
+  const factory _BlockedUserDto({
+    required final UserInfoDto blockedUser,
+    final String? blockedAt,
+  }) = _$BlockedUserDtoImpl;
+
+  factory _BlockedUserDto.fromJson(Map<String, dynamic> json) =
+      _$BlockedUserDtoImpl.fromJson;
+
+  @override
+  UserInfoDto get blockedUser;
+  @override
+  String? get blockedAt;
+
+  /// Create a copy of BlockedUserDto
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$BlockedUserDtoImplCopyWith<_$BlockedUserDtoImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}

@@ -9,6 +9,7 @@ import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../providers/post_detail_provider.dart';
+import '../../../../shared/components/report_dialog.dart';
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
@@ -100,7 +101,12 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context, PostEntity post, List<CommentEntity> comments, int postId) {
+  Widget _buildBody(
+    BuildContext context,
+    PostEntity post,
+    List<CommentEntity> comments,
+    int postId,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
@@ -161,11 +167,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.reply_rounded,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
+                Icon(Icons.reply_rounded, size: 16, color: AppColors.primary),
                 const SizedBox(width: 8),
                 Text(
                   l10n.replyingToComment,
@@ -238,11 +240,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: AppColors.textTertiary,
-        ),
+        Icon(icon, size: 16, color: AppColors.textTertiary),
         const SizedBox(width: 4),
         Text(
           count,
@@ -284,7 +282,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, PostEntity post, int postId) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    PostEntity post,
+    int postId,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
@@ -321,7 +323,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     );
   }
 
-  Widget _buildCommentsSection(BuildContext context, List<CommentEntity> comments, int postId) {
+  Widget _buildCommentsSection(
+    BuildContext context,
+    List<CommentEntity> comments,
+    int postId,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,6 +410,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           onLike: () => notifier.toggleCommentLike(comment.id),
           onEdit: () => _showEditCommentDialog(comment, notifier),
           onDelete: () => _showDeleteCommentDialog(comment.id, notifier),
+          onReport: () async {
+            await showReportDialog(
+              context: context,
+              targetType: ReportTargetType.comment,
+              targetId: comment.id,
+            );
+          },
         ),
       );
       // Add nested replies
@@ -420,6 +433,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               onLike: () => notifier.toggleCommentLike(reply.id),
               onEdit: () => _showEditCommentDialog(reply, notifier),
               onDelete: () => _showDeleteCommentDialog(reply.id, notifier),
+              onReport: () async {
+                await showReportDialog(
+                  context: context,
+                  targetType: ReportTargetType.comment,
+                  targetId: reply.id,
+                );
+              },
             ),
           );
         }
@@ -482,8 +502,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               Row(
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
@@ -532,15 +554,42 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
               PopupMenuItem(
                 value: 'delete',
-                child: Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
+                child: Text(
+                  l10n.delete,
+                  style: const TextStyle(color: AppColors.error),
+                ),
               ),
             ],
           )
         else
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.more_horiz_rounded, size: 22),
-            color: AppColors.textSecondary,
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_horiz_rounded,
+              color: AppColors.textSecondary,
+              size: 22,
+            ),
+            offset: const Offset(0, 40),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            onSelected: (value) async {
+              if (value == 'report') {
+                await showReportDialog(
+                  context: context,
+                  targetType: ReportTargetType.post,
+                  targetId: post.id,
+                );
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'report',
+                child: Text(
+                  l10n.report,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
       ],
     );
@@ -740,7 +789,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       color: _isAnonymous
                           ? AppColors.textPrimary
                           : AppColors.textSecondary,
-                      fontWeight: _isAnonymous ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: _isAnonymous
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                     ),
                   ),
                 ),
@@ -752,7 +803,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(20),
@@ -777,7 +831,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                         errorBorder: InputBorder.none,
                         disabledBorder: InputBorder.none,
                         filled: false,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
                         isDense: true,
                       ),
                     ),
@@ -791,10 +847,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.primary,
-                        AppColors.primaryDark,
-                      ],
+                      colors: [AppColors.primary, AppColors.primaryDark],
                     ),
                     borderRadius: BorderRadius.circular(22),
                     boxShadow: [
@@ -868,11 +921,7 @@ class _ActionButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 20,
-              color: effectiveColor,
-            ),
+            Icon(icon, size: 20, color: effectiveColor),
             const SizedBox(width: 6),
             Text(
               label,
@@ -895,6 +944,7 @@ class _CommentItem extends StatelessWidget {
   final VoidCallback? onLike;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onReport;
 
   const _CommentItem({
     required this.comment,
@@ -903,6 +953,7 @@ class _CommentItem extends StatelessWidget {
     this.onLike,
     this.onEdit,
     this.onDelete,
+    this.onReport,
   });
 
   @override
@@ -978,11 +1029,12 @@ class _CommentItem extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (comment.isMine)
-                            _CommentAuthorMenu(
-                              onEdit: onEdit,
-                              onDelete: onDelete,
-                            ),
+                          _CommentMenu(
+                            isMine: comment.isMine,
+                            onEdit: onEdit,
+                            onDelete: onDelete,
+                            onReport: onReport,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 6),
@@ -1012,11 +1064,18 @@ class _CommentItem extends StatelessWidget {
   }
 }
 
-class _CommentAuthorMenu extends StatelessWidget {
+class _CommentMenu extends StatelessWidget {
+  final bool isMine;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final VoidCallback? onReport;
 
-  const _CommentAuthorMenu({this.onEdit, this.onDelete});
+  const _CommentMenu({
+    required this.isMine,
+    this.onEdit,
+    this.onDelete,
+    this.onReport,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1029,26 +1088,36 @@ class _CommentAuthorMenu extends StatelessWidget {
       ),
       padding: EdgeInsets.zero,
       offset: const Offset(0, 30),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {
         if (value == 'edit') {
           onEdit?.call();
         } else if (value == 'delete') {
           onDelete?.call();
+        } else if (value == 'report') {
+          onReport?.call();
         }
       },
-      itemBuilder: (context) => [
-        PopupMenuItem(value: 'edit', child: Text(l10n.editComment)),
-        PopupMenuItem(
-          value: 'delete',
-          child: Text(
-            l10n.deleteComment,
-            style: const TextStyle(color: AppColors.error),
-          ),
-        ),
-      ],
+      itemBuilder: (context) => isMine
+          ? [
+              PopupMenuItem(value: 'edit', child: Text(l10n.editComment)),
+              PopupMenuItem(
+                value: 'delete',
+                child: Text(
+                  l10n.deleteComment,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ]
+          : [
+              PopupMenuItem(
+                value: 'report',
+                child: Text(
+                  l10n.report,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ],
     );
   }
 }

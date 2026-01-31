@@ -862,4 +862,75 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get birthDate => '생년월일';
+
+  @override
+  String get report => '신고';
+
+  @override
+  String get reportReason => '신고 사유 선택';
+
+  @override
+  String get reportReasonSpam => '스팸/부적절한 홍보';
+
+  @override
+  String get reportReasonAbuse => '욕설/비하';
+
+  @override
+  String get reportReasonSexual => '음란물';
+
+  @override
+  String get reportReasonHate => '혐오 발언';
+
+  @override
+  String get reportReasonIllegal => '불법 정보';
+
+  @override
+  String get reportReasonPrivacy => '개인정보 노출';
+
+  @override
+  String get reportReasonImpersonation => '사칭';
+
+  @override
+  String get reportReasonOther => '기타';
+
+  @override
+  String get reportDescription => '추가 설명 (선택사항)';
+
+  @override
+  String get reportSubmit => '신고하기';
+
+  @override
+  String get reportSuccess => '신고가 접수되었습니다';
+
+  @override
+  String get reportAlreadyReported => '이미 신고한 내용입니다';
+
+  @override
+  String get blockUser => '사용자 차단';
+
+  @override
+  String blockUserConfirm(String name) {
+    return '$name님을 차단하시겠습니까?';
+  }
+
+  @override
+  String get blockUserDescription => '이 사용자로부터 메시지나 친구 요청을 받지 않게 됩니다.';
+
+  @override
+  String get block => '차단';
+
+  @override
+  String get unblock => '차단 해제';
+
+  @override
+  String get blockedUsers => '차단된 사용자';
+
+  @override
+  String get noBlockedUsers => '차단된 사용자 없음';
+
+  @override
+  String get userBlocked => '사용자를 차단했습니다';
+
+  @override
+  String get userUnblocked => '사용자 차단을 해제했습니다';
 }

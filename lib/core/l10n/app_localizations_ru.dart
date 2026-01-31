@@ -878,4 +878,76 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get birthDate => 'Дата рождения';
+
+  @override
+  String get report => 'Жалоба';
+
+  @override
+  String get reportReason => 'Выберите причину жалобы';
+
+  @override
+  String get reportReasonSpam => 'Спам/Неуместная реклама';
+
+  @override
+  String get reportReasonAbuse => 'Оскорбления/Ругательства';
+
+  @override
+  String get reportReasonSexual => 'Сексуальный контент';
+
+  @override
+  String get reportReasonHate => 'Разжигание ненависти';
+
+  @override
+  String get reportReasonIllegal => 'Незаконный контент';
+
+  @override
+  String get reportReasonPrivacy => 'Нарушение конфиденциальности';
+
+  @override
+  String get reportReasonImpersonation => 'Выдача себя за другого';
+
+  @override
+  String get reportReasonOther => 'Другое';
+
+  @override
+  String get reportDescription => 'Дополнительные детали (необязательно)';
+
+  @override
+  String get reportSubmit => 'Отправить жалобу';
+
+  @override
+  String get reportSuccess => 'Жалоба успешно отправлена';
+
+  @override
+  String get reportAlreadyReported => 'Вы уже отправили жалобу';
+
+  @override
+  String get blockUser => 'Заблокировать пользователя';
+
+  @override
+  String blockUserConfirm(String name) {
+    return 'Вы уверены, что хотите заблокировать $name?';
+  }
+
+  @override
+  String get blockUserDescription =>
+      'Вы больше не будете получать сообщения или запросы в друзья от этого пользователя.';
+
+  @override
+  String get block => 'Заблокировать';
+
+  @override
+  String get unblock => 'Разблокировать';
+
+  @override
+  String get blockedUsers => 'Заблокированные пользователи';
+
+  @override
+  String get noBlockedUsers => 'Нет заблокированных пользователей';
+
+  @override
+  String get userBlocked => 'Пользователь заблокирован';
+
+  @override
+  String get userUnblocked => 'Пользователь разблокирован';
 }

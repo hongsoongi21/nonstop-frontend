@@ -883,4 +883,77 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get birthDate => 'Tug\'ilgan sana';
+
+  @override
+  String get report => 'Shikoyat';
+
+  @override
+  String get reportReason => 'Shikoyat sababini tanlang';
+
+  @override
+  String get reportReasonSpam => 'Spam/Noto\'g\'ri reklama';
+
+  @override
+  String get reportReasonAbuse => 'Haqorat/So\'kinish';
+
+  @override
+  String get reportReasonSexual => 'Jinsiy kontent';
+
+  @override
+  String get reportReasonHate => 'Nafrat so\'zlari';
+
+  @override
+  String get reportReasonIllegal => 'Noqonuniy kontent';
+
+  @override
+  String get reportReasonPrivacy => 'Maxfiylik buzilishi';
+
+  @override
+  String get reportReasonImpersonation =>
+      'O\'zini boshqa kishi deb ko\'rsatish';
+
+  @override
+  String get reportReasonOther => 'Boshqa';
+
+  @override
+  String get reportDescription => 'Qo\'shimcha tafsilotlar (ixtiyoriy)';
+
+  @override
+  String get reportSubmit => 'Shikoyat yuborish';
+
+  @override
+  String get reportSuccess => 'Shikoyat muvaffaqiyatli yuborildi';
+
+  @override
+  String get reportAlreadyReported => 'Siz allaqachon shikoyat qilgansiz';
+
+  @override
+  String get blockUser => 'Foydalanuvchini bloklash';
+
+  @override
+  String blockUserConfirm(String name) {
+    return '${name}ni bloklashni xohlaysizmi?';
+  }
+
+  @override
+  String get blockUserDescription =>
+      'Ushbu foydalanuvchidan xabarlar yoki do\'stlik so\'rovlarini olmaysiz.';
+
+  @override
+  String get block => 'Bloklash';
+
+  @override
+  String get unblock => 'Blokdan chiqarish';
+
+  @override
+  String get blockedUsers => 'Bloklangan foydalanuvchilar';
+
+  @override
+  String get noBlockedUsers => 'Bloklangan foydalanuvchilar yo\'q';
+
+  @override
+  String get userBlocked => 'Foydalanuvchi bloklandi';
+
+  @override
+  String get userUnblocked => 'Foydalanuvchi blokdan chiqarildi';
 }

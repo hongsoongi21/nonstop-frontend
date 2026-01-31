@@ -10,6 +10,9 @@ import 'package:nonstop/features/chat/presentation/screens/fullscreen_image_view
 import 'package:nonstop/features/chat/presentation/widgets/message_bubble.dart';
 import 'package:nonstop/features/chat/presentation/widgets/chat_input_bar.dart';
 import 'package:nonstop/features/chat/presentation/widgets/date_separator.dart';
+import 'package:nonstop/shared/components/report_dialog.dart';
+import 'package:nonstop/shared/components/block_user_dialog.dart';
+import 'package:nonstop/features/friends/data/api/friend_api_impl.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   final int roomId;
@@ -28,6 +31,8 @@ class ChatRoomScreen extends ConsumerStatefulWidget {
 class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   final _scrollController = ScrollController();
   bool _showScrollToBottom = false;
+  int? _otherUserId;
+  String? _otherUserName;
 
   @override
   void initState() {
@@ -40,6 +45,22 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _updateOtherUserInfo(ChatRoomState state) {
+    final currentUserId = ref.read(currentUserIdProvider);
+    if (currentUserId == null || state.messages.isEmpty) return;
+
+    // Find other user from messages
+    final otherMessage = state.messages.firstWhere(
+      (m) => m.senderId != currentUserId,
+      orElse: () => state.messages.first,
+    );
+
+    if (otherMessage.senderId != currentUserId) {
+      _otherUserId = otherMessage.senderId;
+      _otherUserName = widget.roomName;
+    }
   }
 
   void _onScroll() {
@@ -68,6 +89,10 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
   Widget build(BuildContext context) {
     final state = ref.watch(chatRoomProvider(widget.roomId));
     final currentUserId = ref.watch(currentUserIdProvider);
+    final l10n = AppLocalizations.of(context);
+
+    // Update other user info
+    _updateOtherUserInfo(state);
 
     return Scaffold(
       appBar: AppBar(
@@ -93,12 +118,52 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
               color: AppColors.surfaceVariant,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: IconButton(
+            child: PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
-              color: AppColors.textSecondary,
-              onPressed: () {
-                // TODO: Show chat options
+              color: AppColors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              offset: const Offset(0, 48),
+              onSelected: (value) {
+                if (value == 'report') {
+                  _handleReportUser();
+                } else if (value == 'block') {
+                  _handleBlockUser();
+                }
               },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.report_outlined, color: AppColors.error),
+                      const SizedBox(width: 12),
+                      Text(
+                        l10n.report,
+                        style: AppTypography.body2.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'block',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.block, color: AppColors.error),
+                      const SizedBox(width: 12),
+                      Text(
+                        l10n.blockUser,
+                        style: AppTypography.body2.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -272,6 +337,9 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     );
                   }
                 },
+                onLongPress: !isMe
+                    ? () => _handleReportMessage(context, message.id)
+                    : null,
               ),
               if (showDateSeparator) DateSeparator(date: message.sentAt),
             ],
@@ -412,6 +480,130 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                   if (file != null) {
                     notifier.sendImageMessage(file.path);
                   }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleReportUser() async {
+    if (_otherUserId == null) return;
+
+    await showReportDialog(
+      context: context,
+      targetType: ReportTargetType.user,
+      targetId: _otherUserId!,
+    );
+  }
+
+  Future<void> _handleBlockUser() async {
+    if (_otherUserId == null) return;
+
+    final l10n = AppLocalizations.of(context);
+    final userName = _otherUserName ?? l10n.chat;
+
+    final confirmed = await BlockUserDialog.show(context, userName);
+    if (!confirmed || !mounted) return;
+
+    try {
+      final friendApi = ref.read(friendApiProvider);
+      final result = await friendApi.blockUser(_otherUserId.toString());
+
+      result.fold(
+        (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(l10n.errorOccurred),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        },
+        (_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('$userName ${l10n.blockUser}'),
+                backgroundColor: AppColors.success,
+              ),
+            );
+            Navigator.of(context).pop();
+          }
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorOccurred),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleReportMessage(BuildContext context, int messageId) async {
+    final l10n = AppLocalizations.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.report_outlined,
+                    color: AppColors.error,
+                    size: 24,
+                  ),
+                ),
+                title: Text(
+                  l10n.report,
+                  style: AppTypography.body1.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  'Report this message',
+                  style: AppTypography.body2.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await showReportDialog(
+                    context: context,
+                    targetType: ReportTargetType.chatMessage,
+                    targetId: messageId,
+                  );
                 },
               ),
             ],

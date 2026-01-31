@@ -214,6 +214,20 @@ class SettingsScreen extends ConsumerWidget {
 
           SizedBox(height: AppSpacing.xl),
 
+          // Blocked Users Section
+          _buildSettingsCard(
+            children: [
+              _buildNavigationTile(
+                context: context,
+                icon: Icons.block,
+                title: AppLocalizations.of(context)!.blockedUsers,
+                onTap: () => context.push(Routes.blockedUsers),
+              ),
+            ],
+          ),
+
+          SizedBox(height: AppSpacing.xl),
+
           // Account Section
           _buildSectionHeader(AppLocalizations.of(context)!.account),
           SizedBox(height: AppSpacing.sm),
@@ -416,6 +430,55 @@ class SettingsScreen extends ConsumerWidget {
             inactiveTrackColor: AppColors.border,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavigationTile({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.textTertiary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Icon(
+                icon,
+                color: AppColors.textSecondary,
+                size: AppSpacing.iconMd,
+              ),
+            ),
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                title,
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: AppColors.textTertiary,
+            ),
+          ],
+        ),
       ),
     );
   }

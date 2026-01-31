@@ -11,4 +11,7 @@ abstract class FriendApi {
   Future<Either<ApiException, Unit>> cancelRequest(String requestId);
   Future<Either<ApiException, Unit>> deleteFriend(String friendId);
   Future<Either<ApiException, List<UserInfoDto>>> searchUsers(String query);
+  Future<Either<ApiException, Unit>> blockUser(String userId);
+  Future<Either<ApiException, Unit>> unblockUser(String blockedId);
+  Future<Either<ApiException, List<BlockedUserDto>>> getBlockedUsers();
 }

@@ -871,4 +871,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get birthDate => 'Birth Date';
+
+  @override
+  String get report => 'Report';
+
+  @override
+  String get reportReason => 'Select report reason';
+
+  @override
+  String get reportReasonSpam => 'Spam/Inappropriate promotion';
+
+  @override
+  String get reportReasonAbuse => 'Profanity/Insult';
+
+  @override
+  String get reportReasonSexual => 'Sexual content';
+
+  @override
+  String get reportReasonHate => 'Hate speech';
+
+  @override
+  String get reportReasonIllegal => 'Illegal content';
+
+  @override
+  String get reportReasonPrivacy => 'Privacy violation';
+
+  @override
+  String get reportReasonImpersonation => 'Impersonation';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportDescription => 'Additional details (optional)';
+
+  @override
+  String get reportSubmit => 'Submit report';
+
+  @override
+  String get reportSuccess => 'Report submitted successfully';
+
+  @override
+  String get reportAlreadyReported => 'You have already reported this';
+
+  @override
+  String get blockUser => 'Block user';
+
+  @override
+  String blockUserConfirm(String name) {
+    return 'Are you sure you want to block $name?';
+  }
+
+  @override
+  String get blockUserDescription =>
+      'You will no longer receive messages or friend requests from this user.';
+
+  @override
+  String get block => 'Block';
+
+  @override
+  String get unblock => 'Unblock';
+
+  @override
+  String get blockedUsers => 'Blocked users';
+
+  @override
+  String get noBlockedUsers => 'No blocked users';
+
+  @override
+  String get userBlocked => 'User blocked';
+
+  @override
+  String get userUnblocked => 'User unblocked';
 }

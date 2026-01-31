@@ -1027,5 +1027,102 @@
   "birthDate": "Дата рождения",
   "@birthDate": {
     "description": "Birth date field label"
+  },
+  "report": "Жалоба",
+  "@report": {
+    "description": "Report button/dialog title"
+  },
+  "reportReason": "Выберите причину жалобы",
+  "@reportReason": {
+    "description": "Report reason selection label"
+  },
+  "reportReasonSpam": "Спам/Неуместная реклама",
+  "@reportReasonSpam": {
+    "description": "Spam report reason"
+  },
+  "reportReasonAbuse": "Оскорбления/Ругательства",
+  "@reportReasonAbuse": {
+    "description": "Abuse report reason"
+  },
+  "reportReasonSexual": "Сексуальный контент",
+  "@reportReasonSexual": {
+    "description": "Sexual content report reason"
+  },
+  "reportReasonHate": "Разжигание ненависти",
+  "@reportReasonHate": {
+    "description": "Hate speech report reason"
+  },
+  "reportReasonIllegal": "Незаконный контент",
+  "@reportReasonIllegal": {
+    "description": "Illegal content report reason"
+  },
+  "reportReasonPrivacy": "Нарушение конфиденциальности",
+  "@reportReasonPrivacy": {
+    "description": "Privacy violation report reason"
+  },
+  "reportReasonImpersonation": "Выдача себя за другого",
+  "@reportReasonImpersonation": {
+    "description": "Impersonation report reason"
+  },
+  "reportReasonOther": "Другое",
+  "@reportReasonOther": {
+    "description": "Other report reason"
+  },
+  "reportDescription": "Дополнительные детали (необязательно)",
+  "@reportDescription": {
+    "description": "Report description field placeholder"
+  },
+  "reportSubmit": "Отправить жалобу",
+  "@reportSubmit": {
+    "description": "Submit report button text"
+  },
+  "reportSuccess": "Жалоба успешно отправлена",
+  "@reportSuccess": {
+    "description": "Report success message"
+  },
+  "reportAlreadyReported": "Вы уже отправили жалобу",
+  "@reportAlreadyReported": {
+    "description": "Already reported error message"
+  },
+  "blockUser": "Заблокировать пользователя",
+  "@blockUser": {
+    "description": "Block user dialog title"
+  },
+  "blockUserConfirm": "Вы уверены, что хотите заблокировать {name}?",
+  "@blockUserConfirm": {
+    "description": "Block user confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserDescription": "Вы больше не будете получать сообщения или запросы в друзья от этого пользователя.",
+  "@blockUserDescription": {
+    "description": "Block user description text"
+  },
+  "block": "Заблокировать",
+  "@block": {
+    "description": "Block button text"
+  },
+  "unblock": "Разблокировать",
+  "@unblock": {
+    "description": "Unblock button text"
+  },
+  "blockedUsers": "Заблокированные пользователи",
+  "@blockedUsers": {
+    "description": "Blocked users screen title"
+  },
+  "noBlockedUsers": "Нет заблокированных пользователей",
+  "@noBlockedUsers": {
+    "description": "Empty state message for blocked users"
+  },
+  "userBlocked": "Пользователь заблокирован",
+  "@userBlocked": {
+    "description": "Success message after blocking user"
+  },
+  "userUnblocked": "Пользователь разблокирован",
+  "@userUnblocked": {
+    "description": "Success message after unblocking user"
   }
 }

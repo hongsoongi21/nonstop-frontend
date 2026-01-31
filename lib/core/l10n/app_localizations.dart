@@ -1769,6 +1769,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Birth Date'**
   String get birthDate;
+
+  /// Report button/dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get report;
+
+  /// Report reason selection label
+  ///
+  /// In en, this message translates to:
+  /// **'Select report reason'**
+  String get reportReason;
+
+  /// Spam report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Spam/Inappropriate promotion'**
+  String get reportReasonSpam;
+
+  /// Abuse report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Profanity/Insult'**
+  String get reportReasonAbuse;
+
+  /// Sexual content report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual content'**
+  String get reportReasonSexual;
+
+  /// Hate speech report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Hate speech'**
+  String get reportReasonHate;
+
+  /// Illegal content report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Illegal content'**
+  String get reportReasonIllegal;
+
+  /// Privacy violation report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy violation'**
+  String get reportReasonPrivacy;
+
+  /// Impersonation report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Impersonation'**
+  String get reportReasonImpersonation;
+
+  /// Other report reason
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
+
+  /// Report description field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details (optional)'**
+  String get reportDescription;
+
+  /// Submit report button text
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get reportSubmit;
+
+  /// Report success message
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted successfully'**
+  String get reportSuccess;
+
+  /// Already reported error message
+  ///
+  /// In en, this message translates to:
+  /// **'You have already reported this'**
+  String get reportAlreadyReported;
+
+  /// Block user dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Block user'**
+  String get blockUser;
+
+  /// Block user confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to block {name}?'**
+  String blockUserConfirm(String name);
+
+  /// Block user description text
+  ///
+  /// In en, this message translates to:
+  /// **'You will no longer receive messages or friend requests from this user.'**
+  String get blockUserDescription;
+
+  /// Block button text
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get block;
+
+  /// Unblock button text
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock'**
+  String get unblock;
+
+  /// Blocked users screen title
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked users'**
+  String get blockedUsers;
+
+  /// Empty state message for blocked users
+  ///
+  /// In en, this message translates to:
+  /// **'No blocked users'**
+  String get noBlockedUsers;
+
+  /// Success message after blocking user
+  ///
+  /// In en, this message translates to:
+  /// **'User blocked'**
+  String get userBlocked;
+
+  /// Success message after unblocking user
+  ///
+  /// In en, this message translates to:
+  /// **'User unblocked'**
+  String get userUnblocked;
 }
 
 class _AppLocalizationsDelegate

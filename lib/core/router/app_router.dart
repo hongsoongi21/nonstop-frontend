@@ -23,6 +23,7 @@ import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/features/friends/presentation/screens/friends_screen.dart';
 import 'package:nonstop/features/notification/presentation/screens/notification_screen.dart';
+import 'package:nonstop/features/settings/presentation/screens/blocked_users_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
 /// Main router with authentication guard and bottom navigation
@@ -180,6 +181,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.settings,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.blockedUsers,
+        builder: (context, state) => const BlockedUsersScreen(),
       ),
       GoRoute(
         path: Routes.timetableTest,
