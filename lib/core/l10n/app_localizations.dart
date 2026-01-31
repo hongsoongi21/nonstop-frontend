@@ -1907,6 +1907,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'User unblocked'**
   String get userUnblocked;
+
+  /// University verification screen title
+  ///
+  /// In en, this message translates to:
+  /// **'University Verification'**
+  String get universityVerification;
+
+  /// Student ID verification tab label
+  ///
+  /// In en, this message translates to:
+  /// **'Student ID'**
+  String get studentIdVerification;
+
+  /// Email verification tab label
+  ///
+  /// In en, this message translates to:
+  /// **'Email Verification'**
+  String get emailVerification;
+
+  /// Upload student ID section title
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Student ID'**
+  String get uploadStudentId;
+
+  /// Select image button text
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectImage;
+
+  /// Take photo option
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// Choose from gallery option
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from Gallery'**
+  String get chooseFromGallery;
+
+  /// Submit verification button text
+  ///
+  /// In en, this message translates to:
+  /// **'Submit for Verification'**
+  String get submitVerification;
+
+  /// Verification pending status message
+  ///
+  /// In en, this message translates to:
+  /// **'Verification is pending review'**
+  String get verificationPending;
+
+  /// Verification approved status message
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Approved'**
+  String get verificationApproved;
+
+  /// School email input label
+  ///
+  /// In en, this message translates to:
+  /// **'School Email'**
+  String get schoolEmail;
+
+  /// Send verification code button text
+  ///
+  /// In en, this message translates to:
+  /// **'Send Verification Code'**
+  String get sendVerificationCode;
+
+  /// Verification code input label
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Verification Code'**
+  String get enterVerificationCode;
+
+  /// Code sent success message
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code sent to your email'**
+  String get codeSent;
+
+  /// Verification success message
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified successfully!'**
+  String get verificationSuccess;
+
+  /// Countdown timer label
+  ///
+  /// In en, this message translates to:
+  /// **'Time remaining'**
+  String get timeRemaining;
 }
 
 class _AppLocalizationsDelegate

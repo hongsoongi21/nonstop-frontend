@@ -943,4 +943,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userUnblocked => 'User unblocked';
+
+  @override
+  String get universityVerification => 'University Verification';
+
+  @override
+  String get studentIdVerification => 'Student ID';
+
+  @override
+  String get emailVerification => 'Email Verification';
+
+  @override
+  String get uploadStudentId => 'Upload Student ID';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from Gallery';
+
+  @override
+  String get submitVerification => 'Submit for Verification';
+
+  @override
+  String get verificationPending => 'Verification is pending review';
+
+  @override
+  String get verificationApproved => 'Verification Approved';
+
+  @override
+  String get schoolEmail => 'School Email';
+
+  @override
+  String get sendVerificationCode => 'Send Verification Code';
+
+  @override
+  String get enterVerificationCode => 'Enter Verification Code';
+
+  @override
+  String get codeSent => 'Verification code sent to your email';
+
+  @override
+  String get verificationSuccess => 'Email verified successfully!';
+
+  @override
+  String get timeRemaining => 'Time remaining';
 }

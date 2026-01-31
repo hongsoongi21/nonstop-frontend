@@ -864,5 +864,21 @@
   "blockedUsers": "Bloklangan foydalanuvchilar",
   "noBlockedUsers": "Bloklangan foydalanuvchilar yo'q",
   "userBlocked": "Foydalanuvchi bloklandi",
-  "userUnblocked": "Foydalanuvchi blokdan chiqarildi"
+  "userUnblocked": "Foydalanuvchi blokdan chiqarildi",
+  "universityVerification": "Universitet tasdig'i",
+  "studentIdVerification": "Talaba guvohnomasi",
+  "emailVerification": "Email tasdig'i",
+  "uploadStudentId": "Talaba guvohnomasini yuklash",
+  "selectImage": "Rasm tanlash",
+  "takePhoto": "Surat olish",
+  "chooseFromGallery": "Galereyadan tanlash",
+  "submitVerification": "Tasdig'ga yuborish",
+  "verificationPending": "Tasdig'lanish ko'rib chiqilmoqda",
+  "verificationApproved": "Tasdig'landi",
+  "schoolEmail": "Universitet emaili",
+  "sendVerificationCode": "Tasdig'lash kodini yuborish",
+  "enterVerificationCode": "Tasdig'lash kodini kiriting",
+  "codeSent": "Tasdig'lash kodi emailingizga yuborildi",
+  "verificationSuccess": "Email muvaffaqiyatli tasdiqlandi!",
+  "timeRemaining": "Qolgan vaqt"
 }

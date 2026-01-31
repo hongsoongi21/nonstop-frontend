@@ -868,5 +868,21 @@
   "blockedUsers": "차단된 사용자",
   "noBlockedUsers": "차단된 사용자 없음",
   "userBlocked": "사용자를 차단했습니다",
-  "userUnblocked": "사용자 차단을 해제했습니다"
+  "userUnblocked": "사용자 차단을 해제했습니다",
+  "universityVerification": "대학교 인증",
+  "studentIdVerification": "학생증 인증",
+  "emailVerification": "이메일 인증",
+  "uploadStudentId": "학생증 업로드",
+  "selectImage": "이미지 선택",
+  "takePhoto": "사진 찍기",
+  "chooseFromGallery": "갤러리에서 선택",
+  "submitVerification": "인증 제출",
+  "verificationPending": "인증 검토 중입니다",
+  "verificationApproved": "인증 완료",
+  "schoolEmail": "학교 이메일",
+  "sendVerificationCode": "인증 코드 발송",
+  "enterVerificationCode": "인증 코드 입력",
+  "codeSent": "이메일로 인증 코드를 발송했습니다",
+  "verificationSuccess": "이메일 인증 성공!",
+  "timeRemaining": "남은 시간"
 }

@@ -1124,5 +1124,69 @@
   "userUnblocked": "Пользователь разблокирован",
   "@userUnblocked": {
     "description": "Success message after unblocking user"
+  },
+  "universityVerification": "Верификация университета",
+  "@universityVerification": {
+    "description": "University verification screen title"
+  },
+  "studentIdVerification": "Студенческий билет",
+  "@studentIdVerification": {
+    "description": "Student ID verification tab label"
+  },
+  "emailVerification": "Верификация email",
+  "@emailVerification": {
+    "description": "Email verification tab label"
+  },
+  "uploadStudentId": "Загрузить студенческий билет",
+  "@uploadStudentId": {
+    "description": "Upload student ID section title"
+  },
+  "selectImage": "Выбрать изображение",
+  "@selectImage": {
+    "description": "Select image button text"
+  },
+  "takePhoto": "Сделать фото",
+  "@takePhoto": {
+    "description": "Take photo option"
+  },
+  "chooseFromGallery": "Выбрать из галереи",
+  "@chooseFromGallery": {
+    "description": "Choose from gallery option"
+  },
+  "submitVerification": "Отправить на верификацию",
+  "@submitVerification": {
+    "description": "Submit verification button text"
+  },
+  "verificationPending": "Верификация находится на рассмотрении",
+  "@verificationPending": {
+    "description": "Verification pending status message"
+  },
+  "verificationApproved": "Верификация одобрена",
+  "@verificationApproved": {
+    "description": "Verification approved status message"
+  },
+  "schoolEmail": "Университетская почта",
+  "@schoolEmail": {
+    "description": "School email input label"
+  },
+  "sendVerificationCode": "Отправить код верификации",
+  "@sendVerificationCode": {
+    "description": "Send verification code button text"
+  },
+  "enterVerificationCode": "Введите код верификации",
+  "@enterVerificationCode": {
+    "description": "Verification code input label"
+  },
+  "codeSent": "Код верификации отправлен на вашу почту",
+  "@codeSent": {
+    "description": "Code sent success message"
+  },
+  "verificationSuccess": "Email успешно верифицирован!",
+  "@verificationSuccess": {
+    "description": "Verification success message"
+  },
+  "timeRemaining": "Осталось времени",
+  "@timeRemaining": {
+    "description": "Countdown timer label"
   }
 }

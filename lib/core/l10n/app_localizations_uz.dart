@@ -956,4 +956,52 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get userUnblocked => 'Foydalanuvchi blokdan chiqarildi';
+
+  @override
+  String get universityVerification => 'Universitet tasdig\'i';
+
+  @override
+  String get studentIdVerification => 'Talaba guvohnomasi';
+
+  @override
+  String get emailVerification => 'Email tasdig\'i';
+
+  @override
+  String get uploadStudentId => 'Talaba guvohnomasini yuklash';
+
+  @override
+  String get selectImage => 'Rasm tanlash';
+
+  @override
+  String get takePhoto => 'Surat olish';
+
+  @override
+  String get chooseFromGallery => 'Galereyadan tanlash';
+
+  @override
+  String get submitVerification => 'Tasdig\'ga yuborish';
+
+  @override
+  String get verificationPending => 'Tasdig\'lanish ko\'rib chiqilmoqda';
+
+  @override
+  String get verificationApproved => 'Tasdig\'landi';
+
+  @override
+  String get schoolEmail => 'Universitet emaili';
+
+  @override
+  String get sendVerificationCode => 'Tasdig\'lash kodini yuborish';
+
+  @override
+  String get enterVerificationCode => 'Tasdig\'lash kodini kiriting';
+
+  @override
+  String get codeSent => 'Tasdig\'lash kodi emailingizga yuborildi';
+
+  @override
+  String get verificationSuccess => 'Email muvaffaqiyatli tasdiqlandi!';
+
+  @override
+  String get timeRemaining => 'Qolgan vaqt';
 }

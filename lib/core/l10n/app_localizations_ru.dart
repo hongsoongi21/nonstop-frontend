@@ -950,4 +950,52 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get userUnblocked => 'Пользователь разблокирован';
+
+  @override
+  String get universityVerification => 'Верификация университета';
+
+  @override
+  String get studentIdVerification => 'Студенческий билет';
+
+  @override
+  String get emailVerification => 'Верификация email';
+
+  @override
+  String get uploadStudentId => 'Загрузить студенческий билет';
+
+  @override
+  String get selectImage => 'Выбрать изображение';
+
+  @override
+  String get takePhoto => 'Сделать фото';
+
+  @override
+  String get chooseFromGallery => 'Выбрать из галереи';
+
+  @override
+  String get submitVerification => 'Отправить на верификацию';
+
+  @override
+  String get verificationPending => 'Верификация находится на рассмотрении';
+
+  @override
+  String get verificationApproved => 'Верификация одобрена';
+
+  @override
+  String get schoolEmail => 'Университетская почта';
+
+  @override
+  String get sendVerificationCode => 'Отправить код верификации';
+
+  @override
+  String get enterVerificationCode => 'Введите код верификации';
+
+  @override
+  String get codeSent => 'Код верификации отправлен на вашу почту';
+
+  @override
+  String get verificationSuccess => 'Email успешно верифицирован!';
+
+  @override
+  String get timeRemaining => 'Осталось времени';
 }

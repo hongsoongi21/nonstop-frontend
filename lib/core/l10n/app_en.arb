@@ -1253,5 +1253,69 @@
   "userUnblocked": "User unblocked",
   "@userUnblocked": {
     "description": "Success message after unblocking user"
+  },
+  "universityVerification": "University Verification",
+  "@universityVerification": {
+    "description": "University verification screen title"
+  },
+  "studentIdVerification": "Student ID",
+  "@studentIdVerification": {
+    "description": "Student ID verification tab label"
+  },
+  "emailVerification": "Email Verification",
+  "@emailVerification": {
+    "description": "Email verification tab label"
+  },
+  "uploadStudentId": "Upload Student ID",
+  "@uploadStudentId": {
+    "description": "Upload student ID section title"
+  },
+  "selectImage": "Select Image",
+  "@selectImage": {
+    "description": "Select image button text"
+  },
+  "takePhoto": "Take Photo",
+  "@takePhoto": {
+    "description": "Take photo option"
+  },
+  "chooseFromGallery": "Choose from Gallery",
+  "@chooseFromGallery": {
+    "description": "Choose from gallery option"
+  },
+  "submitVerification": "Submit for Verification",
+  "@submitVerification": {
+    "description": "Submit verification button text"
+  },
+  "verificationPending": "Verification is pending review",
+  "@verificationPending": {
+    "description": "Verification pending status message"
+  },
+  "verificationApproved": "Verification Approved",
+  "@verificationApproved": {
+    "description": "Verification approved status message"
+  },
+  "schoolEmail": "School Email",
+  "@schoolEmail": {
+    "description": "School email input label"
+  },
+  "sendVerificationCode": "Send Verification Code",
+  "@sendVerificationCode": {
+    "description": "Send verification code button text"
+  },
+  "enterVerificationCode": "Enter Verification Code",
+  "@enterVerificationCode": {
+    "description": "Verification code input label"
+  },
+  "codeSent": "Verification code sent to your email",
+  "@codeSent": {
+    "description": "Code sent success message"
+  },
+  "verificationSuccess": "Email verified successfully!",
+  "@verificationSuccess": {
+    "description": "Verification success message"
+  },
+  "timeRemaining": "Time remaining",
+  "@timeRemaining": {
+    "description": "Countdown timer label"
   }
 }

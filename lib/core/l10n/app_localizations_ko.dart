@@ -933,4 +933,52 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get userUnblocked => '사용자 차단을 해제했습니다';
+
+  @override
+  String get universityVerification => '대학교 인증';
+
+  @override
+  String get studentIdVerification => '학생증 인증';
+
+  @override
+  String get emailVerification => '이메일 인증';
+
+  @override
+  String get uploadStudentId => '학생증 업로드';
+
+  @override
+  String get selectImage => '이미지 선택';
+
+  @override
+  String get takePhoto => '사진 찍기';
+
+  @override
+  String get chooseFromGallery => '갤러리에서 선택';
+
+  @override
+  String get submitVerification => '인증 제출';
+
+  @override
+  String get verificationPending => '인증 검토 중입니다';
+
+  @override
+  String get verificationApproved => '인증 완료';
+
+  @override
+  String get schoolEmail => '학교 이메일';
+
+  @override
+  String get sendVerificationCode => '인증 코드 발송';
+
+  @override
+  String get enterVerificationCode => '인증 코드 입력';
+
+  @override
+  String get codeSent => '이메일로 인증 코드를 발송했습니다';
+
+  @override
+  String get verificationSuccess => '이메일 인증 성공!';
+
+  @override
+  String get timeRemaining => '남은 시간';
 }

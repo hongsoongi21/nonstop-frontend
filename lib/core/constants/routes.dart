@@ -17,6 +17,7 @@ class Routes {
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String blockedUsers = '/settings/blocked-users';
+  static const String verification = '/verification';
 
   // 👥 Friends
   static const String friendRequests = '/friends/requests';
