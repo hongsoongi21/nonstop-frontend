@@ -28,9 +28,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     final notifier = ref.read(gpaProvider.notifier);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.background,
         elevation: 0,
         title: Text(
           'Grade Calculator',

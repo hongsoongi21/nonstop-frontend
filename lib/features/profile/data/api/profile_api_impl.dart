@@ -22,7 +22,11 @@ class ProfileApiImpl implements ProfileApi {
   }) async {
     try {
       final response = await _dioClient.get('/api/v1/users/me');
-      final data = response.data['data'] as Map<String, dynamic>;
+      final responseData = response.data['data'];
+      if (responseData == null) {
+        return Left(ApiException('프로필 데이터를 가져올 수 없습니다.'));
+      }
+      final data = responseData as Map<String, dynamic>;
 
       // Map backend UserResponseDto to frontend UserProfileDto
       final profileDto = UserProfileDto(

@@ -21,7 +21,7 @@ class EnvConfig {
 
   // Default values for development
   static const String _defaultApiBaseUrl = 'http://20.2.136.12:28080';
-  static const String _defaultWsBaseUrl = 'ws://20.2.136.12:28080/ws';
+  static const String _defaultWsBaseUrl = 'ws://20.2.136.12:28080/ws/v1/chat';
   static const String _defaultEnvironment = 'development';
 
   static String get _localApiBaseUrl {
