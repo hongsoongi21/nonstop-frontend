@@ -220,6 +220,23 @@
   "@continueWithGoogle": {
     "description": "continueWithGoogle label/message"
   },
+  "continueWithApple": "Продолжить с Apple",
+  "@continueWithApple": {
+    "description": "continueWithApple label/message"
+  },
+  "appleSignInFailed": "Ошибка входа через Apple: {error}",
+  "@appleSignInFailed": {
+    "description": "appleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appleSignInNotAvailable": "Вход через Apple доступен только на iOS",
+  "@appleSignInNotAvailable": {
+    "description": "appleSignInNotAvailable message"
+  },
   "orSocialMedia": "Или через социальные сети",
   "@orSocialMedia": {
     "description": "orSocialMedia label/message"

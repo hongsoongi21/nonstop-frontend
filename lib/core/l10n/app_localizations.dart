@@ -846,6 +846,24 @@ abstract class AppLocalizations {
   /// **'Continue with Google'**
   String get continueWithGoogle;
 
+  /// continueWithApple label/message
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get continueWithApple;
+
+  /// appleSignInFailed with placeholders
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Sign-In failed: {error}'**
+  String appleSignInFailed(String error);
+
+  /// appleSignInNotAvailable message
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Sign-In is only available on iOS'**
+  String get appleSignInNotAvailable;
+
   /// orSocialMedia label/message
   ///
   /// In en, this message translates to:

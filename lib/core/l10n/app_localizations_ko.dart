@@ -393,6 +393,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get continueWithGoogle => 'Google로 계속하기';
 
   @override
+  String get continueWithApple => 'Apple로 계속하기';
+
+  @override
+  String appleSignInFailed(String error) {
+    return 'Apple 로그인 실패: $error';
+  }
+
+  @override
+  String get appleSignInNotAvailable => 'Apple 로그인은 iOS에서만 사용할 수 있습니다';
+
+  @override
   String get orSocialMedia => '또는 소셜 네트워크로';
 
   @override

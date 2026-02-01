@@ -68,6 +68,14 @@ abstract class AuthApi {
   /// Sign in with Google
   Future<User> signInWithGoogle({required String idToken});
 
+  /// Sign in with Apple
+  Future<User> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  });
+
   /// Get policy list
   Future<List<PolicyResponseDto>> getPolicies();
 

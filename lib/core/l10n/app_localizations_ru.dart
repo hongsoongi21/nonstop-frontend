@@ -402,6 +402,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get continueWithGoogle => 'Продолжить с Google';
 
   @override
+  String get continueWithApple => 'Продолжить с Apple';
+
+  @override
+  String appleSignInFailed(String error) {
+    return 'Ошибка входа через Apple: $error';
+  }
+
+  @override
+  String get appleSignInNotAvailable =>
+      'Вход через Apple доступен только на iOS';
+
+  @override
   String get orSocialMedia => 'Или через социальные сети';
 
   @override

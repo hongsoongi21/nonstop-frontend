@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/l10n/app_localizations.dart';
@@ -166,6 +172,92 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString()))),
+        );
+      }
+    }
+  }
+
+  /// Generate a random nonce for Apple Sign In
+  String _generateNonce([int length = 32]) {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  }
+
+  /// Hash the nonce using SHA256
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Future<void> _handleAppleLogin() async {
+    // Apple Sign In is only available on iOS
+    if (!Platform.isIOS) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInNotAvailable)),
+        );
+      }
+      return;
+    }
+
+    try {
+      // Generate nonce for security
+      final rawNonce = _generateNonce();
+      final nonce = _sha256ofString(rawNonce);
+
+      // Request Apple Sign In
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
+      );
+
+      // Create OAuth credential for Firebase
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
+      );
+
+      // Sign in to Firebase with Apple credential
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      final firebaseIdToken = await userCredential.user?.getIdToken(true);
+
+      if (firebaseIdToken == null) return;
+
+      // Get user name from Apple (only provided on first sign in)
+      final firstName = appleCredential.givenName;
+      final lastName = appleCredential.familyName;
+
+      // Sign in with backend
+      await ref.read(authProvider.notifier).signInWithApple(
+        idToken: firebaseIdToken,
+        authorizationCode: appleCredential.authorizationCode,
+        firstName: firstName,
+        lastName: lastName,
+      );
+
+      if (mounted) {
+        final authState = ref.read(authProvider);
+        if (authState.isAuthenticated && !authState.hasError) {
+          context.go(Routes.home);
+        }
+      }
+    } on SignInWithAppleAuthorizationException catch (e) {
+      // User cancelled the sign-in
+      if (e.code == AuthorizationErrorCode.canceled) return;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(e.message))),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(error.toString()))),
         );
       }
     }
@@ -613,6 +705,57 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         ),
                                       ),
                                     ),
+
+                                    // Apple Login Button (iOS only)
+                                    if (Platform.isIOS) ...[
+                                      SizedBox(height: 12.h),
+                                      Container(
+                                        height: 56.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16.r),
+                                          color: Colors.black,
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: _handleAppleLogin,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.r),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 24.w,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Apple Icon
+                                              Icon(
+                                                Icons.apple,
+                                                size: 24.sp,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 12.w),
+                                              Text(
+                                                AppLocalizations.of(context)!.continueWithApple,
+                                                style: TextStyle(
+                                                  fontFamily: 'Noto Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15.sp,
+                                                  height: 1.4,
+                                                  letterSpacing: -0.01 * 15.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
 
                                     SizedBox(height: 28.h),
 

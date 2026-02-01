@@ -10,6 +10,7 @@ import '../../data/api/auth_api_impl.dart';
 import '../../data/repository_impl/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repository/auth_repository.dart';
+import '../../domain/usecases/apple_sign_in_usecase.dart';
 import '../../domain/usecases/google_sign_in_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
@@ -50,6 +51,12 @@ final signUpUseCaseProvider = Provider<SignUpUseCase>((ref) {
 final googleSignInUseCaseProvider = Provider<GoogleSignInUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return GoogleSignInUseCase(repository);
+});
+
+/// AppleSignInUseCase 제공자
+final appleSignInUseCaseProvider = Provider<AppleSignInUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return AppleSignInUseCase(repository);
 });
 
 /// 현재 인증 상태를 나타내는 클래스
@@ -99,6 +106,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final SignInUseCase _signInUseCase;
   final SignUpUseCase _signUpUseCase;
   final GoogleSignInUseCase _googleSignInUseCase;
+  final AppleSignInUseCase _appleSignInUseCase;
   final AuthRepository _authRepository;
   final FcmService _fcmService;
 
@@ -106,11 +114,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required SignInUseCase signInUseCase,
     required SignUpUseCase signUpUseCase,
     required GoogleSignInUseCase googleSignInUseCase,
+    required AppleSignInUseCase appleSignInUseCase,
     required AuthRepository authRepository,
     required FcmService fcmService,
   }) : _signInUseCase = signInUseCase,
        _signUpUseCase = signUpUseCase,
        _googleSignInUseCase = googleSignInUseCase,
+       _appleSignInUseCase = appleSignInUseCase,
        _authRepository = authRepository,
        _fcmService = fcmService,
        super(const AuthState()) {
@@ -225,6 +235,31 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  /// Apple로 로그인을 수행합니다.
+  Future<void> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    state = state.copyWith(isLoading: true, clearFailure: true);
+    final result = await _appleSignInUseCase(
+      AppleSignInParams(
+        idToken: idToken,
+        authorizationCode: authorizationCode,
+        firstName: firstName,
+        lastName: lastName,
+      ),
+    );
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (user) {
+        state = state.copyWith(isLoading: false, user: user);
+        _initializeFcm();
+      },
+    );
+  }
+
   /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);
@@ -272,6 +307,7 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     signInUseCase: ref.watch(signInUseCaseProvider),
     signUpUseCase: ref.watch(signUpUseCaseProvider),
     googleSignInUseCase: ref.watch(googleSignInUseCaseProvider),
+    appleSignInUseCase: ref.watch(appleSignInUseCaseProvider),
     authRepository: ref.watch(authRepositoryProvider),
     fcmService: ref.watch(fcmServiceProvider),
   );

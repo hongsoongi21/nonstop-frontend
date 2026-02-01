@@ -399,6 +399,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithGoogle => 'Continue with Google';
 
   @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String appleSignInFailed(String error) {
+    return 'Apple Sign-In failed: $error';
+  }
+
+  @override
+  String get appleSignInNotAvailable =>
+      'Apple Sign-In is only available on iOS';
+
+  @override
   String get orSocialMedia => 'Or via social networks';
 
   @override

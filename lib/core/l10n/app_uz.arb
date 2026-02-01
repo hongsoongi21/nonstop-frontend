@@ -220,6 +220,23 @@
   "@continueWithGoogle": {
     "description": "continueWithGoogle label/message"
   },
+  "continueWithApple": "Apple orqali davom eting",
+  "@continueWithApple": {
+    "description": "continueWithApple label/message"
+  },
+  "appleSignInFailed": "Apple orqali kirish muvaffaqiyatsiz: {error}",
+  "@appleSignInFailed": {
+    "description": "appleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appleSignInNotAvailable": "Apple orqali kirish faqat iOS da ishlaydi",
+  "@appleSignInNotAvailable": {
+    "description": "appleSignInNotAvailable message"
+  },
   "orSocialMedia": "Yoki ijtimoly tarmoqlar orqali",
   "@orSocialMedia": {
     "description": "orSocialMedia label/message"

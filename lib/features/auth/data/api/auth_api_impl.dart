@@ -10,6 +10,7 @@ import '../../../../core/storage/secure_storage_service.dart';
 import '../../domain/entities/user.dart';
 import '../dto/auth_request_dto.dart';
 import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
+import '../dto/apple_login_request_dto.dart';
 import '../dto/google_login_request_dto.dart';
 import '../dto/policy_request_dto.dart';
 import '../dto/policy_response_dto.dart';
@@ -99,6 +100,52 @@ class AuthApiImpl implements AuthApi {
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '구글 로그인에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<User> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/auth/apple',
+        data: AppleLoginRequestDto(
+          idToken: idToken,
+          authorizationCode: authorizationCode,
+          firstName: firstName,
+          lastName: lastName,
+        ).toJson(),
+        options: Options(extra: {'no-auth': true}),
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
+
+        if (!kReleaseMode) {
+          AppLogger.d('[NONSTOP] 🍎 Apple Login Tokens Received:');
+          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
+          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+        }
+
+        // 보안 저장소에 토큰 저장
+        await _secureStorageService.saveAccessToken(tokenData.accessToken);
+        await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
+
+        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
+        return await _fetchAndEmitUserInfo();
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? '애플 로그인에 실패했습니다.',
           statusCode: response.statusCode ?? 500,
         );
       }

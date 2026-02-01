@@ -51,6 +51,32 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, User>> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final user = await _authApi.signInWithApple(
+        idToken: idToken,
+        authorizationCode: authorizationCode,
+        firstName: firstName,
+        lastName: lastName,
+      );
+      return Right(user);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,

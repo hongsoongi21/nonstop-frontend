@@ -521,6 +521,23 @@
   "@continueWithGoogle": {
     "description": "continueWithGoogle label/message"
   },
+  "continueWithApple": "Continue with Apple",
+  "@continueWithApple": {
+    "description": "continueWithApple label/message"
+  },
+  "appleSignInFailed": "Apple Sign-In failed: {error}",
+  "@appleSignInFailed": {
+    "description": "appleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appleSignInNotAvailable": "Apple Sign-In is only available on iOS",
+  "@appleSignInNotAvailable": {
+    "description": "appleSignInNotAvailable message"
+  },
   "orSocialMedia": "Or via social networks",
   "@orSocialMedia": {
     "description": "orSocialMedia label/message"

@@ -405,6 +405,18 @@ class AppLocalizationsUz extends AppLocalizations {
   String get continueWithGoogle => 'Google orqali davom eting';
 
   @override
+  String get continueWithApple => 'Apple orqali davom eting';
+
+  @override
+  String appleSignInFailed(String error) {
+    return 'Apple orqali kirish muvaffaqiyatsiz: $error';
+  }
+
+  @override
+  String get appleSignInNotAvailable =>
+      'Apple orqali kirish faqat iOS da ishlaydi';
+
+  @override
   String get orSocialMedia => 'Yoki ijtimoly tarmoqlar orqali';
 
   @override
