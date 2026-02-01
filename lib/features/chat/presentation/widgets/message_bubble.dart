@@ -233,49 +233,63 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildTextBubble() {
-    return Container(
-      constraints: const BoxConstraints(
-        maxWidth: 280,
-      ),
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
-      decoration: BoxDecoration(
-        gradient: isMe
-            ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: AppColors.primaryGradient,
-              )
-            : null,
-        color: isMe ? null : AppColors.messageBubbleReceived,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(isMe ? 20 : 6),
-          topRight: Radius.circular(isMe ? 6 : 20),
-          bottomLeft: const Radius.circular(20),
-          bottomRight: const Radius.circular(20),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isMe
-                ? AppColors.primary.withValues(alpha: 0.25)
-                : AppColors.shadow.withValues(alpha: 0.08),
-            blurRadius: isMe ? 12 : 6,
-            offset: Offset(0, isMe ? 3 : 2),
+    // Theme-aware colors will be obtained from context in the parent widget
+    // For now, using the static colors which work well for both themes
+    return Builder(
+      builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final receivedBubbleColor = isDarkMode
+            ? AppColors.messageBubbleReceivedDark
+            : AppColors.messageBubbleReceived;
+        final receivedTextColor = isDarkMode
+            ? AppColors.textPrimaryDark
+            : AppColors.textPrimary;
+
+        return Container(
+          constraints: const BoxConstraints(
+            maxWidth: 280,
           ),
-        ],
-      ),
-      child: Text(
-        message.content,
-        style: AppTypography.body2.copyWith(
-          color: isMe ? Colors.white : AppColors.textPrimary,
-          height: 1.5,
-          fontSize: 15,
-          fontWeight: isMe ? FontWeight.w500 : FontWeight.w400,
-          letterSpacing: 0.15,
-        ),
-      ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+          decoration: BoxDecoration(
+            gradient: isMe
+                ? const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: AppColors.primaryGradient,
+                  )
+                : null,
+            color: isMe ? null : receivedBubbleColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(isMe ? 20 : 6),
+              topRight: Radius.circular(isMe ? 6 : 20),
+              bottomLeft: const Radius.circular(20),
+              bottomRight: const Radius.circular(20),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isMe
+                    ? AppColors.primary.withValues(alpha: 0.25)
+                    : AppColors.shadow.withValues(alpha: isDarkMode ? 0.3 : 0.08),
+                blurRadius: isMe ? 12 : 6,
+                offset: Offset(0, isMe ? 3 : 2),
+              ),
+            ],
+          ),
+          child: Text(
+            message.content,
+            style: AppTypography.body2.copyWith(
+              color: isMe ? Colors.white : receivedTextColor,
+              height: 1.5,
+              fontSize: 15,
+              fontWeight: isMe ? FontWeight.w500 : FontWeight.w400,
+              letterSpacing: 0.15,
+            ),
+          ),
+        );
+      },
     );
   }
 

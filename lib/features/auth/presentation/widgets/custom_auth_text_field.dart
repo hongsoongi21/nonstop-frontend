@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nonstop/core/theme/app_colors.dart';
 
 /// Custom text field for authentication screens
 ///
 /// Features:
 /// - Fixed size: 275x55
 /// - Border radius: 15px
-/// - Background color: #E9F0FE
-/// - White border
+/// - Theme-aware colors for light/dark mode support
 class CustomAuthTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -32,14 +32,30 @@ class CustomAuthTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Theme-aware colors
+    final backgroundColor = isDarkMode
+        ? AppColors.authFieldBackgroundDark
+        : AppColors.authFieldBackground;
+    final borderColor = isDarkMode
+        ? AppColors.authFieldBorderDark
+        : AppColors.authFieldBorder;
+    final textColor = isDarkMode
+        ? AppColors.authFieldTextDark
+        : AppColors.authFieldText;
+    final hintColor = isDarkMode
+        ? AppColors.authFieldHintDark
+        : AppColors.authFieldHint;
+
     return Container(
       width: 275.w,
       height: 55.h,
       decoration: BoxDecoration(
-        color: const Color(0xFFE9F0FE),
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(15.r),
         border: Border.all(
-          color: const Color(0xFFFFFFFF),
+          color: borderColor,
           width: 1.w,
         ),
       ),
@@ -50,18 +66,18 @@ class CustomAuthTextField extends StatelessWidget {
         readOnly: readOnly,
         style: TextStyle(
           fontSize: 14.sp,
-          color: Colors.black87,
+          color: textColor,
         ),
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 14.sp,
-            color: Colors.black.withValues(alpha: 0.5),
+            color: hintColor,
           ),
           prefixIcon: prefixIcon != null
               ? Icon(
                   prefixIcon,
-                  color: const Color(0xFF7C3BEE), // #7C3BEE
+                  color: AppColors.primary,
                   size: 20.sp,
                 )
               : null,

@@ -209,7 +209,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                               ? '99+'
                                               : unreadCount.toString(),
                                           style: const TextStyle(
-                                            color: Colors.white,
+                                            color: AppColors.textOnPrimary,
                                             fontSize: 10,
                                             fontWeight: FontWeight.w700,
                                             height: 1.2,

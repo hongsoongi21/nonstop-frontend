@@ -36,7 +36,7 @@ class ProfileHeader extends StatelessWidget {
               colors: [
                 AppColors.primary,
                 AppColors.primaryDark,
-                AppColors.tertiary.withOpacity(0.8),
+                AppColors.tertiary.withValues(alpha:0.8),
               ],
               stops: const [0.0, 0.6, 1.0],
             ),
@@ -79,10 +79,10 @@ class ProfileHeader extends StatelessWidget {
                             children: [
                               Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha:0.15),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha:0.3),
                                     width: 1,
                                   ),
                                 ),
@@ -117,10 +117,10 @@ class ProfileHeader extends StatelessWidget {
                           // Settings
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withValues(alpha:0.15),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.3),
+                                color: Colors.white.withValues(alpha:0.3),
                                 width: 1,
                               ),
                             ),
@@ -153,13 +153,13 @@ class ProfileHeader extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha:0.3),
                         blurRadius: 24,
                         spreadRadius: 0,
                         offset: const Offset(0, 12),
                       ),
                       BoxShadow(
-                        color: AppColors.tertiary.withOpacity(0.4),
+                        color: AppColors.tertiary.withValues(alpha:0.4),
                         blurRadius: 32,
                         spreadRadius: 4,
                       ),
@@ -235,10 +235,10 @@ class ProfileHeader extends StatelessWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha:0.2),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.4),
+                      color: Colors.white.withValues(alpha:0.4),
                       width: 1,
                     ),
                   ),
@@ -294,7 +294,7 @@ class ProfileHeader extends StatelessWidget {
                     child: Text(
                       profile.bio!,
                       style: AppTypography.bodyMedium.copyWith(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha:0.9),
                         height: 1.5,
                       ),
                       maxLines: 2,
@@ -317,7 +317,7 @@ class _GeometricPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = Colors.white.withValues(alpha:0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
 
@@ -332,7 +332,7 @@ class _GeometricPatternPainter extends CustomPainter {
 
     // Subtle circles in corners
     final circlePaint = Paint()
-      ..color = Colors.white.withOpacity(0.08)
+      ..color = Colors.white.withValues(alpha:0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
 

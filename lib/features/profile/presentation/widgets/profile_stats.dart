@@ -22,6 +22,11 @@ class ProfileStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final cardColor = theme.colorScheme.surface;
+    final borderColor = isDarkMode ? AppColors.borderDark : AppColors.border;
+
     return Container(
       margin: EdgeInsets.symmetric(horizontal: AppSpacing.md)
           .copyWith(top: AppSpacing.md),
@@ -34,15 +39,17 @@ class ProfileStats extends StatelessWidget {
               horizontal: AppSpacing.md,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cardColor,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.border,
+                color: borderColor,
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.04),
+                  color: isDarkMode
+                      ? Colors.black26
+                      : AppColors.primary.withValues(alpha: 0.04),
                   blurRadius: 24,
                   spreadRadius: 0,
                   offset: const Offset(0, 4),
@@ -66,7 +73,7 @@ class ProfileStats extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.border,
+                        borderColor,
                         Colors.transparent,
                       ],
                     ),
@@ -86,7 +93,7 @@ class ProfileStats extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.border,
+                        borderColor,
                         Colors.transparent,
                       ],
                     ),
@@ -122,7 +129,7 @@ class ProfileStats extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha:0.3),
                     blurRadius: 16,
                     spreadRadius: 0,
                     offset: const Offset(0, 4),
@@ -134,14 +141,14 @@ class ProfileStats extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.edit_outlined,
-                    color: Colors.white,
+                    color: AppColors.textOnPrimary,
                     size: 20,
                   ),
                   SizedBox(width: AppSpacing.sm),
                   Text(
                     AppLocalizations.of(context)!.editProfile,
                     style: AppTypography.button.copyWith(
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                     ),
@@ -170,13 +177,18 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final labelColor = isDarkMode
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+
     return Column(
       children: [
         // Number with accent color
         Container(
           padding: EdgeInsets.all(AppSpacing.xs),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
+            color: color.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
@@ -194,7 +206,7 @@ class _StatItem extends StatelessWidget {
         Text(
           label,
           style: AppTypography.caption.copyWith(
-            color: AppColors.textSecondary,
+            color: labelColor,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
           ),

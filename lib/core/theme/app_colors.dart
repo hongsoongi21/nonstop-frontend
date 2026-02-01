@@ -188,6 +188,35 @@ class AppColors {
   static const Color chatTyping = Color(0xFFD4A853);
   static const Color messageBubbleSent = Color(0xFF1E4D7B);
   static const Color messageBubbleReceived = Color(0xFFF1F5F9);
+  static const Color messageBubbleReceivedDark = Color(0xFF334155);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // GLASSMORPHISM COLORS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// Light mode glass
+  static const Color glassBackground = Color(0xFFFFFFFF);
+  static const Color glassBorder = Color(0xFFFFFFFF);
+
+  /// Dark mode glass
+  static const Color glassBackgroundDark = Color(0xFF1E293B);
+  static const Color glassBorderDark = Color(0xFF475569);
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // AUTH FIELD COLORS
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /// Light mode auth field
+  static const Color authFieldBackground = Color(0xFFE9F0FE);
+  static const Color authFieldBorder = Color(0xFFFFFFFF);
+  static const Color authFieldText = Color(0xFF0F172A);
+  static const Color authFieldHint = Color(0xFF64748B);
+
+  /// Dark mode auth field
+  static const Color authFieldBackgroundDark = Color(0xFF1E293B);
+  static const Color authFieldBorderDark = Color(0xFF475569);
+  static const Color authFieldTextDark = Color(0xFFF8FAFC);
+  static const Color authFieldHintDark = Color(0xFF94A3B8);
 
   /// Social
   static const Color google = Color(0xFFDB4437);

@@ -14,13 +14,18 @@ class AppBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final borderColor = isDarkMode ? AppColors.borderDark : AppColors.border;
+    final unselectedColor = isDarkMode ? AppColors.textTertiaryDark : AppColors.textTertiary;
+
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).bottomNavigationBarTheme.backgroundColor ??
-            Colors.white,
+        color: theme.bottomNavigationBarTheme.backgroundColor ??
+            theme.colorScheme.surface,
         border: Border(
           top: BorderSide(
-            color: AppColors.border,
+            color: borderColor,
             width: 1,
           ),
         ),
@@ -34,7 +39,7 @@ class AppBottomNavigationBar extends StatelessWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textTertiary,
+          unselectedItemColor: unselectedColor,
           showSelectedLabels: true,
           showUnselectedLabels: true,
           selectedFontSize: 11,

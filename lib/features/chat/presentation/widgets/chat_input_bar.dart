@@ -59,22 +59,41 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    // Theme-aware colors
+    final surfaceColor = colorScheme.surface;
+    final surfaceVariantColor = isDarkMode
+        ? AppColors.surfaceVariantDark
+        : AppColors.surfaceVariant;
+    final borderColor = isDarkMode
+        ? AppColors.borderDark
+        : AppColors.border;
+    final iconColor = isDarkMode
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    final hintColor = isDarkMode
+        ? AppColors.textTertiaryDark
+        : AppColors.textHint;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: 12,
         vertical: 12,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         border: Border(
           top: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.5),
+            color: borderColor.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadowMedium,
+            color: isDarkMode ? Colors.black26 : AppColors.shadowMedium,
             blurRadius: 12,
             offset: const Offset(0, -2),
           ),
@@ -89,13 +108,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
             Container(
               margin: const EdgeInsets.only(bottom: 2),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: surfaceVariantColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
                 onPressed: widget.enabled ? widget.onAttachmentTap : null,
                 icon: const Icon(Icons.camera_alt_rounded, size: 22),
-                color: AppColors.textSecondary,
+                color: iconColor,
                 splashRadius: 20,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(
@@ -111,10 +130,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: surfaceVariantColor,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
-                    color: AppColors.border.withValues(alpha: 0.3),
+                    color: borderColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -132,7 +151,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                   decoration: InputDecoration(
                     hintText: widget.hintText ?? AppLocalizations.of(context).messageHint,
                     hintStyle: AppTypography.body2.copyWith(
-                      color: AppColors.textHint,
+                      color: hintColor,
                       fontSize: 15,
                     ),
                     border: OutlineInputBorder(
@@ -182,7 +201,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                               colors: AppColors.primaryGradient,
                             )
                           : null,
-                      color: _hasText ? null : AppColors.surfaceVariant,
+                      color: _hasText ? null : surfaceVariantColor,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: _hasText
                           ? [
@@ -200,7 +219,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         _hasText ? Icons.send_rounded : Icons.send_outlined,
                         size: 22,
                       ),
-                      color: _hasText ? Colors.white : AppColors.textHint,
+                      color: _hasText ? AppColors.textOnPrimary : hintColor,
                       splashRadius: 20,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(
