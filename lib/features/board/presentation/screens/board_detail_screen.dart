@@ -366,7 +366,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               child: Column(
                 children: [
                   Icon(
-                    Icons.chat_bubble_outline_rounded,
+                    Icons.comment_outlined,
                     size: 48,
                     color: AppColors.textTertiary.withValues(alpha: 0.4),
                   ),

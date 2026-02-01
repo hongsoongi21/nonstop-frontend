@@ -26,7 +26,7 @@ class ChatRoom {
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
-      id: json['id'] as int,
+      id: (json['roomId'] ?? json['id']) as int,
       type: json['type'] == 'GROUP' ? ChatRoomType.group : ChatRoomType.oneToOne,
       name: json['name'] as String?,
       unreadCount: json['unreadCount'] as int? ?? 0,

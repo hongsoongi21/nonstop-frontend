@@ -461,23 +461,6 @@ class WeeklyTimeGrid extends StatelessWidget {
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ],
-                                          if (height > 70) ...[
-                                            const Spacer(),
-                                            Text(
-                                              '${entry.startTime} - ${entry.endTime}',
-                                              style: AppTypography.captionSmall
-                                                  .copyWith(
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.8),
-                                                fontSize: 8,
-                                                fontWeight: FontWeight.w600,
-                                                letterSpacing: 0.3,
-                                                fontFeatures: const [
-                                                  FontFeature.tabularFigures()
-                                                ],
-                                              ),
-                                            ),
-                                          ],
                                         ],
                                       ),
                                     ),

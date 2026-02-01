@@ -630,7 +630,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsTitle => 'Друзья';
 
   @override
-  String get requests => 'Запросы';
+  String get requests => 'Полученные';
 
   @override
   String get search => 'Поиск';
@@ -1010,4 +1010,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get timeRemaining => 'Осталось времени';
+
+  @override
+  String get deleteAccount => 'Удалить аккаунт';
+
+  @override
+  String get deleteAccountSubtitle => 'Навсегда удалить аккаунт';
+
+  @override
+  String get confirmDeleteAccount => 'Вы уверены, что хотите удалить аккаунт?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Это действие нельзя отменить. Все ваши данные будут удалены.';
+
+  @override
+  String get deleteAccountSuccess => 'Аккаунт успешно удален';
+
+  @override
+  String get deleteAccountFailed => 'Не удалось удалить аккаунт';
 }

@@ -231,14 +231,26 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<User?> getCurrentUser() async {
     try {
-      // Avoid calling `/users/me` when we don't have a token yet.
-      // This prevents noisy 401s during cold start.
+      // 보안 저장소에서 토큰 확인
       final accessToken = await _secureStorageService.getAccessToken();
-      if (accessToken == null || accessToken.isEmpty) return null;
+      final refreshToken = await _secureStorageService.getRefreshToken();
 
+      // 토큰이 아예 없으면 null 반환
+      if ((accessToken == null || accessToken.isEmpty) &&
+          (refreshToken == null || refreshToken.isEmpty)) {
+        AppLogger.d('📭 No tokens found in storage');
+        return null;
+      }
+
+      AppLogger.d('🔐 Tokens found, validating...');
+
+      // 사용자 정보 조회 시도 (인터셉터가 자동으로 토큰 갱신 처리)
       return await _fetchAndEmitUserInfo();
     } catch (e) {
-      AppLogger.e('현재 사용자 정보 조회 실패: $e'); // Using AppLogger
+      // 토큰 갱신 실패 또는 유효하지 않은 토큰
+      AppLogger.e('❌ 현재 사용자 정보 조회 실패: $e');
+      // 실패 시 토큰 삭제
+      await _secureStorageService.deleteAllTokens();
       return null;
     }
   }

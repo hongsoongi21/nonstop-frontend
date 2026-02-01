@@ -234,6 +234,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsCard(
             children: [
               _buildLogoutButton(context, ref),
+              _buildDivider(),
+              _buildDeleteAccountButton(context, ref),
             ],
           ),
 
@@ -327,6 +329,120 @@ class SettingsScreen extends ConsumerWidget {
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.logout),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeleteAccountButton(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    return InkWell(
+      onTap: () => _showDeleteAccountDialog(context, ref),
+      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Icon(
+                Icons.delete_forever_outlined,
+                color: AppColors.error,
+                size: AppSpacing.iconMd,
+              ),
+            ),
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.deleteAccount,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    l10n.deleteAccountSubtitle,
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: AppColors.textTertiary,
+              size: AppSpacing.iconMd,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteAccount),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.confirmDeleteAccount),
+            SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.deleteAccountWarning,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.error,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(dialogContext).pop();
+              await ref.read(authProvider.notifier).deleteAccount();
+              final authState = ref.read(authProvider);
+              if (context.mounted) {
+                if (authState.failure != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.deleteAccountFailed),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.deleteAccountSuccess),
+                    ),
+                  );
+                  context.go(Routes.login);
+                }
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.deleteAccount),
           ),
         ],
       ),

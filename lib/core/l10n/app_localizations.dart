@@ -1275,7 +1275,7 @@ abstract class AppLocalizations {
   /// Friend requests tab label
   ///
   /// In en, this message translates to:
-  /// **'Requests'**
+  /// **'Received'**
   String get requests;
 
   /// Search tab label
@@ -2021,6 +2021,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time remaining'**
   String get timeRemaining;
+
+  /// Delete account button text
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// Delete account subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete your account'**
+  String get deleteAccountSubtitle;
+
+  /// Delete account confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account?'**
+  String get confirmDeleteAccount;
+
+  /// Delete account warning message
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone. All your data will be deleted.'**
+  String get deleteAccountWarning;
+
+  /// Delete account success message
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully'**
+  String get deleteAccountSuccess;
+
+  /// Delete account failed message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account'**
+  String get deleteAccountFailed;
 }
 
 class _AppLocalizationsDelegate

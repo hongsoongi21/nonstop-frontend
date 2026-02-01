@@ -696,7 +696,7 @@
   "@friendsTitle": {
     "description": "Friends screen title"
   },
-  "requests": "요청",
+  "requests": "받은 요청",
   "@requests": {
     "description": "Friend requests tab label"
   },
@@ -901,5 +901,29 @@
   "enterVerificationCode": "인증 코드 입력",
   "codeSent": "이메일로 인증 코드를 발송했습니다",
   "verificationSuccess": "이메일 인증 성공!",
-  "timeRemaining": "남은 시간"
+  "timeRemaining": "남은 시간",
+  "deleteAccount": "회원 탈퇴",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountSubtitle": "계정을 영구적으로 삭제합니다",
+  "@deleteAccountSubtitle": {
+    "description": "Delete account subtitle"
+  },
+  "confirmDeleteAccount": "정말로 회원 탈퇴를 하시겠습니까?",
+  "@confirmDeleteAccount": {
+    "description": "Delete account confirmation message"
+  },
+  "deleteAccountWarning": "이 작업은 되돌릴 수 없습니다. 모든 데이터가 삭제됩니다.",
+  "@deleteAccountWarning": {
+    "description": "Delete account warning message"
+  },
+  "deleteAccountSuccess": "계정이 삭제되었습니다",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "계정 삭제에 실패했습니다",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
+  }
 }

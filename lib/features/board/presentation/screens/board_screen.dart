@@ -60,8 +60,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         ),
         child: Stack(
           children: [
-            SafeArea(
-              child: Column(
+            GestureDetector(
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: SafeArea(
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header & Community Selector
@@ -384,13 +386,13 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                       child: TextField(
                         controller: _searchController,
                         style: AppTypography.body1.copyWith(
-                          color: AppColors.textPrimary,
+                          color: Colors.white,
                           fontSize: 15,
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.searchPosts,
                           hintStyle: AppTypography.body2.copyWith(
-                            color: AppColors.textSecondary.withValues(alpha: 0.6),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
@@ -398,7 +400,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 14),
                             child: Icon(
                               Icons.search_rounded,
-                              color: AppColors.textSecondary.withValues(alpha: 0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               size: 22,
                             ),
                           ),
@@ -520,6 +522,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                     ),
                   ),
                 ],
+                ),
               ),
             ),
           ],
@@ -695,7 +698,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.forum_rounded,
+                  Icons.article_outlined,
                   size: 52,
                   color: AppColors.primary,
                 ),

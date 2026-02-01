@@ -634,7 +634,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get friendsTitle => 'Do\'stlar';
 
   @override
-  String get requests => 'So\'rovlar';
+  String get requests => 'Qabul qilingan';
 
   @override
   String get search => 'Qidirish';
@@ -1016,4 +1016,23 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get timeRemaining => 'Qolgan vaqt';
+
+  @override
+  String get deleteAccount => 'Hisobni o\'chirish';
+
+  @override
+  String get deleteAccountSubtitle => 'Hisobingizni butunlay o\'chirish';
+
+  @override
+  String get confirmDeleteAccount => 'Hisobingizni o\'chirishni xohlaysizmi?';
+
+  @override
+  String get deleteAccountWarning =>
+      'Bu amalni qaytarib bo\'lmaydi. Barcha ma\'lumotlaringiz o\'chiriladi.';
+
+  @override
+  String get deleteAccountSuccess => 'Hisob muvaffaqiyatli o\'chirildi';
+
+  @override
+  String get deleteAccountFailed => 'Hisobni o\'chirib bo\'lmadi';
 }

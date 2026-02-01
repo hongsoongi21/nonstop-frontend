@@ -66,6 +66,7 @@ class AuthState {
   final Failure? failure;
   final bool isEmailVerificationSent;
   final bool isEmailVerified;
+  final bool isInitialized; // 앱 시작 시 토큰 체크가 완료되었는지 여부
 
   const AuthState({
     this.isLoading = false,
@@ -73,6 +74,7 @@ class AuthState {
     this.failure,
     this.isEmailVerificationSent = false,
     this.isEmailVerified = false,
+    this.isInitialized = false, // 초기에는 false
   });
 
   AuthState copyWith({
@@ -82,14 +84,17 @@ class AuthState {
     bool clearFailure = false,
     bool? isEmailVerificationSent,
     bool? isEmailVerified,
+    bool? isInitialized,
+    bool clearUser = false, // user를 null로 설정하기 위한 플래그
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
-      user: user ?? this.user,
+      user: clearUser ? null : (user ?? this.user),
       failure: clearFailure ? null : (failure ?? this.failure),
       isEmailVerificationSent:
           isEmailVerificationSent ?? this.isEmailVerificationSent,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      isInitialized: isInitialized ?? this.isInitialized,
     );
   }
 
@@ -130,14 +135,35 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 앱 구동 시 로컬 저장소의 토큰을 확인하여 자동 로그인 정보를 가져옵니다.
   Future<void> _initializeAuth() async {
+    debugPrint('[AUTH] 🔄 Initializing authentication...');
     state = state.copyWith(isLoading: true);
     final result = await _authRepository.getCurrentUser();
-    result.fold((failure) => state = state.copyWith(isLoading: false), (user) {
-      state = state.copyWith(isLoading: false, user: user);
-      if (user != null) {
-        _initializeFcm();
+    result.fold(
+      (failure) {
+        // 토큰이 없거나 만료된 경우
+        debugPrint('[AUTH] ❌ Auth initialization failed: ${failure.message}');
+        state = state.copyWith(
+          isLoading: false,
+          isInitialized: true,
+          clearUser: true, // 명시적으로 user를 null로 설정
+        );
+      },
+      (user) {
+        if (user != null) {
+          debugPrint('[AUTH] ✅ Auth initialized successfully for user: ${user.email}');
+        } else {
+          debugPrint('[AUTH] ℹ️ Auth initialized with no user (logged out)');
+        }
+        state = state.copyWith(
+          isLoading: false,
+          user: user,
+          isInitialized: true,
+        );
+        if (user != null) {
+          _initializeFcm();
+        }
       }
-    });
+    );
   }
 
   /// FCM 서비스를 초기화합니다.
@@ -298,6 +324,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 발생한 에러 상태를 초기화합니다.
   void clearError() {
     state = state.copyWith(clearFailure: true);
+  }
+
+  /// 인증 상태를 수동으로 새로고침합니다.
+  /// 앱이 백그라운드에서 돌아왔을 때 호출하여 토큰 상태를 확인할 수 있습니다.
+  Future<void> refreshAuthState() async {
+    await _initializeAuth();
   }
 }
 

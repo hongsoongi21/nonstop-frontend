@@ -764,7 +764,7 @@
   "@friendsTitle": {
     "description": "Friends screen title"
   },
-  "requests": "Запросы",
+  "requests": "Полученные",
   "@requests": {
     "description": "Friend requests tab label"
   },
@@ -1205,5 +1205,29 @@
   "timeRemaining": "Осталось времени",
   "@timeRemaining": {
     "description": "Countdown timer label"
+  },
+  "deleteAccount": "Удалить аккаунт",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountSubtitle": "Навсегда удалить аккаунт",
+  "@deleteAccountSubtitle": {
+    "description": "Delete account subtitle"
+  },
+  "confirmDeleteAccount": "Вы уверены, что хотите удалить аккаунт?",
+  "@confirmDeleteAccount": {
+    "description": "Delete account confirmation message"
+  },
+  "deleteAccountWarning": "Это действие нельзя отменить. Все ваши данные будут удалены.",
+  "@deleteAccountWarning": {
+    "description": "Delete account warning message"
+  },
+  "deleteAccountSuccess": "Аккаунт успешно удален",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "Не удалось удалить аккаунт",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
   }
 }

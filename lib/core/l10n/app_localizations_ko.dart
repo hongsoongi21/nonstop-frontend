@@ -615,7 +615,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get friendsTitle => '친구';
 
   @override
-  String get requests => '요청';
+  String get requests => '받은 요청';
 
   @override
   String get search => '검색';
@@ -992,4 +992,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get timeRemaining => '남은 시간';
+
+  @override
+  String get deleteAccount => '회원 탈퇴';
+
+  @override
+  String get deleteAccountSubtitle => '계정을 영구적으로 삭제합니다';
+
+  @override
+  String get confirmDeleteAccount => '정말로 회원 탈퇴를 하시겠습니까?';
+
+  @override
+  String get deleteAccountWarning => '이 작업은 되돌릴 수 없습니다. 모든 데이터가 삭제됩니다.';
+
+  @override
+  String get deleteAccountSuccess => '계정이 삭제되었습니다';
+
+  @override
+  String get deleteAccountFailed => '계정 삭제에 실패했습니다';
 }

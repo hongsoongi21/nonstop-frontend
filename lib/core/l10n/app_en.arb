@@ -825,7 +825,7 @@
   "@friendsTitle": {
     "description": "Friends screen title"
   },
-  "requests": "Requests",
+  "requests": "Received",
   "@requests": {
     "description": "Friend requests tab label"
   },
@@ -1334,5 +1334,29 @@
   "timeRemaining": "Time remaining",
   "@timeRemaining": {
     "description": "Countdown timer label"
+  },
+  "deleteAccount": "Delete Account",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountSubtitle": "Permanently delete your account",
+  "@deleteAccountSubtitle": {
+    "description": "Delete account subtitle"
+  },
+  "confirmDeleteAccount": "Are you sure you want to delete your account?",
+  "@confirmDeleteAccount": {
+    "description": "Delete account confirmation message"
+  },
+  "deleteAccountWarning": "This action cannot be undone. All your data will be deleted.",
+  "@deleteAccountWarning": {
+    "description": "Delete account warning message"
+  },
+  "deleteAccountSuccess": "Account deleted successfully",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "Failed to delete account",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
   }
 }

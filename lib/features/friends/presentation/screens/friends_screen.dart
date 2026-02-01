@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/routes.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -9,6 +11,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
+import '../../../chat/presentation/providers/chat_provider.dart';
 import '../providers/friend_management_provider.dart';
 import '../../domain/entities/friend.dart';
 
@@ -319,6 +322,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             padding: const EdgeInsets.only(bottom: AppSpacing.sm),
             child: _buildFriendCard(
               friend: friend,
+              onTap: () => _startChatWithFriend(friend),
               trailing: PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'delete') {
@@ -486,8 +490,10 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
 
   Widget _buildSearch(List<Friend> searchResults, bool isLoading) {
     final l10n = AppLocalizations.of(context)!;
-    return Column(
-      children: [
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Column(
+        children: [
         // Search Bar
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -508,14 +514,14 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   child: TextField(
                     controller: _searchController,
                     style: AppTypography.body1.copyWith(
-                      color: AppColors.textPrimary,
+                      color: Colors.white,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.2,
                     ),
                     decoration: InputDecoration(
                       hintText: l10n.searchUsersHint,
                       hintStyle: AppTypography.body2.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Colors.white.withValues(alpha: 0.5),
                         fontWeight: FontWeight.w400,
                         letterSpacing: -0.1,
                       ),
@@ -599,16 +605,22 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     );
                   },
                 ),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildFriendCard({required Friend friend, Widget? trailing}) {
+  Widget _buildFriendCard({required Friend friend, Widget? trailing, VoidCallback? onTap}) {
     // Determine if friend is online (based on status if available)
     final bool isOnline = friend.status == FriendStatus.accepted;
 
-    return GlassContainer(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: GlassContainer(
       padding: const EdgeInsets.all(AppSpacing.md),
       borderRadius: BorderRadius.circular(16),
       opacity: 0.3,
@@ -742,7 +754,52 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           if (trailing != null) trailing,
         ],
       ),
+      ),
+      ),
     );
+  }
+
+  bool _isStartingChat = false;
+
+  Future<void> _startChatWithFriend(Friend friend) async {
+    if (_isStartingChat) return;
+
+    final userId = int.tryParse(friend.id);
+    if (userId == null) return;
+
+    setState(() => _isStartingChat = true);
+
+    final newRoom = await ref.read(chatListProvider.notifier).createOneToOneRoom(userId);
+
+    if (mounted) {
+      setState(() => _isStartingChat = false);
+
+      if (newRoom != null) {
+        // Defer navigation to next frame to avoid Navigator lock
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            context.push(Routes.chatRoomPath(newRoom.id.toString()));
+          }
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorOccurred,
+              style: AppTypography.body1.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildActionButton(Friend user) {

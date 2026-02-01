@@ -692,7 +692,7 @@
   "@friendsTitle": {
     "description": "Friends screen title"
   },
-  "requests": "So'rovlar",
+  "requests": "Qabul qilingan",
   "@requests": {
     "description": "Friend requests tab label"
   },
@@ -897,5 +897,29 @@
   "enterVerificationCode": "Tasdig'lash kodini kiriting",
   "codeSent": "Tasdig'lash kodi emailingizga yuborildi",
   "verificationSuccess": "Email muvaffaqiyatli tasdiqlandi!",
-  "timeRemaining": "Qolgan vaqt"
+  "timeRemaining": "Qolgan vaqt",
+  "deleteAccount": "Hisobni o'chirish",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountSubtitle": "Hisobingizni butunlay o'chirish",
+  "@deleteAccountSubtitle": {
+    "description": "Delete account subtitle"
+  },
+  "confirmDeleteAccount": "Hisobingizni o'chirishni xohlaysizmi?",
+  "@confirmDeleteAccount": {
+    "description": "Delete account confirmation message"
+  },
+  "deleteAccountWarning": "Bu amalni qaytarib bo'lmaydi. Barcha ma'lumotlaringiz o'chiriladi.",
+  "@deleteAccountWarning": {
+    "description": "Delete account warning message"
+  },
+  "deleteAccountSuccess": "Hisob muvaffaqiyatli o'chirildi",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "Hisobni o'chirib bo'lmadi",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
+  }
 }

@@ -623,7 +623,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsTitle => 'Friends';
 
   @override
-  String get requests => 'Requests';
+  String get requests => 'Received';
 
   @override
   String get search => 'Search';
@@ -1003,4 +1003,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeRemaining => 'Time remaining';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountSubtitle => 'Permanently delete your account';
+
+  @override
+  String get confirmDeleteAccount =>
+      'Are you sure you want to delete your account?';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action cannot be undone. All your data will be deleted.';
+
+  @override
+  String get deleteAccountSuccess => 'Account deleted successfully';
+
+  @override
+  String get deleteAccountFailed => 'Failed to delete account';
 }

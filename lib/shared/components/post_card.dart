@@ -113,6 +113,7 @@ class PostCard extends StatelessWidget {
                           : post.writerNickname,
                       style: AppTypography.body1.copyWith(
                         fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                         height: 1.2,
                       ),
                       maxLines: 1,

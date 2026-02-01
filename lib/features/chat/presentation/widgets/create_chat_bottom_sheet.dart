@@ -115,18 +115,15 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
       return;
     }
 
-    await ref.read(chatListProvider.notifier).createOneToOneRoom(userId);
+    final newRoom = await ref.read(chatListProvider.notifier).createOneToOneRoom(userId);
 
     setState(() => _isCreating = false);
 
-    if (mounted) {
-      // Get the newly created room
-      final rooms = ref.read(chatListProvider).rooms;
-      if (rooms.isNotEmpty) {
-        final newRoom = rooms.first;
-        context.pop();
-        context.push(Routes.chatRoomPath(newRoom.id.toString()));
-      }
+    if (mounted && newRoom != null) {
+      context.pop();
+      context.push(Routes.chatRoomPath(newRoom.id.toString()));
+    } else if (mounted) {
+      _showError('Failed to create chat');
     }
   }
 
@@ -433,24 +430,27 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.person_search_rounded,
-              size: 64,
-              color: AppColors.textSecondary.withValues(alpha: 0.3),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              _searchController.text.isEmpty
-                  ? 'Start typing to search users'
-                  : 'No users found',
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.person_search_rounded,
+                size: 64,
+                color: AppColors.textSecondary.withValues(alpha: 0.3),
               ),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                _searchController.text.isEmpty
+                    ? 'Start typing to search users'
+                    : 'No users found',
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
