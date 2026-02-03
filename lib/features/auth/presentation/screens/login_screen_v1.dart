@@ -326,8 +326,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
     final authState = ref.watch(authProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.primaryGradient.last,
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
