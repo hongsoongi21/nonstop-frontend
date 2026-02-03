@@ -382,6 +382,10 @@ final isAuthenticatedProvider = Provider<bool>((ref) {
   return ref.watch(authProvider).isAuthenticated;
 });
 
+final isAuthInitializedProvider = Provider<bool>((ref) {
+  return ref.watch(authProvider).isInitialized;
+});
+
 final currentUserProvider = Provider<User?>((ref) {
   return ref.watch(authProvider).user;
 });

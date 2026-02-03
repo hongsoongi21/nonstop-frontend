@@ -115,7 +115,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
       _showWelcomeSnackbar(authState.user?.nickname);
-      context.go(Routes.home);
+      // 라우터가 자동으로 board로 리다이렉트합니다
     }
   }
 
@@ -179,9 +179,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         final authState = ref.read(authProvider);
         debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, error: ${authState.failure?.message}');
         if (authState.isAuthenticated && !authState.hasError) {
-          debugPrint('[GOOGLE_LOGIN] Step 10: Navigating to home...');
+          debugPrint('[GOOGLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
-          context.go(Routes.home);
+          // 라우터가 자동으로 board로 리다이렉트합니다
         } else {
           debugPrint('[GOOGLE_LOGIN] ERROR: Not authenticated or has error');
         }
@@ -288,9 +288,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         final authState = ref.read(authProvider);
         debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}');
         if (authState.isAuthenticated && !authState.hasError) {
-          debugPrint('[APPLE_LOGIN] Step 10: Navigating to home...');
+          debugPrint('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
-          context.go(Routes.home);
+          // 라우터가 자동으로 board로 리다이렉트합니다
         }
       }
     } on SignInWithAppleAuthorizationException catch (e) {

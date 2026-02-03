@@ -29,19 +29,20 @@ import 'package:nonstop/shared/components/main_scaffold.dart';
 
 /// Main router with authentication guard and bottom navigation
 final routerProvider = Provider<GoRouter>((ref) {
-  // authProvider 전체를 watch하는 대신 isAuthenticated 여부만 watch하여
-  // 이메일 인증 시의 미세한 상태 변화(로딩 등)에 라우터가 재계산되는 것을 방지합니다.
-  final authState = ref.watch(authProvider);
+  // isLoading 등 상태 변화에 라우터가 불필요하게 재계산되는 것을 방지하기 위해
+  // isAuthenticated와 isInitialized만 개별적으로 watch합니다.
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  final isInitialized = ref.watch(isAuthInitializedProvider);
   final analyticsService = ref.watch(analyticsServiceProvider);
 
   return GoRouter(
-    initialLocation: authState.isAuthenticated ? Routes.board : Routes.login,
+    initialLocation: isAuthenticated ? Routes.board : Routes.login,
     observers: [analyticsService.observer],
     redirect: (context, state) {
       final path = state.uri.path;
 
       // 초기화가 완료되지 않았으면 리다이렉트하지 않음 (로딩 중)
-      if (!authState.isInitialized) {
+      if (!isInitialized) {
         return null;
       }
 
@@ -51,12 +52,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           path == Routes.forgotPassword;
 
       // 인증되지 않은 상태에서 보호된 경로에 접근하려고 하면 로그인으로 리다이렉트
-      if (!authState.isAuthenticated && !isAuthPage) {
+      if (!isAuthenticated && !isAuthPage) {
         return Routes.login;
       }
 
       // 이미 인증된 상태에서 인증 페이지(로그인/회원가입)에 접근하면 게시판으로 리다이렉트
-      if (authState.isAuthenticated && isAuthPage) {
+      if (isAuthenticated && isAuthPage) {
         return Routes.board;
       }
 
