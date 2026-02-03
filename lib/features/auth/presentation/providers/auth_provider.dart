@@ -296,7 +296,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       debugPrint('FCM unregister failed: $e');
     }
     await _authRepository.signOut();
-    state = const AuthState();
+    // isInitialized: true를 유지해야 라우터가 로그인 화면으로 리다이렉트함
+    state = const AuthState(isInitialized: true);
   }
 
   /// 정책 동의를 백엔드에 저장합니다.
@@ -308,7 +309,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signOutFull() async {
     state = state.copyWith(isLoading: true);
     await _authRepository.signOutFull();
-    state = const AuthState();
+    // isInitialized: true를 유지해야 라우터가 로그인 화면으로 리다이렉트함
+    state = const AuthState(isInitialized: true);
   }
 
   /// 계정을 삭제하고 상태를 초기화합니다.
@@ -317,7 +319,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _authRepository.deleteAccount();
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (_) => state = const AuthState(),
+      // isInitialized: true를 유지해야 라우터가 로그인 화면으로 리다이렉트함
+      (_) => state = const AuthState(isInitialized: true),
     );
   }
 
@@ -328,8 +331,37 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 인증 상태를 수동으로 새로고침합니다.
   /// 앱이 백그라운드에서 돌아왔을 때 호출하여 토큰 상태를 확인할 수 있습니다.
+  /// 이미 인증된 상태에서는 라우터 재계산을 방지하기 위해 state를 변경하지 않고
+  /// 백그라운드에서 토큰 유효성만 확인합니다.
   Future<void> refreshAuthState() async {
-    await _initializeAuth();
+    // 이미 인증된 상태라면 불필요한 state 변경 없이 백그라운드에서 확인만 합니다.
+    if (state.isAuthenticated) {
+      debugPrint('[AUTH] 🔄 Refreshing auth state (already authenticated, silent check)...');
+      final result = await _authRepository.getCurrentUser();
+      result.fold(
+        (failure) {
+          // 토큰이 만료되었거나 유효하지 않으면 로그아웃 처리
+          debugPrint('[AUTH] ⚠️ Token invalid during refresh: ${failure.message}');
+          state = state.copyWith(
+            isLoading: false,
+            isInitialized: true,
+            clearUser: true,
+          );
+        },
+        (user) {
+          // 토큰이 유효하면 사용자 정보만 업데이트 (변경이 있는 경우에만)
+          if (user != null && user.id != state.user?.id) {
+            debugPrint('[AUTH] ✅ User info updated during refresh');
+            state = state.copyWith(user: user);
+          } else {
+            debugPrint('[AUTH] ✅ Auth state still valid');
+          }
+        },
+      );
+    } else {
+      // 인증되지 않은 상태에서는 기존 초기화 로직 실행
+      await _initializeAuth();
+    }
   }
 }
 

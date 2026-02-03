@@ -102,6 +102,12 @@ abstract class AppLocalizations {
     Locale('uz'),
   ];
 
+  /// Welcome snackbar message after successful login
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {nickname}!'**
+  String loginSuccessWelcome(String nickname);
+
   /// The conventional newborn programmer greeting
   ///
   /// In en, this message translates to:

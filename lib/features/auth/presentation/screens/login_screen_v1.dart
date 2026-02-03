@@ -16,7 +16,6 @@ import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
-import '../widgets/language_selector.dart';
 
 class LoginScreenV1 extends ConsumerStatefulWidget {
   const LoginScreenV1({super.key});
@@ -34,7 +33,6 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _staggeredAnimation1;
   late Animation<double> _staggeredAnimation2;
   late Animation<double> _staggeredAnimation3;
   bool _googleSignInInitialized = false;
@@ -67,13 +65,6 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
     );
 
     // Staggered animations for form elements
-    _staggeredAnimation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.3, 0.8, curve: Curves.easeOut),
-      ),
-    );
-
     _staggeredAnimation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -123,10 +114,22 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
-      if (mounted) {
-        context.go(Routes.home);
-      }
+      _showWelcomeSnackbar(authState.user?.nickname);
+      context.go(Routes.home);
     }
+  }
+
+  void _showWelcomeSnackbar(String? nickname) {
+    if (!mounted) return;
+    final displayName = nickname ?? 'User';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.loginSuccessWelcome(displayName)),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   Future<void> _handleGoogleLogin() async {
@@ -177,6 +180,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, error: ${authState.failure?.message}');
         if (authState.isAuthenticated && !authState.hasError) {
           debugPrint('[GOOGLE_LOGIN] Step 10: Navigating to home...');
+          _showWelcomeSnackbar(authState.user?.nickname);
           context.go(Routes.home);
         } else {
           debugPrint('[GOOGLE_LOGIN] ERROR: Not authenticated or has error');
@@ -227,11 +231,16 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       return;
     }
 
+    // Store notifier reference before async gap to avoid "ref after dispose" error
+    final authNotifier = ref.read(authProvider.notifier);
+
     try {
+      debugPrint('[APPLE_LOGIN] Step 1: Generating nonce...');
       // Generate nonce for security
       final rawNonce = _generateNonce();
       final nonce = _sha256ofString(rawNonce);
 
+      debugPrint('[APPLE_LOGIN] Step 2: Requesting Apple credential...');
       // Request Apple Sign In
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -240,6 +249,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         ],
         nonce: nonce,
       );
+      debugPrint('[APPLE_LOGIN] Step 3: Got Apple credential, identityToken: ${appleCredential.identityToken != null ? "EXISTS" : "NULL"}');
 
       // Create OAuth credential for Firebase
       final oauthCredential = OAuthProvider('apple.com').credential(
@@ -247,18 +257,27 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         rawNonce: rawNonce,
       );
 
+      debugPrint('[APPLE_LOGIN] Step 4: Signing in to Firebase...');
       // Sign in to Firebase with Apple credential
       final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      final firebaseIdToken = await userCredential.user?.getIdToken(true);
+      debugPrint('[APPLE_LOGIN] Step 5: Firebase user: ${userCredential.user?.uid}');
 
-      if (firebaseIdToken == null) return;
+      final firebaseIdToken = await userCredential.user?.getIdToken(true);
+      debugPrint('[APPLE_LOGIN] Step 6: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS" : "NULL"}');
+
+      if (firebaseIdToken == null) {
+        debugPrint('[APPLE_LOGIN] ERROR: Firebase ID Token is null!');
+        return;
+      }
 
       // Get user name from Apple (only provided on first sign in)
       final firstName = appleCredential.givenName;
       final lastName = appleCredential.familyName;
+      debugPrint('[APPLE_LOGIN] Step 7: Name: $firstName $lastName');
 
+      debugPrint('[APPLE_LOGIN] Step 8: Calling backend signInWithApple...');
       // Sign in with backend
-      await ref.read(authProvider.notifier).signInWithApple(
+      await authNotifier.signInWithApple(
         idToken: firebaseIdToken,
         authorizationCode: appleCredential.authorizationCode,
         firstName: firstName,
@@ -267,11 +286,15 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
       if (mounted) {
         final authState = ref.read(authProvider);
+        debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}');
         if (authState.isAuthenticated && !authState.hasError) {
+          debugPrint('[APPLE_LOGIN] Step 10: Navigating to home...');
+          _showWelcomeSnackbar(authState.user?.nickname);
           context.go(Routes.home);
         }
       }
     } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('[APPLE_LOGIN] SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
       // User cancelled the sign-in
       if (e.code == AuthorizationErrorCode.canceled) return;
       if (mounted) {
@@ -279,7 +302,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
           SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(e.message))),
         );
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint('[APPLE_LOGIN] Exception: $error');
+      debugPrint('[APPLE_LOGIN] StackTrace: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(error.toString()))),
@@ -326,63 +351,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Language selector
-                        const LanguageSelector(),
-
                         SizedBox(height: 40.h),
-
-                        // Hero Section
-                        FadeTransition(
-                          opacity: _staggeredAnimation1,
-                          child: Column(
-                            children: [
-                              // Brand Icon/Logo
-                              Container(
-                                width: 72.w,
-                                height: 72.h,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.15),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                    width: 2.w,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.school_outlined,
-                                  size: 36.sp,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 16.h),
-                              Text(
-                                'NonStop',
-                                style: TextStyle(
-                                  fontFamily: 'Noto Sans',
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 32.sp,
-                                  height: 1.2,
-                                  letterSpacing: -0.02 * 32.sp,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              Text(
-                                'Samarqand davlat universiteti',
-                                style: TextStyle(
-                                  fontFamily: 'Noto Sans',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14.sp,
-                                  height: 1.4,
-                                  letterSpacing: 0.02 * 14.sp,
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 48.h),
 
                         // Login form container
                         FadeTransition(
@@ -422,7 +391,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                   children: [
                                     // Title
                                     Text(
-                                      AppLocalizations.of(context)!.welcomeBack,
+                                      'Nonstop',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Noto Sans',

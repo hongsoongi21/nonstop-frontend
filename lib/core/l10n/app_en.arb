@@ -1,5 +1,15 @@
 {
   "@@locale": "en",
+  "loginSuccessWelcome": "Welcome, {nickname}!",
+  "@loginSuccessWelcome": {
+    "description": "Welcome snackbar message after successful login",
+    "placeholders": {
+      "nickname": {
+        "type": "String",
+        "example": "John"
+      }
+    }
+  },
   "helloWorld": "Hello World!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"

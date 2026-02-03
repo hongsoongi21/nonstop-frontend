@@ -1,5 +1,15 @@
 {
   "@@locale": "ko",
+  "loginSuccessWelcome": "{nickname}님, 환영합니다!",
+  "@loginSuccessWelcome": {
+    "description": "Welcome snackbar message after successful login",
+    "placeholders": {
+      "nickname": {
+        "type": "String",
+        "example": "홍길동"
+      }
+    }
+  },
   "helloWorld": "안녕하세요!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"

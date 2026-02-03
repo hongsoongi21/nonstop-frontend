@@ -9,6 +9,11 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String loginSuccessWelcome(String nickname) {
+    return '$nickname님, 환영합니다!';
+  }
+
+  @override
   String get helloWorld => '안녕하세요!';
 
   @override

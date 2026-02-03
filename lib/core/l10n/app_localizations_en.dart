@@ -9,6 +9,11 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String loginSuccessWelcome(String nickname) {
+    return 'Welcome, $nickname!';
+  }
+
+  @override
   String get helloWorld => 'Hello World!';
 
   @override

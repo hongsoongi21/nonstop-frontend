@@ -9,6 +9,11 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
+  String loginSuccessWelcome(String nickname) {
+    return 'Xush kelibsiz, $nickname!';
+  }
+
+  @override
   String get helloWorld => 'Salom, dunyo!';
 
   @override
