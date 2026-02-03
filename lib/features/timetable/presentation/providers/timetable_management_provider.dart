@@ -240,9 +240,15 @@ class TimetableManagementNotifier
     String? place,
     String? color,
   }) async {
+    // If no timetable selected, try to initialize first
     if (state.selectedTimetableId == null) {
-      state = state.copyWith(error: 'No timetable selected');
-      return false;
+      await initializeTimetable();
+
+      // If still no timetable after initialization, return error
+      if (state.selectedTimetableId == null) {
+        state = state.copyWith(error: 'No timetable available. Please create a timetable first.');
+        return false;
+      }
     }
 
     state = state.copyWith(isLoading: true, clearError: true);
