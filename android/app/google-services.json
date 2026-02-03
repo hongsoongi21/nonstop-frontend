@@ -12,7 +12,12 @@
           "package_name": "uz.merge4.nonstop"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCI6rc9gbOlJoyxOhgnPOzXU6XBRyuoI14"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "127473148279-2o8t8nbv7tru4audjcu98bg9qce548kd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "uz.merge4.nonstop"
+              }
+            }
+          ]
         }
       }
     }

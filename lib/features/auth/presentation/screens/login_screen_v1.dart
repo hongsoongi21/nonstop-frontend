@@ -130,37 +130,60 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   }
 
   Future<void> _handleGoogleLogin() async {
+    // Store notifier reference before async gap to avoid "ref after dispose" error
+    final authNotifier = ref.read(authProvider.notifier);
+
     try {
+      debugPrint('[GOOGLE_LOGIN] Step 1: Initializing Google Sign-In...');
       // Ensure Google Sign-In is initialized
       await _initGoogleSignIn();
 
+      debugPrint('[GOOGLE_LOGIN] Step 2: Calling authenticate()...');
       // Google Sign-In using new API (v7.x)
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+      debugPrint('[GOOGLE_LOGIN] Step 3: Got Google user: ${googleUser.email}');
 
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final googleIdToken = googleAuth.idToken;
+      debugPrint('[GOOGLE_LOGIN] Step 4: Google ID Token: ${googleIdToken != null ? "EXISTS (${googleIdToken.length} chars)" : "NULL"}');
 
-      if (googleIdToken == null) return;
+      if (googleIdToken == null) {
+        debugPrint('[GOOGLE_LOGIN] ERROR: Google ID Token is null!');
+        return;
+      }
 
+      debugPrint('[GOOGLE_LOGIN] Step 5: Signing in to Firebase...');
       // Exchange Google token for a Firebase ID token.
       final credential = GoogleAuthProvider.credential(idToken: googleIdToken);
       final userCredential = await FirebaseAuth.instance.signInWithCredential(
         credential,
       );
+      debugPrint('[GOOGLE_LOGIN] Step 6: Firebase user: ${userCredential.user?.uid}');
+
       final firebaseIdToken = await userCredential.user?.getIdToken(true);
+      debugPrint('[GOOGLE_LOGIN] Step 7: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS (${firebaseIdToken.length} chars)" : "NULL"}');
 
-      if (firebaseIdToken == null) return;
+      if (firebaseIdToken == null) {
+        debugPrint('[GOOGLE_LOGIN] ERROR: Firebase ID Token is null!');
+        return;
+      }
 
-      await ref.read(authProvider.notifier).signInWithGoogle(firebaseIdToken);
+      debugPrint('[GOOGLE_LOGIN] Step 8: Calling backend signInWithGoogle...');
+      await authNotifier.signInWithGoogle(firebaseIdToken);
 
       if (mounted) {
         final authState = ref.read(authProvider);
+        debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, error: ${authState.failure?.message}');
         if (authState.isAuthenticated && !authState.hasError) {
+          debugPrint('[GOOGLE_LOGIN] Step 10: Navigating to home...');
           context.go(Routes.home);
+        } else {
+          debugPrint('[GOOGLE_LOGIN] ERROR: Not authenticated or has error');
         }
       }
     } on GoogleSignInException catch (e) {
+      debugPrint('[GOOGLE_LOGIN] GoogleSignInException: ${e.code} - ${e.description}');
       // User cancelled the sign-in
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       if (mounted) {
@@ -168,7 +191,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
           SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(e.description ?? ''))),
         );
       }
-    } catch (error) {
+    } catch (error, stackTrace) {
+      debugPrint('[GOOGLE_LOGIN] Exception: $error');
+      debugPrint('[GOOGLE_LOGIN] StackTrace: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString()))),
