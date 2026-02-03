@@ -699,65 +699,68 @@ class SettingsScreen extends ConsumerWidget {
           top: Radius.circular(AppSpacing.radiusXl),
         ),
       ),
+      isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle bar
-            Container(
-              margin: EdgeInsets.only(top: AppSpacing.sm),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.border,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Title
-            Padding(
-              padding: EdgeInsets.all(AppSpacing.lg),
-              child: Text(
-                l10n.language,
-                style: AppTypography.titleLarge.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                margin: EdgeInsets.only(top: AppSpacing.sm),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-            ),
-            // System default option
-            _buildLanguageOption(
-              context: context,
-              ref: ref,
-              title: l10n.systemDefault,
-              subtitle: AppLocale.getDisplayName(AppLocale.getSystemLocale()),
-              icon: Icons.phone_android,
-              isSelected: !localeState.isUserSelected,
-              onTap: () {
-                ref.read(localeStateProvider.notifier).resetToSystemLocale();
-                Navigator.pop(context);
-              },
-            ),
-            Divider(
-              height: 1,
-              color: AppColors.border.withValues(alpha: 0.3),
-              indent: AppSpacing.lg,
-              endIndent: AppSpacing.lg,
-            ),
-            // Language options
-            ...AppLocale.supportedLocales.map((locale) => _buildLanguageOption(
-                  context: context,
-                  ref: ref,
-                  title: AppLocale.getDisplayName(locale),
-                  flag: AppLocale.getFlag(locale),
-                  isSelected: localeState.isUserSelected &&
-                      localeState.locale.languageCode == locale.languageCode,
-                  onTap: () {
-                    ref.read(localeStateProvider.notifier).setLocale(locale);
-                    Navigator.pop(context);
-                  },
-                )),
-            SizedBox(height: AppSpacing.lg),
-          ],
+              // Title
+              Padding(
+                padding: EdgeInsets.all(AppSpacing.lg),
+                child: Text(
+                  l10n.language,
+                  style: AppTypography.titleLarge.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              // System default option
+              _buildLanguageOption(
+                context: context,
+                ref: ref,
+                title: l10n.systemDefault,
+                subtitle: AppLocale.getDisplayName(AppLocale.getSystemLocale()),
+                icon: Icons.phone_android,
+                isSelected: !localeState.isUserSelected,
+                onTap: () {
+                  ref.read(localeStateProvider.notifier).resetToSystemLocale();
+                  Navigator.pop(context);
+                },
+              ),
+              Divider(
+                height: 1,
+                color: AppColors.border.withValues(alpha: 0.3),
+                indent: AppSpacing.lg,
+                endIndent: AppSpacing.lg,
+              ),
+              // Language options
+              ...AppLocale.supportedLocales.map((locale) => _buildLanguageOption(
+                    context: context,
+                    ref: ref,
+                    title: AppLocale.getDisplayName(locale),
+                    flag: AppLocale.getFlag(locale),
+                    isSelected: localeState.isUserSelected &&
+                        localeState.locale.languageCode == locale.languageCode,
+                    onTap: () {
+                      ref.read(localeStateProvider.notifier).setLocale(locale);
+                      Navigator.pop(context);
+                    },
+                  )),
+              SizedBox(height: AppSpacing.lg),
+            ],
+          ),
         ),
       ),
     );
