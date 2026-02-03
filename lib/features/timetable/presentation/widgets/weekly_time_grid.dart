@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/l10n/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/timetable_entry.dart';
 import '../../domain/entities/day_of_week.dart';
 
 /// Weekly time grid widget showing hours and days - Everytime style
+/// Supports both light and dark themes
 class WeeklyTimeGrid extends StatelessWidget {
   final List<TimetableEntry> entries;
   final Function(TimetableEntry)? onEntryTap;
@@ -12,89 +14,77 @@ class WeeklyTimeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get current day to highlight today column
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final today = DateTime.now().weekday;
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0A0A0A), // Pure dark background
-        borderRadius: BorderRadius.circular(8),
+        color: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF1A1A1A),
+          color: isDark ? const Color(0xFF1A1A1A) : AppColors.border,
           width: 1,
         ),
       ),
       child: Column(
         children: [
-          // Days header
-          _buildDaysHeader(today),
-
-          // Time grid
-          Expanded(child: _buildTimeGrid()),
+          _buildDaysHeader(context, today, isDark),
+          Expanded(child: _buildTimeGrid(context, isDark)),
         ],
       ),
     );
   }
 
-  Widget _buildDaysHeader(int today) {
-    return Builder(
-      builder: (context) {
-        final l10n = AppLocalizations.of(context)!;
-        final weekDays = [
-          {'short': l10n.dayMondayShort, 'full': l10n.dayMonday, 'day': 1},
-          {'short': l10n.dayTuesdayShort, 'full': l10n.dayTuesday, 'day': 2},
-          {'short': l10n.dayWednesdayShort, 'full': l10n.dayWednesday, 'day': 3},
-          {'short': l10n.dayThursdayShort, 'full': l10n.dayThursday, 'day': 4},
-          {'short': l10n.dayFridayShort, 'full': l10n.dayFriday, 'day': 5},
-        ];
+  Widget _buildDaysHeader(BuildContext context, int today, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
+    final weekDays = [
+      {'short': l10n.dayMondayShort, 'day': 1},
+      {'short': l10n.dayTuesdayShort, 'day': 2},
+      {'short': l10n.dayWednesdayShort, 'day': 3},
+      {'short': l10n.dayThursdayShort, 'day': 4},
+      {'short': l10n.dayFridayShort, 'day': 5},
+    ];
 
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: Color(0xFF1A1A1A),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Row(
-            children: [
-              // Empty space for time column
-              const SizedBox(
-                width: 48,
-              ),
+    final borderColor = isDark ? const Color(0xFF1A1A1A) : AppColors.border;
+    final defaultTextColor = isDark ? const Color(0xFF999999) : AppColors.textSecondary;
+    final todayTextColor = isDark ? Colors.white : AppColors.primary;
 
-              // Day headers - minimal style
-              ...weekDays.map((day) {
-                final isToday = day['day'] == today;
-
-                return Expanded(
-                  child: Center(
-                    child: Text(
-                      day['short'] as String,
-                      style: TextStyle(
-                        color: isToday
-                            ? const Color(0xFFFFFFFF)
-                            : const Color(0xFF999999),
-                        fontSize: 13,
-                        fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
-                        letterSpacing: 0,
-                      ),
-                    ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: borderColor, width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          const SizedBox(width: 48),
+          ...weekDays.map((day) {
+            final isToday = day['day'] == today;
+            return Expanded(
+              child: Center(
+                child: Text(
+                  day['short'] as String,
+                  style: TextStyle(
+                    color: isToday ? todayTextColor : defaultTextColor,
+                    fontSize: 13,
+                    fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
                   ),
-                );
-              }),
-            ],
-          ),
-        );
-      },
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 
-  Widget _buildTimeGrid() {
-    // Time slots from 9 AM to 5 PM (Everytime style)
-    final timeSlots = List.generate(9, (index) => 9 + index);
+  Widget _buildTimeGrid(BuildContext context, bool isDark) {
+    // Time slots from 9 AM to 9 PM
+    final timeSlots = List.generate(13, (index) => 9 + index);
+
+    final borderColor = isDark ? const Color(0xFF1A1A1A) : AppColors.borderLight;
+    final hourTextColor = isDark ? const Color(0xFF666666) : AppColors.textTertiary;
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -103,12 +93,10 @@ class WeeklyTimeGrid extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Time column - simple numbers
+              // Time column
               Column(
                 children: timeSlots.map((hour) {
-                  // Format hour as simple number (12-hour after noon)
                   final displayHour = hour > 12 ? hour - 12 : hour;
-
                   return Container(
                     height: 60,
                     width: 48,
@@ -116,29 +104,25 @@ class WeeklyTimeGrid extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
                       '$displayHour',
-                      style: const TextStyle(
-                        color: Color(0xFF666666),
+                      style: TextStyle(
+                        color: hourTextColor,
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        height: 1,
                       ),
                     ),
                   );
                 }).toList(),
               ),
 
-              // Days grid background - minimal
+              // Days grid background
               Expanded(
                 child: Column(
                   children: timeSlots.map((hour) {
                     return Container(
                       height: 60,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                            color: Color(0xFF1A1A1A),
-                            width: 1,
-                          ),
+                          top: BorderSide(color: borderColor, width: 1),
                         ),
                       ),
                       child: Row(
@@ -148,10 +132,7 @@ class WeeklyTimeGrid extends StatelessWidget {
                               decoration: BoxDecoration(
                                 border: Border(
                                   left: dayIndex > 0
-                                      ? const BorderSide(
-                                          color: Color(0xFF1A1A1A),
-                                          width: 1,
-                                        )
+                                      ? BorderSide(color: borderColor, width: 1)
                                       : BorderSide.none,
                                 ),
                               ),
@@ -166,9 +147,9 @@ class WeeklyTimeGrid extends StatelessWidget {
             ],
           ),
 
-          // Events Overlay - flat Everytime style
+          // Course entries overlay
           Positioned.fill(
-            left: 48, // Skip time column
+            left: 48,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final dayWidth = constraints.maxWidth / 5;
@@ -176,32 +157,24 @@ class WeeklyTimeGrid extends StatelessWidget {
                 return Stack(
                   children: entries
                       .where((e) {
-                        // Only show Mon(1) to Fri(5)
                         final dayNum = e.dayOfWeek.weekdayNumber;
                         return dayNum >= 1 && dayNum <= 5;
                       })
                       .map((entry) {
-                        // Check for conflicts
                         final hasConflict = entries.any(
-                          (other) =>
-                              other.id != entry.id && entry.conflictsWith(other),
+                          (other) => other.id != entry.id && entry.conflictsWith(other),
                         );
 
-                        // Calculate position
                         final dayIndex = entry.dayOfWeek.weekdayNumber - 1;
 
                         final startParts = entry.startTime.split(':');
                         final startHour = int.parse(startParts[0]);
                         final startMin = int.parse(startParts[1]);
 
-                        // Grid starts at 9:00. Each hour is 60px.
-                        final double top =
-                            ((startHour - 9) * 60) + (startMin / 60 * 60);
-                        final double height =
-                            (entry.durationInMinutes / 60) * 60;
+                        final double top = ((startHour - 9) * 60) + (startMin / 60 * 60);
+                        final double height = (entry.durationInMinutes / 60) * 60;
 
-                        // Muted pastel colors for Everytime style
-                        final courseColor = _getMutedColor(entry.displayColor);
+                        final courseColor = _getMutedColor(entry.displayColor, isDark);
 
                         return Positioned(
                           left: dayIndex * dayWidth,
@@ -213,12 +186,10 @@ class WeeklyTimeGrid extends StatelessWidget {
                             child: Container(
                               margin: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                // Flat solid color - no gradient
                                 color: hasConflict
                                     ? const Color(0xFFD84545)
                                     : courseColor,
                                 borderRadius: BorderRadius.circular(4),
-                                // No shadows - pure flat design
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
@@ -229,7 +200,6 @@ class WeeklyTimeGrid extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // Course name
                                     Text(
                                       entry.subjectName,
                                       style: const TextStyle(
@@ -241,7 +211,6 @@ class WeeklyTimeGrid extends StatelessWidget {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    // Location
                                     if (entry.place != null) ...[
                                       const SizedBox(height: 2),
                                       Text(
@@ -272,15 +241,23 @@ class WeeklyTimeGrid extends StatelessWidget {
     );
   }
 
-  // Convert display color to muted pastel for Everytime aesthetic
-  Color _getMutedColor(int colorValue) {
+  /// Convert display color to muted pastel for Everytime aesthetic
+  Color _getMutedColor(int colorValue, bool isDark) {
     final original = Color(colorValue);
     final hsl = HSLColor.fromColor(original);
 
-    // Create muted pastel version: reduce saturation, adjust lightness
-    final muted = hsl.withSaturation((hsl.saturation * 0.5).clamp(0.3, 0.6))
-        .withLightness((hsl.lightness * 0.9).clamp(0.45, 0.65));
-
-    return muted.toColor();
+    if (isDark) {
+      // Dark mode: muted, slightly darker pastels
+      final muted = hsl
+          .withSaturation((hsl.saturation * 0.5).clamp(0.3, 0.6))
+          .withLightness((hsl.lightness * 0.9).clamp(0.45, 0.65));
+      return muted.toColor();
+    } else {
+      // Light mode: brighter, more vibrant pastels
+      final muted = hsl
+          .withSaturation((hsl.saturation * 0.7).clamp(0.4, 0.7))
+          .withLightness((hsl.lightness).clamp(0.5, 0.7));
+      return muted.toColor();
+    }
   }
 }
