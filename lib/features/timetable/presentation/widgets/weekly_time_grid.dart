@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/l10n/app_localizations.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/timetable_entry.dart';
 import '../../domain/entities/day_of_week.dart';
 
-/// Weekly time grid widget showing hours and days
+/// Weekly time grid widget showing hours and days - Everytime style
 class WeeklyTimeGrid extends StatelessWidget {
   final List<TimetableEntry> entries;
   final Function(TimetableEntry)? onEntryTap;
@@ -19,19 +17,12 @@ class WeeklyTimeGrid extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF0A0A0A), // Pure dark background
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.border,
+          color: const Color(0xFF1A1A1A),
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            offset: const Offset(0, 4),
-            blurRadius: 16,
-          ),
-        ],
       ),
       child: Column(
         children: [
@@ -57,90 +48,53 @@ class WeeklyTimeGrid extends StatelessWidget {
           {'short': l10n.dayFridayShort, 'full': l10n.dayFriday, 'day': 5},
         ];
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: AppColors.border,
-            width: 2,
-          ),
-        ),
-      ),
-      child: Row(
-        children: [
-          // Empty space for time column with clean styling
-          Container(
-            width: 64,
-            alignment: Alignment.center,
-            child: Icon(
-              Icons.schedule,
-              size: 20,
-              color: AppColors.primary.withValues(alpha: 0.6),
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Color(0xFF1A1A1A),
+                width: 1,
+              ),
             ),
           ),
+          child: Row(
+            children: [
+              // Empty space for time column
+              const SizedBox(
+                width: 48,
+              ),
 
-          // Day headers with today highlight
-          ...weekDays.map((day) {
-            final isToday = day['day'] == today;
+              // Day headers - minimal style
+              ...weekDays.map((day) {
+                final isToday = day['day'] == today;
 
-            return Expanded(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 2),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: isToday
-                      ? AppColors.timetableToday.withValues(alpha: 0.1)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: isToday
-                      ? Border.all(
-                          color: AppColors.timetableToday,
-                          width: 2,
-                        )
-                      : null,
-                ),
-                child: Column(
-                  children: [
-                    Text(
+                return Expanded(
+                  child: Center(
+                    child: Text(
                       day['short'] as String,
-                      style: AppTypography.labelSmall.copyWith(
+                      style: TextStyle(
                         color: isToday
-                            ? AppColors.timetableToday
-                            : AppColors.textSecondary,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.8,
+                            ? const Color(0xFFFFFFFF)
+                            : const Color(0xFF999999),
+                        fontSize: 13,
+                        fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
+                        letterSpacing: 0,
                       ),
                     ),
-                    if (isToday) ...[
-                      const SizedBox(height: 2),
-                      Container(
-                        width: 4,
-                        height: 4,
-                        decoration: const BoxDecoration(
-                          color: AppColors.timetableToday,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
-    );
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
       },
     );
   }
 
   Widget _buildTimeGrid() {
-    // Get current day to highlight today column
-    final today = DateTime.now().weekday;
-
-    // Time slots from 8 AM to 9 PM (extended for flexibility)
-    final timeSlots = List.generate(14, (index) => 8 + index);
+    // Time slots from 9 AM to 5 PM (Everytime style)
+    final timeSlots = List.generate(9, (index) => 9 + index);
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -149,90 +103,54 @@ class WeeklyTimeGrid extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Time column with refined typography
+              // Time column - simple numbers
               Column(
                 children: timeSlots.map((hour) {
-                  // Highlight current hour
-                  final now = DateTime.now();
-                  final isCurrentHour = now.hour == hour;
+                  // Format hour as simple number (12-hour after noon)
+                  final displayHour = hour > 12 ? hour - 12 : hour;
 
                   return Container(
-                    height: 88,
-                    width: 64,
+                    height: 60,
+                    width: 48,
                     alignment: Alignment.topCenter,
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isCurrentHour
-                            ? AppColors.primary.withValues(alpha: 0.08)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        hour < 10 ? '0$hour:00' : '$hour:00',
-                        style: AppTypography.caption.copyWith(
-                          color: isCurrentHour
-                              ? AppColors.primary
-                              : AppColors.textTertiary,
-                          fontWeight: isCurrentHour
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          letterSpacing: 0.5,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      '$displayHour',
+                      style: const TextStyle(
+                        color: Color(0xFF666666),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        height: 1,
                       ),
                     ),
                   );
                 }).toList(),
               ),
 
-              // Days grid background with today column highlight
+              // Days grid background - minimal
               Expanded(
                 child: Column(
                   children: timeSlots.map((hour) {
-                    final isCurrentHour = DateTime.now().hour == hour;
-
                     return Container(
-                      height: 88,
-                      decoration: BoxDecoration(
+                      height: 60,
+                      decoration: const BoxDecoration(
                         border: Border(
                           top: BorderSide(
-                            color: isCurrentHour
-                                ? AppColors.primary.withValues(alpha: 0.15)
-                                : AppColors.borderLight,
-                            width: isCurrentHour ? 2 : 1,
+                            color: Color(0xFF1A1A1A),
+                            width: 1,
                           ),
                         ),
                       ),
                       child: Row(
                         children: List.generate(5, (dayIndex) {
-                          final dayNumber = dayIndex + 1;
-                          final isToday = dayNumber == today;
-
                           return Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isToday
-                                    ? AppColors.timetableToday
-                                        .withValues(alpha: 0.02)
-                                    : Colors.transparent,
                                 border: Border(
                                   left: dayIndex > 0
-                                      ? BorderSide(
-                                          color: isToday || (dayIndex == today)
-                                              ? AppColors.border
-                                              : AppColors.borderLight,
-                                          width: isToday ? 1.5 : 1,
-                                        )
-                                      : BorderSide.none,
-                                  right: isToday
                                       ? const BorderSide(
-                                          color: AppColors.border,
-                                          width: 1.5,
+                                          color: Color(0xFF1A1A1A),
+                                          width: 1,
                                         )
                                       : BorderSide.none,
                                 ),
@@ -248,9 +166,9 @@ class WeeklyTimeGrid extends StatelessWidget {
             ],
           ),
 
-          // Events Overlay with enhanced styling
+          // Events Overlay - flat Everytime style
           Positioned.fill(
-            left: 64, // Skip time column
+            left: 48, // Skip time column
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final dayWidth = constraints.maxWidth / 5;
@@ -276,13 +194,14 @@ class WeeklyTimeGrid extends StatelessWidget {
                         final startHour = int.parse(startParts[0]);
                         final startMin = int.parse(startParts[1]);
 
-                        // Grid starts at 8:00. Each hour is 88px.
+                        // Grid starts at 9:00. Each hour is 60px.
                         final double top =
-                            ((startHour - 8) * 88) + (startMin / 60 * 88);
+                            ((startHour - 9) * 60) + (startMin / 60 * 60);
                         final double height =
-                            (entry.durationInMinutes / 60) * 88;
+                            (entry.durationInMinutes / 60) * 60;
 
-                        final courseColor = Color(entry.displayColor);
+                        // Muted pastel colors for Everytime style
+                        final courseColor = _getMutedColor(entry.displayColor);
 
                         return Positioned(
                           left: dayIndex * dayWidth,
@@ -292,178 +211,50 @@ class WeeklyTimeGrid extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () => onEntryTap?.call(entry),
                             child: Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
+                              margin: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: hasConflict
-                                      ? [
-                                          AppColors.timetableConflict
-                                              .withValues(alpha: 0.85),
-                                          AppColors.timetableConflict
-                                              .withValues(alpha: 0.95),
-                                        ]
-                                      : [
-                                          courseColor.withValues(alpha: 0.92),
-                                          courseColor,
-                                        ],
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: hasConflict
-                                      ? AppColors.timetableConflict
-                                      : courseColor.withValues(alpha: 0.3),
-                                  width: hasConflict ? 2.5 : 1.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: hasConflict
-                                        ? AppColors.timetableConflict
-                                            .withValues(alpha: 0.25)
-                                        : courseColor.withValues(alpha: 0.2),
-                                    offset: const Offset(0, 3),
-                                    blurRadius: 8,
-                                  ),
-                                ],
+                                // Flat solid color - no gradient
+                                color: hasConflict
+                                    ? const Color(0xFFD84545)
+                                    : courseColor,
+                                borderRadius: BorderRadius.circular(4),
+                                // No shadows - pure flat design
                               ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(11),
-                                child: Stack(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 6,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // Subtle pattern overlay
-                                    Positioned.fill(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topLeft,
-                                            end: Alignment.bottomRight,
-                                            colors: [
-                                              Colors.white
-                                                  .withValues(alpha: 0.1),
-                                              Colors.transparent,
-                                            ],
-                                          ),
+                                    // Course name
+                                    Text(
+                                      entry.subjectName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                        height: 1.2,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    // Location
+                                    if (entry.place != null) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        entry.place!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
                                         ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-
-                                    // Content
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 8,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (hasConflict)
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 6,
-                                                vertical: 2,
-                                              ),
-                                              margin: const EdgeInsets.only(
-                                                bottom: 4,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const Icon(
-                                                    Icons.warning_rounded,
-                                                    size: 10,
-                                                    color: AppColors
-                                                        .timetableConflict,
-                                                  ),
-                                                  const SizedBox(width: 3),
-                                                  Text(
-                                                    AppLocalizations.of(context)!.conflict,
-                                                    style: AppTypography
-                                                        .overline
-                                                        .copyWith(
-                                                      color: AppColors
-                                                          .timetableConflict,
-                                                      fontSize: 8,
-                                                      fontWeight:
-                                                          FontWeight.w800,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          Text(
-                                            entry.subjectName,
-                                            style: AppTypography.labelSmall
-                                                .copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 11,
-                                              height: 1.3,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          if (entry.place != null) ...[
-                                            const SizedBox(height: 3),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on,
-                                                  size: 10,
-                                                  color: Colors.white
-                                                      .withValues(alpha: 0.9),
-                                                ),
-                                                const SizedBox(width: 3),
-                                                Expanded(
-                                                  child: Text(
-                                                    entry.place!,
-                                                    style: AppTypography.caption
-                                                        .copyWith(
-                                                      color: Colors.white
-                                                          .withValues(
-                                                              alpha: 0.95),
-                                                      fontSize: 9,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                          if (height > 55 &&
-                                              entry.professor != null) ...[
-                                            const SizedBox(height: 3),
-                                            Text(
-                                              entry.professor!,
-                                              style: AppTypography.caption
-                                                  .copyWith(
-                                                color: Colors.white
-                                                    .withValues(alpha: 0.85),
-                                                fontSize: 9,
-                                                fontWeight: FontWeight.w400,
-                                                fontStyle: FontStyle.italic,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                    ),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -479,5 +270,17 @@ class WeeklyTimeGrid extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // Convert display color to muted pastel for Everytime aesthetic
+  Color _getMutedColor(int colorValue) {
+    final original = Color(colorValue);
+    final hsl = HSLColor.fromColor(original);
+
+    // Create muted pastel version: reduce saturation, adjust lightness
+    final muted = hsl.withSaturation((hsl.saturation * 0.5).clamp(0.3, 0.6))
+        .withLightness((hsl.lightness * 0.9).clamp(0.45, 0.65));
+
+    return muted.toColor();
   }
 }
