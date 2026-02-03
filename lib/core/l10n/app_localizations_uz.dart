@@ -9,6 +9,15 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
+  String get language => 'Til';
+
+  @override
+  String get languageSubtitle => 'O\'zingizga qulay tilni tanlang';
+
+  @override
+  String get systemDefault => 'Tizim tili';
+
+  @override
   String loginSuccessWelcome(String nickname) {
     return 'Xush kelibsiz, $nickname!';
   }

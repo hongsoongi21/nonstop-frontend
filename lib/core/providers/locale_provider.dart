@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +15,17 @@ class AppLocale {
 
   static const String _prefsKey = 'app_locale';
 
+  /// Get system locale, falling back to uzbek if not supported
+  static Locale getSystemLocale() {
+    final systemLocale = ui.PlatformDispatcher.instance.locale;
+    // Check if system locale is supported
+    final supported = supportedLocales.firstWhere(
+      (l) => l.languageCode == systemLocale.languageCode,
+      orElse: () => uzbek, // Default fallback
+    );
+    return supported;
+  }
+
   /// Get display name for a locale
   static String getDisplayName(Locale locale) {
     switch (locale.languageCode) {
@@ -26,6 +39,22 @@ class AppLocale {
         return '한국어';
       default:
         return locale.languageCode;
+    }
+  }
+
+  /// Get flag emoji for a locale
+  static String getFlag(Locale locale) {
+    switch (locale.languageCode) {
+      case 'uz':
+        return '🇺🇿';
+      case 'ru':
+        return '🇷🇺';
+      case 'en':
+        return '🇺🇸';
+      case 'ko':
+        return '🇰🇷';
+      default:
+        return '🌐';
     }
   }
 
@@ -46,9 +75,31 @@ class AppLocale {
   }
 }
 
+/// Locale state with user preference tracking
+class LocaleState {
+  final Locale locale;
+  final bool isUserSelected; // true if user explicitly selected, false if using system
+
+  const LocaleState({
+    required this.locale,
+    this.isUserSelected = false,
+  });
+
+  LocaleState copyWith({
+    Locale? locale,
+    bool? isUserSelected,
+  }) {
+    return LocaleState(
+      locale: locale ?? this.locale,
+      isUserSelected: isUserSelected ?? this.isUserSelected,
+    );
+  }
+}
+
 /// Locale state notifier that persists the selected locale
-class LocaleNotifier extends StateNotifier<Locale> {
-  LocaleNotifier() : super(AppLocale.uzbek) {
+/// Defaults to system language, allows user override
+class LocaleNotifier extends StateNotifier<LocaleState> {
+  LocaleNotifier() : super(LocaleState(locale: AppLocale.getSystemLocale())) {
     _loadSavedLocale();
   }
 
@@ -58,14 +109,19 @@ class LocaleNotifier extends StateNotifier<Locale> {
       final prefs = await SharedPreferences.getInstance();
       final savedCode = prefs.getString(AppLocale._prefsKey);
       if (savedCode != null) {
+        // User has explicitly set a locale
         final locale = AppLocale.supportedLocales.firstWhere(
           (l) => l.languageCode == savedCode,
-          orElse: () => AppLocale.uzbek,
+          orElse: () => AppLocale.getSystemLocale(),
         );
-        state = locale;
+        state = LocaleState(locale: locale, isUserSelected: true);
+      } else {
+        // No saved preference, use system locale
+        state = LocaleState(locale: AppLocale.getSystemLocale(), isUserSelected: false);
       }
     } catch (e) {
-      // If loading fails, keep default locale
+      // If loading fails, use system locale
+      state = LocaleState(locale: AppLocale.getSystemLocale(), isUserSelected: false);
     }
   }
 
@@ -73,7 +129,7 @@ class LocaleNotifier extends StateNotifier<Locale> {
   Future<void> setLocale(Locale locale) async {
     if (!AppLocale.supportedLocales.contains(locale)) return;
 
-    state = locale;
+    state = LocaleState(locale: locale, isUserSelected: true);
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -83,17 +139,34 @@ class LocaleNotifier extends StateNotifier<Locale> {
     }
   }
 
+  /// Reset to system locale (remove user preference)
+  Future<void> resetToSystemLocale() async {
+    state = LocaleState(locale: AppLocale.getSystemLocale(), isUserSelected: false);
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AppLocale._prefsKey);
+    } catch (e) {
+      // If removing fails, state is still reset in memory
+    }
+  }
+
   /// Set locale by language code
   Future<void> setLocaleByCode(String code) async {
     final locale = AppLocale.supportedLocales.firstWhere(
       (l) => l.languageCode == code,
-      orElse: () => AppLocale.uzbek,
+      orElse: () => AppLocale.getSystemLocale(),
     );
     await setLocale(locale);
   }
 }
 
-/// Provider for the current locale
-final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) {
+/// Provider for the locale state (includes user preference info)
+final localeStateProvider = StateNotifierProvider<LocaleNotifier, LocaleState>((ref) {
   return LocaleNotifier();
+});
+
+/// Provider for just the current locale (for backward compatibility)
+final localeProvider = Provider<Locale>((ref) {
+  return ref.watch(localeStateProvider).locale;
 });

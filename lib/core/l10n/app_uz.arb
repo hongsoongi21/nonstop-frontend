@@ -1,5 +1,8 @@
 {
   "@@locale": "uz",
+  "language": "Til",
+  "languageSubtitle": "O'zingizga qulay tilni tanlang",
+  "systemDefault": "Tizim tili",
   "loginSuccessWelcome": "Xush kelibsiz, {nickname}!",
   "@loginSuccessWelcome": {
     "description": "Welcome snackbar message after successful login",

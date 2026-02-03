@@ -1,5 +1,17 @@
 {
   "@@locale": "en",
+  "language": "Language",
+  "@language": {
+    "description": "Language setting title"
+  },
+  "languageSubtitle": "Choose your preferred language",
+  "@languageSubtitle": {
+    "description": "Language setting subtitle"
+  },
+  "systemDefault": "System Default",
+  "@systemDefault": {
+    "description": "Option to use system language"
+  },
   "loginSuccessWelcome": "Welcome, {nickname}!",
   "@loginSuccessWelcome": {
     "description": "Welcome snackbar message after successful login",

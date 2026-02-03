@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/l10n/app_localizations.dart';
+import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -96,6 +97,13 @@ class SettingsScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Language Section
+          _buildSectionHeader(AppLocalizations.of(context)!.language),
+          SizedBox(height: AppSpacing.sm),
+          _buildLanguageSection(context, ref),
+
+          SizedBox(height: AppSpacing.xl),
+
           // Notifications Section
           _buildSectionHeader(AppLocalizations.of(context)!.notifications),
           SizedBox(height: AppSpacing.sm),
@@ -593,6 +601,228 @@ class SettingsScreen extends ConsumerWidget {
               Icons.chevron_right,
               color: AppColors.textTertiary,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSection(BuildContext context, WidgetRef ref) {
+    final localeState = ref.watch(localeStateProvider);
+    final currentLocale = localeState.locale;
+    final isUserSelected = localeState.isUserSelected;
+
+    return _buildSettingsCard(
+      children: [
+        InkWell(
+          onTap: () => _showLanguageSelector(context, ref),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.md,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  child: Icon(
+                    Icons.language,
+                    color: AppColors.primary,
+                    size: AppSpacing.iconMd,
+                  ),
+                ),
+                SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.language,
+                        style: AppTypography.bodyLarge.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: AppSpacing.xxs),
+                      Text(
+                        AppLocalizations.of(context)!.languageSubtitle,
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isUserSelected
+                          ? AppLocale.getDisplayName(currentLocale)
+                          : AppLocalizations.of(context)!.systemDefault,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(width: AppSpacing.xs),
+                    Icon(
+                      Icons.chevron_right,
+                      color: AppColors.textTertiary,
+                      size: AppSpacing.iconMd,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showLanguageSelector(BuildContext context, WidgetRef ref) {
+    final localeState = ref.read(localeStateProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXl),
+        ),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: EdgeInsets.only(top: AppSpacing.sm),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                l10n.language,
+                style: AppTypography.titleLarge.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            // System default option
+            _buildLanguageOption(
+              context: context,
+              ref: ref,
+              title: l10n.systemDefault,
+              subtitle: AppLocale.getDisplayName(AppLocale.getSystemLocale()),
+              icon: Icons.phone_android,
+              isSelected: !localeState.isUserSelected,
+              onTap: () {
+                ref.read(localeStateProvider.notifier).resetToSystemLocale();
+                Navigator.pop(context);
+              },
+            ),
+            Divider(
+              height: 1,
+              color: AppColors.border.withValues(alpha: 0.3),
+              indent: AppSpacing.lg,
+              endIndent: AppSpacing.lg,
+            ),
+            // Language options
+            ...AppLocale.supportedLocales.map((locale) => _buildLanguageOption(
+                  context: context,
+                  ref: ref,
+                  title: AppLocale.getDisplayName(locale),
+                  flag: AppLocale.getFlag(locale),
+                  isSelected: localeState.isUserSelected &&
+                      localeState.locale.languageCode == locale.languageCode,
+                  onTap: () {
+                    ref.read(localeStateProvider.notifier).setLocale(locale);
+                    Navigator.pop(context);
+                  },
+                )),
+            SizedBox(height: AppSpacing.lg),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String title,
+    String? subtitle,
+    String? flag,
+    IconData? icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            if (flag != null)
+              Text(
+                flag,
+                style: TextStyle(fontSize: 24),
+              )
+            else if (icon != null)
+              Icon(
+                icon,
+                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                size: 24,
+              ),
+            SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textPrimary,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: AppColors.primary,
+                size: AppSpacing.iconMd,
+              ),
           ],
         ),
       ),

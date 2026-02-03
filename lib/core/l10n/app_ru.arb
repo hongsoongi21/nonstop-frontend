@@ -1,5 +1,8 @@
 {
   "@@locale": "ru",
+  "language": "Язык",
+  "languageSubtitle": "Выберите предпочитаемый язык",
+  "systemDefault": "Системный язык",
   "loginSuccessWelcome": "Добро пожаловать, {nickname}!",
   "@loginSuccessWelcome": {
     "description": "Welcome snackbar message after successful login",

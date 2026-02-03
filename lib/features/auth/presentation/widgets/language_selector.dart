@@ -79,7 +79,7 @@ class LanguageSelector extends ConsumerWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        ref.read(localeProvider.notifier).setLocale(locale);
+        ref.read(localeStateProvider.notifier).setLocale(locale);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

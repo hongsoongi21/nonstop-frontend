@@ -9,6 +9,15 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get language => 'Language';
+
+  @override
+  String get languageSubtitle => 'Choose your preferred language';
+
+  @override
+  String get systemDefault => 'System Default';
+
+  @override
   String loginSuccessWelcome(String nickname) {
     return 'Welcome, $nickname!';
   }

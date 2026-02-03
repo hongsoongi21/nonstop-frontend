@@ -9,6 +9,15 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get language => 'Язык';
+
+  @override
+  String get languageSubtitle => 'Выберите предпочитаемый язык';
+
+  @override
+  String get systemDefault => 'Системный язык';
+
+  @override
   String loginSuccessWelcome(String nickname) {
     return 'Добро пожаловать, $nickname!';
   }

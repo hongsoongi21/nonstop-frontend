@@ -102,6 +102,24 @@ abstract class AppLocalizations {
     Locale('uz'),
   ];
 
+  /// Language setting title
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Language setting subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your preferred language'**
+  String get languageSubtitle;
+
+  /// Option to use system language
+  ///
+  /// In en, this message translates to:
+  /// **'System Default'**
+  String get systemDefault;
+
   /// Welcome snackbar message after successful login
   ///
   /// In en, this message translates to:
