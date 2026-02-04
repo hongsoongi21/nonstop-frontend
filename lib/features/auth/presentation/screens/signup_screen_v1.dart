@@ -19,7 +19,6 @@ import '../providers/policy_provider.dart';
 import '../providers/university_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
 import '../widgets/gradient_button.dart';
-import '../widgets/language_selector.dart';
 
 class SignupScreenV1 extends ConsumerStatefulWidget {
   /// OAuth 회원가입 데이터 (Google/Apple 로그인 시 전달됨)
@@ -49,14 +48,12 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   Timer? _verificationTimer;
   int _remainingSeconds = 300; // 5분
 
-  /// OAuth 회원가입 데이터 (타입 캐스팅된 버전)
-  OAuthSignupData? get _oauthData {
-    final data = widget.oauthSignupData;
-    if (data is OAuthSignupData) {
-      return data;
-    }
-    return null;
-  }
+  // OAuth 데이터 캐시 (initState/didChangeDependencies에서 설정)
+  OAuthSignupData? _cachedOAuthData;
+  bool _oauthDataInitialized = false;
+
+  /// OAuth 회원가입 데이터 (위젯 파라미터 또는 auth state에서 가져옴)
+  OAuthSignupData? get _oauthData => _cachedOAuthData;
 
   /// OAuth 회원가입 모드인지 확인
   bool get _isOAuthSignup => _oauthData != null;
@@ -64,12 +61,36 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   @override
   void initState() {
     super.initState();
-    // OAuth 데이터가 있으면 이메일 필드 초기화
-    if (_oauthData != null) {
-      _emailController.text = _oauthData!.email;
+    // 위젯 파라미터로 전달된 OAuth 데이터 먼저 확인
+    final data = widget.oauthSignupData;
+    if (data is OAuthSignupData) {
+      _cachedOAuthData = data;
+      _initializeOAuthFields();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 위젯 파라미터에 없으면 auth state에서 가져오기 (라우터 리다이렉트 시)
+    if (!_oauthDataInitialized) {
+      _oauthDataInitialized = true;
+      if (_cachedOAuthData == null) {
+        final authState = ref.read(authProvider);
+        if (authState.hasPendingOAuthSignup) {
+          _cachedOAuthData = authState.pendingOAuthSignup;
+          _initializeOAuthFields();
+        }
+      }
+    }
+  }
+
+  void _initializeOAuthFields() {
+    if (_cachedOAuthData != null) {
+      _emailController.text = _cachedOAuthData!.email;
       // 닉네임 힌트로 displayName 사용 가능
-      if (_oauthData!.displayName != null && _oauthData!.displayName!.isNotEmpty) {
-        _nicknameController.text = _oauthData!.displayName!;
+      if (_cachedOAuthData!.displayName != null && _cachedOAuthData!.displayName!.isNotEmpty) {
+        _nicknameController.text = _cachedOAuthData!.displayName!;
       }
     }
   }
@@ -377,11 +398,6 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // 언어 선택기
-                        const LanguageSelector(),
-
-                        SizedBox(height: AppSpacing.md.h),
-
                         // 메인 회원가입 폼 컨테이너
                         Container(
                           width: 343.w,

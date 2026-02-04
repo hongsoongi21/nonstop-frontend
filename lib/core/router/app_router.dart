@@ -33,6 +33,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   // isAuthenticated와 isInitialized만 개별적으로 watch합니다.
   final isAuthenticated = ref.watch(isAuthenticatedProvider);
   final isInitialized = ref.watch(isAuthInitializedProvider);
+  final authState = ref.watch(authProvider);
   final analyticsService = ref.watch(analyticsServiceProvider);
 
   return GoRouter(
@@ -51,8 +52,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           path == Routes.register ||
           path == Routes.forgotPassword;
 
+      // OAuth 회원가입 대기 중인 경우 (신규 또는 미완성 프로필)
+      // 로그인 페이지에 있으면 회원가입 페이지로 리다이렉트
+      if (authState.hasPendingOAuthSignup && path == Routes.login) {
+        return Routes.register;
+      }
+
       // 인증되지 않은 상태에서 보호된 경로에 접근하려고 하면 로그인으로 리다이렉트
-      if (!isAuthenticated && !isAuthPage) {
+      // 단, OAuth 회원가입 대기 중이면 회원가입 페이지 접근 허용
+      if (!isAuthenticated && !isAuthPage && !authState.hasPendingOAuthSignup) {
         return Routes.login;
       }
 
@@ -73,7 +81,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.register,
         builder: (context, state) {
-          // Check for OAuth signup data passed as extra
+          // Check for OAuth signup data passed as extra or from auth state
           final oauthData = state.extra;
           return SignupScreenV1(oauthSignupData: oauthData);
         },
