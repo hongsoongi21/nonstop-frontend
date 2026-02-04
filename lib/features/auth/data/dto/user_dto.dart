@@ -20,7 +20,9 @@ class UserDto with _$UserDto {
     int? majorId,
     @JsonKey(name: 'introduction') String? bio,
     @JsonKey(name: 'userRole') String? role,
-    @JsonKey(name: 'isVerified') @Default(false) bool isEmailVerified,
+    @JsonKey(name: 'emailVerified') @Default(false) bool isEmailVerified,
+    String? preferredLanguage,
+    @Default(false) bool isUniversityVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _UserDto;
@@ -45,6 +47,8 @@ class UserDto with _$UserDto {
       bio: bio,
       role: role,
       isEmailVerified: isEmailVerified,
+      preferredLanguage: preferredLanguage,
+      isUniversityVerified: isUniversityVerified,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -65,6 +69,8 @@ class UserDto with _$UserDto {
       bio: user.bio,
       role: user.role,
       isEmailVerified: user.isEmailVerified,
+      preferredLanguage: user.preferredLanguage,
+      isUniversityVerified: user.isUniversityVerified,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     );

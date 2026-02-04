@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/failures.dart';
+import '../../data/dto/semester_dto.dart';
 import '../entities/day_of_week.dart';
 import '../entities/semester.dart';
 import '../entities/timetable.dart';
@@ -14,7 +15,8 @@ abstract class TimetableRepository {
   // Timetable operations
   Future<Either<Failure, List<Timetable>>> getMyTimetables();
   Future<Either<Failure, Timetable>> createTimetable({
-    required int semesterId,
+    required int year,
+    required SemesterType semesterType,
     String? title,
     bool isPublic = false,
   });

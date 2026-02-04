@@ -13,6 +13,7 @@ class BoardState {
   final List<Board> boards;
   final Community? selectedCommunity;
   final Board? selectedBoard;
+  final bool needsRefresh;
 
   const BoardState({
     this.isLoading = false,
@@ -22,6 +23,7 @@ class BoardState {
     this.boards = const [],
     this.selectedCommunity,
     this.selectedBoard,
+    this.needsRefresh = false,
   });
 
   BoardState copyWith({
@@ -32,6 +34,7 @@ class BoardState {
     List<Board>? boards,
     Community? selectedCommunity,
     Board? selectedBoard,
+    bool? needsRefresh,
   }) {
     return BoardState(
       isLoading: isLoading ?? this.isLoading,
@@ -41,6 +44,7 @@ class BoardState {
       boards: boards ?? this.boards,
       selectedCommunity: selectedCommunity ?? this.selectedCommunity,
       selectedBoard: selectedBoard ?? this.selectedBoard,
+      needsRefresh: needsRefresh ?? this.needsRefresh,
     );
   }
 }
@@ -227,6 +231,19 @@ class BoardNotifier extends StateNotifier<BoardState> {
     state = state.copyWith(
       posts: state.posts.where((post) => post.id != postId).toList(),
     );
+  }
+
+  /// Mark that the board list needs to be refreshed (e.g., after comment added)
+  void markNeedsRefresh() {
+    state = state.copyWith(needsRefresh: true);
+  }
+
+  /// Check if refresh is needed and perform it if so
+  Future<void> refreshIfNeeded() async {
+    if (state.needsRefresh) {
+      state = state.copyWith(needsRefresh: false);
+      await refreshPosts();
+    }
   }
 }
 

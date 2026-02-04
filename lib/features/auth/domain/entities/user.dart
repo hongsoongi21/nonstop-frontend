@@ -17,6 +17,8 @@ class User with _$User {
     String? bio,
     String? role,
     @Default(false) bool isEmailVerified,
+    String? preferredLanguage,
+    @Default(false) bool isUniversityVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) = _User;

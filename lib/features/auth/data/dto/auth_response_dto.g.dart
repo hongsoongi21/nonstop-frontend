@@ -14,6 +14,7 @@ _$TokenResponseDtoImpl _$$TokenResponseDtoImplFromJson(
   userId: (json['userId'] as num?)?.toInt(),
   emailVerified: json['emailVerified'] as bool? ?? false,
   hasAgreedAllMandatory: json['hasAgreedAllMandatory'] as bool? ?? false,
+  hasBirthDate: json['hasBirthDate'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$TokenResponseDtoImplToJson(
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$TokenResponseDtoImplToJson(
   'userId': instance.userId,
   'emailVerified': instance.emailVerified,
   'hasAgreedAllMandatory': instance.hasAgreedAllMandatory,
+  'hasBirthDate': instance.hasBirthDate,
 };

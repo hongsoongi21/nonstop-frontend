@@ -12,11 +12,13 @@ import 'package:nonstop/core/l10n/app_localizations.dart';
 import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
-import '../../../../shared/components/post_card.dart';
+import '../../../../shared/components/post_card_compact.dart';
+import '../../../../shared/components/report_dialog.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notification/presentation/providers/notification_provider.dart';
 import '../providers/board_provider.dart';
 import '../../domain/entities/community.entity.dart';
+import '../../domain/entities/post.entity.dart';
 
 class BoardScreen extends ConsumerStatefulWidget {
   const BoardScreen({super.key});
@@ -36,7 +38,16 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen for needsRefresh flag and trigger refresh
+    ref.listen<BoardState>(boardProvider, (previous, next) {
+      if (next.needsRefresh && !next.isLoading) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(boardProvider.notifier).refreshIfNeeded();
+        });
+      }
+    });
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final boardState = ref.watch(boardProvider);
     final posts = boardState.posts;
     final isLoading = boardState.isLoading;
@@ -61,7 +72,13 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         child: Stack(
           children: [
             GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                final currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+                  currentFocus.unfocus();
+                }
+              },
               child: SafeArea(
                 child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +103,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                 l10n.board,
                                 style: AppTypography.headline4.copyWith(
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimary,
+                                  color: isDark ? Colors.white : AppColors.textPrimary,
                                   letterSpacing: -0.5,
                                   height: 1.1,
                                 ),
@@ -169,7 +186,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                                         context.push(Routes.notifications),
                                     icon: Icon(
                                       Icons.notifications_outlined,
-                                      color: AppColors.textPrimary,
+                                      color: isDark ? Colors.white : AppColors.textPrimary,
                                       size: 22,
                                     ),
                                     padding: const EdgeInsets.all(10),
@@ -385,6 +402,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                       ),
                       child: TextField(
                         controller: _searchController,
+                        autofocus: false,
                         style: AppTypography.body1.copyWith(
                           color: Colors.white,
                           fontSize: 15,
@@ -486,36 +504,26 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                             )
                           : posts.isEmpty
                               ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
-                              : ListView.builder(
+                              : ListView.separated(
                                   padding: const EdgeInsets.only(
-                                    left: AppSpacing.lg,
-                                    right: AppSpacing.lg,
-                                    top: AppSpacing.md,
+                                    left: AppSpacing.md,
+                                    right: AppSpacing.md,
+                                    top: AppSpacing.sm,
                                     bottom: 100,
                                   ),
                                   itemCount: posts.length,
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(height: AppSpacing.xs),
                                   itemBuilder: (context, index) {
                                     final post = posts[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: AppSpacing.lg,
-                                      ),
-                                      child: PostCard(
-                                        post: post,
-                                        onTap: () => context.go(
-                                          Routes.boardDetailPath(
-                                            post.id.toString(),
-                                          ),
-                                        ),
-                                        onLike: () => ref
-                                            .read(boardProvider.notifier)
-                                            .toggleLike(post.id),
-                                        onComment: () => context.go(
-                                          Routes.boardDetailPath(
-                                            post.id.toString(),
-                                          ),
+                                    return PostCardCompact(
+                                      post: post,
+                                      onTap: () => context.go(
+                                        Routes.boardDetailPath(
+                                          post.id.toString(),
                                         ),
                                       ),
+                                      onMenuTap: () => _showPostMenu(context, post),
                                     );
                                   },
                                 ),
@@ -538,11 +546,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   ) {
     final user = ref.read(currentUserProvider);
     final l10n = AppLocalizations.of(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: AppColors.surface,
+      backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -573,6 +582,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               style: AppTypography.headline6.copyWith(
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
+                color: isDark ? Colors.white : AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -621,7 +631,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                             color: isSelected
                                 ? AppColors.primary
-                                : AppColors.textPrimary,
+                                : (isDark ? Colors.white : AppColors.textPrimary),
                           ),
                         ),
                       ),
@@ -673,15 +683,78 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     );
   }
 
+  void _showPostMenu(BuildContext context, PostEntity post) {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.textSecondary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.flag_outlined, color: AppColors.error),
+                title: Text(
+                  l10n.report,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  showReportDialog(
+                    context: context,
+                    targetType: ReportTargetType.post,
+                    targetId: post.id,
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.block_outlined, color: AppColors.textSecondary),
+                title: Text(
+                  l10n.blockUser,
+                  style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  // TODO: Implement block user
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Coming soon')),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildEmptyState(BuildContext context, String boardName) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
-            color: AppColors.surface.withValues(alpha: 0.5),
+            // Use solid color to prevent transition glitches
+            color: isDark ? AppColors.surfaceDark : AppColors.surface,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               color: AppColors.textSecondary.withValues(alpha: 0.1),

@@ -19,7 +19,9 @@ _$UserDtoImpl _$$UserDtoImplFromJson(Map<String, dynamic> json) =>
       majorId: (json['majorId'] as num?)?.toInt(),
       bio: json['introduction'] as String?,
       role: json['userRole'] as String?,
-      isEmailVerified: json['isVerified'] as bool? ?? false,
+      isEmailVerified: json['emailVerified'] as bool? ?? false,
+      preferredLanguage: json['preferredLanguage'] as String?,
+      isUniversityVerified: json['isUniversityVerified'] as bool? ?? false,
       createdAt: json['createdAt'] == null
           ? null
           : DateTime.parse(json['createdAt'] as String),
@@ -41,7 +43,9 @@ Map<String, dynamic> _$$UserDtoImplToJson(_$UserDtoImpl instance) =>
       'majorId': instance.majorId,
       'introduction': instance.bio,
       'userRole': instance.role,
-      'isVerified': instance.isEmailVerified,
+      'emailVerified': instance.isEmailVerified,
+      'preferredLanguage': instance.preferredLanguage,
+      'isUniversityVerified': instance.isUniversityVerified,
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
     };

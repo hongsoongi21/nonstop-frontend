@@ -194,7 +194,6 @@ EmailVerificationConfirmDto _$EmailVerificationConfirmDtoFromJson(
 
 /// @nodoc
 mixin _$EmailVerificationConfirmDto {
-  String get email => throw _privateConstructorUsedError;
   String get code => throw _privateConstructorUsedError;
 
   /// Serializes this EmailVerificationConfirmDto to a JSON map.
@@ -218,7 +217,7 @@ abstract class $EmailVerificationConfirmDtoCopyWith<$Res> {
         EmailVerificationConfirmDto
       >;
   @useResult
-  $Res call({String email, String code});
+  $Res call({String code});
 }
 
 /// @nodoc
@@ -238,13 +237,9 @@ class _$EmailVerificationConfirmDtoCopyWithImpl<
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? email = null, Object? code = null}) {
+  $Res call({Object? code = null}) {
     return _then(
       _value.copyWith(
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
             code: null == code
                 ? _value.code
                 : code // ignore: cast_nullable_to_non_nullable
@@ -264,7 +259,7 @@ abstract class _$$EmailVerificationConfirmDtoImplCopyWith<$Res>
   ) = __$$EmailVerificationConfirmDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String email, String code});
+  $Res call({String code});
 }
 
 /// @nodoc
@@ -284,13 +279,9 @@ class __$$EmailVerificationConfirmDtoImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? email = null, Object? code = null}) {
+  $Res call({Object? code = null}) {
     return _then(
       _$EmailVerificationConfirmDtoImpl(
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
         code: null == code
             ? _value.code
             : code // ignore: cast_nullable_to_non_nullable
@@ -304,23 +295,18 @@ class __$$EmailVerificationConfirmDtoImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$EmailVerificationConfirmDtoImpl
     implements _EmailVerificationConfirmDto {
-  const _$EmailVerificationConfirmDtoImpl({
-    required this.email,
-    required this.code,
-  });
+  const _$EmailVerificationConfirmDtoImpl({required this.code});
 
   factory _$EmailVerificationConfirmDtoImpl.fromJson(
     Map<String, dynamic> json,
   ) => _$$EmailVerificationConfirmDtoImplFromJson(json);
 
   @override
-  final String email;
-  @override
   final String code;
 
   @override
   String toString() {
-    return 'EmailVerificationConfirmDto(email: $email, code: $code)';
+    return 'EmailVerificationConfirmDto(code: $code)';
   }
 
   @override
@@ -328,13 +314,12 @@ class _$EmailVerificationConfirmDtoImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$EmailVerificationConfirmDtoImpl &&
-            (identical(other.email, email) || other.email == email) &&
             (identical(other.code, code) || other.code == code));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, email, code);
+  int get hashCode => Object.hash(runtimeType, code);
 
   /// Create a copy of EmailVerificationConfirmDto
   /// with the given fields replaced by the non-null parameter values.
@@ -355,16 +340,12 @@ class _$EmailVerificationConfirmDtoImpl
 
 abstract class _EmailVerificationConfirmDto
     implements EmailVerificationConfirmDto {
-  const factory _EmailVerificationConfirmDto({
-    required final String email,
-    required final String code,
-  }) = _$EmailVerificationConfirmDtoImpl;
+  const factory _EmailVerificationConfirmDto({required final String code}) =
+      _$EmailVerificationConfirmDtoImpl;
 
   factory _EmailVerificationConfirmDto.fromJson(Map<String, dynamic> json) =
       _$EmailVerificationConfirmDtoImpl.fromJson;
 
-  @override
-  String get email;
   @override
   String get code;
 

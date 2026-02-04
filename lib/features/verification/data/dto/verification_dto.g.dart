@@ -16,14 +16,11 @@ Map<String, dynamic> _$$EmailVerificationRequestDtoImplToJson(
 
 _$EmailVerificationConfirmDtoImpl _$$EmailVerificationConfirmDtoImplFromJson(
   Map<String, dynamic> json,
-) => _$EmailVerificationConfirmDtoImpl(
-  email: json['email'] as String,
-  code: json['code'] as String,
-);
+) => _$EmailVerificationConfirmDtoImpl(code: json['code'] as String);
 
 Map<String, dynamic> _$$EmailVerificationConfirmDtoImplToJson(
   _$EmailVerificationConfirmDtoImpl instance,
-) => <String, dynamic>{'email': instance.email, 'code': instance.code};
+) => <String, dynamic>{'code': instance.code};
 
 _$VerificationStatusDtoImpl _$$VerificationStatusDtoImplFromJson(
   Map<String, dynamic> json,

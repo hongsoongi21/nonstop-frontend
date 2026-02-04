@@ -382,23 +382,8 @@ class AuthApiImpl implements AuthApi {
       );
     }
 
-    try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/signup/resend',
-        data: {'email': _lastVerificationEmail},
-        options: Options(extra: {'no-auth': true}),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '인증번호 재발송에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
+    // Use the same endpoint as sendVerificationEmail (signup/resend was deleted)
+    await sendVerificationEmail(_lastVerificationEmail!);
   }
 
   @override

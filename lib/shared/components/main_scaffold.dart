@@ -23,34 +23,44 @@ class MainScaffold extends ConsumerWidget {
     final user = authState.user;
     final isAdmin = user?.isAdmin ?? false;
 
-    return Scaffold(
-      extendBody: true,
-      body: Stack(
-        children: [
-          AppBackground(child: navigationShell),
-          if (kDebugMode) const _DebugPortal(),
-        ],
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        // Dismiss keyboard when tapping outside of input fields (iOS fix)
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        body: Stack(
+          children: [
+            AppBackground(child: navigationShell),
+            if (kDebugMode) const _DebugPortal(),
+          ],
+        ),
+        bottomNavigationBar: AppBottomNavigationBar(
+          navigationShell: navigationShell,
+        ),
+        floatingActionButton: isAdmin
+            ? AppFab(
+                icon: Icons.admin_panel_settings,
+                tooltip: 'Admin Menu',
+                backgroundColor: AppColors.secondary,
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  // TODO: 관리자 기능 구현
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
+                  );
+                },
+              )
+            : null,
+        floatingActionButtonLocation: isAdmin
+            ? FloatingActionButtonLocation.startFloat
+            : null,
       ),
-      bottomNavigationBar: AppBottomNavigationBar(
-        navigationShell: navigationShell,
-      ),
-      floatingActionButton: isAdmin
-          ? AppFab(
-              icon: Icons.admin_panel_settings,
-              tooltip: 'Admin Menu',
-              backgroundColor: AppColors.secondary,
-              onPressed: () {
-                HapticFeedback.lightImpact();
-                // TODO: 관리자 기능 구현
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
-                );
-              },
-            )
-          : null,
-      floatingActionButtonLocation: isAdmin
-          ? FloatingActionButtonLocation.startFloat
-          : null,
     );
   }
 }
@@ -252,6 +262,7 @@ class AppScaffold extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool extendBody;
   final bool extendBodyBehindAppBar;
+  final bool dismissKeyboardOnTap;
 
   const AppScaffold({
     super.key,
@@ -267,6 +278,7 @@ class AppScaffold extends StatelessWidget {
     this.padding,
     this.extendBody = false,
     this.extendBodyBehindAppBar = false,
+    this.dismissKeyboardOnTap = true,
   });
 
   @override
@@ -282,6 +294,20 @@ class AppScaffold extends StatelessWidget {
 
     if (useGradient && backgroundColor == null) {
       content = AppBackground(child: content);
+    }
+
+    // Wrap with keyboard dismiss functionality for iOS
+    if (dismissKeyboardOnTap) {
+      content = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          final currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+            currentFocus.unfocus();
+          }
+        },
+        child: content,
+      );
     }
 
     return Scaffold(

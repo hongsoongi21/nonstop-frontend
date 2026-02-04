@@ -96,14 +96,24 @@ class ChatApiImpl implements ChatApi {
   @override
   Future<List<int>> getGroupMembers(int roomId) async {
     final response = await _dioClient.get('/api/v1/chat/group-rooms/$roomId/members');
-    return (response.data['data'] as List).cast<int>();
+    final data = response.data['data'] as List;
+    // Backend returns List<ChatRoomMemberResponseDto>, extract userIds
+    return data.map((member) {
+      if (member is int) {
+        return member;
+      } else if (member is Map) {
+        return member['userId'] as int;
+      }
+      return 0;
+    }).where((id) => id > 0).toList();
   }
 
   @override
   Future<void> markAsRead(int roomId, int messageId) async {
+    // Backend expects messageId as query parameter, not request body
     await _dioClient.patch(
       '/api/v1/chat/rooms/$roomId/read',
-      data: {'lastReadMessageId': messageId},
+      queryParameters: {'messageId': messageId},
     );
   }
 

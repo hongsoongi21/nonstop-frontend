@@ -255,8 +255,11 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
           ElevatedButton(
             onPressed: () async {
               if (selectedSemesterId != null) {
+                final selectedSemester = ref.read(semestersProvider)
+                    .firstWhere((s) => s.id == selectedSemesterId);
                 final success = await notifier.createTimetable(
-                  semesterId: selectedSemesterId!,
+                  year: selectedSemester.year,
+                  semesterType: selectedSemester.type,
                   title: titleController.text.isEmpty
                       ? null
                       : titleController.text,

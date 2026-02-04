@@ -29,6 +29,8 @@ mixin _$User {
   String? get bio => throw _privateConstructorUsedError;
   String? get role => throw _privateConstructorUsedError;
   bool get isEmailVerified => throw _privateConstructorUsedError;
+  String? get preferredLanguage => throw _privateConstructorUsedError;
+  bool get isUniversityVerified => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
 
@@ -56,6 +58,8 @@ abstract class $UserCopyWith<$Res> {
     String? bio,
     String? role,
     bool isEmailVerified,
+    String? preferredLanguage,
+    bool isUniversityVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -88,6 +92,8 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? bio = freezed,
     Object? role = freezed,
     Object? isEmailVerified = null,
+    Object? preferredLanguage = freezed,
+    Object? isUniversityVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -141,6 +147,14 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
                 ? _value.isEmailVerified
                 : isEmailVerified // ignore: cast_nullable_to_non_nullable
                       as bool,
+            preferredLanguage: freezed == preferredLanguage
+                ? _value.preferredLanguage
+                : preferredLanguage // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            isUniversityVerified: null == isUniversityVerified
+                ? _value.isUniversityVerified
+                : isUniversityVerified // ignore: cast_nullable_to_non_nullable
+                      as bool,
             createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -176,6 +190,8 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
     String? bio,
     String? role,
     bool isEmailVerified,
+    String? preferredLanguage,
+    bool isUniversityVerified,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -205,6 +221,8 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? bio = freezed,
     Object? role = freezed,
     Object? isEmailVerified = null,
+    Object? preferredLanguage = freezed,
+    Object? isUniversityVerified = null,
     Object? createdAt = freezed,
     Object? updatedAt = freezed,
   }) {
@@ -258,6 +276,14 @@ class __$$UserImplCopyWithImpl<$Res>
             ? _value.isEmailVerified
             : isEmailVerified // ignore: cast_nullable_to_non_nullable
                   as bool,
+        preferredLanguage: freezed == preferredLanguage
+            ? _value.preferredLanguage
+            : preferredLanguage // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        isUniversityVerified: null == isUniversityVerified
+            ? _value.isUniversityVerified
+            : isUniversityVerified // ignore: cast_nullable_to_non_nullable
+                  as bool,
         createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -287,6 +313,8 @@ class _$UserImpl extends _User {
     this.bio,
     this.role,
     this.isEmailVerified = false,
+    this.preferredLanguage,
+    this.isUniversityVerified = false,
     this.createdAt,
     this.updatedAt,
   }) : super._();
@@ -317,13 +345,18 @@ class _$UserImpl extends _User {
   @JsonKey()
   final bool isEmailVerified;
   @override
+  final String? preferredLanguage;
+  @override
+  @JsonKey()
+  final bool isUniversityVerified;
+  @override
   final DateTime? createdAt;
   @override
   final DateTime? updatedAt;
 
   @override
   String toString() {
-    return 'User(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, role: $role, isEmailVerified: $isEmailVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'User(id: $id, email: $email, nickname: $nickname, fullName: $fullName, avatarUrl: $avatarUrl, university: $university, universityId: $universityId, major: $major, majorId: $majorId, bio: $bio, role: $role, isEmailVerified: $isEmailVerified, preferredLanguage: $preferredLanguage, isUniversityVerified: $isUniversityVerified, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -349,6 +382,10 @@ class _$UserImpl extends _User {
             (identical(other.role, role) || other.role == role) &&
             (identical(other.isEmailVerified, isEmailVerified) ||
                 other.isEmailVerified == isEmailVerified) &&
+            (identical(other.preferredLanguage, preferredLanguage) ||
+                other.preferredLanguage == preferredLanguage) &&
+            (identical(other.isUniversityVerified, isUniversityVerified) ||
+                other.isUniversityVerified == isUniversityVerified) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -370,6 +407,8 @@ class _$UserImpl extends _User {
     bio,
     role,
     isEmailVerified,
+    preferredLanguage,
+    isUniversityVerified,
     createdAt,
     updatedAt,
   );
@@ -397,6 +436,8 @@ abstract class _User extends User {
     final String? bio,
     final String? role,
     final bool isEmailVerified,
+    final String? preferredLanguage,
+    final bool isUniversityVerified,
     final DateTime? createdAt,
     final DateTime? updatedAt,
   }) = _$UserImpl;
@@ -426,6 +467,10 @@ abstract class _User extends User {
   String? get role;
   @override
   bool get isEmailVerified;
+  @override
+  String? get preferredLanguage;
+  @override
+  bool get isUniversityVerified;
   @override
   DateTime? get createdAt;
   @override

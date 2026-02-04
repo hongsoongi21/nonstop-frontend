@@ -96,9 +96,10 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     final boards = boardState.boards;
     final l10n = AppLocalizations.of(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppScaffold(
       title: l10n.createPost,
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.background,
       padding: EdgeInsets.zero,
       body: Container(
         constraints: BoxConstraints(

@@ -94,7 +94,16 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     // Update other user info
     _updateOtherUserInfo(state);
 
-    return Scaffold(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        // Dismiss keyboard when tapping outside (iOS fix)
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -240,6 +249,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

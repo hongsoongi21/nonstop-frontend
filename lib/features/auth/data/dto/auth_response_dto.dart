@@ -11,6 +11,7 @@ class TokenResponseDto with _$TokenResponseDto {
     int? userId,
     @Default(false) bool emailVerified,
     @Default(false) bool hasAgreedAllMandatory,
+    @Default(false) bool hasBirthDate,
   }) = _TokenResponseDto;
 
   factory TokenResponseDto.fromJson(Map<String, dynamic> json) =>

@@ -83,10 +83,17 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
       isAnonymous: isAnonymous,
     );
 
-    result.fold((error) => state = state.copyWith(error: error), (newComment) {
-      // Refresh comments
-      fetchPostDetail();
-    });
+    if (result.isLeft()) {
+      result.fold(
+        (error) => state = state.copyWith(error: error),
+        (_) {},
+      );
+    } else {
+      // Refresh comments and update board list
+      await fetchPostDetail();
+      // Also mark board list for refresh in case user navigates back quickly
+      _ref.read(boardProvider.notifier).markNeedsRefresh();
+    }
   }
 
   Future<void> toggleLike() async {
@@ -169,18 +176,30 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
 
   Future<void> deleteComment(int commentId) async {
     final result = await _repository.deleteComment(commentId);
-    result.fold((error) => state = state.copyWith(error: error), (_) {
-      // Refresh comments
-      fetchPostDetail();
-    });
+    if (result.isLeft()) {
+      result.fold(
+        (error) => state = state.copyWith(error: error),
+        (_) {},
+      );
+    } else {
+      // Refresh comments and update board list
+      await fetchPostDetail();
+      // Also mark board list for refresh
+      _ref.read(boardProvider.notifier).markNeedsRefresh();
+    }
   }
 
   Future<void> updateComment(int commentId, String content) async {
     final result = await _repository.updateComment(commentId, content: content);
-    result.fold((error) => state = state.copyWith(error: error), (_) {
-      // Refresh comments
-      fetchPostDetail();
-    });
+    if (result.isLeft()) {
+      result.fold(
+        (error) => state = state.copyWith(error: error),
+        (_) {},
+      );
+    } else {
+      // Refresh comments and update board list
+      await fetchPostDetail();
+    }
   }
 
   void clearError() {

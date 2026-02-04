@@ -48,7 +48,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
       backgroundColor: Colors.transparent,
       floatingActionButton: entries.isNotEmpty
           ? FloatingActionButton.extended(
-              onPressed: () => _showCreateEventDialog(context, ref),
+              onPressed: state.isLoading
+                  ? null
+                  : () => _showCreateEventDialog(context, ref),
               backgroundColor: AppColors.primary,
               elevation: 8,
               icon: Icon(Icons.add_rounded, color: Colors.white),
@@ -238,8 +240,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 ),
                                 SizedBox(height: AppSpacing.lg),
                                 ElevatedButton(
-                                  onPressed:
-                                      () => _showCreateEventDialog(context, ref),
+                                  onPressed: state.isLoading
+                                      ? null
+                                      : () => _showCreateEventDialog(context, ref),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     foregroundColor: Colors.white,
