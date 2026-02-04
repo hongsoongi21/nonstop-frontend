@@ -1,3 +1,4 @@
+import 'package:dice_bear/dice_bear.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -25,6 +26,14 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    final surfaceColor = isDarkMode ? AppColors.surfaceDark : AppColors.surface;
+    final borderColor = isDarkMode ? AppColors.borderDark : AppColors.border;
+    final shadowColor = isDarkMode ? Colors.black26 : AppColors.shadow;
+    final shadowMediumColor = isDarkMode ? Colors.black38 : AppColors.shadowMedium;
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(
@@ -32,21 +41,21 @@ class PostCard extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: AppColors.border,
+          color: borderColor,
           width: AppSpacing.borderWidth,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
+            color: shadowColor,
             blurRadius: 8,
             offset: const Offset(0, 2),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: AppColors.shadowMedium,
+            color: shadowMediumColor,
             blurRadius: 16,
             offset: const Offset(0, 4),
             spreadRadius: 0,
@@ -57,45 +66,26 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
-          _buildCategoryChip(),
-          _buildContent(),
-          _buildFooter(),
+          _buildHeader(context),
+          _buildCategoryChip(context),
+          _buildContent(context),
+          _buildFooter(context),
         ],
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final textHintColor = isDarkMode ? AppColors.textTertiaryDark : AppColors.textHint;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Avatar
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: post.isWriterAnonymous 
-              ? AppColors.border.withAlpha(50)
-              : AppColors.primary.withAlpha(20),
-          child: post.isWriterAnonymous
-              ? Text(
-                  'A',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                )
-              : Text(
-                  post.writerNickname.isNotEmpty
-                      ? post.writerNickname[0].toUpperCase()
-                      : '?',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                  ),
-                ),
-        ),
+        _buildAvatar(),
 
         SizedBox(width: AppSpacing.md),
 
@@ -113,7 +103,7 @@ class PostCard extends StatelessWidget {
                           : post.writerNickname,
                       style: AppTypography.body1.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: textPrimaryColor,
                         height: 1.2,
                       ),
                       maxLines: 1,
@@ -124,14 +114,14 @@ class PostCard extends StatelessWidget {
                   Text(
                     '•',
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.textHint,
+                      color: textHintColor,
                     ),
                   ),
                   SizedBox(width: AppSpacing.sm),
                   Text(
                     timeAgo(post.createdAt),
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.textHint,
+                      color: textHintColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -141,7 +131,7 @@ class PostCard extends StatelessWidget {
               Text(
                 'Student', // Fallback text
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: textSecondaryColor,
                   fontWeight: FontWeight.w500,
                 ),
                 maxLines: 1,
@@ -157,7 +147,7 @@ class PostCard extends StatelessWidget {
           icon: Icon(
             Icons.more_vert,
             size: 20,
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
           ),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(),
@@ -167,7 +157,45 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryChip() {
+  /// 아바타 위젯 - 익명은 DiceBear, 일반은 이니셜
+  Widget _buildAvatar() {
+    if (post.isWriterAnonymous) {
+      // 익명 유저: DiceBear 아바타 (게시글 ID를 seed로 사용)
+      final avatar = DiceBearBuilder(
+        seed: 'post-anon-${post.id}',
+        sprite: DiceBearSprite.funEmoji,
+      ).build();
+
+      return ClipOval(
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: avatar.toImage(),
+        ),
+      );
+    }
+
+    // 일반 유저: 이니셜 아바타
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: AppColors.primary.withAlpha(20),
+      child: Text(
+        post.writerNickname.isNotEmpty
+            ? post.writerNickname[0].toUpperCase()
+            : '?',
+        style: AppTypography.caption.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = isDarkMode ? AppColors.primaryLight : AppColors.primary;
+
     return Container(
       margin: const EdgeInsets.only(top: AppSpacing.md),
       padding: const EdgeInsets.symmetric(
@@ -177,7 +205,7 @@ class PostCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.12),
+            primaryColor.withValues(alpha: 0.12),
             AppColors.tertiary.withValues(alpha: 0.08),
           ],
           begin: Alignment.topLeft,
@@ -185,7 +213,7 @@ class PostCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.3),
+          color: primaryColor.withValues(alpha: 0.3),
           width: AppSpacing.borderWidth,
         ),
       ),
@@ -204,7 +232,7 @@ class PostCard extends StatelessWidget {
           Text(
             'General', // Fallback category
             style: AppTypography.caption.copyWith(
-              color: AppColors.primary,
+              color: primaryColor,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.3,
             ),
@@ -214,7 +242,12 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final textHintColor = isDarkMode ? AppColors.textTertiaryDark : AppColors.textHint;
+
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.md),
       child: Column(
@@ -224,6 +257,7 @@ class PostCard extends StatelessWidget {
           Text(
             post.title,
             style: AppTypography.headline6.copyWith(
+              color: textPrimaryColor,
               fontWeight: FontWeight.w700,
               height: 1.3,
               fontSize: 18,
@@ -236,7 +270,7 @@ class PostCard extends StatelessWidget {
           Text(
             post.content,
             style: AppTypography.body2.copyWith(
-              color: AppColors.textSecondary,
+              color: textSecondaryColor,
               height: 1.5,
               fontSize: 15,
             ),
@@ -251,7 +285,7 @@ class PostCard extends StatelessWidget {
               child: Text(
                 'Read more...',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textHint,
+                  color: textHintColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -262,7 +296,12 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFooter() {
+  Widget _buildFooter(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final surfaceVariantColor = isDarkMode ? AppColors.surfaceVariantDark : AppColors.surfaceVariant;
+    final borderColor = isDarkMode ? AppColors.borderDark : AppColors.border;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
     return Container(
       margin: const EdgeInsets.only(top: AppSpacing.lg),
       padding: const EdgeInsets.symmetric(
@@ -270,10 +309,10 @@ class PostCard extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+        color: surfaceVariantColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.5),
+          color: borderColor.withValues(alpha: 0.5),
           width: AppSpacing.borderWidthThin,
         ),
       ),
@@ -284,7 +323,7 @@ class PostCard extends StatelessWidget {
           _StatItem(
             icon: Icons.remove_red_eye_outlined,
             count: post.viewCount.toInt(),
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
           ),
 
           SizedBox(width: AppSpacing.xl),
@@ -293,7 +332,7 @@ class PostCard extends StatelessWidget {
           _StatItem(
             icon: post.isLiked ? Icons.favorite : Icons.favorite_border,
             count: post.likeCount,
-            color: post.isLiked ? AppColors.accent : AppColors.textSecondary,
+            color: post.isLiked ? AppColors.accent : textSecondaryColor,
             onTap: onLike,
           ),
 
@@ -303,7 +342,7 @@ class PostCard extends StatelessWidget {
           _StatItem(
             icon: Icons.chat_bubble_outline,
             count: post.commentCount,
-            color: AppColors.textSecondary,
+            color: textSecondaryColor,
             onTap: onComment,
           ),
         ],
@@ -327,6 +366,9 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -344,7 +386,7 @@ class _StatItem extends StatelessWidget {
             Text(
               '$count',
               style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+                color: textSecondaryColor,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),

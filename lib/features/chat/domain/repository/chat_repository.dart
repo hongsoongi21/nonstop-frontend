@@ -52,4 +52,7 @@ abstract class ChatRepository {
 
   /// Upload an image for chat and return the URL
   Future<Either<Failure, String>> uploadChatImage(int roomId, String localFilePath);
+
+  /// Leave a chat room
+  Future<Either<Failure, void>> leaveRoom(int roomId);
 }

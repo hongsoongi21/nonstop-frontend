@@ -245,6 +245,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get editProfileComingSoon => '프로필 수정 - 곧 출시 예정!';
 
   @override
+  String get searchComingSoon => '검색 - 곧 출시 예정!';
+
+  @override
   String get filterPrefix => '필터: ';
 
   @override
@@ -510,6 +513,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get emailVerified => '이메일 인증 완료';
 
   @override
+  String get oauthEmailVerified => '소셜 로그인을 통해 이메일이 인증되었습니다';
+
+  @override
   String get verificationCodeSent => '인증 코드가 전송되었습니다!';
 
   @override
@@ -683,6 +689,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get tryDifferentName => '다른 이름으로 검색해보세요';
+
+  @override
+  String get keepTyping => '계속 입력하세요';
+
+  @override
+  String get minTwoCharacters => '검색하려면 최소 2자 이상 입력하세요';
 
   @override
   String get online => '온라인';
@@ -1024,4 +1036,29 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get deleteAccountFailed => '계정 삭제에 실패했습니다';
+
+  @override
+  String get leaveRoom => '채팅방 나가기';
+
+  @override
+  String get leaveRoomConfirm =>
+      '정말로 이 채팅방을 나가시겠습니까? 더 이상 이 대화의 메시지를 받을 수 없습니다.';
+
+  @override
+  String get leaveRoomSuccess => '채팅방을 나갔습니다';
+
+  @override
+  String get latest => '최신순';
+
+  @override
+  String get trending => '인기순';
+
+  @override
+  String get mostCommented => '댓글순';
+
+  @override
+  String get completeProfile => '프로필 완성';
+
+  @override
+  String get completeProfileSubtitle => '필수 정보를 입력해 주세요';
 }

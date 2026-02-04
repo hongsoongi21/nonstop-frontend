@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +28,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -42,7 +45,27 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   void dispose() {
     _tabController.dispose();
     _searchController.dispose();
+    _searchDebounce?.cancel();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    final trimmed = value.trim();
+
+    // Only search if query has at least 2 characters
+    if (trimmed.length < 2) {
+      // Clear results for short queries
+      if (trimmed.isEmpty) {
+        ref.read(friendManagementProvider.notifier).searchUsers('');
+      }
+      return;
+    }
+
+    // Debounce: wait 500ms after user stops typing
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(friendManagementProvider.notifier).searchUsers(trimmed);
+    });
   }
 
   @override
@@ -529,11 +552,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       contentPadding: EdgeInsets.zero,
                       isDense: true,
                     ),
-                    onChanged: (value) {
-                      ref
-                          .read(friendManagementProvider.notifier)
-                          .searchUsers(value.trim());
-                    },
+                    onChanged: _onSearchChanged,
                   ),
                 ),
                 if (_searchController.text.isNotEmpty)
@@ -571,6 +590,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   icon: Icons.search,
                   title: l10n.startSearching,
                   subtitle: l10n.typeInSearchBar,
+                )
+              : _searchController.text.trim().length < 2
+              ? _buildEmptyState(
+                  icon: Icons.keyboard,
+                  title: l10n.keepTyping,
+                  subtitle: l10n.minTwoCharacters,
                 )
               : isLoading
               ? ListView.builder(
@@ -778,7 +803,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         // Defer navigation to next frame to avoid Navigator lock
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            context.push(Routes.chatRoomPath(newRoom.id.toString()));
+            // Use 'go' instead of 'push' to update the bottom navigation tab to Chat
+            context.go(Routes.chatRoomPath(newRoom.id.toString()));
           }
         });
       } else {

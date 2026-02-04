@@ -357,6 +357,10 @@
   "@editProfileComingSoon": {
     "description": "Edit profile coming soon message"
   },
+  "searchComingSoon": "검색 - 곧 출시 예정!",
+  "@searchComingSoon": {
+    "description": "Search coming soon message"
+  },
   "filterPrefix": "필터: ",
   "@filterPrefix": {
     "description": "Filter prefix for filter tab change"
@@ -546,6 +550,10 @@
   "emailVerified": "이메일 인증 완료",
   "@emailVerified": {
     "description": "emailVerified label/message"
+  },
+  "oauthEmailVerified": "소셜 로그인을 통해 이메일이 인증되었습니다",
+  "@oauthEmailVerified": {
+    "description": "Message shown when OAuth email is auto-verified"
   },
   "verificationCodeSent": "인증 코드가 전송되었습니다!",
   "@verificationCodeSent": {
@@ -786,6 +794,14 @@
   "@tryDifferentName": {
     "description": "Empty state subtitle for no search results"
   },
+  "keepTyping": "계속 입력하세요",
+  "@keepTyping": {
+    "description": "Empty state title when search query is too short"
+  },
+  "minTwoCharacters": "검색하려면 최소 2자 이상 입력하세요",
+  "@minTwoCharacters": {
+    "description": "Empty state subtitle when search query is too short"
+  },
   "online": "온라인",
   "@online": {
     "description": "Online status label"
@@ -938,5 +954,37 @@
   "deleteAccountFailed": "계정 삭제에 실패했습니다",
   "@deleteAccountFailed": {
     "description": "Delete account failed message"
+  },
+  "leaveRoom": "채팅방 나가기",
+  "@leaveRoom": {
+    "description": "Leave chat room button text"
+  },
+  "leaveRoomConfirm": "정말로 이 채팅방을 나가시겠습니까? 더 이상 이 대화의 메시지를 받을 수 없습니다.",
+  "@leaveRoomConfirm": {
+    "description": "Leave room confirmation message"
+  },
+  "leaveRoomSuccess": "채팅방을 나갔습니다",
+  "@leaveRoomSuccess": {
+    "description": "Leave room success message"
+  },
+  "latest": "최신순",
+  "@latest": {
+    "description": "Latest filter option for board posts"
+  },
+  "trending": "인기순",
+  "@trending": {
+    "description": "Trending filter option for board posts"
+  },
+  "mostCommented": "댓글순",
+  "@mostCommented": {
+    "description": "Most commented filter option for board posts"
+  },
+  "completeProfile": "프로필 완성",
+  "@completeProfile": {
+    "description": "Title for incomplete profile completion screen"
+  },
+  "completeProfileSubtitle": "필수 정보를 입력해 주세요",
+  "@completeProfileSubtitle": {
+    "description": "Subtitle for incomplete profile completion screen"
   }
 }

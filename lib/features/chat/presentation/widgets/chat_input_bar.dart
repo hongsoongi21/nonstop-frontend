@@ -55,6 +55,8 @@ class _ChatInputBarState extends State<ChatInputBar> {
     if (text.isEmpty) return;
     widget.onSend(text);
     _controller.clear();
+    // 키보드 내리기
+    FocusScope.of(context).unfocus();
   }
 
   @override

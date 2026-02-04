@@ -375,6 +375,10 @@
   "@emailVerified": {
     "description": "emailVerified label/message"
   },
+  "oauthEmailVerified": "Email подтвержден через социальную сеть",
+  "@oauthEmailVerified": {
+    "description": "Message shown when OAuth email is auto-verified"
+  },
   "verificationCodeSent": "Код подтверждения отправлен!",
   "@verificationCodeSent": {
     "description": "verificationCodeSent label/message"
@@ -854,6 +858,14 @@
   "@tryDifferentName": {
     "description": "Empty state subtitle for no search results"
   },
+  "keepTyping": "Продолжайте ввод",
+  "@keepTyping": {
+    "description": "Empty state title when search query is too short"
+  },
+  "minTwoCharacters": "Введите минимум 2 символа для поиска",
+  "@minTwoCharacters": {
+    "description": "Empty state subtitle when search query is too short"
+  },
   "online": "Онлайн",
   "@online": {
     "description": "Online status label"
@@ -1029,6 +1041,10 @@
   "editProfileComingSoon": "Редактирование профиля - скоро!",
   "@editProfileComingSoon": {
     "description": "Edit profile coming soon message"
+  },
+  "searchComingSoon": "Поиск - скоро!",
+  "@searchComingSoon": {
+    "description": "Search coming soon message"
   },
   "filterPrefix": "Фильтр: ",
   "@filterPrefix": {
@@ -1242,5 +1258,37 @@
   "deleteAccountFailed": "Не удалось удалить аккаунт",
   "@deleteAccountFailed": {
     "description": "Delete account failed message"
+  },
+  "leaveRoom": "Выйти из чата",
+  "@leaveRoom": {
+    "description": "Leave chat room button text"
+  },
+  "leaveRoomConfirm": "Вы уверены, что хотите выйти из этого чата? Вы больше не будете получать сообщения из этого разговора.",
+  "@leaveRoomConfirm": {
+    "description": "Leave room confirmation message"
+  },
+  "leaveRoomSuccess": "Вы покинули чат",
+  "@leaveRoomSuccess": {
+    "description": "Leave room success message"
+  },
+  "latest": "Новые",
+  "@latest": {
+    "description": "Latest filter option for board posts"
+  },
+  "trending": "Популярные",
+  "@trending": {
+    "description": "Trending filter option for board posts"
+  },
+  "mostCommented": "Обсуждаемые",
+  "@mostCommented": {
+    "description": "Most commented filter option for board posts"
+  },
+  "completeProfile": "Заполнить профиль",
+  "@completeProfile": {
+    "description": "Title for incomplete profile completion screen"
+  },
+  "completeProfileSubtitle": "Пожалуйста, заполните необходимую информацию",
+  "@completeProfileSubtitle": {
+    "description": "Subtitle for incomplete profile completion screen"
   }
 }

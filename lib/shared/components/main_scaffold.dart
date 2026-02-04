@@ -190,6 +190,9 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use GoRouter's canPop() for consistency with context.pop()
+    final canPop = showBackButton && GoRouter.of(context).canPop();
+
     return AppBar(
       title: Text(title),
       elevation: elevation,
@@ -200,7 +203,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       leading:
           leading ??
-          (showBackButton && Navigator.of(context).canPop()
+          (canPop
               ? IconButton(
                   onPressed: () => context.pop(),
                   icon: const Icon(Icons.arrow_back),

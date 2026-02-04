@@ -42,102 +42,111 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildSystemMessage() {
-    String text;
-    IconData icon;
-    Color color;
+    return Builder(
+      builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final textSecondaryColor = isDarkMode
+            ? AppColors.textSecondaryDark
+            : AppColors.textSecondary;
 
-    switch (message.type) {
-      case MessageType.systemInvite:
-        text = '${message.content}님이 초대되었습니다';
-        icon = Icons.person_add_rounded;
-        color = AppColors.chatOnline;
-        break;
-      case MessageType.systemLeave:
-        text = '${message.content}님이 나갔습니다';
-        icon = Icons.exit_to_app_rounded;
-        color = AppColors.textSecondary;
-        break;
-      case MessageType.systemKick:
-        text = '${message.content}님이 강퇴되었습니다';
-        icon = Icons.block_rounded;
-        color = AppColors.error;
-        break;
-      default:
-        text = message.content;
-        icon = Icons.info_outline_rounded;
-        color = AppColors.info;
-    }
+        String text;
+        IconData icon;
+        Color color;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        vertical: 16,
-        horizontal: 20,
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              height: 1.5,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.transparent,
-                    color.withValues(alpha: 0.2),
-                  ],
-                ),
-              ),
-            ),
+        switch (message.type) {
+          case MessageType.systemInvite:
+            text = '${message.content}님이 초대되었습니다';
+            icon = Icons.person_add_rounded;
+            color = AppColors.chatOnline;
+            break;
+          case MessageType.systemLeave:
+            text = '${message.content}님이 나갔습니다';
+            icon = Icons.exit_to_app_rounded;
+            color = textSecondaryColor;
+            break;
+          case MessageType.systemKick:
+            text = '${message.content}님이 강퇴되었습니다';
+            icon = Icons.block_rounded;
+            color = AppColors.error;
+            break;
+          default:
+            text = message.content;
+            icon = Icons.info_outline_rounded;
+            color = AppColors.info;
+        }
+
+        return Container(
+          margin: const EdgeInsets.symmetric(
+            vertical: 16,
+            horizontal: 20,
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 12),
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: color.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  size: 14,
-                  color: color.withValues(alpha: 0.8),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  text,
-                  style: AppTypography.caption.copyWith(
-                    color: color.withValues(alpha: 0.9),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2,
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 1.5,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        color.withValues(alpha: 0.2),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              height: 1.5,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    color.withValues(alpha: 0.2),
-                    Colors.transparent,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 14,
+                      color: color.withValues(alpha: 0.8),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      text,
+                      style: AppTypography.caption.copyWith(
+                        color: color.withValues(alpha: 0.9),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
+              Expanded(
+                child: Container(
+                  height: 1.5,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        color.withValues(alpha: 0.2),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -294,159 +303,172 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildImageBubble() {
-    return GestureDetector(
-      onTap: onImageTap,
-      child: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 260,
-          maxHeight: 340,
-          minWidth: 200,
-          minHeight: 140,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowMedium,
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+    return Builder(
+      builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final surfaceVariantColor = isDarkMode
+            ? AppColors.surfaceVariantDark
+            : AppColors.surfaceVariant;
+        final textSecondaryColor = isDarkMode
+            ? AppColors.textSecondaryDark
+            : AppColors.textSecondary;
+        final shadowColor = isDarkMode ? Colors.black38 : AppColors.shadowMedium;
+
+        return GestureDetector(
+          onTap: onImageTap,
+          child: Container(
+            constraints: const BoxConstraints(
+              maxWidth: 260,
+              maxHeight: 340,
+              minWidth: 200,
+              minHeight: 140,
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            fit: StackFit.passthrough,
-            children: [
-              CachedNetworkImage(
-                imageUrl: message.content,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.surfaceVariant,
-                        AppColors.surfaceVariant.withValues(alpha: 0.7),
-                      ],
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: shadowColor,
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Stack(
+                fit: StackFit.passthrough,
+                children: [
+                  CachedNetworkImage(
+                    imageUrl: message.content,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            surfaceVariantColor,
+                            surfaceVariantColor.withValues(alpha: 0.7),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  isMe ? AppColors.primary : AppColors.tertiary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Loading image...',
+                              style: AppTypography.caption.copyWith(
+                                color: textSecondaryColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.errorLight,
+                            AppColors.errorLight.withValues(alpha: 0.7),
+                          ],
+                        ),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.8),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.broken_image_rounded,
+                                size: 36,
+                                color: AppColors.error,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Failed to load',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.error,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 32,
-                          height: 32,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              isMe ? AppColors.primary : AppColors.tertiary,
+                  // Tap overlay hint
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.7),
+                            Colors.black.withValues(alpha: 0.3),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.fullscreen_rounded,
+                            size: 16,
+                            color: Colors.white.withValues(alpha: 0.95),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Tap to view full size',
+                            style: AppTypography.caption.copyWith(
+                              color: Colors.white.withValues(alpha: 0.95),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.2,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Loading image...',
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.errorLight,
-                        AppColors.errorLight.withValues(alpha: 0.7),
-                      ],
-                    ),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.8),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.broken_image_rounded,
-                            size: 36,
-                            color: AppColors.error,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Failed to load',
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.error,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // Tap overlay hint
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.7),
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.fullscreen_rounded,
-                        size: 16,
-                        color: Colors.white.withValues(alpha: 0.95),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Tap to view full size',
-                        style: AppTypography.caption.copyWith(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -454,41 +476,56 @@ class MessageBubble extends StatelessWidget {
     final timeFormat = DateFormat('HH:mm');
     final timeString = timeFormat.format(message.sentAt);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (!isMe) ...[
-            Text(
-              timeString,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary.withValues(alpha: 0.7),
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
-          if (isMe) ...[
-            _buildStatusIndicator(),
-            const SizedBox(width: 5),
-            Text(
-              timeString,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary.withValues(alpha: 0.7),
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.2,
-              ),
-            ),
-          ],
-        ],
-      ),
+    return Builder(
+      builder: (context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        final textSecondaryColor = isDarkMode
+            ? AppColors.textSecondaryDark
+            : AppColors.textSecondary;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!isMe) ...[
+                Text(
+                  timeString,
+                  style: AppTypography.caption.copyWith(
+                    color: textSecondaryColor.withValues(alpha: 0.7),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+              if (isMe) ...[
+                _buildStatusIndicator(context),
+                const SizedBox(width: 5),
+                Text(
+                  timeString,
+                  style: AppTypography.caption.copyWith(
+                    color: textSecondaryColor.withValues(alpha: 0.7),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildStatusIndicator() {
+  Widget _buildStatusIndicator(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textSecondaryColor = isDarkMode
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    final primaryColor = isDarkMode ? AppColors.primaryLight : AppColors.primary;
+
     if (message.isSending) {
       return SizedBox(
         width: 14,
@@ -496,7 +533,7 @@ class MessageBubble extends StatelessWidget {
         child: CircularProgressIndicator(
           strokeWidth: 2,
           valueColor: AlwaysStoppedAnimation<Color>(
-            AppColors.textSecondary.withValues(alpha: 0.5),
+            textSecondaryColor.withValues(alpha: 0.5),
           ),
         ),
       );
@@ -525,16 +562,16 @@ class MessageBubble extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              AppColors.primary.withValues(alpha: 0.15),
-              AppColors.primary.withValues(alpha: 0.05),
+              primaryColor.withValues(alpha: 0.15),
+              primaryColor.withValues(alpha: 0.05),
             ],
           ),
           borderRadius: BorderRadius.circular(4),
         ),
-        child: const Icon(
+        child: Icon(
           Icons.done_all_rounded,
           size: 12,
-          color: AppColors.primary,
+          color: primaryColor,
         ),
       );
     }
@@ -542,7 +579,7 @@ class MessageBubble extends StatelessWidget {
     return Icon(
       Icons.done_rounded,
       size: 14,
-      color: AppColors.textSecondary.withValues(alpha: 0.6),
+      color: textSecondaryColor.withValues(alpha: 0.6),
     );
   }
 }

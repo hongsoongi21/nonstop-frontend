@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../../data/api/auth_api.dart';
 import '../entities/policy.dart';
 import '../entities/user.dart';
 
@@ -13,10 +14,12 @@ abstract class AuthRepository {
   });
 
   /// Sign in with Google
-  Future<Either<Failure, User>> signInWithGoogle({required String idToken});
+  /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
+  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({required String idToken});
 
   /// Sign in with Apple
-  Future<Either<Failure, User>> signInWithApple({
+  /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
+  Future<Either<Failure, OAuthLoginResult>> signInWithApple({
     required String idToken,
     String? authorizationCode,
     String? firstName,
@@ -27,6 +30,15 @@ abstract class AuthRepository {
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
+  });
+
+  /// Complete OAuth signup for new users (no password required)
+  Future<Either<Failure, User>> completeOAuthSignup({
     required String nickname,
     required DateTime birthDate,
     int? universityId,

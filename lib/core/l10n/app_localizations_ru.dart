@@ -254,6 +254,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editProfileComingSoon => 'Редактирование профиля - скоро!';
 
   @override
+  String get searchComingSoon => 'Поиск - скоро!';
+
+  @override
   String get filterPrefix => 'Фильтр: ';
 
   @override
@@ -523,6 +526,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get emailVerified => 'Email подтвержден';
 
   @override
+  String get oauthEmailVerified => 'Email подтвержден через социальную сеть';
+
+  @override
   String get verificationCodeSent => 'Код подтверждения отправлен!';
 
   @override
@@ -698,6 +704,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get tryDifferentName => 'Попробуйте другое имя';
+
+  @override
+  String get keepTyping => 'Продолжайте ввод';
+
+  @override
+  String get minTwoCharacters => 'Введите минимум 2 символа для поиска';
 
   @override
   String get online => 'Онлайн';
@@ -1043,4 +1055,30 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get deleteAccountFailed => 'Не удалось удалить аккаунт';
+
+  @override
+  String get leaveRoom => 'Выйти из чата';
+
+  @override
+  String get leaveRoomConfirm =>
+      'Вы уверены, что хотите выйти из этого чата? Вы больше не будете получать сообщения из этого разговора.';
+
+  @override
+  String get leaveRoomSuccess => 'Вы покинули чат';
+
+  @override
+  String get latest => 'Новые';
+
+  @override
+  String get trending => 'Популярные';
+
+  @override
+  String get mostCommented => 'Обсуждаемые';
+
+  @override
+  String get completeProfile => 'Заполнить профиль';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Пожалуйста, заполните необходимую информацию';
 }

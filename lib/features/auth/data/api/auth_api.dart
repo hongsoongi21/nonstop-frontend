@@ -1,5 +1,34 @@
 import '../../domain/entities/user.dart';
+import '../dto/auth_response_dto.dart';
 import '../dto/policy_response_dto.dart';
+
+/// Result of OAuth login - existing user, new user, or incomplete profile
+sealed class OAuthLoginResult {}
+
+/// Existing user with complete profile
+class OAuthExistingUser extends OAuthLoginResult {
+  final User user;
+  OAuthExistingUser(this.user);
+}
+
+/// New user who needs to complete signup
+class OAuthNewUser extends OAuthLoginResult {
+  final OAuthSignupData signupData;
+  OAuthNewUser(this.signupData);
+}
+
+/// Existing user with incomplete profile (missing birthDate or policy agreements)
+class OAuthIncompleteUser extends OAuthLoginResult {
+  final OAuthSignupData signupData;
+  final bool hasBirthDate;
+  final bool hasAgreedAllMandatory;
+
+  OAuthIncompleteUser({
+    required this.signupData,
+    required this.hasBirthDate,
+    required this.hasAgreedAllMandatory,
+  });
+}
 
 /// API interface for authentication operations
 abstract class AuthApi {
@@ -66,14 +95,25 @@ abstract class AuthApi {
   Future<String?> getAccessToken();
 
   /// Sign in with Google
-  Future<User> signInWithGoogle({required String idToken});
+  /// Returns OAuthExistingUser for existing users, OAuthNewUser for new users
+  Future<OAuthLoginResult> signInWithGoogle({required String idToken});
 
   /// Sign in with Apple
-  Future<User> signInWithApple({
+  /// Returns OAuthExistingUser for existing users, OAuthNewUser for new users
+  Future<OAuthLoginResult> signInWithApple({
     required String idToken,
     String? authorizationCode,
     String? firstName,
     String? lastName,
+  });
+
+  /// Complete OAuth signup for new users
+  Future<User> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Get policy list

@@ -11,6 +11,7 @@ import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../data/dto/auth_response_dto.dart';
 import '../../domain/entities/policy.dart';
 import '../../domain/entities/university.dart';
 import '../providers/auth_provider.dart';
@@ -21,7 +22,10 @@ import '../widgets/gradient_button.dart';
 import '../widgets/language_selector.dart';
 
 class SignupScreenV1 extends ConsumerStatefulWidget {
-  const SignupScreenV1({super.key});
+  /// OAuth 회원가입 데이터 (Google/Apple 로그인 시 전달됨)
+  final dynamic oauthSignupData;
+
+  const SignupScreenV1({super.key, this.oauthSignupData});
 
   @override
   ConsumerState<SignupScreenV1> createState() => _SignupScreenV1State();
@@ -44,6 +48,31 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   // 타이머 관련 변수
   Timer? _verificationTimer;
   int _remainingSeconds = 300; // 5분
+
+  /// OAuth 회원가입 데이터 (타입 캐스팅된 버전)
+  OAuthSignupData? get _oauthData {
+    final data = widget.oauthSignupData;
+    if (data is OAuthSignupData) {
+      return data;
+    }
+    return null;
+  }
+
+  /// OAuth 회원가입 모드인지 확인
+  bool get _isOAuthSignup => _oauthData != null;
+
+  @override
+  void initState() {
+    super.initState();
+    // OAuth 데이터가 있으면 이메일 필드 초기화
+    if (_oauthData != null) {
+      _emailController.text = _oauthData!.email;
+      // 닉네임 힌트로 displayName 사용 가능
+      if (_oauthData!.displayName != null && _oauthData!.displayName!.isNotEmpty) {
+        _nicknameController.text = _oauthData!.displayName!;
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -126,43 +155,53 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
   }
 
   Future<void> _handleSignup() async {
+    final l10n = AppLocalizations.of(context);
+    final authState = ref.read(authProvider);
+
+    // 미완성 프로필 상태 확인
+    final isIncompleteProfile = authState.isIncompleteProfile && _isOAuthSignup;
+    final needsBirthDate = !authState.existingUserHasBirthDate;
+    final needsPolicyAgreement = !authState.existingUserHasAgreedPolicies;
+
     // 1. 클라이언트 측 유효성 검사 (입력 형식 등)
     if (!_formKey.currentState!.validate()) return;
 
-    // 2. 정책 로드 상태 확인 및 필수 약관 동의 검사
-    final policiesAsync = ref.read(policiesProvider);
-    
-    // 데이터가 아직 로드되지 않았거나 에러인 경우 처리
-    if (!policiesAsync.hasValue) {
-       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.pleaseWaitPoliciesLoad),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
+    // 2. 정책 동의 검사 (필요한 경우에만)
+    if (!isIncompleteProfile || needsPolicyAgreement) {
+      final policiesAsync = ref.read(policiesProvider);
 
-    final policies = policiesAsync.value!;
-    final mandatoryPolicies = policies.where((p) => p.isMandatory);
-    final isAllMandatoryAgreed = mandatoryPolicies.every((p) => _agreedPolicyIds.contains(p.id));
+      // 데이터가 아직 로드되지 않았거나 에러인 경우 처리
+      if (!policiesAsync.hasValue) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.pleaseWaitPoliciesLoad),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
 
-    if (!isAllMandatoryAgreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.agreeMandatoryPolicies),
-          backgroundColor: AppColors.error,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-      return;
+      final policies = policiesAsync.value!;
+      final mandatoryPolicies = policies.where((p) => p.isMandatory);
+      final isAllMandatoryAgreed = mandatoryPolicies.every((p) => _agreedPolicyIds.contains(p.id));
+
+      if (!isAllMandatoryAgreed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.agreeMandatoryPolicies),
+            backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
     }
 
     // 3. 대학교 선택 여부 확인
     if (_selectedUniversityId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.pleaseSelectUniversity),
+          content: Text(l10n.pleaseSelectUniversity),
           backgroundColor: AppColors.error,
           duration: const Duration(seconds: 2),
         ),
@@ -170,11 +209,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // 4. 생년월일 검증
-    if (_selectedBirthDate == null) {
+    // 4. 생년월일 검증 (필요한 경우에만)
+    if ((!isIncompleteProfile || needsBirthDate) && _selectedBirthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.pleaseSelectBirthDate),
+          content: Text(l10n.pleaseSelectBirthDate),
           backgroundColor: AppColors.error,
           duration: const Duration(seconds: 2),
         ),
@@ -182,41 +221,54 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       return;
     }
 
-    // 5. 이메일 인증 여부 확인
-    final authState = ref.read(authProvider);
-    if (!authState.isEmailVerified) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.pleaseVerifyEmail),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-
-    // 5. 회원가입 프로세스 실행
-    await ref.read(authProvider.notifier).signUp(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-          nickname: _nicknameController.text.trim(),
-          birthDate: _selectedBirthDate!,
-          universityId: _selectedUniversityId,
-          agreedPolicyIds: _agreedPolicyIds.toList(),
+    // 5. OAuth vs 일반 회원가입 분기
+    if (_isOAuthSignup) {
+      // OAuth 회원가입: 이메일 인증 불필요, 비밀번호 불필요
+      // 미완성 프로필의 경우 birthDate가 null일 수 있음 (이미 있는 경우)
+      await ref.read(authProvider.notifier).completeOAuthSignup(
+            nickname: _nicknameController.text.trim(),
+            birthDate: _selectedBirthDate ?? DateTime(2000, 1, 1), // 기존 값이 있으면 서버에서 무시됨
+            universityId: _selectedUniversityId,
+            agreedPolicyIds: _agreedPolicyIds.toList(),
+          );
+    } else {
+      // 일반 회원가입: 이메일 인증 필요
+      final authState = ref.read(authProvider);
+      if (!authState.isEmailVerified) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).pleaseVerifyEmail),
+            backgroundColor: AppColors.error,
+          ),
         );
+        return;
+      }
+
+      // 회원가입 프로세스 실행
+      await ref.read(authProvider.notifier).signUp(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+            nickname: _nicknameController.text.trim(),
+            birthDate: _selectedBirthDate!,
+            universityId: _selectedUniversityId,
+            agreedPolicyIds: _agreedPolicyIds.toList(),
+          );
+    }
 
     // 위젯이 마운트된 상태인지 확인
     if (!mounted) return;
 
     // 6. 실행 결과에 따른 처리
-    if (authState.hasError) {
+    final resultAuthState = ref.read(authProvider);
+    if (resultAuthState.hasError) {
       // 실패 시 에러 메시지 노출
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.signupFailed),
+          content: Text(resultAuthState.failure?.message ?? AppLocalizations.of(context).signupFailed),
           backgroundColor: AppColors.error,
         ),
       );
-    } else if (authState.isAuthenticated) {
+    } else if (resultAuthState.isAuthenticated) {
       // 가입 시 정책 동의가 함께 처리되므로 즉시 홈 화면으로 이동
       if (mounted) {
         context.go(Routes.home);
@@ -229,20 +281,20 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     if (email.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context)!.validationEmailInvalid),
+          content: Text(AppLocalizations.of(context).validationEmailInvalid),
           backgroundColor: AppColors.error,
         ),
       );
       return;
     }
     await ref.read(authProvider.notifier).sendVerificationEmail(email);
-    
+
     if (mounted) {
       final authState = ref.read(authProvider);
       if (authState.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.failedToSendCode),
+            content: Text(authState.failure?.message ?? AppLocalizations.of(context).failedToSendCode),
             backgroundColor: AppColors.error,
           ),
         );
@@ -250,7 +302,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         _startTimer(); // 타이머 시작
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.verificationCodeSent),
+            content: Text(AppLocalizations.of(context).verificationCodeSent),
             backgroundColor: AppColors.success,
           ),
         );
@@ -269,7 +321,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       if (authState.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.invalidCode),
+            content: Text(authState.failure?.message ?? AppLocalizations.of(context).invalidCode),
             backgroundColor: AppColors.error,
           ),
         );
@@ -277,7 +329,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         _verificationTimer?.cancel(); // 인증 성공 시 타이머 정지
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.emailVerifiedSuccess),
+            content: Text(AppLocalizations.of(context).emailVerifiedSuccess),
             backgroundColor: AppColors.success,
           ),
         );
@@ -297,6 +349,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     final universitiesAsync = ref.watch(universitiesProvider);
     // 정책 목록 데이터를 Watch 합니다.
     final policiesAsync = ref.watch(policiesProvider);
+
+    // 미완성 프로필 상태 확인 (기존 OAuth 사용자)
+    final isIncompleteProfile = authState.isIncompleteProfile && _isOAuthSignup;
+    final needsBirthDate = !authState.existingUserHasBirthDate;
+    final needsPolicyAgreement = !authState.existingUserHasAgreedPolicies;
 
     return Scaffold(
       body: Container(
@@ -355,21 +412,21 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   SizedBox(height: AppSpacing.sm.h),
 
                                   // 헤더 타이틀
-                                  _buildHeader(),
+                                  _buildHeader(isIncompleteProfile: isIncompleteProfile),
 
                                   SizedBox(height: AppSpacing.lg.h),
 
                                   // 닉네임 입력 필드
                                   CustomAuthTextField(
                                     controller: _nicknameController,
-                                    hintText: AppLocalizations.of(context)!.nickname,
+                                    hintText: AppLocalizations.of(context).nickname,
                                     prefixIcon: Icons.person_outline,
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
-                                        return AppLocalizations.of(context)!.validationNicknameRequired;
+                                        return AppLocalizations.of(context).validationNicknameRequired;
                                       }
                                       if (value.length < 2 || value.length > 20) {
-                                        return AppLocalizations.of(context)!.validationNickname2to20;
+                                        return AppLocalizations.of(context).validationNickname2to20;
                                       }
                                       return null;
                                     },
@@ -380,10 +437,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                   // 대학교 선택 드롭다운
                                   _buildUniversityDropdown(universitiesAsync),
 
-                                  SizedBox(height: AppSpacing.md.h),
-
-                                  // 생년월일 선택
-                                  _buildBirthDatePicker(),
+                                  // 생년월일 선택 (미완성 프로필에서 이미 있으면 숨김)
+                                  if (!isIncompleteProfile || needsBirthDate) ...[
+                                    SizedBox(height: AppSpacing.md.h),
+                                    _buildBirthDatePicker(),
+                                  ],
 
                                   SizedBox(height: AppSpacing.md.h),
 
@@ -394,23 +452,25 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                       Expanded(
                                         child: CustomAuthTextField(
                                           controller: _emailController,
-                                          hintText: AppLocalizations.of(context)!.email,
+                                          hintText: AppLocalizations.of(context).email,
                                           prefixIcon: Icons.email_outlined,
                                           keyboardType: TextInputType.emailAddress,
-                                          readOnly: authState.isEmailVerified,
+                                          // OAuth는 항상 readOnly, 일반 가입은 인증 완료 시 readOnly
+                                          readOnly: _isOAuthSignup || authState.isEmailVerified,
                                           validator: (value) {
                                             if (value == null || value.isEmpty) {
-                                              return AppLocalizations.of(context)!.validationEmailRequired;
+                                              return AppLocalizations.of(context).validationEmailRequired;
                                             }
                                             if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                                                 .hasMatch(value)) {
-                                              return AppLocalizations.of(context)!.validationEmailInvalid;
+                                              return AppLocalizations.of(context).validationEmailInvalid;
                                             }
                                             return null;
                                           },
                                         ),
                                       ),
-                                      if (!authState.isEmailVerified) ...[
+                                      // 일반 회원가입에서만 인증 버튼 표시
+                                      if (!_isOAuthSignup && !authState.isEmailVerified) ...[
                                         SizedBox(width: AppSpacing.sm.w),
                                         SizedBox(
                                           height: 55.h,
@@ -426,7 +486,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                               padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
-                                              authState.isEmailVerificationSent ? AppLocalizations.of(context)!.resend : AppLocalizations.of(context)!.send,
+                                              authState.isEmailVerificationSent ? AppLocalizations.of(context).resend : AppLocalizations.of(context).send,
                                               style: AppTypography.buttonSmall.copyWith(
                                                 color: AppColors.textOnPrimary,
                                               ),
@@ -437,7 +497,29 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                     ],
                                   ),
 
-                                  if (authState.isEmailVerificationSent && !authState.isEmailVerified) ...[
+                                  // OAuth의 경우 이메일 인증 대신 안내 메시지 표시
+                                  if (_isOAuthSignup)
+                                    Padding(
+                                      padding: EdgeInsets.only(top: AppSpacing.sm.h),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.check_circle, color: AppColors.success, size: AppSpacing.iconSm.sp),
+                                          SizedBox(width: AppSpacing.xs.w),
+                                          Expanded(
+                                            child: Text(
+                                              AppLocalizations.of(context).oauthEmailVerified,
+                                              style: AppTypography.caption.copyWith(
+                                                color: AppColors.success,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  // 일반 회원가입의 경우에만 이메일 인증 코드 입력 표시
+                                  if (!_isOAuthSignup && authState.isEmailVerificationSent && !authState.isEmailVerified) ...[
                                     SizedBox(height: AppSpacing.md.h),
                                     Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -445,7 +527,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                         Expanded(
                                           child: CustomAuthTextField(
                                             controller: _verificationCodeController,
-                                            hintText: AppLocalizations.of(context)!.sixDigitCode,
+                                            hintText: AppLocalizations.of(context).sixDigitCode,
                                             prefixIcon: Icons.lock_clock_outlined,
                                             keyboardType: TextInputType.number,
                                             suffix: Text(
@@ -472,7 +554,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                               padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
                                             ),
                                             child: Text(
-                                              AppLocalizations.of(context)!.verify,
+                                              AppLocalizations.of(context).verify,
                                               style: AppTypography.buttonSmall.copyWith(
                                                 color: AppColors.textOnPrimary,
                                               ),
@@ -491,7 +573,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                           Icon(Icons.check_circle, color: AppColors.success, size: AppSpacing.iconSm.sp),
                                           SizedBox(width: AppSpacing.xs.w),
                                           Text(
-                                            AppLocalizations.of(context)!.emailVerified,
+                                            AppLocalizations.of(context).emailVerified,
                                             style: AppTypography.caption.copyWith(
                                               color: AppColors.success,
                                               fontWeight: FontWeight.w600,
@@ -501,54 +583,60 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                                       ),
                                     ),
 
-                                  SizedBox(height: AppSpacing.md.h),
+                                  // 일반 회원가입에서만 비밀번호 필드 표시 (OAuth는 비밀번호 불필요)
+                                  if (!_isOAuthSignup) ...[
+                                    SizedBox(height: AppSpacing.md.h),
 
-                                  // 비밀번호 입력 필드
-                                  CustomAuthTextField(
-                                    controller: _passwordController,
-                                    hintText: AppLocalizations.of(context)!.password,
-                                    prefixIcon: Icons.lock_outline,
-                                    obscureText: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return AppLocalizations.of(context)!.validationPasswordRequired;
-                                      }
-                                      if (value.length < 8) {
-                                        return AppLocalizations.of(context)!.validationPasswordMin8;
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                    // 비밀번호 입력 필드
+                                    CustomAuthTextField(
+                                      controller: _passwordController,
+                                      hintText: AppLocalizations.of(context).password,
+                                      prefixIcon: Icons.lock_outline,
+                                      obscureText: true,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return AppLocalizations.of(context).validationPasswordRequired;
+                                        }
+                                        if (value.length < 8) {
+                                          return AppLocalizations.of(context).validationPasswordMin8;
+                                        }
+                                        return null;
+                                      },
+                                    ),
 
-                                  SizedBox(height: AppSpacing.md.h),
+                                    SizedBox(height: AppSpacing.md.h),
 
-                                  // 비밀번호 확인 필드
-                                  CustomAuthTextField(
-                                    controller: _confirmPasswordController,
-                                    hintText: AppLocalizations.of(context)!.confirmPassword,
-                                    prefixIcon: Icons.lock_outline,
-                                    obscureText: true,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return AppLocalizations.of(context)!.validationConfirmPassword;
-                                      }
-                                      if (value != _passwordController.text) {
-                                        return AppLocalizations.of(context)!.validationPasswordsNoMatch;
-                                      }
-                                      return null;
-                                    },
-                                  ),
+                                    // 비밀번호 확인 필드
+                                    CustomAuthTextField(
+                                      controller: _confirmPasswordController,
+                                      hintText: AppLocalizations.of(context).confirmPassword,
+                                      prefixIcon: Icons.lock_outline,
+                                      obscureText: true,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return AppLocalizations.of(context).validationConfirmPassword;
+                                        }
+                                        if (value != _passwordController.text) {
+                                          return AppLocalizations.of(context).validationPasswordsNoMatch;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ],
+
+                                  // 약관 동의 섹션 (미완성 프로필에서 이미 동의했으면 숨김)
+                                  if (!isIncompleteProfile || needsPolicyAgreement) ...[
+                                    SizedBox(height: AppSpacing.lg.h),
+                                    _buildPolicyAgreementSection(policiesAsync),
+                                  ],
 
                                   SizedBox(height: AppSpacing.lg.h),
 
-                                  // 약관 동의 섹션 (API 데이터 기반)
-                                  _buildPolicyAgreementSection(policiesAsync),
-
-                                  SizedBox(height: AppSpacing.lg.h),
-
-                                  // 가입하기 버튼
+                                  // 가입하기/완료 버튼
                                   GradientButton(
-                                    text: AppLocalizations.of(context)!.createAccount,
+                                    text: isIncompleteProfile
+                                        ? AppLocalizations.of(context).save
+                                        : AppLocalizations.of(context).createAccount,
                                     onPressed: isLoading ? null : _handleSignup,
                                   ),
 
@@ -581,11 +669,14 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader({bool isIncompleteProfile = false}) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         Text(
-          AppLocalizations.of(context)!.createAccount,
+          isIncompleteProfile
+              ? l10n.completeProfile
+              : l10n.createAccount,
           textAlign: TextAlign.center,
           style: AppTypography.headline2.copyWith(
             color: AppColors.textPrimary,
@@ -593,7 +684,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         ),
         SizedBox(height: AppSpacing.xs.h),
         Text(
-          AppLocalizations.of(context)!.enterYourInfo,
+          isIncompleteProfile
+              ? l10n.completeProfileSubtitle
+              : l10n.enterYourInfo,
           textAlign: TextAlign.center,
           style: AppTypography.body2.copyWith(
             color: AppColors.textSecondary,
@@ -619,7 +712,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         data: (universities) => DropdownButtonFormField<int>(
           initialValue: _selectedUniversityId,
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.selectUniversity,
+            hintText: AppLocalizations.of(context).selectUniversity,
             hintStyle: AppTypography.body2.copyWith(
               color: AppColors.textHint,
             ),
@@ -707,7 +800,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             SizedBox(width: AppSpacing.sm.w),
             Expanded(
               child: Text(
-                formattedDate ?? AppLocalizations.of(context)!.selectBirthDate,
+                formattedDate ?? AppLocalizations.of(context).selectBirthDate,
                 style: AppTypography.body2.copyWith(
                   color: formattedDate != null
                       ? AppColors.textPrimary
@@ -737,8 +830,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
-      helpText: AppLocalizations.of(context)!.selectYourBirthDate,
-      fieldLabelText: AppLocalizations.of(context)!.birthDate,
+      helpText: AppLocalizations.of(context).selectYourBirthDate,
+      fieldLabelText: AppLocalizations.of(context).birthDate,
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -773,7 +866,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       child: policiesAsync.when(
         data: (policies) {
           if (policies.isEmpty) {
-            return Text(AppLocalizations.of(context)!.noPoliciesAvailable);
+            return Text(AppLocalizations.of(context).noPoliciesAvailable);
           }
           
           final isAllAgreed = policies.every((p) => _agreedPolicyIds.contains(p.id));
@@ -801,7 +894,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                     ),
                     SizedBox(width: AppSpacing.sm.w),
                     Text(
-                      AppLocalizations.of(context)!.agreeToAll,
+                      AppLocalizations.of(context).agreeToAll,
                       style: AppTypography.body2.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -871,7 +964,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             TextSpan(
               children: [
                 TextSpan(
-                  text: isRequired ? '${AppLocalizations.of(context)!.required} ' : '${AppLocalizations.of(context)!.optional} ',
+                  text: isRequired ? '${AppLocalizations.of(context).required} ' : '${AppLocalizations.of(context).optional} ',
                   style: AppTypography.caption.copyWith(
                     color: isRequired ? AppColors.error : AppColors.success,
                     fontWeight: FontWeight.w600,
@@ -893,7 +986,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           child: Padding(
             padding: EdgeInsets.only(left: AppSpacing.sm.w),
             child: Text(
-              AppLocalizations.of(context)!.view,
+              AppLocalizations.of(context).view,
               style: AppTypography.captionSmall.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -916,9 +1009,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             color: AppColors.textSecondary,
           ),
           children: [
-            TextSpan(text: AppLocalizations.of(context)!.haveAccount),
+            TextSpan(text: AppLocalizations.of(context).haveAccount),
             TextSpan(
-              text: AppLocalizations.of(context)!.loginLink,
+              text: AppLocalizations.of(context).loginLink,
               style: AppTypography.body2.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,

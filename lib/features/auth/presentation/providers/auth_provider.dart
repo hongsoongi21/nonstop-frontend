@@ -7,6 +7,7 @@ import '../../../../core/services/fcm_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../data/api/auth_api.dart';
 import '../../data/api/auth_api_impl.dart';
+import '../../data/dto/auth_response_dto.dart';
 import '../../data/repository_impl/auth_repository_impl.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repository/auth_repository.dart';
@@ -67,6 +68,10 @@ class AuthState {
   final bool isEmailVerificationSent;
   final bool isEmailVerified;
   final bool isInitialized; // 앱 시작 시 토큰 체크가 완료되었는지 여부
+  final OAuthSignupData? pendingOAuthSignup; // OAuth 회원가입 대기 데이터
+  final bool isIncompleteProfile; // 기존 OAuth 사용자의 미완성 프로필 여부
+  final bool existingUserHasBirthDate; // 기존 사용자의 생년월일 보유 여부
+  final bool existingUserHasAgreedPolicies; // 기존 사용자의 약관 동의 여부
 
   const AuthState({
     this.isLoading = false,
@@ -75,6 +80,10 @@ class AuthState {
     this.isEmailVerificationSent = false,
     this.isEmailVerified = false,
     this.isInitialized = false, // 초기에는 false
+    this.pendingOAuthSignup,
+    this.isIncompleteProfile = false,
+    this.existingUserHasBirthDate = false,
+    this.existingUserHasAgreedPolicies = false,
   });
 
   AuthState copyWith({
@@ -86,6 +95,11 @@ class AuthState {
     bool? isEmailVerified,
     bool? isInitialized,
     bool clearUser = false, // user를 null로 설정하기 위한 플래그
+    OAuthSignupData? pendingOAuthSignup,
+    bool clearPendingOAuthSignup = false,
+    bool? isIncompleteProfile,
+    bool? existingUserHasBirthDate,
+    bool? existingUserHasAgreedPolicies,
   }) {
     return AuthState(
       isLoading: isLoading ?? this.isLoading,
@@ -95,6 +109,16 @@ class AuthState {
           isEmailVerificationSent ?? this.isEmailVerificationSent,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       isInitialized: isInitialized ?? this.isInitialized,
+      pendingOAuthSignup: clearPendingOAuthSignup
+          ? null
+          : (pendingOAuthSignup ?? this.pendingOAuthSignup),
+      isIncompleteProfile: clearPendingOAuthSignup
+          ? false
+          : (isIncompleteProfile ?? this.isIncompleteProfile),
+      existingUserHasBirthDate:
+          existingUserHasBirthDate ?? this.existingUserHasBirthDate,
+      existingUserHasAgreedPolicies:
+          existingUserHasAgreedPolicies ?? this.existingUserHasAgreedPolicies,
     );
   }
 
@@ -103,6 +127,9 @@ class AuthState {
 
   /// 에러 발생 여부 확인
   bool get hasError => failure != null;
+
+  /// OAuth 회원가입 대기 중인지 확인 (신규 또는 미완성 프로필)
+  bool get hasPendingOAuthSignup => pendingOAuthSignup != null;
 }
 
 /// 인증 상태를 관리하는 Notifier입니다.
@@ -247,6 +274,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Google로 로그인을 수행합니다.
+  /// 신규 사용자인 경우 pendingOAuthSignup에 데이터가 설정됩니다.
   Future<void> signInWithGoogle(String idToken) async {
     state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _googleSignInUseCase(
@@ -254,14 +282,39 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
-      (user) {
-        state = state.copyWith(isLoading: false, user: user);
-        _initializeFcm();
+      (loginResult) {
+        switch (loginResult) {
+          case OAuthExistingUser(user: final user):
+            // 기존 사용자: 바로 로그인 완료
+            state = state.copyWith(isLoading: false, user: user);
+            _initializeFcm();
+          case OAuthNewUser(signupData: final signupData):
+            // 신규 사용자: 회원가입 화면으로 이동 필요
+            state = state.copyWith(
+              isLoading: false,
+              pendingOAuthSignup: signupData,
+              isIncompleteProfile: false,
+            );
+          case OAuthIncompleteUser(
+              signupData: final signupData,
+              hasBirthDate: final hasBirthDate,
+              hasAgreedAllMandatory: final hasAgreed,
+            ):
+            // 기존 사용자지만 필수 정보 미완성: 프로필 완성 화면으로 이동
+            state = state.copyWith(
+              isLoading: false,
+              pendingOAuthSignup: signupData,
+              isIncompleteProfile: true,
+              existingUserHasBirthDate: hasBirthDate,
+              existingUserHasAgreedPolicies: hasAgreed,
+            );
+        }
       },
     );
   }
 
   /// Apple로 로그인을 수행합니다.
+  /// 신규 사용자인 경우 pendingOAuthSignup에 데이터가 설정됩니다.
   Future<void> signInWithApple({
     required String idToken,
     String? authorizationCode,
@@ -279,11 +332,69 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
+      (loginResult) {
+        switch (loginResult) {
+          case OAuthExistingUser(user: final user):
+            // 기존 사용자: 바로 로그인 완료
+            state = state.copyWith(isLoading: false, user: user);
+            _initializeFcm();
+          case OAuthNewUser(signupData: final signupData):
+            // 신규 사용자: 회원가입 화면으로 이동 필요
+            state = state.copyWith(
+              isLoading: false,
+              pendingOAuthSignup: signupData,
+              isIncompleteProfile: false,
+            );
+          case OAuthIncompleteUser(
+              signupData: final signupData,
+              hasBirthDate: final hasBirthDate,
+              hasAgreedAllMandatory: final hasAgreed,
+            ):
+            // 기존 사용자지만 필수 정보 미완성: 프로필 완성 화면으로 이동
+            state = state.copyWith(
+              isLoading: false,
+              pendingOAuthSignup: signupData,
+              isIncompleteProfile: true,
+              existingUserHasBirthDate: hasBirthDate,
+              existingUserHasAgreedPolicies: hasAgreed,
+            );
+        }
+      },
+    );
+  }
+
+  /// OAuth 회원가입을 완료합니다. (Google/Apple 신규 사용자용)
+  Future<void> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
+  }) async {
+    state = state.copyWith(isLoading: true, clearFailure: true);
+    final result = await _authRepository.completeOAuthSignup(
+      nickname: nickname,
+      birthDate: birthDate,
+      universityId: universityId,
+      majorId: majorId,
+      agreedPolicyIds: agreedPolicyIds,
+    );
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, failure: failure),
       (user) {
-        state = state.copyWith(isLoading: false, user: user);
+        state = state.copyWith(
+          isLoading: false,
+          user: user,
+          clearPendingOAuthSignup: true,
+        );
         _initializeFcm();
       },
     );
+  }
+
+  /// OAuth 회원가입 대기 상태를 초기화합니다.
+  void clearPendingOAuthSignup() {
+    state = state.copyWith(clearPendingOAuthSignup: true);
   }
 
   /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,13 +7,16 @@ import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/core/widgets/app_loading_skeleton.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
-import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
 import 'package:nonstop/features/chat/presentation/widgets/chat_room_tile.dart';
 import 'package:nonstop/features/chat/presentation/widgets/connection_status_bar.dart';
 import 'package:nonstop/features/chat/presentation/widgets/create_chat_bottom_sheet.dart';
-import 'package:nonstop/shared/components/app_background.dart';
 
+/// Clean, minimal chat screen following Swiss design principles
+/// - Simple header with title and action icons
+/// - Clean dividers between chat items
+/// - No unnecessary gradients or shadows
+/// - Clear visual hierarchy
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
@@ -29,88 +30,143 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final chatState = ref.watch(chatListProvider);
     final currentUser = ref.watch(currentUserProvider);
     final currentUserId = currentUser?.id != null ? int.tryParse(currentUser!.id) : null;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    final backgroundColor = isDarkMode ? AppColors.backgroundDark : AppColors.background;
+    final surfaceColor = isDarkMode ? AppColors.surfaceDark : AppColors.surface;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context).chat,
-          style: AppTypography.headline3.copyWith(
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.5,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: AppBackground(
+      backgroundColor: backgroundColor,
+      body: SafeArea(
         child: Column(
           children: [
-            // Connection status at top
+            // Clean header
+            _buildHeader(context, isDarkMode),
+
+            // Subtle divider
+            Container(
+              height: 1,
+              color: isDarkMode
+                  ? AppColors.borderDark.withValues(alpha: 0.5)
+                  : AppColors.border.withValues(alpha: 0.3),
+            ),
+
+            // Connection status
             const ConnectionStatusBar(),
 
-            // Chat list with fade-in animation
+            // Chat list
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () => ref.read(chatListProvider.notifier).loadRooms(),
-                color: AppColors.primary,
-                backgroundColor: AppColors.surface,
-                child: _buildChatList(context, chatState, currentUserId),
+              child: Container(
+                color: surfaceColor,
+                child: RefreshIndicator(
+                  onRefresh: () => ref.read(chatListProvider.notifier).loadRooms(),
+                  color: AppColors.primary,
+                  backgroundColor: surfaceColor,
+                  child: _buildChatList(context, chatState, currentUserId, isDarkMode),
+                ),
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.primaryGradient,
-          ),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.4),
-              blurRadius: 16,
-              offset: const Offset(0, 4),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, bool isDarkMode) {
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final iconColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      child: Row(
+        children: [
+          // Title - clean, bold
+          Text(
+            AppLocalizations.of(context).chat,
+            style: AppTypography.headline4.copyWith(
+              fontWeight: FontWeight.w800,
+              fontSize: 28,
+              letterSpacing: -0.5,
+              color: textPrimaryColor,
             ),
-          ],
-        ),
-        child: FloatingActionButton(
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            _showCreateChatSheet(context);
-          },
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          child: const Icon(Icons.add_rounded, size: 28),
+          ),
+
+          const Spacer(),
+
+          // Search icon
+          _buildHeaderIcon(
+            icon: Icons.search_rounded,
+            onTap: () => _showSearch(context),
+            isDarkMode: isDarkMode,
+            iconColor: iconColor,
+          ),
+
+          const SizedBox(width: AppSpacing.sm),
+
+          // Add icon
+          _buildHeaderIcon(
+            icon: Icons.add,
+            onTap: () => _showCreateChatSheet(context),
+            isDarkMode: isDarkMode,
+            iconColor: iconColor,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderIcon({
+    required IconData icon,
+    required VoidCallback onTap,
+    required bool isDarkMode,
+    required Color iconColor,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        borderRadius: BorderRadius.circular(8),
+        splashColor: AppColors.primary.withValues(alpha: 0.1),
+        highlightColor: AppColors.primary.withValues(alpha: 0.05),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Icon(
+            icon,
+            size: 26,
+            color: iconColor,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildChatList(BuildContext context, ChatListState state, int? currentUserId) {
+  Widget _buildChatList(
+    BuildContext context,
+    ChatListState state,
+    int? currentUserId,
+    bool isDarkMode,
+  ) {
+    final borderColor = isDarkMode ? AppColors.borderDark : AppColors.border;
+
     if (state.isLoading && state.rooms.isEmpty) {
       return ListView.separated(
-        padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: 88),
+        padding: const EdgeInsets.only(top: 0, bottom: 88),
         itemCount: 6,
         separatorBuilder: (context, index) => Container(
-          margin: const EdgeInsets.only(left: 76),
+          margin: const EdgeInsets.only(left: 84),
           height: 1,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.border.withValues(alpha: 0.3),
-                AppColors.border.withValues(alpha: 0.1),
-              ],
-            ),
-          ),
+          color: borderColor.withValues(alpha: 0.3),
         ),
         itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
           ),
           child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
         ),
@@ -118,142 +174,120 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
 
     if (state.error != null && state.rooms.isEmpty) {
-      return Center(
+      return _buildErrorState(context, isDarkMode);
+    }
+
+    if (state.rooms.isEmpty) {
+      return _buildEmptyState(context, isDarkMode);
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.only(top: 0, bottom: 88),
+      itemCount: state.rooms.length,
+      separatorBuilder: (context, index) => Container(
+        margin: const EdgeInsets.only(left: 84),
+        height: 1,
+        color: borderColor.withValues(alpha: 0.3),
+      ),
+      itemBuilder: (context, index) {
+        final room = state.rooms[index];
+        return ChatRoomTile(
+          room: room,
+          currentUserId: currentUserId,
+        );
+      },
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, bool isDarkMode) {
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.errorLight,
+                color: AppColors.error.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.error_outline_rounded,
-                size: 48,
-                color: AppColors.error,
+                Icons.wifi_off_rounded,
+                size: 40,
+                color: AppColors.error.withValues(alpha: 0.7),
               ),
             ),
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.lg),
             Text(
               AppLocalizations.of(context).chatLoadError,
               style: AppTypography.body1.copyWith(
-                color: AppColors.textPrimary,
+                color: textPrimaryColor,
                 fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              'Pull down to retry',
+              style: AppTypography.body2.copyWith(
+                color: textSecondaryColor,
               ),
             ),
           ],
         ),
-      );
-    }
-
-    if (state.rooms.isEmpty) {
-      return _buildEmptyState(context);
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.only(top: AppSpacing.xs, bottom: 88),
-      itemCount: state.rooms.length,
-      separatorBuilder: (context, index) => Container(
-        margin: const EdgeInsets.only(left: 76),
-        height: 1,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.border.withValues(alpha: 0.3),
-              AppColors.border.withValues(alpha: 0.1),
-            ],
-          ),
-        ),
       ),
-      itemBuilder: (context, index) {
-        final room = state.rooms[index];
-        return TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 300 + (index * 50)),
-          curve: Curves.easeOutCubic,
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
-            return Opacity(
-              opacity: value,
-              child: Transform.translate(
-                offset: Offset(0, 20 * (1 - value)),
-                child: child,
-              ),
-            );
-          },
-          child: ChatRoomTile(
-            room: room,
-            currentUserId: currentUserId,
-          ),
-        );
-      },
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, bool isDarkMode) {
     final l10n = AppLocalizations.of(context);
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final primaryColor = isDarkMode ? AppColors.primaryLight : AppColors.primary;
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.08),
-                  AppColors.tertiary.withValues(alpha: 0.05),
-                ],
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: primaryColor.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
               ),
-              shape: BoxShape.circle,
+              child: Icon(
+                Icons.chat_bubble_outline_rounded,
+                size: 56,
+                color: primaryColor.withValues(alpha: 0.5),
+              ),
             ),
-            child: Icon(
-              Icons.chat_bubble_outline_rounded,
-              size: 72,
-              color: AppColors.primary.withValues(alpha: 0.4),
+            const SizedBox(height: AppSpacing.xl),
+            Text(
+              l10n.chatListEmpty,
+              style: AppTypography.headline5.copyWith(
+                color: textPrimaryColor,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+              ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.chatListEmpty,
-            style: AppTypography.headline4.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.w700,
-              letterSpacing: -0.3,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-            child: Text(
+            const SizedBox(height: AppSpacing.sm),
+            Text(
               l10n.chatListEmptyHint,
               style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
+                color: textSecondaryColor,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: AppColors.primaryGradient,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Material(
+            const SizedBox(height: AppSpacing.xl),
+            // Start conversation button
+            Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
@@ -261,10 +295,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   _showCreateChatSheet(context);
                 },
                 borderRadius: BorderRadius.circular(12),
-                child: Padding(
+                child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: primaryColor,
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -287,8 +325,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showSearch(BuildContext context) {
+    // TODO: Implement search functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context).searchComingSoon),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

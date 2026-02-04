@@ -15,6 +15,7 @@ _$TokenResponseDtoImpl _$$TokenResponseDtoImplFromJson(
   emailVerified: json['emailVerified'] as bool? ?? false,
   hasAgreedAllMandatory: json['hasAgreedAllMandatory'] as bool? ?? false,
   hasBirthDate: json['hasBirthDate'] as bool? ?? false,
+  isNewUser: json['isNewUser'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$$TokenResponseDtoImplToJson(
@@ -26,4 +27,5 @@ Map<String, dynamic> _$$TokenResponseDtoImplToJson(
   'emailVerified': instance.emailVerified,
   'hasAgreedAllMandatory': instance.hasAgreedAllMandatory,
   'hasBirthDate': instance.hasBirthDate,
+  'isNewUser': instance.isNewUser,
 };

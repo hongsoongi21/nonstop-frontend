@@ -217,4 +217,35 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(Failure.server(message: e.toString(), statusCode: 500));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> leaveRoom(int roomId) async {
+    try {
+      // Unsubscribe from room messages
+      if (_subscriptions.containsKey(roomId)) {
+        _subscriptions[roomId]!();
+        _subscriptions.remove(roomId);
+      }
+      if (_roomStreams.containsKey(roomId)) {
+        _roomStreams[roomId]!.close();
+        _roomStreams.remove(roomId);
+      }
+
+      // Unsubscribe from read receipts
+      if (_readReceiptSubscriptions.containsKey(roomId)) {
+        _readReceiptSubscriptions[roomId]!();
+        _readReceiptSubscriptions.remove(roomId);
+      }
+      if (_readReceiptStreams.containsKey(roomId)) {
+        _readReceiptStreams[roomId]!.close();
+        _readReceiptStreams.remove(roomId);
+      }
+
+      // Call API to leave room
+      await _api.leaveRoom(roomId);
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure.server(message: e.toString(), statusCode: 500));
+    }
+  }
 }

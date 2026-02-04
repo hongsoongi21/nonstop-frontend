@@ -256,6 +256,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get editProfileComingSoon => 'Profilni tahrirlash - tez orada!';
 
   @override
+  String get searchComingSoon => 'Qidiruv - tez orada!';
+
+  @override
   String get filterPrefix => 'Filtr: ';
 
   @override
@@ -526,6 +529,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get emailVerified => 'Email tasdiqlandi';
 
   @override
+  String get oauthEmailVerified => 'Ijtimoiy tarmoq orqali email tasdiqlandi';
+
+  @override
   String get verificationCodeSent => 'Tasdiqlash kodi yuborildi!';
 
   @override
@@ -702,6 +708,12 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get tryDifferentName => 'Boshqa ism bilan qidirib ko\'ring';
+
+  @override
+  String get keepTyping => 'Davom eting';
+
+  @override
+  String get minTwoCharacters => 'Qidirish uchun kamida 2 ta belgi kiriting';
 
   @override
   String get online => 'Onlayn';
@@ -1049,4 +1061,30 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get deleteAccountFailed => 'Hisobni o\'chirib bo\'lmadi';
+
+  @override
+  String get leaveRoom => 'Xonadan chiqish';
+
+  @override
+  String get leaveRoomConfirm =>
+      'Bu chat xonasidan chiqishni xohlaysizmi? Endi bu suhbatdan xabar olmaysiz.';
+
+  @override
+  String get leaveRoomSuccess => 'Chat xonasidan chiqildi';
+
+  @override
+  String get latest => 'Yangi';
+
+  @override
+  String get trending => 'Ommabop';
+
+  @override
+  String get mostCommented => 'Ko\'p muhokama';
+
+  @override
+  String get completeProfile => 'Profilni to\'ldirish';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Iltimos, kerakli ma\'lumotlarni kiriting';
 }

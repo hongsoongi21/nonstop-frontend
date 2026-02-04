@@ -101,6 +101,14 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     );
     return createdRoom;
   }
+
+  /// 채팅방 목록에서 특정 방 제거 (나가기 성공 후 호출)
+  void removeRoom(int roomId) {
+    state = ChatListState(
+      isLoading: false,
+      rooms: state.rooms.where((r) => r.id != roomId).toList(),
+    );
+  }
 }
 
 final chatListProvider = StateNotifierProvider<ChatListNotifier, ChatListState>(
@@ -385,6 +393,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         ).toList(),
       );
     }
+  }
+
+  /// 채팅방 나가기
+  Future<bool> leaveRoom() async {
+    final result = await _repository.leaveRoom(roomId);
+    return result.fold(
+      (failure) => false,
+      (_) => true,
+    );
   }
 
   @override

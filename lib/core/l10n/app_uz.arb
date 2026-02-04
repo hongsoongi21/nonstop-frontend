@@ -375,6 +375,10 @@
   "@emailVerified": {
     "description": "emailVerified label/message"
   },
+  "oauthEmailVerified": "Ijtimoiy tarmoq orqali email tasdiqlandi",
+  "@oauthEmailVerified": {
+    "description": "Message shown when OAuth email is auto-verified"
+  },
   "verificationCodeSent": "Tasdiqlash kodi yuborildi!",
   "@verificationCodeSent": {
     "description": "verificationCodeSent label/message"
@@ -681,6 +685,10 @@
   "@editProfileComingSoon": {
     "description": "Edit profile coming soon message"
   },
+  "searchComingSoon": "Qidiruv - tez orada!",
+  "@searchComingSoon": {
+    "description": "Search coming soon message"
+  },
   "filterPrefix": "Filtr: ",
   "@filterPrefix": {
     "description": "Filter prefix for filter tab change"
@@ -781,6 +789,14 @@
   "tryDifferentName": "Boshqa ism bilan qidirib ko'ring",
   "@tryDifferentName": {
     "description": "Empty state subtitle for no search results"
+  },
+  "keepTyping": "Davom eting",
+  "@keepTyping": {
+    "description": "Empty state title when search query is too short"
+  },
+  "minTwoCharacters": "Qidirish uchun kamida 2 ta belgi kiriting",
+  "@minTwoCharacters": {
+    "description": "Empty state subtitle when search query is too short"
   },
   "online": "Onlayn",
   "@online": {
@@ -934,5 +950,37 @@
   "deleteAccountFailed": "Hisobni o'chirib bo'lmadi",
   "@deleteAccountFailed": {
     "description": "Delete account failed message"
+  },
+  "leaveRoom": "Xonadan chiqish",
+  "@leaveRoom": {
+    "description": "Leave chat room button text"
+  },
+  "leaveRoomConfirm": "Bu chat xonasidan chiqishni xohlaysizmi? Endi bu suhbatdan xabar olmaysiz.",
+  "@leaveRoomConfirm": {
+    "description": "Leave room confirmation message"
+  },
+  "leaveRoomSuccess": "Chat xonasidan chiqildi",
+  "@leaveRoomSuccess": {
+    "description": "Leave room success message"
+  },
+  "latest": "Yangi",
+  "@latest": {
+    "description": "Latest filter option for board posts"
+  },
+  "trending": "Ommabop",
+  "@trending": {
+    "description": "Trending filter option for board posts"
+  },
+  "mostCommented": "Ko'p muhokama",
+  "@mostCommented": {
+    "description": "Most commented filter option for board posts"
+  },
+  "completeProfile": "Profilni to'ldirish",
+  "@completeProfile": {
+    "description": "Title for incomplete profile completion screen"
+  },
+  "completeProfileSubtitle": "Iltimos, kerakli ma'lumotlarni kiriting",
+  "@completeProfileSubtitle": {
+    "description": "Subtitle for incomplete profile completion screen"
   }
 }

@@ -251,6 +251,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfileComingSoon => 'Edit Profile - coming soon!';
 
   @override
+  String get searchComingSoon => 'Search - coming soon!';
+
+  @override
   String get filterPrefix => 'Filter: ';
 
   @override
@@ -517,6 +520,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get emailVerified => 'Email verified';
 
   @override
+  String get oauthEmailVerified => 'Email verified via social login';
+
+  @override
   String get verificationCodeSent => 'Verification code sent!';
 
   @override
@@ -691,6 +697,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryDifferentName => 'Try a different name';
+
+  @override
+  String get keepTyping => 'Keep typing';
+
+  @override
+  String get minTwoCharacters => 'Enter at least 2 characters to search';
 
   @override
   String get online => 'Online';
@@ -1037,4 +1049,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteAccountFailed => 'Failed to delete account';
+
+  @override
+  String get leaveRoom => 'Leave Room';
+
+  @override
+  String get leaveRoomConfirm =>
+      'Are you sure you want to leave this chat room? You will no longer receive messages from this conversation.';
+
+  @override
+  String get leaveRoomSuccess => 'Left the chat room';
+
+  @override
+  String get latest => 'Latest';
+
+  @override
+  String get trending => 'Trending';
+
+  @override
+  String get mostCommented => 'Most Discussed';
+
+  @override
+  String get completeProfile => 'Complete Profile';
+
+  @override
+  String get completeProfileSubtitle =>
+      'Please fill in the required information';
 }

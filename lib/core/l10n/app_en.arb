@@ -319,6 +319,10 @@
   "@editProfileComingSoon": {
     "description": "Edit profile coming soon message"
   },
+  "searchComingSoon": "Search - coming soon!",
+  "@searchComingSoon": {
+    "description": "Search coming soon message"
+  },
   "filterPrefix": "Filter: ",
   "@filterPrefix": {
     "description": "Filter prefix for filter tab change"
@@ -685,6 +689,10 @@
   "@emailVerified": {
     "description": "emailVerified label/message"
   },
+  "oauthEmailVerified": "Email verified via social login",
+  "@oauthEmailVerified": {
+    "description": "Message shown when OAuth email is auto-verified"
+  },
   "verificationCodeSent": "Verification code sent!",
   "@verificationCodeSent": {
     "description": "verificationCodeSent label/message"
@@ -923,6 +931,14 @@
   "tryDifferentName": "Try a different name",
   "@tryDifferentName": {
     "description": "Empty state subtitle for no search results"
+  },
+  "keepTyping": "Keep typing",
+  "@keepTyping": {
+    "description": "Empty state title when search query is too short"
+  },
+  "minTwoCharacters": "Enter at least 2 characters to search",
+  "@minTwoCharacters": {
+    "description": "Empty state subtitle when search query is too short"
   },
   "online": "Online",
   "@online": {
@@ -1380,5 +1396,37 @@
   "deleteAccountFailed": "Failed to delete account",
   "@deleteAccountFailed": {
     "description": "Delete account failed message"
+  },
+  "leaveRoom": "Leave Room",
+  "@leaveRoom": {
+    "description": "Leave chat room button text"
+  },
+  "leaveRoomConfirm": "Are you sure you want to leave this chat room? You will no longer receive messages from this conversation.",
+  "@leaveRoomConfirm": {
+    "description": "Leave room confirmation message"
+  },
+  "leaveRoomSuccess": "Left the chat room",
+  "@leaveRoomSuccess": {
+    "description": "Leave room success message"
+  },
+  "latest": "Latest",
+  "@latest": {
+    "description": "Latest filter option for board posts"
+  },
+  "trending": "Trending",
+  "@trending": {
+    "description": "Trending filter option for board posts"
+  },
+  "mostCommented": "Most Discussed",
+  "@mostCommented": {
+    "description": "Most commented filter option for board posts"
+  },
+  "completeProfile": "Complete Profile",
+  "@completeProfile": {
+    "description": "Title for incomplete profile completion screen"
+  },
+  "completeProfileSubtitle": "Please fill in the required information",
+  "@completeProfileSubtitle": {
+    "description": "Subtitle for incomplete profile completion screen"
   }
 }

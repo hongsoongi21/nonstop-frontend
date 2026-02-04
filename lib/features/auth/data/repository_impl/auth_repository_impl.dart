@@ -33,12 +33,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> signInWithGoogle({
+  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({
     required String idToken,
   }) async {
     try {
-      final user = await _authApi.signInWithGoogle(idToken: idToken);
-      return Right(user);
+      final result = await _authApi.signInWithGoogle(idToken: idToken);
+      return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
     } on NetworkException {
@@ -51,18 +51,46 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> signInWithApple({
+  Future<Either<Failure, OAuthLoginResult>> signInWithApple({
     required String idToken,
     String? authorizationCode,
     String? firstName,
     String? lastName,
   }) async {
     try {
-      final user = await _authApi.signInWithApple(
+      final result = await _authApi.signInWithApple(
         idToken: idToken,
         authorizationCode: authorizationCode,
         firstName: firstName,
         lastName: lastName,
+      );
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
+  }) async {
+    try {
+      final user = await _authApi.completeOAuthSignup(
+        nickname: nickname,
+        birthDate: birthDate,
+        universityId: universityId,
+        majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
       );
       return Right(user);
     } on ServerException catch (e) {

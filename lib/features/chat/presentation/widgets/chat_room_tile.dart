@@ -1,11 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
+import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 
+/// Clean, minimal chat room tile following Swiss design principles
+/// - Clear visual hierarchy through typography
+/// - Restrained use of color (only for status indicators)
+/// - Generous whitespace
+/// - No unnecessary shadows or gradients
 class ChatRoomTile extends StatelessWidget {
   final ChatRoom room;
   final int? currentUserId;
@@ -20,36 +26,29 @@ class ChatRoomTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final hasUnread = room.unreadCount > 0;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}'),
+        splashColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)
+            .withValues(alpha: 0.08),
+        highlightColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)
+            .withValues(alpha: 0.04),
         child: Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 14,
-          ),
-          decoration: BoxDecoration(
-            gradient: hasUnread
-                ? LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      AppColors.primary.withValues(alpha: 0.03),
-                      Colors.transparent,
-                    ],
-                  )
-                : null,
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md + 2,
           ),
           child: Row(
             children: [
-              _buildAvatar(),
-              const SizedBox(width: 14),
-              Expanded(child: _buildContent()),
-              const SizedBox(width: 10),
-              _buildTrailing(context),
+              _buildAvatar(context),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(child: _buildContent(context, hasUnread)),
+              const SizedBox(width: AppSpacing.md),
+              _buildTrailing(context, hasUnread),
             ],
           ),
         ),
@@ -57,83 +56,61 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final isGroup = room.type == ChatRoomType.group;
     final displayName = room.name ?? 'Chat';
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
-    final hasUnread = room.unreadCount > 0;
+
+    // Determine avatar image URL
+    final imageUrl = room.imageUrl;
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+
+    // Avatar colors based on name hash for consistency
+    final avatarColor = _getAvatarColor(displayName);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
+        // Main avatar
         Container(
-          width: 56,
-          height: 56,
+          width: 52,
+          height: 52,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: _getAvatarGradient(displayName),
+            color: hasImage ? null : avatarColor.withValues(alpha: 0.15),
+            border: Border.all(
+              color: isDarkMode
+                  ? AppColors.borderDark.withValues(alpha: 0.3)
+                  : AppColors.border.withValues(alpha: 0.5),
+              width: 1,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: _getAvatarGradient(displayName)[0].withValues(alpha: 0.3),
-                blurRadius: hasUnread ? 12 : 8,
-                offset: const Offset(0, 3),
-              ),
-            ],
           ),
-          child: Center(
-            child: Text(
-              initial,
-              style: AppTypography.headline4.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-                fontSize: 22,
-                letterSpacing: 0,
-              ),
-            ),
+          child: ClipOval(
+            child: hasImage
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => _buildInitialAvatar(
+                      initial,
+                      avatarColor,
+                      isDarkMode,
+                    ),
+                    errorWidget: (context, url, error) => _buildInitialAvatar(
+                      initial,
+                      avatarColor,
+                      isDarkMode,
+                    ),
+                  )
+                : _buildInitialAvatar(initial, avatarColor, isDarkMode),
           ),
         ),
-        if (isGroup)
+
+        // Online indicator - positioned at bottom-left of avatar
+        if (!isGroup)
           Positioned(
-            right: -1,
-            bottom: -1,
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: AppColors.primaryGradient,
-                ),
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.surface,
-                  width: 2.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.people_rounded,
-                size: 12,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        // Online indicator (example - would need actual online status)
-        if (!isGroup && hasUnread)
-          Positioned(
-            right: 2,
-            top: 2,
+            left: 0,
+            bottom: 0,
             child: Container(
               width: 14,
               height: 14,
@@ -141,16 +118,33 @@ class ChatRoomTile extends StatelessWidget {
                 color: AppColors.chatOnline,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.surface,
+                  color: isDarkMode ? AppColors.backgroundDark : AppColors.background,
                   width: 2.5,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.chatOnline.withValues(alpha: 0.5),
-                    blurRadius: 4,
-                    spreadRadius: 1,
-                  ),
-                ],
+              ),
+            ),
+          ),
+
+        // Group indicator
+        if (isGroup)
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: isDarkMode ? AppColors.primaryLight : AppColors.primary,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isDarkMode ? AppColors.backgroundDark : AppColors.background,
+                  width: 2,
+                ),
+              ),
+              child: const Icon(
+                Icons.people_rounded,
+                size: 11,
+                color: Colors.white,
               ),
             ),
           ),
@@ -158,59 +152,71 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildInitialAvatar(String initial, Color color, bool isDarkMode) {
+    return Container(
+      color: color.withValues(alpha: isDarkMode ? 0.2 : 0.12),
+      child: Center(
+        child: Text(
+          initial,
+          style: AppTypography.headline5.copyWith(
+            color: color,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, bool hasUnread) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final displayName = room.name ?? 'Chat';
     final hasLastMessage = room.lastMessage != null;
     final lastMessageContent = hasLastMessage ? room.lastMessage!.content : '';
-    final isGroup = room.type == ChatRoomType.group;
-    final hasUnread = room.unreadCount > 0;
 
-    // For group chats, show sender prefix
-    String messagePreview = lastMessageContent;
-    if (isGroup && hasLastMessage && room.lastMessage!.senderId != currentUserId) {
-      // Ideally we'd show sender name, but we only have ID
-      // For now, just show the message with a subtle indicator
-      messagePreview = lastMessageContent;
-    }
+    final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+    final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+    final textHintColor = isDarkMode ? AppColors.textTertiaryDark : AppColors.textHint;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        // Room name with bold geometric styling
+        // Username - bold, clear hierarchy
         Text(
           displayName,
           style: AppTypography.body1.copyWith(
-            fontWeight: hasUnread ? FontWeight.w800 : FontWeight.w700,
-            fontSize: 17,
-            letterSpacing: -0.4,
+            fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+            fontSize: 16,
+            letterSpacing: -0.2,
             height: 1.2,
-            color: hasUnread ? AppColors.textPrimary : AppColors.textPrimary,
+            color: textPrimaryColor,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
 
-        const SizedBox(height: 5),
+        const SizedBox(height: 4),
 
-        // Last message preview
+        // Message preview - single line, muted
         if (hasLastMessage)
           Text(
-            messagePreview,
+            lastMessageContent,
             style: AppTypography.body2.copyWith(
-              color: hasUnread ? AppColors.textSecondary : AppColors.textTertiary,
-              fontSize: 14.5,
+              color: hasUnread ? textSecondaryColor : textHintColor,
+              fontSize: 14,
               height: 1.3,
               fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400,
-              letterSpacing: 0.1,
+              letterSpacing: 0,
             ),
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           )
         else
           Text(
             'No messages yet',
             style: AppTypography.body2.copyWith(
-              color: AppColors.textHint,
+              color: textHintColor,
               fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
@@ -219,72 +225,42 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 
-  Widget _buildTrailing(BuildContext context) {
-    final hasUnread = room.unreadCount > 0;
+  Widget _buildTrailing(BuildContext context, bool hasUnread) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final timestamp = room.lastMessage?.sentAt ?? room.updatedAt;
+    final textHintColor = isDarkMode ? AppColors.textTertiaryDark : AppColors.textHint;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Timestamp with geometric styling
+        // Time - simple, clean text
         if (timestamp != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              gradient: hasUnread
-                  ? LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppColors.primary.withValues(alpha: 0.12),
-                        AppColors.primary.withValues(alpha: 0.06),
-                      ],
-                    )
-                  : null,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              _formatTimestamp(timestamp),
-              style: AppTypography.caption.copyWith(
-                color: hasUnread ? AppColors.primary : AppColors.textTertiary,
-                fontSize: 12,
-                fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w500,
-                letterSpacing: 0.3,
-              ),
+          Text(
+            _formatTimeAgo(timestamp),
+            style: AppTypography.caption.copyWith(
+              color: textHintColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              letterSpacing: 0,
             ),
           ),
 
         if (hasUnread) ...[
-          const SizedBox(height: 8),
-          // Unread badge with gradient and glow
+          const SizedBox(height: 6),
+          // Unread badge - clean blue circle
           Container(
             padding: EdgeInsets.symmetric(
-              horizontal: room.unreadCount > 99 ? 7 : 8,
-              vertical: 5,
-            ),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFF6B6B),
-                  Color(0xFFEF4444),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFEF4444).withValues(alpha: 0.5),
-                  blurRadius: 10,
-                  offset: const Offset(0, 3),
-                  spreadRadius: 1,
-                ),
-              ],
+              horizontal: room.unreadCount > 9 ? 6 : 0,
+              vertical: 0,
             ),
             constraints: const BoxConstraints(
-              minWidth: 24,
-              minHeight: 24,
+              minWidth: 22,
+              minHeight: 22,
+            ),
+            decoration: BoxDecoration(
+              color: isDarkMode ? AppColors.primaryLight : AppColors.primary,
+              borderRadius: BorderRadius.circular(11),
             ),
             child: Center(
               child: Text(
@@ -292,9 +268,8 @@ class ChatRoomTile extends StatelessWidget {
                 style: AppTypography.caption.copyWith(
                   color: Colors.white,
                   fontSize: 12,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   height: 1.0,
-                  letterSpacing: 0.2,
                 ),
               ),
             ),
@@ -304,36 +279,39 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 
-  String _formatTimestamp(DateTime dateTime) {
+  /// Format timestamp as "Xm ago", "Xh ago", "Xd ago"
+  String _formatTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(const Duration(days: 1));
-    final messageDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final difference = now.difference(dateTime);
 
-    if (messageDate == today) {
-      return DateFormat.Hm().format(dateTime); // 14:30
-    } else if (messageDate == yesterday) {
-      return '어제';
-    } else if (now.difference(dateTime).inDays < 7) {
-      return DateFormat.E('ko').format(dateTime); // 월, 화, etc
+    if (difference.inMinutes < 1) {
+      return 'now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inDays < 30) {
+      return '${(difference.inDays / 7).floor()}w ago';
     } else {
-      return DateFormat.MMMd('ko').format(dateTime); // 1월 28일
+      return '${(difference.inDays / 30).floor()}mo ago';
     }
   }
 
-  List<Color> _getAvatarGradient(String name) {
-    // Generate consistent gradient based on name hash
+  /// Generate consistent color based on name
+  Color _getAvatarColor(String name) {
     final hash = name.hashCode.abs();
-    final gradients = [
-      [const Color(0xFF667EEA), const Color(0xFF764BA2)],
-      [const Color(0xFFF093FB), const Color(0xFFF5576C)],
-      [const Color(0xFF4FACFE), const Color(0xFF00F2FE)],
-      [const Color(0xFF43E97B), const Color(0xFF38F9D7)],
-      [const Color(0xFFFA709A), const Color(0xFFFEE140)],
-      [const Color(0xFF30CFD0), const Color(0xFF330867)],
-      [const Color(0xFFA8EDEA), const Color(0xFFFED6E3)],
-      [const Color(0xFFFF9A9E), const Color(0xFFFECAB5)],
+    final colors = [
+      const Color(0xFF6366F1), // Indigo
+      const Color(0xFF8B5CF6), // Violet
+      const Color(0xFFEC4899), // Pink
+      const Color(0xFFF59E0B), // Amber
+      const Color(0xFF10B981), // Emerald
+      const Color(0xFF06B6D4), // Cyan
+      const Color(0xFF3B82F6), // Blue
+      const Color(0xFFEF4444), // Red
     ];
-    return gradients[hash % gradients.length];
+    return colors[hash % colors.length];
   }
 }

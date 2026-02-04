@@ -35,13 +35,17 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   @override
   void initState() {
     super.initState();
-    // Pre-select board from state if available
+    // Pre-select board from state if available, or initialize if needed
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(boardProvider);
       if (state.selectedBoard != null) {
         setState(() {
           _selectedBoard = state.selectedBoard;
         });
+      }
+      // If boards are empty and not loading, trigger initialization
+      if (state.boards.isEmpty && !state.isLoading && state.error == null) {
+        ref.read(boardProvider.notifier).initialize();
       }
     });
   }
@@ -218,6 +222,9 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
 
   Widget _buildBoardSelector(BuildContext context, List<Board> boards) {
     final l10n = AppLocalizations.of(context)!;
+    final boardState = ref.watch(boardProvider);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return GlassContainer(
       borderColor: Colors.transparent,
       child: Column(
@@ -231,8 +238,60 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          if (boards.isEmpty)
-            Text(l10n.noBoardsAvailable)
+          if (boardState.isLoading)
+            Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  l10n.loading,
+                  style: AppTypography.body2.copyWith(
+                    color: isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            )
+          else if (boardState.error != null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.errorOccurred,
+                  style: AppTypography.body2.copyWith(color: AppColors.error),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextButton.icon(
+                  onPressed: () => ref.read(boardProvider.notifier).initialize(),
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: Text(l10n.retry),
+                ),
+              ],
+            )
+          else if (boards.isEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.noBoardsAvailable,
+                  style: AppTypography.body2.copyWith(
+                    color: isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextButton.icon(
+                  onPressed: () => ref.read(boardProvider.notifier).initialize(),
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: Text(l10n.retry),
+                ),
+              ],
+            )
           else
             Wrap(
               spacing: AppSpacing.sm,
@@ -247,19 +306,19 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       setState(() => _selectedBoard = board);
                     }
                   },
-                  backgroundColor: AppColors.surface.withValues(alpha: 0.5),
+                  backgroundColor: (isDarkMode ? AppColors.surfaceDark : AppColors.surface).withValues(alpha: 0.5),
                   selectedColor: AppColors.primary.withValues(alpha: 0.15),
                   checkmarkColor: AppColors.primary,
                   labelStyle: AppTypography.body2.copyWith(
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : (isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary),
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected ? AppColors.primary : (isDarkMode ? AppColors.borderDark : AppColors.border),
                       width: isSelected ? 2 : 1,
                     ),
                   ),

@@ -1,3 +1,4 @@
+import 'package:dice_bear/dice_bear.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -419,17 +420,19 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           },
         ),
       );
-      // Add nested replies
+      // Add nested replies (동일 선상에 배치, 부모 닉네임 멘션 표시)
       if (comment.replies.isNotEmpty) {
+        // 부모 댓글 닉네임 (익명이면 "익명" 표시)
+        final parentNickname = comment.isWriterAnonymous
+            ? AppLocalizations.of(context)!.anonymous
+            : comment.writerNickname;
+
         for (var reply in comment.replies) {
           list.add(
             _CommentItem(
               comment: reply,
               isReply: true,
-              onReply: () {
-                setState(() => _replyingToId = reply.id);
-                _commentFocusNode.requestFocus();
-              },
+              parentNickname: parentNickname,
               onLike: () => notifier.toggleCommentLike(reply.id),
               onEdit: () => _showEditCommentDialog(reply, notifier),
               onDelete: () => _showDeleteCommentDialog(reply.id, notifier),
@@ -448,41 +451,63 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return list;
   }
 
+  /// 게시글 작성자 아바타 - 익명은 DiceBear, 일반은 이니셜
+  Widget _buildPostAuthorAvatar(PostEntity post) {
+    if (post.isWriterAnonymous) {
+      // 익명 유저: DiceBear 아바타 (게시글 ID를 seed로 사용)
+      final avatar = DiceBearBuilder(
+        seed: 'post-anon-${post.id}',
+        sprite: DiceBearSprite.funEmoji,
+      ).build();
+
+      return ClipOval(
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: avatar.toImage(),
+        ),
+      );
+    }
+
+    // 일반 유저: 이니셜 아바타
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primary.withValues(alpha: 0.12),
+            AppColors.primary.withValues(alpha: 0.06),
+          ],
+        ),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          post.writerNickname.isNotEmpty
+              ? post.writerNickname[0].toUpperCase()
+              : '?',
+          style: AppTypography.headline5.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildPostHeader(BuildContext context, PostEntity post) {
     final l10n = AppLocalizations.of(context)!;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary.withValues(alpha: 0.12),
-                AppColors.primary.withValues(alpha: 0.06),
-              ],
-            ),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.08),
-              width: 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              post.writerNickname.isNotEmpty
-                  ? post.writerNickname[0].toUpperCase()
-                  : '?',
-              style: AppTypography.headline5.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ),
+        _buildPostAuthorAvatar(post),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -940,6 +965,7 @@ class _ActionButton extends StatelessWidget {
 class _CommentItem extends StatelessWidget {
   final CommentEntity comment;
   final bool isReply;
+  final String? parentNickname; // 대댓글인 경우 부모 댓글 닉네임
   final VoidCallback? onReply;
   final VoidCallback? onLike;
   final VoidCallback? onEdit;
@@ -949,6 +975,7 @@ class _CommentItem extends StatelessWidget {
   const _CommentItem({
     required this.comment,
     this.isReply = false,
+    this.parentNickname,
     this.onReply,
     this.onLike,
     this.onEdit,
@@ -960,41 +987,11 @@ class _CommentItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: EdgeInsets.only(left: isReply ? 48.0 : 0, bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: isReply ? 32 : 36,
-            height: isReply ? 32 : 36,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.surfaceVariant,
-                  AppColors.surfaceVariant.withValues(alpha: 0.6),
-                ],
-              ),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.5),
-                width: 1,
-              ),
-            ),
-            child: Center(
-              child: Text(
-                comment.writerNickname.isNotEmpty
-                    ? comment.writerNickname[0].toUpperCase()
-                    : '?',
-                style: AppTypography.body2.copyWith(
-                  fontSize: isReply ? 13 : 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ),
-          ),
+          _buildAvatar(),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -1017,16 +1014,39 @@ class _CommentItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(
-                              comment.isWriterAnonymous
-                                  ? l10n.anonymous
-                                  : comment.writerNickname,
-                              style: AppTypography.body2.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textPrimary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    comment.isWriterAnonymous
+                                        ? l10n.anonymous
+                                        : comment.writerNickname,
+                                    style: AppTypography.body2.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                // 대댓글인 경우 부모 댓글 멘션 표시
+                                if (isReply && parentNickname != null) ...[
+                                  const SizedBox(width: 6),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 12,
+                                    color: AppColors.textTertiary,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '@$parentNickname',
+                                    style: AppTypography.caption.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                           ),
                           _CommentMenu(
@@ -1059,6 +1079,58 @@ class _CommentItem extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// 아바타 위젯 생성 - 익명 유저는 DiceBear, 일반 유저는 이니셜
+  Widget _buildAvatar() {
+    if (comment.isWriterAnonymous) {
+      // 익명 유저: DiceBear 아바타 사용 (댓글 ID를 seed로 사용하여 일관성 유지)
+      final avatar = DiceBearBuilder(
+        seed: 'anon-${comment.id}',
+        sprite: DiceBearSprite.funEmoji,
+      ).build();
+
+      return ClipOval(
+        child: SizedBox(
+          width: 36,
+          height: 36,
+          child: avatar.toImage(),
+        ),
+      );
+    }
+
+    // 일반 유저: 이니셜 아바타
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.surfaceVariant,
+            AppColors.surfaceVariant.withValues(alpha: 0.6),
+          ],
+        ),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.border.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Text(
+          comment.writerNickname.isNotEmpty
+              ? comment.writerNickname[0].toUpperCase()
+              : '?',
+          style: AppTypography.body2.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textSecondary,
+          ),
+        ),
       ),
     );
   }

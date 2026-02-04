@@ -27,6 +27,7 @@ mixin _$TokenResponseDto {
   bool get emailVerified => throw _privateConstructorUsedError;
   bool get hasAgreedAllMandatory => throw _privateConstructorUsedError;
   bool get hasBirthDate => throw _privateConstructorUsedError;
+  bool get isNewUser => throw _privateConstructorUsedError;
 
   /// Serializes this TokenResponseDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +53,7 @@ abstract class $TokenResponseDtoCopyWith<$Res> {
     bool emailVerified,
     bool hasAgreedAllMandatory,
     bool hasBirthDate,
+    bool isNewUser,
   });
 }
 
@@ -76,6 +78,7 @@ class _$TokenResponseDtoCopyWithImpl<$Res, $Val extends TokenResponseDto>
     Object? emailVerified = null,
     Object? hasAgreedAllMandatory = null,
     Object? hasBirthDate = null,
+    Object? isNewUser = null,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +106,10 @@ class _$TokenResponseDtoCopyWithImpl<$Res, $Val extends TokenResponseDto>
                 ? _value.hasBirthDate
                 : hasBirthDate // ignore: cast_nullable_to_non_nullable
                       as bool,
+            isNewUser: null == isNewUser
+                ? _value.isNewUser
+                : isNewUser // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -125,6 +132,7 @@ abstract class _$$TokenResponseDtoImplCopyWith<$Res>
     bool emailVerified,
     bool hasAgreedAllMandatory,
     bool hasBirthDate,
+    bool isNewUser,
   });
 }
 
@@ -148,6 +156,7 @@ class __$$TokenResponseDtoImplCopyWithImpl<$Res>
     Object? emailVerified = null,
     Object? hasAgreedAllMandatory = null,
     Object? hasBirthDate = null,
+    Object? isNewUser = null,
   }) {
     return _then(
       _$TokenResponseDtoImpl(
@@ -175,6 +184,10 @@ class __$$TokenResponseDtoImplCopyWithImpl<$Res>
             ? _value.hasBirthDate
             : hasBirthDate // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isNewUser: null == isNewUser
+            ? _value.isNewUser
+            : isNewUser // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -190,6 +203,7 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
     this.emailVerified = false,
     this.hasAgreedAllMandatory = false,
     this.hasBirthDate = false,
+    this.isNewUser = false,
   });
 
   factory _$TokenResponseDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -210,10 +224,13 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
   @override
   @JsonKey()
   final bool hasBirthDate;
+  @override
+  @JsonKey()
+  final bool isNewUser;
 
   @override
   String toString() {
-    return 'TokenResponseDto(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, emailVerified: $emailVerified, hasAgreedAllMandatory: $hasAgreedAllMandatory, hasBirthDate: $hasBirthDate)';
+    return 'TokenResponseDto(accessToken: $accessToken, refreshToken: $refreshToken, userId: $userId, emailVerified: $emailVerified, hasAgreedAllMandatory: $hasAgreedAllMandatory, hasBirthDate: $hasBirthDate, isNewUser: $isNewUser)';
   }
 
   @override
@@ -231,7 +248,9 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
             (identical(other.hasAgreedAllMandatory, hasAgreedAllMandatory) ||
                 other.hasAgreedAllMandatory == hasAgreedAllMandatory) &&
             (identical(other.hasBirthDate, hasBirthDate) ||
-                other.hasBirthDate == hasBirthDate));
+                other.hasBirthDate == hasBirthDate) &&
+            (identical(other.isNewUser, isNewUser) ||
+                other.isNewUser == isNewUser));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -244,6 +263,7 @@ class _$TokenResponseDtoImpl implements _TokenResponseDto {
     emailVerified,
     hasAgreedAllMandatory,
     hasBirthDate,
+    isNewUser,
   );
 
   /// Create a copy of TokenResponseDto
@@ -271,6 +291,7 @@ abstract class _TokenResponseDto implements TokenResponseDto {
     final bool emailVerified,
     final bool hasAgreedAllMandatory,
     final bool hasBirthDate,
+    final bool isNewUser,
   }) = _$TokenResponseDtoImpl;
 
   factory _TokenResponseDto.fromJson(Map<String, dynamic> json) =
@@ -288,6 +309,8 @@ abstract class _TokenResponseDto implements TokenResponseDto {
   bool get hasAgreedAllMandatory;
   @override
   bool get hasBirthDate;
+  @override
+  bool get isNewUser;
 
   /// Create a copy of TokenResponseDto
   /// with the given fields replaced by the non-null parameter values.

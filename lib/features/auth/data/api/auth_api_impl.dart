@@ -30,6 +30,9 @@ class AuthApiImpl implements AuthApi {
   final _authStateController = StreamController<User?>.broadcast();
   // 인증 확인을 위해 마지막으로 인증번호를 보낸 이메일을 저장합니다.
   String? _lastVerificationEmail;
+  // OAuth 가입 시 사용할 이메일 (signInWithGoogle/Apple에서 설정됨)
+  String? _oauthEmail;
+  String? _oauthProvider;
   final _googleSignIn = GoogleSignIn.instance;
 
   AuthApiImpl(this._dioClient, this._secureStorageService);
@@ -73,7 +76,7 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Future<User> signInWithGoogle({required String idToken}) async {
+  Future<OAuthLoginResult> signInWithGoogle({required String idToken}) async {
     try {
       final response = await _dioClient.post(
         '/api/v1/auth/google',
@@ -89,14 +92,52 @@ class AuthApiImpl implements AuthApi {
           AppLogger.d('[NONSTOP] 🔑 Google Login Tokens Received:');
           AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
           AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+          AppLogger.d('[NONSTOP]   isNewUser: ${tokenData.isNewUser}');
         }
 
         // 보안 저장소에 토큰 저장
         await _secureStorageService.saveAccessToken(tokenData.accessToken);
         await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
 
-        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
-        return await _fetchAndEmitUserInfo();
+        // 토큰에서 이메일 추출
+        final email = apiResponse['data']['email'] as String? ?? '';
+        final displayName = apiResponse['data']['displayName'] as String?;
+
+        // 신규 사용자인 경우 회원가입 화면으로 이동하도록 OAuthNewUser 반환
+        if (tokenData.isNewUser) {
+          _oauthEmail = email;
+          _oauthProvider = 'google';
+
+          return OAuthNewUser(OAuthSignupData(
+            email: email,
+            displayName: displayName,
+            provider: 'google',
+            accessToken: tokenData.accessToken,
+            refreshToken: tokenData.refreshToken,
+          ));
+        }
+
+        // 기존 사용자지만 필수 정보가 누락된 경우 (생년월일 또는 필수 약관 동의)
+        if (!tokenData.hasBirthDate || !tokenData.hasAgreedAllMandatory) {
+          _oauthEmail = email;
+          _oauthProvider = 'google';
+
+          return OAuthIncompleteUser(
+            signupData: OAuthSignupData(
+              email: email,
+              displayName: displayName,
+              provider: 'google',
+              accessToken: tokenData.accessToken,
+              refreshToken: tokenData.refreshToken,
+            ),
+            hasBirthDate: tokenData.hasBirthDate,
+            hasAgreedAllMandatory: tokenData.hasAgreedAllMandatory,
+          );
+        }
+
+        // 기존 사용자 (프로필 완성됨): 내 정보를 조회하여 반환
+        final user = await _fetchAndEmitUserInfo();
+        return OAuthExistingUser(user);
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '구글 로그인에 실패했습니다.',
@@ -109,7 +150,7 @@ class AuthApiImpl implements AuthApi {
   }
 
   @override
-  Future<User> signInWithApple({
+  Future<OAuthLoginResult> signInWithApple({
     required String idToken,
     String? authorizationCode,
     String? firstName,
@@ -135,14 +176,58 @@ class AuthApiImpl implements AuthApi {
           AppLogger.d('[NONSTOP] 🍎 Apple Login Tokens Received:');
           AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
           AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
+          AppLogger.d('[NONSTOP]   isNewUser: ${tokenData.isNewUser}');
         }
 
         // 보안 저장소에 토큰 저장
         await _secureStorageService.saveAccessToken(tokenData.accessToken);
         await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
 
-        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
-        return await _fetchAndEmitUserInfo();
+        // 토큰에서 이메일 추출
+        final email = apiResponse['data']['email'] as String? ?? '';
+        // Apple은 최초 로그인 시에만 이름을 제공
+        String? displayName;
+        if (firstName != null || lastName != null) {
+          displayName = [firstName, lastName].where((e) => e != null).join(' ');
+        } else {
+          displayName = apiResponse['data']['displayName'] as String?;
+        }
+
+        // 신규 사용자인 경우 회원가입 화면으로 이동하도록 OAuthNewUser 반환
+        if (tokenData.isNewUser) {
+          _oauthEmail = email;
+          _oauthProvider = 'apple';
+
+          return OAuthNewUser(OAuthSignupData(
+            email: email,
+            displayName: displayName,
+            provider: 'apple',
+            accessToken: tokenData.accessToken,
+            refreshToken: tokenData.refreshToken,
+          ));
+        }
+
+        // 기존 사용자지만 필수 정보가 누락된 경우 (생년월일 또는 필수 약관 동의)
+        if (!tokenData.hasBirthDate || !tokenData.hasAgreedAllMandatory) {
+          _oauthEmail = email;
+          _oauthProvider = 'apple';
+
+          return OAuthIncompleteUser(
+            signupData: OAuthSignupData(
+              email: email,
+              displayName: displayName,
+              provider: 'apple',
+              accessToken: tokenData.accessToken,
+              refreshToken: tokenData.refreshToken,
+            ),
+            hasBirthDate: tokenData.hasBirthDate,
+            hasAgreedAllMandatory: tokenData.hasAgreedAllMandatory,
+          );
+        }
+
+        // 기존 사용자 (프로필 완성됨): 내 정보를 조회하여 반환
+        final user = await _fetchAndEmitUserInfo();
+        return OAuthExistingUser(user);
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '애플 로그인에 실패했습니다.',
@@ -192,6 +277,48 @@ class AuthApiImpl implements AuthApi {
       } else {
         throw ServerException(
           message: apiResponse['message'] ?? '회원가입에 실패했습니다.',
+          statusCode: response.statusCode ?? 500,
+        );
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<User> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
+  }) async {
+    try {
+      // Format birthDate as "YYYY-MM-DD"
+      final birthDateString =
+          '${birthDate.year.toString().padLeft(4, '0')}-'
+          '${birthDate.month.toString().padLeft(2, '0')}-'
+          '${birthDate.day.toString().padLeft(2, '0')}';
+
+      // OAuth 사용자는 이미 토큰이 저장되어 있으므로 프로필 완성 API 호출
+      final response = await _dioClient.post(
+        '/api/v1/auth/oauth/complete-signup',
+        data: {
+          'nickname': nickname,
+          'birthDate': birthDateString,
+          'universityId': universityId,
+          'majorId': majorId,
+          'agreedPolicyIds': agreedPolicyIds,
+        },
+      );
+
+      final apiResponse = response.data as Map<String, dynamic>;
+      if (apiResponse['success'] == true) {
+        // 프로필 완성 후 사용자 정보 조회
+        return await _fetchAndEmitUserInfo();
+      } else {
+        throw ServerException(
+          message: apiResponse['message'] ?? 'OAuth 회원가입 완료에 실패했습니다.',
           statusCode: response.statusCode ?? 500,
         );
       }

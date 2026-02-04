@@ -72,8 +72,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.register,
-        builder: (context, state) =>
-            const SignupScreenV1(), // Using V1 for development
+        builder: (context, state) {
+          // Check for OAuth signup data passed as extra
+          final oauthData = state.extra;
+          return SignupScreenV1(oauthSignupData: oauthData);
+        },
       ),
 
       GoRoute(

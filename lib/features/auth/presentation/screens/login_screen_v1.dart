@@ -14,6 +14,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../../core/constants/routes.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../data/dto/auth_response_dto.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
 
@@ -177,8 +178,13 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, error: ${authState.failure?.message}');
-        if (authState.isAuthenticated && !authState.hasError) {
+        debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+
+        if (authState.hasPendingOAuthSignup) {
+          // 신규 사용자: 회원가입 화면으로 이동
+          debugPrint('[GOOGLE_LOGIN] Step 10: New user, redirecting to signup...');
+          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+        } else if (authState.isAuthenticated && !authState.hasError) {
           debugPrint('[GOOGLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
           // 라우터가 자동으로 board로 리다이렉트합니다
@@ -286,8 +292,13 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}');
-        if (authState.isAuthenticated && !authState.hasError) {
+        debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+
+        if (authState.hasPendingOAuthSignup) {
+          // 신규 사용자: 회원가입 화면으로 이동
+          debugPrint('[APPLE_LOGIN] Step 10: New user, redirecting to signup...');
+          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+        } else if (authState.isAuthenticated && !authState.hasError) {
           debugPrint('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
           // 라우터가 자동으로 board로 리다이렉트합니다

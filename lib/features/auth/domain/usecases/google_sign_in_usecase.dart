@@ -2,17 +2,18 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecase.dart';
-import '../entities/user.dart';
+import '../../data/api/auth_api.dart';
 import '../repository/auth_repository.dart';
 
 /// Use case for signing in a user with Google
-class GoogleSignInUseCase implements UseCase<User, GoogleSignInParams> {
+/// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
+class GoogleSignInUseCase implements UseCase<OAuthLoginResult, GoogleSignInParams> {
   final AuthRepository _authRepository;
 
   GoogleSignInUseCase(this._authRepository);
 
   @override
-  Future<Either<Failure, User>> call(GoogleSignInParams params) {
+  Future<Either<Failure, OAuthLoginResult>> call(GoogleSignInParams params) {
     return _authRepository.signInWithGoogle(idToken: params.idToken);
   }
 }

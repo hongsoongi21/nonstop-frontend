@@ -139,6 +139,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                   _handleReportUser();
                 } else if (value == 'block') {
                   _handleBlockUser();
+                } else if (value == 'leave') {
+                  _handleLeaveRoom();
                 }
               },
               itemBuilder: (context) => [
@@ -165,6 +167,22 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       const SizedBox(width: 12),
                       Text(
                         l10n.blockUser,
+                        style: AppTypography.body2.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  value: 'leave',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.exit_to_app_rounded, color: AppColors.textSecondary),
+                      const SizedBox(width: 12),
+                      Text(
+                        l10n.leaveRoom,
                         style: AppTypography.body2.copyWith(
                           color: AppColors.textPrimary,
                         ),
@@ -554,6 +572,83 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _handleLeaveRoom() async {
+    final l10n = AppLocalizations.of(context);
+
+    // 확인 다이얼로그 표시
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Text(
+          l10n.leaveRoom,
+          style: AppTypography.headline5.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          l10n.leaveRoomConfirm,
+          style: AppTypography.body2.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              l10n.cancel,
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              l10n.leaveRoom,
+              style: AppTypography.body2.copyWith(
+                color: AppColors.error,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    // 채팅방 나가기 실행
+    final success = await ref.read(chatRoomProvider(widget.roomId).notifier).leaveRoom();
+
+    if (!mounted) return;
+
+    if (success) {
+      // 채팅 목록에서 제거
+      ref.read(chatListProvider.notifier).removeRoom(widget.roomId);
+
+      // 화면 닫기
+      Navigator.of(context).pop();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.leaveRoomSuccess),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.errorOccurred),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 

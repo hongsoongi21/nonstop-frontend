@@ -564,6 +564,12 @@ abstract class AppLocalizations {
   /// **'Edit Profile - coming soon!'**
   String get editProfileComingSoon;
 
+  /// Search coming soon message
+  ///
+  /// In en, this message translates to:
+  /// **'Search - coming soon!'**
+  String get searchComingSoon;
+
   /// Filter prefix for filter tab change
   ///
   /// In en, this message translates to:
@@ -1068,6 +1074,12 @@ abstract class AppLocalizations {
   /// **'Email verified'**
   String get emailVerified;
 
+  /// Message shown when OAuth email is auto-verified
+  ///
+  /// In en, this message translates to:
+  /// **'Email verified via social login'**
+  String get oauthEmailVerified;
+
   /// verificationCodeSent label/message
   ///
   /// In en, this message translates to:
@@ -1403,6 +1415,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try a different name'**
   String get tryDifferentName;
+
+  /// Empty state title when search query is too short
+  ///
+  /// In en, this message translates to:
+  /// **'Keep typing'**
+  String get keepTyping;
+
+  /// Empty state subtitle when search query is too short
+  ///
+  /// In en, this message translates to:
+  /// **'Enter at least 2 characters to search'**
+  String get minTwoCharacters;
 
   /// Online status label
   ///
@@ -2081,6 +2105,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to delete account'**
   String get deleteAccountFailed;
+
+  /// Leave chat room button text
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Room'**
+  String get leaveRoom;
+
+  /// Leave room confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave this chat room? You will no longer receive messages from this conversation.'**
+  String get leaveRoomConfirm;
+
+  /// Leave room success message
+  ///
+  /// In en, this message translates to:
+  /// **'Left the chat room'**
+  String get leaveRoomSuccess;
+
+  /// Latest filter option for board posts
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get latest;
+
+  /// Trending filter option for board posts
+  ///
+  /// In en, this message translates to:
+  /// **'Trending'**
+  String get trending;
+
+  /// Most commented filter option for board posts
+  ///
+  /// In en, this message translates to:
+  /// **'Most Discussed'**
+  String get mostCommented;
+
+  /// Title for incomplete profile completion screen
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Profile'**
+  String get completeProfile;
+
+  /// Subtitle for incomplete profile completion screen
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in the required information'**
+  String get completeProfileSubtitle;
 }
 
 class _AppLocalizationsDelegate
