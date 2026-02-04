@@ -445,6 +445,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 이미 인증된 상태에서는 라우터 재계산을 방지하기 위해 state를 변경하지 않고
   /// 백그라운드에서 토큰 유효성만 확인합니다.
   Future<void> refreshAuthState() async {
+    // 로딩 중이거나 OAuth 회원가입 대기 중이면 간섭하지 않음
+    // (Google/Apple 로그인 흐름 중에 앱이 resume될 때 상태가 리셋되는 것을 방지)
+    if (state.isLoading || state.hasPendingOAuthSignup) {
+      debugPrint('[AUTH] ⏭️ Skipping refresh - auth operation in progress');
+      return;
+    }
+
     // 이미 인증된 상태라면 불필요한 state 변경 없이 백그라운드에서 확인만 합니다.
     if (state.isAuthenticated) {
       debugPrint('[AUTH] 🔄 Refreshing auth state (already authenticated, silent check)...');
@@ -469,8 +476,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
           }
         },
       );
+    } else if (state.isInitialized) {
+      // 이미 초기화가 완료된 상태에서는 재초기화하지 않음
+      debugPrint('[AUTH] ⏭️ Skipping refresh - already initialized');
     } else {
-      // 인증되지 않은 상태에서는 기존 초기화 로직 실행
+      // 초기화가 안 된 상태에서만 초기화 로직 실행
       await _initializeAuth();
     }
   }
