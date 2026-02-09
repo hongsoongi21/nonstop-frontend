@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/app.dart';
 import 'package:nonstop/core/services/fcm_service.dart';
+import 'package:nonstop/core/supabase/supabase_config.dart';
 import 'package:nonstop/core/utils/logger.dart';
 import 'package:nonstop/firebase_options.dart';
 
@@ -22,6 +23,9 @@ void main() async {
 
     // FCM background handler 등록
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+    // Supabase 초기화
+    await SupabaseConfig.initialize();
 
     // Crashlytics 설정
     if (!kDebugMode) {

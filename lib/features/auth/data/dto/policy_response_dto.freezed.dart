@@ -25,6 +25,7 @@ mixin _$PolicyResponseDto {
   String get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get url => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_mandatory')
   bool get isMandatory => throw _privateConstructorUsedError;
 
   /// Serializes this PolicyResponseDto to a JSON map.
@@ -44,7 +45,13 @@ abstract class $PolicyResponseDtoCopyWith<$Res> {
     $Res Function(PolicyResponseDto) then,
   ) = _$PolicyResponseDtoCopyWithImpl<$Res, PolicyResponseDto>;
   @useResult
-  $Res call({int id, String type, String title, String url, bool isMandatory});
+  $Res call({
+    int id,
+    String type,
+    String title,
+    String url,
+    @JsonKey(name: 'is_mandatory') bool isMandatory,
+  });
 }
 
 /// @nodoc
@@ -105,7 +112,13 @@ abstract class _$$PolicyResponseDtoImplCopyWith<$Res>
   ) = __$$PolicyResponseDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int id, String type, String title, String url, bool isMandatory});
+  $Res call({
+    int id,
+    String type,
+    String title,
+    String url,
+    @JsonKey(name: 'is_mandatory') bool isMandatory,
+  });
 }
 
 /// @nodoc
@@ -163,7 +176,7 @@ class _$PolicyResponseDtoImpl extends _PolicyResponseDto {
     required this.type,
     required this.title,
     required this.url,
-    required this.isMandatory,
+    @JsonKey(name: 'is_mandatory') required this.isMandatory,
   }) : super._();
 
   factory _$PolicyResponseDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -178,6 +191,7 @@ class _$PolicyResponseDtoImpl extends _PolicyResponseDto {
   @override
   final String url;
   @override
+  @JsonKey(name: 'is_mandatory')
   final bool isMandatory;
 
   @override
@@ -226,7 +240,7 @@ abstract class _PolicyResponseDto extends PolicyResponseDto {
     required final String type,
     required final String title,
     required final String url,
-    required final bool isMandatory,
+    @JsonKey(name: 'is_mandatory') required final bool isMandatory,
   }) = _$PolicyResponseDtoImpl;
   const _PolicyResponseDto._() : super._();
 
@@ -242,6 +256,7 @@ abstract class _PolicyResponseDto extends PolicyResponseDto {
   @override
   String get url;
   @override
+  @JsonKey(name: 'is_mandatory')
   bool get isMandatory;
 
   /// Create a copy of PolicyResponseDto

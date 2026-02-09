@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:nonstop/core/network/dio_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
-import 'package:path/path.dart' as path;
 
 abstract class ChatApi {
   Future<List<ChatRoom>> getMyChatRooms();
@@ -12,177 +10,399 @@ abstract class ChatApi {
   Future<ChatRoom> createOneToOneRoom(int targetUserId);
   Future<ChatRoom> createGroupRoom(String name, List<int> userIds);
 
-  // New methods for full chat functionality
   Future<void> leaveRoom(int roomId);
   Future<void> inviteToGroup(int roomId, List<int> userIds);
   Future<void> kickFromGroup(int roomId, int userId);
   Future<List<int>> getGroupMembers(int roomId);
   Future<void> markAsRead(int roomId, int messageId);
   Future<String> uploadChatImage(int roomId, String localFilePath);
+
+  /// Send a message and return the created ChatMessage
+  Future<ChatMessage> sendMessage({
+    required int roomId,
+    required String content,
+    required String type,
+    required int clientMessageId,
+  });
 }
 
 class ChatApiImpl implements ChatApi {
-  final DioClient _dioClient;
+  final SupabaseClient _supabase;
 
-  ChatApiImpl(this._dioClient);
+  ChatApiImpl(this._supabase);
 
-  @override
-  Future<List<ChatRoom>> getMyChatRooms() async {
-    try {
-      final response = await _dioClient.get('/api/v1/chat/rooms');
-      final list = (response.data['data'] as List)
-          .map((e) => ChatRoom.fromJson(e))
-          .toList();
-      return list;
-    } catch (e) {
-      rethrow;
-    }
+  Future<int> _getCurrentUserId() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) throw Exception('Not authenticated');
+    final data = await _supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authUser.id)
+        .single();
+    return data['id'] as int;
   }
 
   @override
-  Future<List<ChatMessage>> getMessages(int roomId, int limit, int offset) async {
-    final response = await _dioClient.get(
-      '/api/v1/chat/rooms/$roomId/messages',
-      queryParameters: {
-        'limit': limit,
-        'offset': offset,
-      },
+  Future<List<ChatRoom>> getMyChatRooms() async {
+    final currentUserId = await _getCurrentUserId();
+
+    // Get user's active room memberships
+    final memberships = await _supabase
+        .from('chat_room_members')
+        .select('room_id, last_read_message_id')
+        .eq('user_id', currentUserId)
+        .isFilter('left_at', null);
+
+    final memberList = memberships as List;
+    if (memberList.isEmpty) return [];
+
+    final roomIds = memberList.map((m) => m['room_id'] as int).toList();
+    final lastReadMap = <int, int?>{};
+    for (final m in memberList) {
+      lastReadMap[m['room_id'] as int] = m['last_read_message_id'] as int?;
+    }
+
+    // Get room details
+    final rooms = await _supabase
+        .from('chat_rooms')
+        .select()
+        .inFilter('id', roomIds);
+
+    // Get last message per room + unread counts in parallel
+    final lastMessages = <int, Map<String, dynamic>>{};
+    final unreadCounts = <int, int>{};
+
+    await Future.wait(roomIds.map((roomId) async {
+      // Last message
+      final msgs = await _supabase
+          .from('messages')
+          .select()
+          .eq('chat_room_id', roomId)
+          .order('sent_at', ascending: false)
+          .limit(1);
+      if ((msgs as List).isNotEmpty) {
+        lastMessages[roomId] = msgs.first;
+      }
+
+      // Unread count
+      final lastReadId = lastReadMap[roomId];
+      if (lastReadId != null) {
+        final unread = await _supabase
+            .from('messages')
+            .select('id')
+            .eq('chat_room_id', roomId)
+            .gt('id', lastReadId);
+        unreadCounts[roomId] = (unread as List).length;
+      } else {
+        final all = await _supabase
+            .from('messages')
+            .select('id')
+            .eq('chat_room_id', roomId);
+        unreadCounts[roomId] = (all as List).length;
+      }
+    }));
+
+    // Get member IDs per room
+    final allMembers = await _supabase
+        .from('chat_room_members')
+        .select('room_id, user_id')
+        .inFilter('room_id', roomIds)
+        .isFilter('left_at', null);
+
+    final membersByRoom = <int, List<int>>{};
+    for (final m in allMembers as List) {
+      final roomId = m['room_id'] as int;
+      membersByRoom.putIfAbsent(roomId, () => []);
+      membersByRoom[roomId]!.add(m['user_id'] as int);
+    }
+
+    // Build ChatRoom entities
+    return (rooms as List).map((room) {
+      final roomId = room['id'] as int;
+      final lastMsg = lastMessages[roomId];
+      ChatMessage? lastMessage;
+      if (lastMsg != null) {
+        lastMessage = _mapToMessage(lastMsg);
+      }
+
+      return ChatRoom(
+        id: roomId,
+        type: room['type'] == 'GROUP'
+            ? ChatRoomType.group
+            : ChatRoomType.oneToOne,
+        name: room['name'] as String?,
+        unreadCount: unreadCounts[roomId] ?? 0,
+        lastMessage: lastMessage,
+        memberIds: membersByRoom[roomId],
+        updatedAt: room['updated_at'] != null
+            ? DateTime.parse(room['updated_at'] as String)
+            : null,
+      );
+    }).toList()
+      ..sort((a, b) {
+        final aTime =
+            a.lastMessage?.sentAt ?? a.updatedAt ?? DateTime(2000);
+        final bTime =
+            b.lastMessage?.sentAt ?? b.updatedAt ?? DateTime(2000);
+        return bTime.compareTo(aTime);
+      });
+  }
+
+  ChatMessage _mapToMessage(Map<String, dynamic> data) {
+    final typeStr = (data['type'] as String? ?? 'TEXT').toLowerCase();
+    MessageType type;
+    switch (typeStr) {
+      case 'image':
+        type = MessageType.image;
+        break;
+      case 'system_invite':
+        type = MessageType.systemInvite;
+        break;
+      case 'system_leave':
+        type = MessageType.systemLeave;
+        break;
+      case 'system_kick':
+        type = MessageType.systemKick;
+        break;
+      default:
+        type = MessageType.text;
+    }
+
+    return ChatMessage(
+      id: data['id'] as int,
+      roomId: data['chat_room_id'] as int? ?? 0,
+      senderId: data['sender_id'] as int? ?? 0,
+      content: data['content'] as String? ?? '',
+      type: type,
+      sentAt: data['sent_at'] != null
+          ? DateTime.parse(data['sent_at'] as String)
+          : DateTime.now(),
+      clientMessageId: data['client_message_id']?.toString(),
     );
-    final list = (response.data['data'] as List)
-        .map((e) => ChatMessage.fromJson(e))
-        .toList();
-    return list;
+  }
+
+  @override
+  Future<List<ChatMessage>> getMessages(
+      int roomId, int limit, int offset) async {
+    final data = await _supabase
+        .from('messages')
+        .select()
+        .eq('chat_room_id', roomId)
+        .order('sent_at', ascending: false)
+        .range(offset, offset + limit - 1);
+
+    return (data as List).map((msg) => _mapToMessage(msg)).toList();
   }
 
   @override
   Future<ChatRoom> createOneToOneRoom(int targetUserId) async {
-    final response = await _dioClient.post(
-      '/api/v1/chat/rooms',
-      data: {'targetUserId': targetUserId},
+    final currentUserId = await _getCurrentUserId();
+
+    // Check if 1:1 room already exists (LEAST/GREATEST ensures order)
+    final userA =
+        currentUserId < targetUserId ? currentUserId : targetUserId;
+    final userB =
+        currentUserId < targetUserId ? targetUserId : currentUserId;
+
+    final existing = await _supabase
+        .from('one_to_one_chat_rooms')
+        .select('room_id')
+        .eq('user_a_id', userA)
+        .eq('user_b_id', userB)
+        .maybeSingle();
+
+    if (existing != null) {
+      final roomId = existing['room_id'] as int;
+
+      // Re-join if previously left
+      final member = await _supabase
+          .from('chat_room_members')
+          .select()
+          .eq('room_id', roomId)
+          .eq('user_id', currentUserId)
+          .maybeSingle();
+
+      if (member != null && member['left_at'] != null) {
+        await _supabase
+            .from('chat_room_members')
+            .update({'left_at': null})
+            .eq('room_id', roomId)
+            .eq('user_id', currentUserId);
+      }
+
+      final room = await _supabase
+          .from('chat_rooms')
+          .select()
+          .eq('id', roomId)
+          .single();
+
+      return ChatRoom(
+        id: roomId,
+        type: ChatRoomType.oneToOne,
+        name: room['name'] as String?,
+        unreadCount: 0,
+        memberIds: [currentUserId, targetUserId],
+        updatedAt: DateTime.parse(room['updated_at'] as String),
+      );
+    }
+
+    // Create new room
+    final roomData = await _supabase
+        .from('chat_rooms')
+        .insert({
+          'type': 'ONE_TO_ONE',
+          'creator_id': currentUserId,
+        })
+        .select()
+        .single();
+
+    final roomId = roomData['id'] as int;
+
+    // Create one_to_one record
+    await _supabase.from('one_to_one_chat_rooms').insert({
+      'room_id': roomId,
+      'user_a_id': userA,
+      'user_b_id': userB,
+    });
+
+    // Add both users as members
+    await _supabase.from('chat_room_members').insert([
+      {'room_id': roomId, 'user_id': currentUserId},
+      {'room_id': roomId, 'user_id': targetUserId},
+    ]);
+
+    return ChatRoom(
+      id: roomId,
+      type: ChatRoomType.oneToOne,
+      unreadCount: 0,
+      memberIds: [currentUserId, targetUserId],
+      updatedAt: DateTime.parse(roomData['updated_at'] as String),
     );
-    return ChatRoom.fromJson(response.data['data']);
   }
 
   @override
   Future<ChatRoom> createGroupRoom(String name, List<int> userIds) async {
-    final response = await _dioClient.post(
-      '/api/v1/chat/group-rooms',
-      data: {
-        'roomName': name,
-        'userIds': userIds,
-      },
+    final currentUserId = await _getCurrentUserId();
+
+    final roomData = await _supabase
+        .from('chat_rooms')
+        .insert({
+          'type': 'GROUP',
+          'name': name,
+          'creator_id': currentUserId,
+        })
+        .select()
+        .single();
+
+    final roomId = roomData['id'] as int;
+
+    // Add creator + invited users as members
+    final allUserIds = {currentUserId, ...userIds}.toList();
+    await _supabase.from('chat_room_members').insert(
+      allUserIds
+          .map((uid) => {'room_id': roomId, 'user_id': uid})
+          .toList(),
     );
-    return ChatRoom.fromJson(response.data['data']);
+
+    return ChatRoom(
+      id: roomId,
+      type: ChatRoomType.group,
+      name: name,
+      unreadCount: 0,
+      memberIds: allUserIds,
+      updatedAt: DateTime.parse(roomData['updated_at'] as String),
+    );
   }
 
   @override
   Future<void> leaveRoom(int roomId) async {
-    await _dioClient.delete('/api/v1/chat/rooms/$roomId');
+    final currentUserId = await _getCurrentUserId();
+    await _supabase
+        .from('chat_room_members')
+        .update({'left_at': DateTime.now().toIso8601String()})
+        .eq('room_id', roomId)
+        .eq('user_id', currentUserId);
   }
 
   @override
   Future<void> inviteToGroup(int roomId, List<int> userIds) async {
-    await _dioClient.post(
-      '/api/v1/chat/group-rooms/$roomId/invite',
-      data: {'userIds': userIds},
+    await _supabase.from('chat_room_members').insert(
+      userIds
+          .map((uid) => {'room_id': roomId, 'user_id': uid})
+          .toList(),
     );
   }
 
   @override
   Future<void> kickFromGroup(int roomId, int userId) async {
-    await _dioClient.delete('/api/v1/chat/group-rooms/$roomId/members/$userId');
+    await _supabase
+        .from('chat_room_members')
+        .update({'left_at': DateTime.now().toIso8601String()})
+        .eq('room_id', roomId)
+        .eq('user_id', userId);
   }
 
   @override
   Future<List<int>> getGroupMembers(int roomId) async {
-    final response = await _dioClient.get('/api/v1/chat/group-rooms/$roomId/members');
-    final data = response.data['data'] as List;
-    // Backend returns List<ChatRoomMemberResponseDto>, extract userIds
-    return data.map((member) {
-      if (member is int) {
-        return member;
-      } else if (member is Map) {
-        return member['userId'] as int;
-      }
-      return 0;
-    }).where((id) => id > 0).toList();
+    final data = await _supabase
+        .from('chat_room_members')
+        .select('user_id')
+        .eq('room_id', roomId)
+        .isFilter('left_at', null);
+
+    return (data as List).map((m) => m['user_id'] as int).toList();
   }
 
   @override
   Future<void> markAsRead(int roomId, int messageId) async {
-    // Backend expects messageId as query parameter, not request body
-    await _dioClient.patch(
-      '/api/v1/chat/rooms/$roomId/read',
-      queryParameters: {'messageId': messageId},
-    );
+    final currentUserId = await _getCurrentUserId();
+    await _supabase
+        .from('chat_room_members')
+        .update({'last_read_message_id': messageId})
+        .eq('room_id', roomId)
+        .eq('user_id', currentUserId);
   }
 
   @override
   Future<String> uploadChatImage(int roomId, String localFilePath) async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) throw Exception('Not authenticated');
+
     final file = File(localFilePath);
-    final fileName = path.basename(localFilePath);
-    final extension = path.extension(localFilePath).toLowerCase();
+    final fileName =
+        '${authUser.id}/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
-    // Determine content type
-    String contentType;
-    switch (extension) {
-      case '.jpg':
-      case '.jpeg':
-        contentType = 'image/jpeg';
-        break;
-      case '.png':
-        contentType = 'image/png';
-        break;
-      case '.gif':
-        contentType = 'image/gif';
-        break;
-      case '.webp':
-        contentType = 'image/webp';
-        break;
-      default:
-        contentType = 'image/jpeg';
-    }
+    await _supabase.storage.from('chat-images').upload(fileName, file);
+    return _supabase.storage.from('chat-images').getPublicUrl(fileName);
+  }
 
-    // 1. Request SAS URL from backend
-    final sasResponse = await _dioClient.post(
-      '/api/v1/files/sas-url',
-      data: {
-        'fileName': fileName,
-        'contentType': contentType,
-        'purpose': 'CHAT_IMAGE',
-        'targetId': roomId,
-      },
-    );
-    final sasUrl = sasResponse.data['data'] as String;
+  @override
+  Future<ChatMessage> sendMessage({
+    required int roomId,
+    required String content,
+    required String type,
+    required int clientMessageId,
+  }) async {
+    final currentUserId = await _getCurrentUserId();
 
-    // Extract blob URL (URL without SAS token)
-    final blobUrl = sasUrl.split('?').first;
+    final data = await _supabase
+        .from('messages')
+        .insert({
+          'chat_room_id': roomId,
+          'sender_id': currentUserId,
+          'content': content,
+          'type': type,
+          'client_message_id': clientMessageId,
+        })
+        .select()
+        .single();
 
-    // 2. Upload file directly to Azure Blob Storage
-    final fileBytes = await file.readAsBytes();
-    await Dio().put(
-      sasUrl,
-      data: Stream.fromIterable([fileBytes]),
-      options: Options(
-        headers: {
-          'x-ms-blob-type': 'BlockBlob',
-          'Content-Type': contentType,
-          'Content-Length': fileBytes.length,
-        },
-      ),
-    );
+    // Update room's updated_at
+    await _supabase
+        .from('chat_rooms')
+        .update({'updated_at': DateTime.now().toIso8601String()})
+        .eq('id', roomId);
 
-    // 3. Notify backend upload is complete
-    await _dioClient.post(
-      '/api/v1/files/upload-complete',
-      data: {
-        'blobUrl': blobUrl,
-        'originalFileName': fileName,
-        'purpose': 'CHAT_IMAGE',
-        'targetId': roomId,
-      },
-    );
-
-    return blobUrl;
+    return _mapToMessage(data);
   }
 }

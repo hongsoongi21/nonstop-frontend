@@ -132,4 +132,22 @@ class ChatApiMock implements ChatApi {
     await Future.delayed(const Duration(milliseconds: 500));
     return 'https://example.com/mock-image.jpg';
   }
+
+  @override
+  Future<ChatMessage> sendMessage({
+    required int roomId,
+    required String content,
+    required String type,
+    required int clientMessageId,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return ChatMessage(
+      id: DateTime.now().millisecondsSinceEpoch,
+      roomId: roomId,
+      senderId: 0,
+      content: content,
+      sentAt: DateTime.now(),
+      clientMessageId: clientMessageId.toString(),
+    );
+  }
 }

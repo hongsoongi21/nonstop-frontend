@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
+import '../../../../core/supabase/supabase_provider.dart';
 import '../../data/api/notification_api.dart';
 import '../../data/api/notification_api_impl.dart';
 import '../../data/repository/notification_repository.dart';
@@ -8,8 +8,8 @@ import '../../domain/entities/app_notification.dart';
 
 // API Provider
 final notificationApiProvider = Provider<NotificationApi>((ref) {
-  final dioClient = ref.watch(dioClientProvider);
-  return NotificationApiImpl(dioClient);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return NotificationApiImpl(supabaseClient);
 });
 
 // Repository Provider

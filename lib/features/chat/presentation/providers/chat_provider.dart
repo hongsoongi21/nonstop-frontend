@@ -1,26 +1,20 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/core/errors/failures.dart';
-import 'package:nonstop/core/network/dio_client.dart' show dioClientProvider;
-import 'package:nonstop/core/network/stomp_service.dart';
-import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart' hide dioClientProvider;
+import 'package:nonstop/core/supabase/supabase_provider.dart';
+import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
 import 'package:nonstop/features/chat/data/repository_impl/chat_repository_impl.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/domain/entities/read_receipt.dart';
 import 'package:nonstop/features/chat/domain/repository/chat_repository.dart';
-import 'package:uuid/uuid.dart';
 
 // --- Dependencies ---
 
-final stompServiceProvider = Provider<StompService>((ref) {
-  return StompService();
-});
-
 final chatApiProvider = Provider<ChatApi>((ref) {
-  final dioClient = ref.read(dioClientProvider);
-  return ChatApiImpl(dioClient);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return ChatApiImpl(supabaseClient);
 });
 
 /// Provides the current user's ID as int for chat operations
@@ -33,10 +27,8 @@ final currentUserIdProvider = Provider<int?>((ref) {
 
 final chatRepositoryProvider = Provider<ChatRepository>((ref) {
   final api = ref.watch(chatApiProvider);
-  final stompService = ref.watch(stompServiceProvider);
-  final authRepo = ref.watch(authRepositoryProvider);
-
-  return ChatRepositoryImpl(api, stompService, authRepo);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return ChatRepositoryImpl(api, supabaseClient);
 });
 
 // --- State ---
@@ -57,7 +49,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   }
 
   Future<void> _init() async {
-    // Connect to WS
+    // Connect to real-time (no-op for Supabase, connects per-channel)
     await _repository.connect();
     // Load rooms
     loadRooms();
@@ -167,7 +159,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   StreamSubscription<ChatMessage>? _subscription;
   StreamSubscription<ReadReceipt>? _readReceiptSubscription;
 
-  ChatRoomNotifier(this._repository, this._ref, this.roomId) : super(ChatRoomState()) {
+  ChatRoomNotifier(this._repository, this._ref, this.roomId)
+      : super(ChatRoomState()) {
     loadHistory();
     subscribe();
     _subscribeToReadReceipts();
@@ -176,7 +169,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> loadHistory() async {
     state = state.copyWith(isLoading: true);
-    final result = await _repository.getMessages(roomId: roomId, limit: 50, offset: 0);
+    final result =
+        await _repository.getMessages(roomId: roomId, limit: 50, offset: 0);
     result.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
@@ -198,8 +192,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void _subscribeToReadReceipts() {
-    _readReceiptSubscription = _repository.subscribeToReadReceipts(roomId).listen((receipt) {
-      // Update read status - track which message each user has read up to
+    _readReceiptSubscription =
+        _repository.subscribeToReadReceipts(roomId).listen((receipt) {
       state = state.copyWith(
         readStatusByUser: {
           ...state.readStatusByUser,
@@ -211,7 +205,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> markMessagesAsRead() async {
     if (state.messages.isEmpty) return;
-    // Most recent message is first in the list (list is reversed for display)
     final lastMessageId = state.messages.first.id;
     await _repository.markAsRead(roomId: roomId, messageId: lastMessageId);
   }
@@ -220,23 +213,26 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     // Check if this message matches an optimistic message by clientMessageId
     if (message.clientMessageId != null) {
       final existingIndex = state.messages.indexWhere(
-        (m) => m.clientMessageId != null && m.clientMessageId == message.clientMessageId,
+        (m) =>
+            m.clientMessageId != null &&
+            m.clientMessageId == message.clientMessageId,
       );
 
       if (existingIndex != -1) {
         // Replace optimistic message with real message from server
         final updatedMessages = List<ChatMessage>.from(state.messages);
-        updatedMessages[existingIndex] = message.copyWith(isSending: false, hasError: false);
+        updatedMessages[existingIndex] =
+            message.copyWith(isSending: false, hasError: false);
         state = state.copyWith(messages: updatedMessages);
         return;
       }
     }
 
-    // Check for duplicate by message ID (avoid double-adding)
+    // Check for duplicate by message ID
     final isDuplicate = state.messages.any((m) => m.id == message.id);
     if (isDuplicate) return;
 
-    // New message from another user - prepend to list
+    // New message - prepend to list
     state = state.copyWith(
       messages: [message, ...state.messages],
     );
@@ -246,17 +242,16 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     String content, {
     MessageType type = MessageType.text,
   }) async {
-    // Optimistic update
-    final tempId = DateTime.now().millisecondsSinceEpoch;
-    final clientMessageId = const Uuid().v4();
+    // Generate a clientMessageId for optimistic update matching
+    final clientMsgId = DateTime.now().microsecondsSinceEpoch;
     final optimisticMessage = ChatMessage(
-      id: tempId,
+      id: clientMsgId,
       roomId: roomId,
       senderId: _ref.read(currentUserIdProvider) ?? 0,
       content: content,
       type: type,
       sentAt: DateTime.now(),
-      clientMessageId: clientMessageId,
+      clientMessageId: clientMsgId.toString(),
       isSending: true,
     );
 
@@ -268,15 +263,15 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       roomId: roomId,
       content: content,
       type: type,
+      clientMessageId: clientMsgId,
     );
 
     result.fold(
       (failure) {
-        // Mark as error
         state = state.copyWith(
           messages: state.messages
               .map(
-                (m) => m.id == tempId
+                (m) => m.id == clientMsgId
                     ? m.copyWith(hasError: true, isSending: false)
                     : m,
               )
@@ -284,11 +279,10 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
         );
       },
       (_) {
-        // Success - usually we wait for the real message via WS to replace this,
-        // or we just mark it sent.
         state = state.copyWith(
           messages: state.messages
-              .map((m) => m.id == tempId ? m.copyWith(isSending: false) : m)
+              .map(
+                  (m) => m.id == clientMsgId ? m.copyWith(isSending: false) : m)
               .toList(),
         );
       },
@@ -296,7 +290,6 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   Future<void> loadMore() async {
-    // Prevent multiple simultaneous loads or loading when all data is fetched
     if (state.isLoadingMore || state.hasReachedEnd || state.isLoading) return;
 
     state = state.copyWith(isLoadingMore: true);
@@ -318,26 +311,24 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
           isLoadingMore: false,
           hasReachedEnd: hasReachedEnd,
           currentOffset: state.currentOffset + moreMessages.length,
-          messages: [...state.messages, ...moreMessages], // Append older messages
+          messages: [...state.messages, ...moreMessages],
         );
       },
     );
   }
 
   Future<void> sendImageMessage(String localFilePath) async {
-    // 1. Create optimistic message with local path as content
-    final tempId = DateTime.now().millisecondsSinceEpoch;
-    final clientMessageId = const Uuid().v4();
+    final clientMsgId = DateTime.now().microsecondsSinceEpoch;
     final currentUserId = _ref.read(currentUserIdProvider) ?? 0;
 
     final optimisticMessage = ChatMessage(
-      id: tempId,
+      id: clientMsgId,
       roomId: roomId,
       senderId: currentUserId,
-      content: localFilePath, // Show local preview
+      content: localFilePath,
       type: MessageType.image,
       sentAt: DateTime.now(),
-      clientMessageId: clientMessageId,
+      clientMessageId: clientMsgId.toString(),
       isSending: true,
     );
 
@@ -346,41 +337,44 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     );
 
     try {
-      // 2. Upload image and get URL
-      final uploadResult = await _repository.uploadChatImage(roomId, localFilePath);
+      final uploadResult =
+          await _repository.uploadChatImage(roomId, localFilePath);
 
       await uploadResult.fold(
         (failure) async {
-          // Mark as error if upload fails
           state = state.copyWith(
-            messages: state.messages.map((m) =>
-              m.id == tempId ? m.copyWith(hasError: true, isSending: false) : m
-            ).toList(),
+            messages: state.messages
+                .map((m) => m.id == clientMsgId
+                    ? m.copyWith(hasError: true, isSending: false)
+                    : m)
+                .toList(),
           );
         },
         (imageUrl) async {
-          // 3. Send message via STOMP
           final result = await _repository.sendMessage(
             roomId: roomId,
             content: imageUrl,
             type: MessageType.image,
+            clientMessageId: clientMsgId,
           );
 
           result.fold(
             (failure) {
-              // Mark as error
               state = state.copyWith(
-                messages: state.messages.map((m) =>
-                  m.id == tempId ? m.copyWith(hasError: true, isSending: false) : m
-                ).toList(),
+                messages: state.messages
+                    .map((m) => m.id == clientMsgId
+                        ? m.copyWith(hasError: true, isSending: false)
+                        : m)
+                    .toList(),
               );
             },
             (_) {
-              // Update optimistic message with real URL
               state = state.copyWith(
-                messages: state.messages.map((m) =>
-                  m.id == tempId ? m.copyWith(content: imageUrl, isSending: false) : m
-                ).toList(),
+                messages: state.messages
+                    .map((m) => m.id == clientMsgId
+                        ? m.copyWith(content: imageUrl, isSending: false)
+                        : m)
+                    .toList(),
               );
             },
           );
@@ -388,9 +382,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
       );
     } catch (e) {
       state = state.copyWith(
-        messages: state.messages.map((m) =>
-          m.id == tempId ? m.copyWith(hasError: true, isSending: false) : m
-        ).toList(),
+        messages: state.messages
+            .map((m) => m.id == clientMsgId
+                ? m.copyWith(hasError: true, isSending: false)
+                : m)
+            .toList(),
       );
     }
   }
@@ -412,11 +408,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 }
 
-final chatRoomProvider =
-    StateNotifierProvider.autoDispose.family<ChatRoomNotifier, ChatRoomState, int>((
-      ref,
-      roomId,
-    ) {
-      final repository = ref.watch(chatRepositoryProvider);
-      return ChatRoomNotifier(repository, ref, roomId);
-    });
+final chatRoomProvider = StateNotifierProvider.autoDispose
+    .family<ChatRoomNotifier, ChatRoomState, int>((
+  ref,
+  roomId,
+) {
+  final repository = ref.watch(chatRepositoryProvider);
+  return ChatRoomNotifier(repository, ref, roomId);
+});

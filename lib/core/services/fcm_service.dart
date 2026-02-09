@@ -5,11 +5,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../constants/routes.dart';
-import '../network/dio_client.dart';
 import '../router/app_router.dart';
+import '../supabase/supabase_provider.dart';
 
 /// Background message handler - must be top-level function
 @pragma('vm:entry-point')
@@ -22,13 +22,13 @@ class FcmService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-  final DioClient _dioClient;
+  final SupabaseClient _supabase;
   final ProviderContainer _container;
 
   String? _fcmToken;
   String get fcmToken => _fcmToken ?? '';
 
-  FcmService(this._dioClient, this._container);
+  FcmService(this._supabase, this._container);
 
   /// Initialize FCM service
   Future<void> initialize() async {
@@ -128,16 +128,31 @@ class FcmService {
     _registerTokenWithBackend(token);
   }
 
-  /// Register token with backend
+  /// Register token with backend via Supabase
   Future<void> _registerTokenWithBackend(String token) async {
     try {
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) return;
+
+      // Get user ID from users table
+      final userData = await _supabase
+          .from('users')
+          .select('id')
+          .eq('auth_id', authUser.id)
+          .single();
+      final userId = userData['id'] as int;
+
       final deviceType = Platform.isIOS ? 'IOS' : 'ANDROID';
-      await _dioClient.post(
-        '/api/v1/devices/fcm-token',
-        data: {
-          'deviceType': deviceType,
+
+      // Upsert device token
+      await _supabase.from('device_tokens').upsert(
+        {
+          'user_id': userId,
+          'device_type': deviceType,
           'token': token,
+          'is_active': true,
         },
+        onConflict: 'token',
       );
       debugPrint('FCM token registered with backend');
     } catch (e) {
@@ -247,7 +262,6 @@ class FcmService {
           break;
 
         case 'comment':
-          // Comments are associated with posts
           if (id != null) {
             router.push(Routes.boardDetailPath(id));
           } else {
@@ -256,9 +270,9 @@ class FcmService {
           break;
 
         default:
-          // Default fallback to notifications screen
           router.push(Routes.notifications);
-          debugPrint('Unknown notification type: $type, navigating to notifications screen');
+          debugPrint(
+              'Unknown notification type: $type, navigating to notifications screen');
       }
     } catch (e) {
       debugPrint('Error navigating from notification: $e');
@@ -279,7 +293,6 @@ class FcmService {
 
 /// FCM Service Provider
 final fcmServiceProvider = Provider<FcmService>((ref) {
-  final dioClient = ref.watch(dioClientProvider);
-  // Pass the ref.container to access the router later
-  return FcmService(dioClient, ref.container);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return FcmService(supabaseClient, ref.container);
 });

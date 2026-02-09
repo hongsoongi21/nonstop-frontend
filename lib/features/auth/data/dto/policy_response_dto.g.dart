@@ -13,7 +13,7 @@ _$PolicyResponseDtoImpl _$$PolicyResponseDtoImplFromJson(
   type: json['type'] as String,
   title: json['title'] as String,
   url: json['url'] as String,
-  isMandatory: json['isMandatory'] as bool,
+  isMandatory: json['is_mandatory'] as bool,
 );
 
 Map<String, dynamic> _$$PolicyResponseDtoImplToJson(
@@ -23,5 +23,5 @@ Map<String, dynamic> _$$PolicyResponseDtoImplToJson(
   'type': instance.type,
   'title': instance.title,
   'url': instance.url,
-  'isMandatory': instance.isMandatory,
+  'is_mandatory': instance.isMandatory,
 };

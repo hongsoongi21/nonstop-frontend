@@ -1,6 +1,6 @@
-import 'package:dio/dio.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../core/errors/exceptions.dart';
-import '../../../../core/network/dio_client.dart';
 import '../dto/university_response_dto.dart';
 
 abstract class UniversityApi {
@@ -15,9 +15,9 @@ abstract class UniversityApi {
 }
 
 class UniversityApiImpl implements UniversityApi {
-  final DioClient _dioClient;
+  final SupabaseClient _supabase;
 
-  UniversityApiImpl(this._dioClient);
+  UniversityApiImpl(this._supabase);
 
   @override
   Future<UniversityListResponseDto> getUniversities({
@@ -27,59 +27,66 @@ class UniversityApiImpl implements UniversityApi {
     int? offset,
   }) async {
     try {
-      final response = await _dioClient.get(
-        '/api/v1/universities/list',
-        queryParameters: {
-          if (keyword != null) 'keyword': keyword,
-          if (region != null) 'region': region,
-          if (limit != null) 'limit': limit,
-          if (offset != null) 'offset': offset,
-        },
-      );
+      var query = _supabase.from('universities').select();
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        return UniversityListResponseDto.fromJson(apiResponse['data']);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '대학교 목록을 불러오는데 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
+      if (keyword != null && keyword.isNotEmpty) {
+        query = query.ilike('name', '%$keyword%');
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+      if (region != null && region.isNotEmpty) {
+        query = query.eq('region', region);
+      }
+
+      final effectiveLimit = limit ?? 50;
+      final effectiveOffset = offset ?? 0;
+
+      final data = await query
+          .order('name')
+          .range(effectiveOffset, effectiveOffset + effectiveLimit - 1);
+
+      final items = (data as List)
+          .map((json) => UniversityResponseDto(
+                id: json['id'] as int,
+                name: json['name'] as String,
+                region: json['region'] as String?,
+                logoImageUrl: json['logo_image_url'] as String?,
+              ))
+          .toList();
+
+      return UniversityListResponseDto(
+        items: items,
+        totalCount: items.length,
+        hasMore: items.length >= effectiveLimit,
+        limit: effectiveLimit,
+        offset: effectiveOffset,
+      );
+    } catch (e) {
+      throw ServerException(
+        message: '대학교 목록을 불러오는데 실패했습니다: $e',
+        statusCode: 500,
+      );
     }
   }
 
   @override
   Future<UniversityResponseDto> getUniversityById(int id) async {
     try {
-      final response = await _dioClient.get('/api/v1/universities/$id');
+      final data = await _supabase
+          .from('universities')
+          .select()
+          .eq('id', id)
+          .single();
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        return UniversityResponseDto.fromJson(apiResponse['data']);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '대학교 정보를 불러오는데 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+      return UniversityResponseDto(
+        id: data['id'] as int,
+        name: data['name'] as String,
+        region: data['region'] as String?,
+        logoImageUrl: data['logo_image_url'] as String?,
+      );
+    } catch (e) {
+      throw ServerException(
+        message: '대학교 정보를 불러오는데 실패했습니다: $e',
+        statusCode: 500,
+      );
     }
-  }
-
-  Exception _handleDioError(DioException e) {
-    if (e.response != null) {
-      final data = e.response?.data;
-      if (data is Map<String, dynamic>) {
-        return ServerException(
-          message: data['message'] ?? '서버 오류가 발생했습니다.',
-          statusCode: e.response?.statusCode ?? 500,
-        );
-      }
-    }
-    return NetworkException('인터넷 연결을 확인해주세요.');
   }
 }

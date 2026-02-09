@@ -1,50 +1,116 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/network/dio_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/supabase/supabase_provider.dart';
 import '../../domain/entities/board.entity.dart';
 import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
 
 final boardRemoteDataSourceProvider = Provider<BoardRemoteDataSource>((ref) {
-  final dioClient = ref.watch(dioClientProvider);
-  return BoardRemoteDataSource(dioClient);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return BoardRemoteDataSource(supabaseClient);
 });
 
 class BoardRemoteDataSource {
-  final DioClient _dioClient;
+  final SupabaseClient _supabase;
 
-  BoardRemoteDataSource(this._dioClient);
+  BoardRemoteDataSource(this._supabase);
 
+  // ---------------------------------------------------------------------------
+  // Helper: get current user's BIGSERIAL id from auth UUID
+  // ---------------------------------------------------------------------------
+  Future<int> _getCurrentUserId() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) throw Exception('Not authenticated');
+    final data = await _supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authUser.id)
+        .single();
+    return data['id'] as int;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Communities
+  // ---------------------------------------------------------------------------
   Future<List<Community>> getCommunities() async {
-    final response = await _dioClient.get('/api/v1/communities');
-    final List<dynamic> communitiesJson = response.data['data']['communities'];
-    return communitiesJson.map((json) => Community.fromJson(json)).toList();
+    final data = await _supabase
+        .from('communities')
+        .select()
+        .order('sort_order', ascending: true);
+
+    return (data as List)
+        .map((json) => Community(
+              id: json['id'] as int,
+              name: json['name'] as String,
+              description: json['description'] as String?,
+              icon: json['icon'] as String?,
+              universityRequired: json['university_id'] != null,
+              isAnonymous: json['is_anonymous'] as bool? ?? false,
+            ))
+        .toList();
   }
 
+  // ---------------------------------------------------------------------------
+  // Boards
+  // ---------------------------------------------------------------------------
   Future<List<Board>> getBoards(int communityId) async {
-    final response = await _dioClient.get(
-      '/api/v1/communities/$communityId/boards',
-    );
-    final List<dynamic> boardsJson = response.data['data'];
-    return boardsJson.map((json) => Board.fromJson(json)).toList();
+    final data = await _supabase
+        .from('boards')
+        .select()
+        .eq('community_id', communityId);
+
+    return (data as List)
+        .map((json) => Board(
+              id: json['id'] as int,
+              name: json['name'] as String,
+              description: json['description'] as String?,
+              type: _parseBoardType(json['type'] as String),
+              isSecret: json['is_secret'] as bool? ?? false,
+              createdAt: DateTime.parse(json['created_at'] as String),
+            ))
+        .toList();
   }
 
+  // ---------------------------------------------------------------------------
+  // Posts
+  // ---------------------------------------------------------------------------
   Future<List<PostEntity>> getPosts(
     int boardId, {
     int page = 1,
     int size = 20,
   }) async {
-    final response = await _dioClient.get(
-      '/api/v1/boards/$boardId/posts',
-      queryParameters: {'page': page, 'size': size},
-    );
-    final List<dynamic> postsJson = response.data['data'];
-    return postsJson.map((json) => PostEntity.fromJson(json)).toList();
+    final from = (page - 1) * size;
+    final to = from + size - 1;
+
+    final posts = await _supabase
+        .from('posts')
+        .select('*, users(nickname)')
+        .eq('board_id', boardId)
+        .isFilter('deleted_at', null)
+        .order('created_at', ascending: false)
+        .range(from, to);
+
+    if (posts.isEmpty) return [];
+    return _enrichPosts(posts);
   }
 
   Future<PostEntity> getPostDetail(int postId) async {
-    final response = await _dioClient.get('/api/v1/posts/$postId');
-    return PostEntity.fromJson(response.data['data']);
+    final post = await _supabase
+        .from('posts')
+        .select('*, users(nickname)')
+        .eq('id', postId)
+        .single();
+
+    // Increment view count
+    await _supabase
+        .from('posts')
+        .update({'view_count': (post['view_count'] as int) + 1})
+        .eq('id', postId);
+
+    final enriched = await _enrichPosts([post]);
+    return enriched.first;
   }
 
   Future<PostEntity> createPost(
@@ -55,17 +121,29 @@ class BoardRemoteDataSource {
     bool isSecret = false,
     List<String>? imageUrls,
   }) async {
-    final response = await _dioClient.post(
-      '/api/v1/boards/$boardId/posts',
-      data: {
-        'title': title,
-        'content': content,
-        'isAnonymous': isAnonymous,
-        'isSecret': isSecret,
-        'imageUrls': imageUrls,
-      },
+    final currentUserId = await _getCurrentUserId();
+
+    final result = await _supabase
+        .from('posts')
+        .insert({
+          'board_id': boardId,
+          'user_id': currentUserId,
+          'title': title,
+          'content': content,
+          'is_anonymous': isAnonymous,
+          'is_secret': isSecret,
+          // TODO: imageUrls - add image_urls column and Supabase Storage integration
+        })
+        .select('*, users(nickname)')
+        .single();
+
+    return _mapToPost(
+      result,
+      likeCount: 0,
+      commentCount: 0,
+      isLiked: false,
+      isMine: true,
     );
-    return PostEntity.fromJson(response.data['data']);
   }
 
   Future<PostEntity> updatePost(
@@ -76,31 +154,128 @@ class BoardRemoteDataSource {
     bool isSecret = false,
     List<String>? imageUrls,
   }) async {
-    final response = await _dioClient.patch(
-      '/api/v1/posts/$postId',
-      data: {
-        'title': title,
-        'content': content,
-        'isAnonymous': isAnonymous,
-        'isSecret': isSecret,
-        'imageUrls': imageUrls,
-      },
-    );
-    return PostEntity.fromJson(response.data['data']);
+    final result = await _supabase
+        .from('posts')
+        .update({
+          'title': title,
+          'content': content,
+          'is_anonymous': isAnonymous,
+          'is_secret': isSecret,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', postId)
+        .select('*, users(nickname)')
+        .single();
+
+    final enriched = await _enrichPosts([result]);
+    return enriched.first;
   }
 
   Future<void> deletePost(int postId) async {
-    await _dioClient.delete('/api/v1/posts/$postId');
+    await _supabase
+        .from('posts')
+        .update({'deleted_at': DateTime.now().toIso8601String()})
+        .eq('id', postId);
   }
 
   Future<void> togglePostLike(int postId) async {
-    await _dioClient.post('/api/v1/posts/$postId/like');
+    final currentUserId = await _getCurrentUserId();
+
+    final existing = await _supabase
+        .from('user_post_likes')
+        .select()
+        .eq('user_id', currentUserId)
+        .eq('post_id', postId)
+        .maybeSingle();
+
+    if (existing == null) {
+      await _supabase.from('user_post_likes').insert({
+        'user_id': currentUserId,
+        'post_id': postId,
+      });
+    } else if (existing['deleted_at'] != null) {
+      await _supabase
+          .from('user_post_likes')
+          .update({'deleted_at': null})
+          .eq('user_id', currentUserId)
+          .eq('post_id', postId);
+    } else {
+      await _supabase
+          .from('user_post_likes')
+          .update({'deleted_at': DateTime.now().toIso8601String()})
+          .eq('user_id', currentUserId)
+          .eq('post_id', postId);
+    }
   }
 
+  // ---------------------------------------------------------------------------
+  // Comments
+  // ---------------------------------------------------------------------------
   Future<List<CommentEntity>> getComments(int postId) async {
-    final response = await _dioClient.get('/api/v1/posts/$postId/comments');
-    final List<dynamic> commentsJson = response.data['data'];
-    return commentsJson.map((json) => CommentEntity.fromJson(json)).toList();
+    final currentUserId = await _getCurrentUserId();
+
+    final comments = await _supabase
+        .from('comments')
+        .select('*, users(nickname)')
+        .eq('post_id', postId)
+        .isFilter('deleted_at', null)
+        .order('created_at', ascending: true);
+
+    if (comments.isEmpty) return [];
+
+    final commentIds = comments.map((c) => c['id'] as int).toList();
+
+    // Batch: like counts
+    final likes = await _supabase
+        .from('user_comment_likes')
+        .select('comment_id')
+        .inFilter('comment_id', commentIds)
+        .isFilter('deleted_at', null);
+
+    final likeCountMap = <int, int>{};
+    for (final like in likes) {
+      final cid = like['comment_id'] as int;
+      likeCountMap[cid] = (likeCountMap[cid] ?? 0) + 1;
+    }
+
+    // Batch: current user's likes
+    final myLikes = await _supabase
+        .from('user_comment_likes')
+        .select('comment_id')
+        .inFilter('comment_id', commentIds)
+        .eq('user_id', currentUserId)
+        .isFilter('deleted_at', null);
+
+    final myLikeSet = myLikes.map((l) => l['comment_id'] as int).toSet();
+
+    // Map all comments (flat list)
+    final allComments = comments
+        .map((c) {
+          final cid = c['id'] as int;
+          return _mapToComment(
+            c,
+            likeCount: likeCountMap[cid] ?? 0,
+            isLiked: myLikeSet.contains(cid),
+            isMine: c['user_id'] == currentUserId,
+          );
+        })
+        .toList();
+
+    // Build tree: top-level comments with nested replies
+    final topLevel = <CommentEntity>[];
+    final repliesMap = <int, List<CommentEntity>>{};
+
+    for (final comment in allComments) {
+      if (comment.upperCommentId == null) {
+        topLevel.add(comment);
+      } else {
+        repliesMap.putIfAbsent(comment.upperCommentId!, () => []).add(comment);
+      }
+    }
+
+    return topLevel
+        .map((c) => c.copyWith(replies: repliesMap[c.id] ?? []))
+        .toList();
   }
 
   Future<CommentEntity> createComment(
@@ -110,16 +285,23 @@ class BoardRemoteDataSource {
     bool isAnonymous = false,
     List<String>? imageUrls,
   }) async {
-    final response = await _dioClient.post(
-      '/api/v1/posts/$postId/comments',
-      data: {
-        'content': content,
-        'upperCommentId': upperCommentId,
-        'isAnonymous': isAnonymous,
-        'imageUrls': imageUrls,
-      },
-    );
-    return CommentEntity.fromJson(response.data['data']);
+    final currentUserId = await _getCurrentUserId();
+
+    final result = await _supabase
+        .from('comments')
+        .insert({
+          'post_id': postId,
+          'user_id': currentUserId,
+          'content': content,
+          'type': isAnonymous ? 'ANONYMOUS' : 'GENERAL',
+          'is_anonymous': isAnonymous,
+          if (upperCommentId != null) 'upper_comment_id': upperCommentId,
+          'depth': upperCommentId != null ? 1 : 0,
+        })
+        .select('*, users(nickname)')
+        .single();
+
+    return _mapToComment(result, likeCount: 0, isLiked: false, isMine: true);
   }
 
   Future<CommentEntity> updateComment(
@@ -128,34 +310,235 @@ class BoardRemoteDataSource {
     bool isAnonymous = false,
     List<String>? imageUrls,
   }) async {
-    final response = await _dioClient.patch(
-      '/api/v1/comments/$commentId',
-      data: {
-        'content': content,
-        'isAnonymous': isAnonymous,
-        'imageUrls': imageUrls,
-      },
+    final currentUserId = await _getCurrentUserId();
+
+    final result = await _supabase
+        .from('comments')
+        .update({
+          'content': content,
+          'is_anonymous': isAnonymous,
+          'type': isAnonymous ? 'ANONYMOUS' : 'GENERAL',
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', commentId)
+        .select('*, users(nickname)')
+        .single();
+
+    final likes = await _supabase
+        .from('user_comment_likes')
+        .select()
+        .eq('comment_id', commentId)
+        .isFilter('deleted_at', null);
+
+    final myLike = await _supabase
+        .from('user_comment_likes')
+        .select()
+        .eq('comment_id', commentId)
+        .eq('user_id', currentUserId)
+        .isFilter('deleted_at', null)
+        .maybeSingle();
+
+    return _mapToComment(
+      result,
+      likeCount: likes.length,
+      isLiked: myLike != null,
+      isMine: true,
     );
-    return CommentEntity.fromJson(response.data['data']);
   }
 
   Future<void> deleteComment(int commentId) async {
-    await _dioClient.delete('/api/v1/comments/$commentId');
+    await _supabase
+        .from('comments')
+        .update({'deleted_at': DateTime.now().toIso8601String()})
+        .eq('id', commentId);
   }
 
   Future<void> toggleCommentLike(int commentId) async {
-    await _dioClient.post('/api/v1/comments/$commentId/like');
+    final currentUserId = await _getCurrentUserId();
+
+    final existing = await _supabase
+        .from('user_comment_likes')
+        .select()
+        .eq('user_id', currentUserId)
+        .eq('comment_id', commentId)
+        .maybeSingle();
+
+    if (existing == null) {
+      await _supabase.from('user_comment_likes').insert({
+        'user_id': currentUserId,
+        'comment_id': commentId,
+      });
+    } else if (existing['deleted_at'] != null) {
+      await _supabase
+          .from('user_comment_likes')
+          .update({'deleted_at': null})
+          .eq('user_id', currentUserId)
+          .eq('comment_id', commentId);
+    } else {
+      await _supabase
+          .from('user_comment_likes')
+          .update({'deleted_at': DateTime.now().toIso8601String()})
+          .eq('user_id', currentUserId)
+          .eq('comment_id', commentId);
+    }
   }
 
+  // ---------------------------------------------------------------------------
+  // My Posts
+  // ---------------------------------------------------------------------------
   Future<List<PostEntity>> getMyPosts({
     int page = 1,
     int size = 20,
   }) async {
-    final response = await _dioClient.get(
-      '/api/v1/users/me/posts',
-      queryParameters: {'page': page, 'size': size},
+    final currentUserId = await _getCurrentUserId();
+    final from = (page - 1) * size;
+    final to = from + size - 1;
+
+    final posts = await _supabase
+        .from('posts')
+        .select('*, users(nickname)')
+        .eq('user_id', currentUserId)
+        .isFilter('deleted_at', null)
+        .order('created_at', ascending: false)
+        .range(from, to);
+
+    if (posts.isEmpty) return [];
+    return _enrichPosts(posts);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private Helpers
+  // ---------------------------------------------------------------------------
+
+  /// Enrich a list of raw post maps with computed fields
+  /// (likeCount, commentCount, isLiked, isMine)
+  Future<List<PostEntity>> _enrichPosts(
+      List<Map<String, dynamic>> posts) async {
+    final postIds = posts.map((p) => p['id'] as int).toList();
+    final currentUserId = await _getCurrentUserId();
+
+    // Batch: like counts
+    final likes = await _supabase
+        .from('user_post_likes')
+        .select('post_id')
+        .inFilter('post_id', postIds)
+        .isFilter('deleted_at', null);
+
+    final likeCountMap = <int, int>{};
+    for (final like in likes) {
+      final pid = like['post_id'] as int;
+      likeCountMap[pid] = (likeCountMap[pid] ?? 0) + 1;
+    }
+
+    // Batch: comment counts
+    final commentRows = await _supabase
+        .from('comments')
+        .select('post_id')
+        .inFilter('post_id', postIds)
+        .isFilter('deleted_at', null);
+
+    final commentCountMap = <int, int>{};
+    for (final comment in commentRows) {
+      final pid = comment['post_id'] as int;
+      commentCountMap[pid] = (commentCountMap[pid] ?? 0) + 1;
+    }
+
+    // Batch: current user's likes
+    final myLikes = await _supabase
+        .from('user_post_likes')
+        .select('post_id')
+        .inFilter('post_id', postIds)
+        .eq('user_id', currentUserId)
+        .isFilter('deleted_at', null);
+
+    final myLikeSet = myLikes.map((l) => l['post_id'] as int).toSet();
+
+    return posts.map((post) {
+      final postId = post['id'] as int;
+      return _mapToPost(
+        post,
+        likeCount: likeCountMap[postId] ?? 0,
+        commentCount: commentCountMap[postId] ?? 0,
+        isLiked: myLikeSet.contains(postId),
+        isMine: post['user_id'] == currentUserId,
+      );
+    }).toList();
+  }
+
+  BoardType _parseBoardType(String type) {
+    switch (type) {
+      case 'GENERAL':
+        return BoardType.general;
+      case 'NOTICE':
+        return BoardType.notice;
+      case 'QNA':
+        return BoardType.qna;
+      case 'ANONYMOUS':
+        return BoardType.anonymous;
+      default:
+        return BoardType.general;
+    }
+  }
+
+  PostEntity _mapToPost(
+    Map<String, dynamic> data, {
+    required int likeCount,
+    required int commentCount,
+    required bool isLiked,
+    required bool isMine,
+  }) {
+    final isAnonymous = data['is_anonymous'] as bool? ?? false;
+    final userMap = data['users'] as Map<String, dynamic>?;
+
+    return PostEntity(
+      id: data['id'] as int,
+      boardId: data['board_id'] as int,
+      writerNickname:
+          isAnonymous ? '익명' : (userMap?['nickname'] as String? ?? ''),
+      isWriterAnonymous: isAnonymous,
+      title: data['title'] as String? ?? '',
+      content: data['content'] as String? ?? '',
+      viewCount: data['view_count'] as int? ?? 0,
+      likeCount: likeCount,
+      commentCount: commentCount,
+      isSecret: data['is_secret'] as bool? ?? false,
+      isLiked: isLiked,
+      isMine: isMine,
+      createdAt: DateTime.parse(data['created_at'] as String),
+      updatedAt: data['updated_at'] != null
+          ? DateTime.parse(data['updated_at'] as String)
+          : null,
     );
-    final List<dynamic> postsJson = response.data['data'];
-    return postsJson.map((json) => PostEntity.fromJson(json)).toList();
+  }
+
+  CommentEntity _mapToComment(
+    Map<String, dynamic> data, {
+    required int likeCount,
+    required bool isLiked,
+    required bool isMine,
+  }) {
+    final isAnonymous = data['is_anonymous'] as bool? ?? false;
+    final userMap = data['users'] as Map<String, dynamic>?;
+    final typeStr = data['type'] as String? ?? 'GENERAL';
+
+    return CommentEntity(
+      id: data['id'] as int,
+      postId: data['post_id'] as int,
+      upperCommentId: data['upper_comment_id'] as int?,
+      writerNickname:
+          isAnonymous ? '익명' : (userMap?['nickname'] as String? ?? ''),
+      isWriterAnonymous: isAnonymous,
+      content: data['content'] as String? ?? '',
+      type:
+          typeStr == 'ANONYMOUS' ? CommentType.anonymous : CommentType.general,
+      depth: data['depth'] as int? ?? 0,
+      likeCount: likeCount,
+      isLiked: isLiked,
+      isMine: isMine,
+      createdAt: DateTime.parse(data['created_at'] as String),
+      updatedAt: data['updated_at'] != null
+          ? DateTime.parse(data['updated_at'] as String)
+          : null,
+    );
   }
 }

@@ -1,15 +1,15 @@
-import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/exceptions.dart';
-import '../../../../core/network/dio_client.dart';
+import '../../../../core/supabase/supabase_provider.dart';
 import '../dto/semester_dto.dart';
 import '../dto/timetable_dto.dart';
 import '../dto/timetable_entry_dto.dart';
 
 final timetableApiProvider = Provider<TimetableApi>((ref) {
-  return TimetableApiImpl(ref.read(dioClientProvider));
+  return TimetableApiImpl(ref.read(supabaseClientProvider));
 });
 
 /// API interface for timetable operations
@@ -44,53 +44,69 @@ abstract class TimetableApi {
   Future<Either<ApiException, List<TimetableDto>>> getPublicTimetables();
 }
 
-/// Implementation of TimetableApi using Dio HTTP client
+/// Implementation of TimetableApi using Supabase PostgREST
 class TimetableApiImpl implements TimetableApi {
-  final DioClient _dio;
+  final SupabaseClient _supabase;
 
-  TimetableApiImpl(this._dio);
+  TimetableApiImpl(this._supabase);
 
+  // ---------------------------------------------------------------------------
+  // Helper: get current user's BIGSERIAL id from auth UUID
+  // ---------------------------------------------------------------------------
+  Future<int> _getCurrentUserId() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) throw const ApiException('Not authenticated');
+    final data = await _supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authUser.id)
+        .single();
+    return data['id'] as int;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Semesters
+  // ---------------------------------------------------------------------------
   @override
   Future<Either<ApiException, List<SemesterDto>>> getSemesters() async {
     try {
-      final response = await _dio.get('/api/v1/semesters');
+      final data = await _supabase
+          .from('semesters')
+          .select()
+          .order('year', ascending: false)
+          .order('type');
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final list = (data['data'] as List)
-              .map((json) => SemesterDto.fromJson(json))
-              .toList();
-          return right(list);
-        }
-      }
+      final list = (data as List)
+          .map((json) => SemesterDto(
+                id: json['id'] as int,
+                year: json['year'] as int,
+                type: _parseSemesterType(json['type'] as String),
+                isCurrent: false,
+              ))
+          .toList();
 
-      return left(ApiException('Failed to fetch semesters'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      return right(list);
     } catch (e) {
       return left(ApiException(e.toString()));
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Timetables
+  // ---------------------------------------------------------------------------
   @override
   Future<Either<ApiException, List<TimetableDto>>> getMyTimetables() async {
     try {
-      final response = await _dio.get('/api/v1/timetables');
+      final currentUserId = await _getCurrentUserId();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final list = (data['data'] as List)
-              .map((json) => TimetableDto.fromJson(json))
-              .toList();
-          return right(list);
-        }
-      }
+      final data = await _supabase
+          .from('time_tables')
+          .select('*, semesters(year, type)')
+          .eq('user_id', currentUserId);
 
-      return left(ApiException('Failed to fetch timetables'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      final list =
+          (data as List).map((json) => _mapToTimetableDto(json)).toList();
+      return right(list);
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -101,21 +117,63 @@ class TimetableApiImpl implements TimetableApi {
     TimetableRequestDto request,
   ) async {
     try {
-      final response = await _dio.post(
-        '/api/v1/timetables',
-        data: request.toJson(),
-      );
+      final currentUserId = await _getCurrentUserId();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return right(TimetableDto.fromJson(data['data']));
+      // Resolve semester id from year + type
+      int? semesterId;
+      if (request.year != null && request.semesterType != null) {
+        final semesterTypeStr = _semesterTypeToDbString(request.semesterType!);
+
+        final semester = await _supabase
+            .from('semesters')
+            .select('id')
+            .eq('year', request.year!)
+            .eq('type', semesterTypeStr)
+            .maybeSingle();
+
+        if (semester != null) {
+          semesterId = semester['id'] as int;
+        } else {
+          // Create semester - get user's university_id
+          final user = await _supabase
+              .from('users')
+              .select('university_id')
+              .eq('id', currentUserId)
+              .single();
+          final universityId = user['university_id'] as int?;
+          if (universityId == null) {
+            return left(const ApiException('University not set'));
+          }
+
+          final newSemester = await _supabase
+              .from('semesters')
+              .insert({
+                'university_id': universityId,
+                'year': request.year!,
+                'type': semesterTypeStr,
+              })
+              .select('id')
+              .single();
+          semesterId = newSemester['id'] as int;
         }
       }
 
-      return left(ApiException('Failed to create timetable'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      if (semesterId == null) {
+        return left(const ApiException('Could not determine semester'));
+      }
+
+      final result = await _supabase
+          .from('time_tables')
+          .insert({
+            'user_id': currentUserId,
+            'semester_id': semesterId,
+            'title': request.title,
+            'is_public': request.isPublic ?? false,
+          })
+          .select('*, semesters(year, type)')
+          .single();
+
+      return right(_mapToTimetableDto(result));
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -126,18 +184,13 @@ class TimetableApiImpl implements TimetableApi {
     int id,
   ) async {
     try {
-      final response = await _dio.get('/api/v1/timetables/$id');
+      final data = await _supabase
+          .from('time_tables')
+          .select('*, semesters(year, type), time_table_entries(*)')
+          .eq('id', id)
+          .single();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return right(TimetableDetailDto.fromJson(data['data']));
-        }
-      }
-
-      return left(ApiException('Failed to fetch timetable detail'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      return right(_mapToTimetableDetailDto(data));
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -149,21 +202,18 @@ class TimetableApiImpl implements TimetableApi {
     TimetableRequestDto request,
   ) async {
     try {
-      final response = await _dio.patch(
-        '/api/v1/timetables/$id',
-        data: request.toJson(),
-      );
+      final updateData = <String, dynamic>{};
+      if (request.title != null) updateData['title'] = request.title;
+      if (request.isPublic != null) updateData['is_public'] = request.isPublic;
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return right(TimetableDto.fromJson(data['data']));
-        }
-      }
+      final result = await _supabase
+          .from('time_tables')
+          .update(updateData)
+          .eq('id', id)
+          .select('*, semesters(year, type)')
+          .single();
 
-      return left(ApiException('Failed to update timetable'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      return right(_mapToTimetableDto(result));
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -172,41 +222,38 @@ class TimetableApiImpl implements TimetableApi {
   @override
   Future<Either<ApiException, Unit>> deleteTimetable(int id) async {
     try {
-      final response = await _dio.delete('/api/v1/timetables/$id');
-
-      if (response.statusCode == 200) {
-        return right(unit);
-      }
-
-      return left(ApiException('Failed to delete timetable'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      await _supabase.from('time_tables').delete().eq('id', id);
+      return right(unit);
     } catch (e) {
       return left(ApiException(e.toString()));
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Entries
+  // ---------------------------------------------------------------------------
   @override
   Future<Either<ApiException, TimetableEntryDto>> addEntry(
     int timetableId,
     TimetableEntryRequestDto request,
   ) async {
     try {
-      final response = await _dio.post(
-        '/api/v1/timetables/$timetableId/entries',
-        data: request.toJson(),
-      );
+      final result = await _supabase
+          .from('time_table_entries')
+          .insert({
+            'time_table_id': timetableId,
+            'subject_name': request.subjectName,
+            'professor': request.professor,
+            'day_of_week': request.dayOfWeek.toJson(),
+            'start_time': request.startTime,
+            'end_time': request.endTime,
+            'place': request.place,
+            'color': request.color,
+          })
+          .select()
+          .single();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return right(TimetableEntryDto.fromJson(data['data']));
-        }
-      }
-
-      return left(ApiException('Failed to add entry'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      return right(_mapToEntryDto(result));
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -218,21 +265,22 @@ class TimetableApiImpl implements TimetableApi {
     TimetableEntryRequestDto request,
   ) async {
     try {
-      final response = await _dio.patch(
-        '/api/v1/timetables/entries/$entryId',
-        data: request.toJson(),
-      );
+      final result = await _supabase
+          .from('time_table_entries')
+          .update({
+            'subject_name': request.subjectName,
+            'professor': request.professor,
+            'day_of_week': request.dayOfWeek.toJson(),
+            'start_time': request.startTime,
+            'end_time': request.endTime,
+            'place': request.place,
+            'color': request.color,
+          })
+          .eq('id', entryId)
+          .select()
+          .single();
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          return right(TimetableEntryDto.fromJson(data['data']));
-        }
-      }
-
-      return left(ApiException('Failed to update entry'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      return right(_mapToEntryDto(result));
     } catch (e) {
       return left(ApiException(e.toString()));
     }
@@ -241,40 +289,115 @@ class TimetableApiImpl implements TimetableApi {
   @override
   Future<Either<ApiException, Unit>> deleteEntry(int entryId) async {
     try {
-      final response = await _dio.delete('/api/v1/timetables/entries/$entryId');
-
-      if (response.statusCode == 200) {
-        return right(unit);
-      }
-
-      return left(ApiException('Failed to delete entry'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      await _supabase.from('time_table_entries').delete().eq('id', entryId);
+      return right(unit);
     } catch (e) {
       return left(ApiException(e.toString()));
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Public Timetables
+  // ---------------------------------------------------------------------------
   @override
   Future<Either<ApiException, List<TimetableDto>>> getPublicTimetables() async {
     try {
-      final response = await _dio.get('/api/v1/timetables/public');
+      final data = await _supabase
+          .from('time_tables')
+          .select('*, semesters(year, type)')
+          .eq('is_public', true);
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data['success'] == true && data['data'] != null) {
-          final list = (data['data'] as List)
-              .map((json) => TimetableDto.fromJson(json))
-              .toList();
-          return right(list);
-        }
-      }
-
-      return left(ApiException('Failed to fetch public timetables'));
-    } on DioException catch (e) {
-      return left(ApiException(e.message ?? 'Network error'));
+      final list =
+          (data as List).map((json) => _mapToTimetableDto(json)).toList();
+      return right(list);
     } catch (e) {
       return left(ApiException(e.toString()));
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private Helpers
+  // ---------------------------------------------------------------------------
+
+  SemesterType _parseSemesterType(String type) {
+    switch (type) {
+      case 'FIRST':
+        return SemesterType.first;
+      case 'SECOND':
+        return SemesterType.second;
+      case 'SUMMER':
+        return SemesterType.summer;
+      case 'WINTER':
+        return SemesterType.winter;
+      default:
+        return SemesterType.first;
+    }
+  }
+
+  String _semesterTypeToDbString(SemesterType type) {
+    switch (type) {
+      case SemesterType.first:
+        return 'FIRST';
+      case SemesterType.second:
+        return 'SECOND';
+      case SemesterType.summer:
+        return 'SUMMER';
+      case SemesterType.winter:
+        return 'WINTER';
+    }
+  }
+
+  TimetableDto _mapToTimetableDto(Map<String, dynamic> json) {
+    final semesterData = json['semesters'] as Map<String, dynamic>?;
+    return TimetableDto(
+      id: json['id'] as int,
+      semesterId: json['semester_id'] as int,
+      year: semesterData?['year'] as int? ?? 0,
+      semesterType:
+          _parseSemesterType(semesterData?['type'] as String? ?? 'FIRST'),
+      title: json['title'] as String?,
+      isPublic: json['is_public'] as bool? ?? false,
+    );
+  }
+
+  TimetableDetailDto _mapToTimetableDetailDto(Map<String, dynamic> json) {
+    final semesterData = json['semesters'] as Map<String, dynamic>?;
+    final entriesData = json['time_table_entries'] as List? ?? [];
+
+    return TimetableDetailDto(
+      id: json['id'] as int,
+      semesterId: json['semester_id'] as int,
+      year: semesterData?['year'] as int? ?? 0,
+      semesterType:
+          _parseSemesterType(semesterData?['type'] as String? ?? 'FIRST'),
+      title: json['title'] as String?,
+      isPublic: json['is_public'] as bool? ?? false,
+      entries: entriesData
+          .map((e) => _mapToEntryDto(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  TimetableEntryDto _mapToEntryDto(Map<String, dynamic> json) {
+    // Supabase returns TIME as "HH:MM:SS" - convert to "HH:mm"
+    String formatTime(String? time) {
+      if (time == null) return '09:00';
+      final parts = time.split(':');
+      if (parts.length >= 2) return '${parts[0]}:${parts[1]}';
+      return time;
+    }
+
+    return TimetableEntryDto(
+      id: json['id'] as int,
+      timetableId: json['time_table_id'] as int,
+      subjectName: json['subject_name'] as String? ?? '',
+      professor: json['professor'] as String?,
+      dayOfWeek:
+          DayOfWeekJson.fromJson(json['day_of_week'] as String? ?? 'MONDAY'),
+      startTime: formatTime(json['start_time'] as String?),
+      endTime: formatTime(json['end_time'] as String?),
+      place: json['place'] as String?,
+      color: json['color'] as String?,
+    );
   }
 }

@@ -11,7 +11,7 @@ class PolicyResponseDto with _$PolicyResponseDto {
     required String type,
     required String title,
     required String url,
-    required bool isMandatory,
+    @JsonKey(name: 'is_mandatory') required bool isMandatory,
   }) = _PolicyResponseDto;
 
   factory PolicyResponseDto.fromJson(Map<String, dynamic> json) =>

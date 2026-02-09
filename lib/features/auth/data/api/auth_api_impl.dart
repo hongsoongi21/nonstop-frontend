@@ -1,243 +1,63 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import '../../../../core/errors/exceptions.dart';
-import '../../../../core/network/dio_client.dart';
-import '../../../../core/storage/secure_storage_service.dart';
+import '../../../../core/supabase/supabase_provider.dart';
+import '../../../../core/utils/logger.dart';
 import '../../domain/entities/user.dart';
-import '../dto/auth_request_dto.dart';
-import '../dto/auth_response_dto.dart'; // Ensure TokenResponseDto is imported via this
-import '../dto/apple_login_request_dto.dart';
-import '../dto/google_login_request_dto.dart';
-import '../dto/policy_request_dto.dart';
+import '../dto/auth_response_dto.dart';
 import '../dto/policy_response_dto.dart';
-import '../dto/user_dto.dart';
 import 'auth_api.dart';
-import '../../../../core/utils/logger.dart'; // Added for AppLogger
 
 final authApiProvider = Provider<AuthApi>((ref) {
-  final dioClient = ref.watch(dioClientProvider);
-  final secureStorageService = ref.watch(secureStorageServiceProvider);
-  return AuthApiImpl(dioClient, secureStorageService);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return AuthApiImpl(supabaseClient);
 });
 
 class AuthApiImpl implements AuthApi {
-  final DioClient _dioClient;
-  final SecureStorageService _secureStorageService;
+  final supa.SupabaseClient _supabase;
   final _authStateController = StreamController<User?>.broadcast();
-  // 인증 확인을 위해 마지막으로 인증번호를 보낸 이메일을 저장합니다.
+  // Store the last email for verification resend
   String? _lastVerificationEmail;
-  // OAuth 가입 시 사용할 이메일 (signInWithGoogle/Apple에서 설정됨)
-  String? _oauthEmail;
-  String? _oauthProvider;
   final _googleSignIn = GoogleSignIn.instance;
 
-  AuthApiImpl(this._dioClient, this._secureStorageService);
+  AuthApiImpl(this._supabase);
+
+  // ---------------------------------------------------------------------------
+  // Sign In
+  // ---------------------------------------------------------------------------
 
   @override
   Future<User> signIn({required String email, required String password}) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/login',
-        data: LoginRequestDto(email: email, password: password).toJson(),
-        options: Options(extra: {'no-auth': true}),
+      final response = await _supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
       );
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        final tokenData = TokenResponseDto.fromJson(
-          apiResponse['data'],
-        ); // Changed to TokenResponseDto
-
-        if (!kReleaseMode) {
-          AppLogger.d('[NONSTOP] 🔑 Tokens Received:'); // Using AppLogger
-          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
-          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
-        }
-
-        // 보안 저장소에 토큰 저장
-        await _secureStorageService.saveAccessToken(tokenData.accessToken);
-        await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
-
-        // 토큰 획득 후 내 정보를 조회하여 최종 User 엔티티를 반환합니다.
-        return await _fetchAndEmitUserInfo();
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '로그인에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
+      if (response.user == null) {
+        throw const ServerException(
+          message: '로그인에 실패했습니다.',
+          statusCode: 401,
         );
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+
+      if (!kReleaseMode) {
+        AppLogger.d('[NONSTOP] Supabase sign-in successful for ${response.user!.email}');
+      }
+
+      return await _fetchCurrentUser();
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 401);
     }
   }
 
-  @override
-  Future<OAuthLoginResult> signInWithGoogle({required String idToken}) async {
-    try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/google',
-        data: GoogleLoginRequestDto(idToken: idToken).toJson(),
-        options: Options(extra: {'no-auth': true}),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
-
-        if (!kReleaseMode) {
-          AppLogger.d('[NONSTOP] 🔑 Google Login Tokens Received:');
-          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
-          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
-          AppLogger.d('[NONSTOP]   isNewUser: ${tokenData.isNewUser}');
-        }
-
-        // 보안 저장소에 토큰 저장
-        await _secureStorageService.saveAccessToken(tokenData.accessToken);
-        await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
-
-        // 토큰에서 이메일 추출
-        final email = apiResponse['data']['email'] as String? ?? '';
-        final displayName = apiResponse['data']['displayName'] as String?;
-
-        // 신규 사용자인 경우 회원가입 화면으로 이동하도록 OAuthNewUser 반환
-        if (tokenData.isNewUser) {
-          _oauthEmail = email;
-          _oauthProvider = 'google';
-
-          return OAuthNewUser(OAuthSignupData(
-            email: email,
-            displayName: displayName,
-            provider: 'google',
-            accessToken: tokenData.accessToken,
-            refreshToken: tokenData.refreshToken,
-          ));
-        }
-
-        // 기존 사용자지만 필수 정보가 누락된 경우 (생년월일 또는 필수 약관 동의)
-        if (!tokenData.hasBirthDate || !tokenData.hasAgreedAllMandatory) {
-          _oauthEmail = email;
-          _oauthProvider = 'google';
-
-          return OAuthIncompleteUser(
-            signupData: OAuthSignupData(
-              email: email,
-              displayName: displayName,
-              provider: 'google',
-              accessToken: tokenData.accessToken,
-              refreshToken: tokenData.refreshToken,
-            ),
-            hasBirthDate: tokenData.hasBirthDate,
-            hasAgreedAllMandatory: tokenData.hasAgreedAllMandatory,
-          );
-        }
-
-        // 기존 사용자 (프로필 완성됨): 내 정보를 조회하여 반환
-        final user = await _fetchAndEmitUserInfo();
-        return OAuthExistingUser(user);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '구글 로그인에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
-
-  @override
-  Future<OAuthLoginResult> signInWithApple({
-    required String idToken,
-    String? authorizationCode,
-    String? firstName,
-    String? lastName,
-  }) async {
-    try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/apple',
-        data: AppleLoginRequestDto(
-          idToken: idToken,
-          authorizationCode: authorizationCode,
-          firstName: firstName,
-          lastName: lastName,
-        ).toJson(),
-        options: Options(extra: {'no-auth': true}),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        final tokenData = TokenResponseDto.fromJson(apiResponse['data']);
-
-        if (!kReleaseMode) {
-          AppLogger.d('[NONSTOP] 🍎 Apple Login Tokens Received:');
-          AppLogger.d('[NONSTOP]   Access: ${tokenData.accessToken}');
-          AppLogger.d('[NONSTOP]   Refresh: ${tokenData.refreshToken}');
-          AppLogger.d('[NONSTOP]   isNewUser: ${tokenData.isNewUser}');
-        }
-
-        // 보안 저장소에 토큰 저장
-        await _secureStorageService.saveAccessToken(tokenData.accessToken);
-        await _secureStorageService.saveRefreshToken(tokenData.refreshToken);
-
-        // 토큰에서 이메일 추출
-        final email = apiResponse['data']['email'] as String? ?? '';
-        // Apple은 최초 로그인 시에만 이름을 제공
-        String? displayName;
-        if (firstName != null || lastName != null) {
-          displayName = [firstName, lastName].where((e) => e != null).join(' ');
-        } else {
-          displayName = apiResponse['data']['displayName'] as String?;
-        }
-
-        // 신규 사용자인 경우 회원가입 화면으로 이동하도록 OAuthNewUser 반환
-        if (tokenData.isNewUser) {
-          _oauthEmail = email;
-          _oauthProvider = 'apple';
-
-          return OAuthNewUser(OAuthSignupData(
-            email: email,
-            displayName: displayName,
-            provider: 'apple',
-            accessToken: tokenData.accessToken,
-            refreshToken: tokenData.refreshToken,
-          ));
-        }
-
-        // 기존 사용자지만 필수 정보가 누락된 경우 (생년월일 또는 필수 약관 동의)
-        if (!tokenData.hasBirthDate || !tokenData.hasAgreedAllMandatory) {
-          _oauthEmail = email;
-          _oauthProvider = 'apple';
-
-          return OAuthIncompleteUser(
-            signupData: OAuthSignupData(
-              email: email,
-              displayName: displayName,
-              provider: 'apple',
-              accessToken: tokenData.accessToken,
-              refreshToken: tokenData.refreshToken,
-            ),
-            hasBirthDate: tokenData.hasBirthDate,
-            hasAgreedAllMandatory: tokenData.hasAgreedAllMandatory,
-          );
-        }
-
-        // 기존 사용자 (프로필 완성됨): 내 정보를 조회하여 반환
-        final user = await _fetchAndEmitUserInfo();
-        return OAuthExistingUser(user);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '애플 로그인에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
+  // ---------------------------------------------------------------------------
+  // Sign Up
+  // ---------------------------------------------------------------------------
 
   @override
   Future<User> signUp({
@@ -250,40 +70,137 @@ class AuthApiImpl implements AuthApi {
     List<int>? agreedPolicyIds,
   }) async {
     try {
-      // Format birthDate as "YYYY-MM-DD"
-      final birthDateString =
+      // 1. Create auth user (trigger will create public.users row)
+      final response = await _supabase.auth.signUp(
+        email: email,
+        password: password,
+        data: {'nickname': nickname},
+      );
+
+      if (response.user == null) {
+        throw const ServerException(
+          message: '회원가입에 실패했습니다.',
+          statusCode: 500,
+        );
+      }
+
+      if (!kReleaseMode) {
+        AppLogger.d('[NONSTOP] Supabase sign-up successful for ${response.user!.email}');
+      }
+
+      // 2. Update the public.users row with additional info
+      final birthDateStr =
           '${birthDate.year.toString().padLeft(4, '0')}-'
           '${birthDate.month.toString().padLeft(2, '0')}-'
           '${birthDate.day.toString().padLeft(2, '0')}';
 
-      final response = await _dioClient.post(
-        '/api/v1/auth/signup',
-        data: SignUpRequestDto(
-          email: email,
-          password: password,
-          nickname: nickname,
-          birthDate: birthDateString,
-          universityId: universityId,
-          majorId: majorId,
-          agreedPolicyIds: agreedPolicyIds,
-        ).toJson(),
-        options: Options(extra: {'no-auth': true}),
-      );
+      await _supabase.from('users').update({
+        'nickname': nickname,
+        'birth_date': birthDateStr,
+        if (universityId != null) 'university_id': universityId,
+        if (majorId != null) 'major_id': majorId,
+      }).eq('auth_id', response.user!.id);
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        // 회원가입 성공 직후, 사용자 편의를 위해 즉시 로그인을 시도합니다.
-        return await signIn(email: email, password: password);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '회원가입에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
+      // 3. Save policy agreements
+      if (agreedPolicyIds != null && agreedPolicyIds.isNotEmpty) {
+        final userId = await _getUserId(response.user!.id);
+        await _supabase.from('user_policy_agreements').insert(
+          agreedPolicyIds
+              .map((policyId) => {
+                    'user_id': userId,
+                    'policy_id': policyId,
+                  })
+              .toList(),
         );
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+
+      return await _fetchCurrentUser();
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // OAuth - Google
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<OAuthLoginResult> signInWithGoogle({required String idToken}) async {
+    try {
+      final response = await _supabase.auth.signInWithIdToken(
+        provider: supa.OAuthProvider.google,
+        idToken: idToken,
+      );
+
+      if (response.user == null) {
+        throw const ServerException(
+          message: '구글 로그인에 실패했습니다.',
+          statusCode: 401,
+        );
+      }
+
+      if (!kReleaseMode) {
+        AppLogger.d('[NONSTOP] Google sign-in via Supabase successful');
+      }
+
+      return await _resolveOAuthResult(
+        authUser: response.user!,
+        session: response.session,
+        provider: 'google',
+      );
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 401);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // OAuth - Apple
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<OAuthLoginResult> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final response = await _supabase.auth.signInWithIdToken(
+        provider: supa.OAuthProvider.apple,
+        idToken: idToken,
+      );
+
+      if (response.user == null) {
+        throw const ServerException(
+          message: '애플 로그인에 실패했습니다.',
+          statusCode: 401,
+        );
+      }
+
+      if (!kReleaseMode) {
+        AppLogger.d('[NONSTOP] Apple sign-in via Supabase successful');
+      }
+
+      // Apple only provides name on first sign-in; override displayName if available
+      String? displayName;
+      if (firstName != null || lastName != null) {
+        displayName = [firstName, lastName].where((e) => e != null).join(' ');
+      }
+
+      return await _resolveOAuthResult(
+        authUser: response.user!,
+        session: response.session,
+        provider: 'apple',
+        displayNameOverride: displayName,
+      );
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 401);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // OAuth - Complete signup (profile completion for new/incomplete users)
+  // ---------------------------------------------------------------------------
 
   @override
   Future<User> completeOAuthSignup({
@@ -294,57 +211,58 @@ class AuthApiImpl implements AuthApi {
     List<int>? agreedPolicyIds,
   }) async {
     try {
-      // Format birthDate as "YYYY-MM-DD"
-      final birthDateString =
+      final authUser = _supabase.auth.currentUser;
+      if (authUser == null) {
+        throw const ServerException(
+          message: '인증되지 않은 사용자입니다.',
+          statusCode: 401,
+        );
+      }
+
+      final birthDateStr =
           '${birthDate.year.toString().padLeft(4, '0')}-'
           '${birthDate.month.toString().padLeft(2, '0')}-'
           '${birthDate.day.toString().padLeft(2, '0')}';
 
-      // OAuth 사용자는 이미 토큰이 저장되어 있으므로 프로필 완성 API 호출
-      final response = await _dioClient.post(
-        '/api/v1/auth/oauth/complete-signup',
-        data: {
-          'nickname': nickname,
-          'birthDate': birthDateString,
-          'universityId': universityId,
-          'majorId': majorId,
-          'agreedPolicyIds': agreedPolicyIds,
-        },
-      );
+      // Update public.users row with profile info
+      await _supabase.from('users').update({
+        'nickname': nickname,
+        'birth_date': birthDateStr,
+        if (universityId != null) 'university_id': universityId,
+        if (majorId != null) 'major_id': majorId,
+      }).eq('auth_id', authUser.id);
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        // 프로필 완성 후 사용자 정보 조회
-        return await _fetchAndEmitUserInfo();
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? 'OAuth 회원가입 완료에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
+      // Save policy agreements
+      if (agreedPolicyIds != null && agreedPolicyIds.isNotEmpty) {
+        final userId = await _getUserId(authUser.id);
+        await _supabase.from('user_policy_agreements').upsert(
+          agreedPolicyIds
+              .map((policyId) => {
+                    'user_id': userId,
+                    'policy_id': policyId,
+                  })
+              .toList(),
+          onConflict: 'user_id,policy_id',
         );
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+
+      return await _fetchCurrentUser();
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Sign Out
+  // ---------------------------------------------------------------------------
 
   @override
   Future<void> signOut() async {
     try {
-      final refreshToken = await _secureStorageService.getRefreshToken();
-      if (refreshToken != null) {
-        // 서버에 로그아웃 요청 (Refresh Token 무효화)
-        await _dioClient.post(
-          '/api/v1/auth/logout',
-          data: RefreshRequestDto(refreshToken: refreshToken).toJson(),
-          // 로그아웃 시에는 기존 액세스 토큰을 함께 보내야 할 수 있으므로 no-auth를 쓰지 않거나 상황에 맞춰 결정
-        );
-      }
+      await _supabase.auth.signOut();
     } catch (e) {
-      // 서버 호출 실패 로그 (필요 시)
-      AppLogger.e('로그아웃 요청 실패: $e'); // Using AppLogger
+      AppLogger.e('Supabase sign-out error: $e');
     } finally {
-      // 서버 성공 여부와 관계없이 로컬 인증 정보 삭제
-      await _secureStorageService.deleteAllTokens();
       _authStateController.add(null);
     }
   }
@@ -355,72 +273,52 @@ class AuthApiImpl implements AuthApi {
     await _googleSignIn.signOut();
   }
 
+  // ---------------------------------------------------------------------------
+  // Current User
+  // ---------------------------------------------------------------------------
+
   @override
   Future<User?> getCurrentUser() async {
     try {
-      // 보안 저장소에서 토큰 확인
-      final accessToken = await _secureStorageService.getAccessToken();
-      final refreshToken = await _secureStorageService.getRefreshToken();
+      final authUser = _supabase.auth.currentUser;
+      final session = _supabase.auth.currentSession;
 
-      // 토큰이 아예 없으면 null 반환
-      if ((accessToken == null || accessToken.isEmpty) &&
-          (refreshToken == null || refreshToken.isEmpty)) {
-        AppLogger.d('📭 No tokens found in storage');
+      if (authUser == null || session == null) {
+        AppLogger.d('No Supabase session found');
         return null;
       }
 
-      AppLogger.d('🔐 Tokens found, validating...');
-
-      // 사용자 정보 조회 시도 (인터셉터가 자동으로 토큰 갱신 처리)
-      return await _fetchAndEmitUserInfo();
+      AppLogger.d('Supabase session found, fetching user profile...');
+      return await _fetchCurrentUser();
     } catch (e) {
-      // 토큰 갱신 실패 또는 유효하지 않은 토큰
-      AppLogger.e('❌ 현재 사용자 정보 조회 실패: $e');
-      // 실패 시 토큰 삭제
-      await _secureStorageService.deleteAllTokens();
+      AppLogger.e('Failed to get current user: $e');
       return null;
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Password Reset
+  // ---------------------------------------------------------------------------
+
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/password/reset/request',
-        data: {'email': email},
-        options: Options(extra: {'no-auth': true}),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '비밀번호 재설정 이메일 발송에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+      await _supabase.auth.resetPasswordForEmail(email);
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
 
   @override
   Future<void> verifyPasswordResetCode(String email, String code) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/password/reset/verify',
-        data: {'email': email, 'code': code},
-        options: Options(extra: {'no-auth': true}),
+      await _supabase.auth.verifyOTP(
+        email: email,
+        token: code,
+        type: supa.OtpType.recovery,
       );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '인증 코드가 일치하지 않습니다.',
-          statusCode: response.statusCode ?? 400,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
 
@@ -431,44 +329,25 @@ class AuthApiImpl implements AuthApi {
     String newPassword,
   ) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/password/reset/confirm',
-        data: {'email': email, 'code': code, 'newPassword': newPassword},
-        options: Options(extra: {'no-auth': true}),
+      await _supabase.auth.updateUser(
+        supa.UserAttributes(password: newPassword),
       );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '비밀번호 변경에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // Email Verification
+  // ---------------------------------------------------------------------------
+
   @override
   Future<void> sendVerificationEmail(String email) async {
+    _lastVerificationEmail = email;
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/email/send-verification',
-        data: {'email': email},
-        options: Options(extra: {'no-auth': true}),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        _lastVerificationEmail = email;
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '인증 이메일 발송에 실패했습니다.',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+      await _supabase.auth.resend(type: supa.OtpType.signup, email: email);
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
 
@@ -480,23 +359,14 @@ class AuthApiImpl implements AuthApi {
         statusCode: 400,
       );
     }
-
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/email/verify',
-        data: {'email': _lastVerificationEmail, 'code': code},
-        options: Options(extra: {'no-auth': true}),
+      await _supabase.auth.verifyOTP(
+        email: _lastVerificationEmail!,
+        token: code,
+        type: supa.OtpType.signup,
       );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '인증번호가 일치하지 않습니다.',
-          statusCode: response.statusCode ?? 400,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on supa.AuthException catch (e) {
+      throw ServerException(message: e.message, statusCode: 400);
     }
   }
 
@@ -508,52 +378,67 @@ class AuthApiImpl implements AuthApi {
         statusCode: 400,
       );
     }
-
-    // Use the same endpoint as sendVerificationEmail (signup/resend was deleted)
     await sendVerificationEmail(_lastVerificationEmail!);
   }
+
+  // ---------------------------------------------------------------------------
+  // Duplicate Checks
+  // ---------------------------------------------------------------------------
 
   @override
   Future<void> checkEmailDuplicate(String email) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/email/check',
-        data: {'email': email},
-        options: Options(extra: {'no-auth': true}),
-      );
+      final result = await _supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '이미 존재하는 이메일입니다',
-          statusCode: 409, // Conflict
+      if (result != null) {
+        throw const ServerException(
+          message: '이미 존재하는 이메일입니다',
+          statusCode: 409,
         );
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(
+        message: '이메일 확인 중 오류가 발생했습니다: $e',
+        statusCode: 500,
+      );
     }
   }
 
   @override
   Future<void> checkNicknameDuplicate(String nickname) async {
     try {
-      final response = await _dioClient.post(
-        '/api/v1/auth/nickname/check',
-        data: {'nickname': nickname},
-        options: Options(extra: {'no-auth': true}),
-      );
+      final result = await _supabase
+          .from('users')
+          .select('id')
+          .eq('nickname', nickname)
+          .isFilter('deleted_at', null)
+          .maybeSingle();
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '이미 존재하는 닉네임입니다',
+      if (result != null) {
+        throw const ServerException(
+          message: '이미 존재하는 닉네임입니다',
           statusCode: 409,
         );
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(
+        message: '닉네임 확인 중 오류가 발생했습니다: $e',
+        statusCode: 500,
+      );
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Profile Update
+  // ---------------------------------------------------------------------------
 
   @override
   Future<User> updateProfile({
@@ -563,132 +448,292 @@ class AuthApiImpl implements AuthApi {
     String? bio,
     String? avatarUrl,
   }) async {
-    try {
-      // Need to import ProfileUpdateRequestDto
-      // Assuming ProfileUpdateRequestDto is in lib/features/profile/data/dto
-      // If not, it needs to be created or imported from the correct location.
-      // For now, I'll use a direct map.
-      final response = await _dioClient.patch(
-        '/api/v1/users/me',
-        data: {
-          'nickname': nickname,
-          'universityId': universityId,
-          'majorId': majorId,
-          'introduction': bio,
-          // 'avatarUrl': avatarUrl, // Not included in current DTO. If needed, ProfileUpdateRequestDto must handle it.
-        },
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) {
+      throw const ServerException(
+        message: '인증되지 않은 사용자입니다.',
+        statusCode: 401,
       );
+    }
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        return await _fetchAndEmitUserInfo();
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '프로필 업데이트 실패',
-          statusCode: response.statusCode ?? 500,
-        );
+    try {
+      final updateData = <String, dynamic>{};
+      if (nickname != null) updateData['nickname'] = nickname;
+      if (universityId != null) updateData['university_id'] = universityId;
+      if (majorId != null) updateData['major_id'] = majorId;
+      if (bio != null) updateData['introduction'] = bio;
+      if (avatarUrl != null) updateData['profile_image_url'] = avatarUrl;
+
+      if (updateData.isNotEmpty) {
+        await _supabase
+            .from('users')
+            .update(updateData)
+            .eq('auth_id', authUser.id);
       }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+
+      return await _fetchCurrentUser();
+    } catch (e) {
+      throw ServerException(
+        message: '프로필 업데이트 실패: $e',
+        statusCode: 500,
+      );
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Account Deletion (soft delete)
+  // ---------------------------------------------------------------------------
 
   @override
   Future<void> deleteAccount() async {
-    try {
-      final response = await _dioClient.delete('/api/v1/users/me');
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) {
+      throw const ServerException(
+        message: '인증되지 않은 사용자입니다.',
+        statusCode: 401,
+      );
+    }
 
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] == true) {
-        await _secureStorageService.deleteAllTokens();
-        _authStateController.add(null);
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '계정 삭제 실패',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    try {
+      await _supabase.from('users').update({
+        'deleted_at': DateTime.now().toIso8601String(),
+        'is_active': false,
+      }).eq('auth_id', authUser.id);
+
+      await _supabase.auth.signOut();
+      _authStateController.add(null);
+    } catch (e) {
+      throw ServerException(
+        message: '계정 삭제 실패: $e',
+        statusCode: 500,
+      );
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Policies
+  // ---------------------------------------------------------------------------
 
   @override
   Future<List<PolicyResponseDto>> getPolicies() async {
     try {
-      final response = await _dioClient.get('/api/v1/policies');
+      final data = await _supabase
+          .from('policies')
+          .select()
+          .eq('is_active', true)
+          .order('id');
 
-      // JSON Array 응답 처리
-      final List<dynamic> list = response.data;
-      return list.map((e) => PolicyResponseDto.fromJson(e)).toList();
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+      return (data as List)
+          .map((e) => PolicyResponseDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      throw ServerException(
+        message: '정책 목록 조회 실패: $e',
+        statusCode: 500,
+      );
     }
   }
 
   @override
   Future<void> agreePolicies(List<int> policyIds) async {
-    try {
-      final response = await _dioClient.post(
-        '/api/v1/policies/agree',
-        data: PolicyAgreeRequestDto(policyIds: policyIds).toJson(),
-      );
-
-      final apiResponse = response.data as Map<String, dynamic>;
-      if (apiResponse['success'] != true) {
-        throw ServerException(
-          message: apiResponse['message'] ?? '정책 동의 저장 실패',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) {
+      throw const ServerException(message: '인증 필요', statusCode: 401);
     }
+
+    try {
+      final userId = await _getUserId(authUser.id);
+      await _supabase.from('user_policy_agreements').upsert(
+        policyIds
+            .map((id) => {
+                  'user_id': userId,
+                  'policy_id': id,
+                })
+            .toList(),
+        onConflict: 'user_id,policy_id',
+      );
+    } catch (e) {
+      throw ServerException(
+        message: '정책 동의 저장 실패: $e',
+        statusCode: 500,
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Access Token & Auth State Stream
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<String?> getAccessToken() async {
+    return _supabase.auth.currentSession?.accessToken;
   }
 
   @override
   Stream<User?> get authStateChanges => _authStateController.stream;
-  Future<User> _fetchAndEmitUserInfo() async {
-    try {
-      final response = await _dioClient.get('/api/v1/users/me');
-      final apiResponse = response.data as Map<String, dynamic>;
 
-      if (apiResponse['success'] == true) {
-        final userDto = UserDto.fromJson(apiResponse['data']);
-        final user = userDto.toDomain();
-        _authStateController.add(user);
-        return user;
-      } else {
-        throw ServerException(
-          message: apiResponse['message'] ?? '사용자 정보 조회 실패',
-          statusCode: response.statusCode ?? 500,
-        );
-      }
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    }
-  }
+  // ---------------------------------------------------------------------------
+  // Private Helpers
+  // ---------------------------------------------------------------------------
 
-  Exception _handleDioError(DioException e) {
-    if (e.response != null) {
-      final data = e.response?.data;
-      if (data is Map<String, dynamic>) {
-        return ServerException(
-          message: data['message'] ?? '서버 오류가 발생했습니다',
-          statusCode: e.response?.statusCode ?? 500,
-        );
-      }
-      // 응답이 JSON이 아닌 경우 사용자 친화적 메시지 반환
-      return ServerException(
-        message: '서버 오류가 발생했습니다',
-        statusCode: e.response?.statusCode ?? 500,
+  /// Fetch the current user's profile from the `users` table,
+  /// joining `universities` and `majors` for display names.
+  Future<User> _fetchCurrentUser() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) {
+      throw const ServerException(
+        message: '인증되지 않은 사용자입니다.',
+        statusCode: 401,
       );
     }
-    return NetworkException('인터넷 연결을 확인해주세요.');
+
+    final data = await _supabase
+        .from('users')
+        .select('*, universities(name), majors(name)')
+        .eq('auth_id', authUser.id)
+        .single();
+
+    final user = _mapToUser(data);
+    _authStateController.add(user);
+    return user;
   }
 
-  @override
-  Future<String?> getAccessToken() async {
-    return await _secureStorageService.getAccessToken();
+  /// Map a Supabase row from `users` (with joined university/major) to
+  /// the domain [User] entity.
+  User _mapToUser(Map<String, dynamic> data) {
+    return User(
+      id: data['id'].toString(),
+      email: data['email'] ?? '',
+      nickname: data['nickname'] ?? '',
+      fullName: data['full_name'] as String?,
+      avatarUrl: data['profile_image_url'] as String?,
+      university: data['universities'] != null
+          ? (data['universities'] as Map<String, dynamic>)['name'] as String?
+          : null,
+      universityId: data['university_id'] as int?,
+      major: data['majors'] != null
+          ? (data['majors'] as Map<String, dynamic>)['name'] as String?
+          : null,
+      majorId: data['major_id'] as int?,
+      bio: data['introduction'] as String?,
+      role: data['user_role'] as String?,
+      isEmailVerified: data['is_email_verified'] as bool? ?? false,
+      preferredLanguage: data['preferred_language'] as String?,
+      isUniversityVerified: data['is_verified'] as bool? ?? false,
+      createdAt: data['created_at'] != null
+          ? DateTime.parse(data['created_at'] as String)
+          : null,
+      updatedAt: data['updated_at'] != null
+          ? DateTime.parse(data['updated_at'] as String)
+          : null,
+    );
+  }
+
+  /// Get the public.users.id (BIGSERIAL) for a given auth UID.
+  Future<int> _getUserId(String authUid) async {
+    final data = await _supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authUid)
+        .single();
+    return data['id'] as int;
+  }
+
+  /// Shared logic for Google and Apple OAuth sign-in result resolution.
+  /// Determines whether the user is new, has an incomplete profile, or is
+  /// an existing user with a complete profile.
+  Future<OAuthLoginResult> _resolveOAuthResult({
+    required supa.User authUser,
+    required supa.Session? session,
+    required String provider,
+    String? displayNameOverride,
+  }) async {
+    final email = authUser.email ?? '';
+    final displayName = displayNameOverride ??
+        authUser.userMetadata?['full_name'] as String?;
+    final accessToken = session?.accessToken ?? '';
+    final refreshToken = session?.refreshToken ?? '';
+    final authId = authUser.id;
+
+    // Check if user profile exists in public.users
+    var userData = await _supabase
+        .from('users')
+        .select()
+        .eq('auth_id', authId)
+        .maybeSingle();
+
+    if (userData == null) {
+      // New user - the trigger should have created the row, but may not have completed yet
+      await Future.delayed(const Duration(milliseconds: 500));
+      userData = await _supabase
+          .from('users')
+          .select()
+          .eq('auth_id', authId)
+          .maybeSingle();
+
+      if (userData == null) {
+        // Still no row - treat as new user
+        return OAuthNewUser(OAuthSignupData(
+          email: email,
+          displayName: displayName,
+          provider: provider,
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+        ));
+      }
+    }
+
+    // Check if profile is complete (has nickname and birth_date)
+    final hasNickname = userData['nickname'] != null &&
+        (userData['nickname'] as String).isNotEmpty;
+    final hasBirthDate = userData['birth_date'] != null;
+
+    // Check mandatory policy agreements
+    final userId = userData['id'] as int;
+    bool hasAgreedAllMandatory = true;
+
+    final mandatoryPolicies = await _supabase
+        .from('policies')
+        .select('id')
+        .eq('is_active', true)
+        .eq('is_mandatory', true);
+
+    if ((mandatoryPolicies as List).isNotEmpty) {
+      final agreements = await _supabase
+          .from('user_policy_agreements')
+          .select('policy_id')
+          .eq('user_id', userId);
+
+      final agreedIds =
+          (agreements as List).map((a) => a['policy_id']).toSet();
+      hasAgreedAllMandatory =
+          mandatoryPolicies.every((p) => agreedIds.contains(p['id']));
+    }
+
+    if (!hasNickname || !hasBirthDate || !hasAgreedAllMandatory) {
+      final isNew = !hasNickname;
+      final signupData = OAuthSignupData(
+        email: email,
+        displayName: displayName,
+        provider: provider,
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+
+      if (isNew) {
+        return OAuthNewUser(signupData);
+      } else {
+        return OAuthIncompleteUser(
+          signupData: signupData,
+          hasBirthDate: hasBirthDate,
+          hasAgreedAllMandatory: hasAgreedAllMandatory,
+        );
+      }
+    }
+
+    // Complete profile - return existing user
+    final user = _mapToUser(userData);
+    _authStateController.add(user);
+    return OAuthExistingUser(user);
   }
 }

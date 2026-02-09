@@ -2,9 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
-import '../../../../core/network/dio_client.dart';
 import '../../../../core/services/fcm_service.dart';
-import '../../../../core/storage/secure_storage_service.dart';
 import '../../data/api/auth_api.dart';
 import '../../data/api/auth_api_impl.dart';
 import '../../data/dto/auth_response_dto.dart';
@@ -15,20 +13,6 @@ import '../../domain/usecases/apple_sign_in_usecase.dart';
 import '../../domain/usecases/google_sign_in_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
-
-/// DioClient 제공자
-final dioClientProvider = Provider<DioClient>((ref) {
-  final secureStorage = ref.watch(secureStorageServiceProvider);
-  return DioClient(secureStorage);
-});
-
-/// AuthApi 제공자
-final authApiProvider = Provider<AuthApi>((ref) {
-  // 제공자로부터 DioClient 사용
-  final dioClient = ref.watch(dioClientProvider);
-  final secureStorage = ref.watch(secureStorageServiceProvider);
-  return AuthApiImpl(dioClient, secureStorage);
-});
 
 /// AuthRepository 제공자
 final authRepositoryProvider = Provider<AuthRepository>((ref) {

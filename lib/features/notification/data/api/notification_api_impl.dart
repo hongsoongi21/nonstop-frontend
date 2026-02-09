@@ -1,41 +1,56 @@
-import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/exceptions.dart';
-import '../../../../core/network/dio_client.dart';
 import '../../domain/entities/app_notification.dart';
 import 'notification_api.dart';
 
 class NotificationApiImpl implements NotificationApi {
-  final DioClient _dioClient;
+  final SupabaseClient _supabase;
 
-  NotificationApiImpl(this._dioClient);
+  NotificationApiImpl(this._supabase);
+
+  Future<int> _getCurrentUserId() async {
+    final authUser = _supabase.auth.currentUser;
+    if (authUser == null) throw const ApiException('Not authenticated');
+    final data = await _supabase
+        .from('users')
+        .select('id')
+        .eq('auth_id', authUser.id)
+        .single();
+    return data['id'] as int;
+  }
 
   @override
-  Future<Either<ApiException, List<AppNotification>>> getNotifications() async {
+  Future<Either<ApiException, List<AppNotification>>>
+      getNotifications() async {
     try {
-      final response = await _dioClient.get('/api/v1/notifications');
-      final data = response.data['data'] as List<dynamic>;
-      final notifications = data.map((json) {
-        final map = json as Map<String, dynamic>;
+      final currentUserId = await _getCurrentUserId();
+
+      final data = await _supabase
+          .from('notifications')
+          .select()
+          .eq('user_id', currentUserId)
+          .order('created_at', ascending: false);
+
+      final notifications = (data as List).map((map) {
         return AppNotification(
           id: map['id'] as int,
-          actorId: map['actorId'] as int?,
-          actorNickname: map['actorNickname'] as String?,
+          actorId: map['actor_id'] as int?,
+          actorNickname: map['actor_nickname'] as String?,
           type: _parseNotificationType(map['type'] as String?),
-          postId: map['postId'] as int?,
-          commentId: map['commentId'] as int?,
-          chatRoomId: map['chatRoomId'] as int?,
+          postId: map['post_id'] as int?,
+          commentId: map['comment_id'] as int?,
+          chatRoomId: map['chat_room_id'] as int?,
           message: map['message'] as String? ?? '',
-          isRead: map['isRead'] as bool? ?? false,
-          createdAt: map['createdAt'] != null
-              ? DateTime.parse(map['createdAt'] as String)
+          isRead: map['is_read'] as bool? ?? false,
+          createdAt: map['created_at'] != null
+              ? DateTime.parse(map['created_at'] as String)
               : DateTime.now(),
         );
       }).toList();
+
       return Right(notifications);
-    } on DioException catch (e) {
-      return Left(_handleDioError(e));
     } catch (e) {
       return Left(ApiException('Failed to get notifications: $e'));
     }
@@ -44,10 +59,11 @@ class NotificationApiImpl implements NotificationApi {
   @override
   Future<Either<ApiException, void>> markAsRead(int notificationId) async {
     try {
-      await _dioClient.patch('/api/v1/notifications/$notificationId/read');
+      await _supabase
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('id', notificationId);
       return const Right(null);
-    } on DioException catch (e) {
-      return Left(_handleDioError(e));
     } catch (e) {
       return Left(ApiException('Failed to mark notification as read: $e'));
     }
@@ -56,10 +72,13 @@ class NotificationApiImpl implements NotificationApi {
   @override
   Future<Either<ApiException, void>> markAllAsRead() async {
     try {
-      await _dioClient.patch('/api/v1/notifications/read-all');
+      final currentUserId = await _getCurrentUserId();
+      await _supabase
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('user_id', currentUserId)
+          .eq('is_read', false);
       return const Right(null);
-    } on DioException catch (e) {
-      return Left(_handleDioError(e));
     } catch (e) {
       return Left(ApiException('Failed to mark all notifications as read: $e'));
     }
@@ -86,18 +105,5 @@ class NotificationApiImpl implements NotificationApi {
       default:
         return NotificationType.announcement;
     }
-  }
-
-  ApiException _handleDioError(DioException e) {
-    if (e.response != null) {
-      final statusCode = e.response!.statusCode;
-      final data = e.response!.data;
-      String message = 'Unknown error';
-      if (data is Map<String, dynamic> && data['message'] != null) {
-        message = data['message'] as String;
-      }
-      return ApiException('[$statusCode] $message');
-    }
-    return ApiException('Network error: ${e.message}');
   }
 }

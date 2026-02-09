@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:nonstop/core/errors/failures.dart';
-import 'package:nonstop/core/network/dio_client.dart' show dioClientProvider;
+import 'package:nonstop/core/supabase/supabase_provider.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import 'package:nonstop/features/board/data/repositories/board_repository_impl.dart';
@@ -344,8 +344,8 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
 
 /// Profile API provider
 final profileApiProvider = Provider<ProfileApi>((ref) {
-  final dioClient = ref.read(dioClientProvider);
-  return ProfileApiImpl(dioClient);
+  final supabaseClient = ref.watch(supabaseClientProvider);
+  return ProfileApiImpl(supabaseClient);
 });
 
 /// Repository provider
