@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/network/stomp_service.dart';
@@ -6,6 +7,7 @@ import 'package:nonstop/features/auth/domain/repository/auth_repository.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
+import 'package:nonstop/features/chat/domain/entities/read_receipt.dart';
 import 'package:nonstop/features/chat/domain/repository/chat_repository.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,9 +18,13 @@ class ChatRepositoryImpl implements ChatRepository {
 
   // Cache subscriptions to unsubscribe later if needed
   final Map<int, Function()> _subscriptions = {};
-  
+
   // Stream controllers for active rooms
   final Map<int, StreamController<ChatMessage>> _roomStreams = {};
+
+  // Read receipt subscriptions and streams
+  final Map<int, Function()> _readReceiptSubscriptions = {};
+  final Map<int, StreamController<ReadReceipt>> _readReceiptStreams = {};
 
   ChatRepositoryImpl(this._api, this._stompService, this._authRepository);
 
@@ -37,18 +43,30 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<void> disconnect() async {
-    // Unsubscribe all
+    // Unsubscribe all message subscriptions
     for (final unsubscribe in _subscriptions.values) {
       unsubscribe();
     }
     _subscriptions.clear();
-    
-    // Close streams
+
+    // Close message streams
     for (final controller in _roomStreams.values) {
       controller.close();
     }
     _roomStreams.clear();
-    
+
+    // Unsubscribe all read receipt subscriptions
+    for (final unsubscribe in _readReceiptSubscriptions.values) {
+      unsubscribe();
+    }
+    _readReceiptSubscriptions.clear();
+
+    // Close read receipt streams
+    for (final controller in _readReceiptStreams.values) {
+      controller.close();
+    }
+    _readReceiptStreams.clear();
+
     _stompService.disconnect();
   }
 
@@ -68,7 +86,7 @@ class ChatRepositoryImpl implements ChatRepository {
           final message = ChatMessage.fromJson(data);
           controller.add(message);
         } catch (e) {
-          // controller.addError(e);
+          debugPrint('Error parsing chat message: $e');
         }
       },
     );
@@ -147,6 +165,87 @@ class ChatRepositoryImpl implements ChatRepository {
       return Right(result);
     } catch (e) {
        return Left(Failure.server(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
+  Stream<ReadReceipt> subscribeToReadReceipts(int roomId) {
+    if (_readReceiptStreams.containsKey(roomId)) {
+      return _readReceiptStreams[roomId]!.stream;
+    }
+
+    final controller = StreamController<ReadReceipt>.broadcast();
+    _readReceiptStreams[roomId] = controller;
+
+    final unsubscribe = _stompService.subscribe(
+      destination: '/sub/chat/room/$roomId/read',
+      callback: (data) {
+        try {
+          final receipt = ReadReceipt.fromJson(data);
+          controller.add(receipt);
+        } catch (e) {
+          // Log error but don't crash
+          debugPrint('Error parsing read receipt: $e');
+        }
+      },
+    );
+
+    _readReceiptSubscriptions[roomId] = unsubscribe;
+
+    return controller.stream;
+  }
+
+  @override
+  Future<Either<Failure, void>> markAsRead({
+    required int roomId,
+    required int messageId,
+  }) async {
+    try {
+      await _api.markAsRead(roomId, messageId);
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure.server(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> uploadChatImage(int roomId, String localFilePath) async {
+    try {
+      final imageUrl = await _api.uploadChatImage(roomId, localFilePath);
+      return Right(imageUrl);
+    } catch (e) {
+      return Left(Failure.server(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> leaveRoom(int roomId) async {
+    try {
+      // Unsubscribe from room messages
+      if (_subscriptions.containsKey(roomId)) {
+        _subscriptions[roomId]!();
+        _subscriptions.remove(roomId);
+      }
+      if (_roomStreams.containsKey(roomId)) {
+        _roomStreams[roomId]!.close();
+        _roomStreams.remove(roomId);
+      }
+
+      // Unsubscribe from read receipts
+      if (_readReceiptSubscriptions.containsKey(roomId)) {
+        _readReceiptSubscriptions[roomId]!();
+        _readReceiptSubscriptions.remove(roomId);
+      }
+      if (_readReceiptStreams.containsKey(roomId)) {
+        _readReceiptStreams[roomId]!.close();
+        _readReceiptStreams.remove(roomId);
+      }
+
+      // Call API to leave room
+      await _api.leaveRoom(roomId);
+      return const Right(null);
+    } catch (e) {
+      return Left(Failure.server(message: e.toString(), statusCode: 500));
     }
   }
 }

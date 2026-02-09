@@ -174,4 +174,61 @@ class FriendApiImpl implements FriendApi {
       return left(ApiException(e.toString()));
     }
   }
+
+  @override
+  Future<Either<ApiException, Unit>> blockUser(String userId) async {
+    try {
+      final response = await _dio.post(
+        '/api/v1/friends/block',
+        data: {'targetUserId': int.parse(userId)},
+      );
+
+      if (response.statusCode == 200) {
+        return right(unit);
+      }
+      return left(ApiException('Failed to block user'));
+    } on DioException catch (e) {
+      return left(ApiException(e.message ?? 'Network error'));
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ApiException, Unit>> unblockUser(String blockedId) async {
+    try {
+      final response = await _dio.delete('/api/v1/friends/block/$blockedId');
+
+      if (response.statusCode == 200) {
+        return right(unit);
+      }
+      return left(ApiException('Failed to unblock user'));
+    } on DioException catch (e) {
+      return left(ApiException(e.message ?? 'Network error'));
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<ApiException, List<BlockedUserDto>>> getBlockedUsers() async {
+    try {
+      final response = await _dio.get('/api/v1/friends/blocked');
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data['success'] == true && data['data'] != null) {
+          final list = (data['data'] as List)
+              .map((json) => BlockedUserDto.fromJson(json))
+              .toList();
+          return right(list);
+        }
+      }
+      return left(ApiException('Failed to fetch blocked users'));
+    } on DioException catch (e) {
+      return left(ApiException(e.message ?? 'Network error'));
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
 }

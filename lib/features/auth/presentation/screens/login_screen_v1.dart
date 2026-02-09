@@ -1,17 +1,22 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_typography.dart';
+import '../../data/dto/auth_response_dto.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
-import '../widgets/gradient_button.dart';
-import '../widgets/language_selector.dart';
 
 class LoginScreenV1 extends ConsumerStatefulWidget {
   const LoginScreenV1({super.key});
@@ -25,25 +30,68 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    serverClientId:
-        '821831827536-uqt7lfmq43a4ed678fqrm9fj32c1slt7.apps.googleusercontent.com',
-    scopes: ['email', 'profile'],
-  );
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _staggeredAnimation2;
+  late Animation<double> _staggeredAnimation3;
+  bool _googleSignInInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1200),
     );
+
+    // Fade animation for the entire form
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+      ),
     );
+
+    // Slide animation for the form container
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.0, 0.6, curve: Curves.easeOutCubic),
+      ),
+    );
+
+    // Staggered animations for form elements
+    _staggeredAnimation2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.4, 0.9, curve: Curves.easeOut),
+      ),
+    );
+
+    _staggeredAnimation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
+      ),
+    );
+
     _animationController.forward();
+    _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    if (_googleSignInInitialized) return;
+    await _googleSignIn.initialize(
+      // Firebase project: nonstop-c2aa4 (127473148279)
+      serverClientId:
+          '127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com',
+    );
+    _googleSignInInitialized = true;
   }
 
   @override
@@ -67,58 +115,217 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
     final authState = ref.read(authProvider);
     if (authState.isAuthenticated && !authState.hasError) {
+      _showWelcomeSnackbar(authState.user?.nickname);
+      // 라우터가 자동으로 board로 리다이렉트합니다
+    }
+  }
+
+  void _showWelcomeSnackbar(String? nickname) {
+    if (!mounted) return;
+    final displayName = nickname ?? 'User';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.loginSuccessWelcome(displayName)),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Future<void> _handleGoogleLogin() async {
+    // Store notifier reference before async gap to avoid "ref after dispose" error
+    final authNotifier = ref.read(authProvider.notifier);
+
+    try {
+      debugPrint('[GOOGLE_LOGIN] Step 1: Initializing Google Sign-In...');
+      // Ensure Google Sign-In is initialized
+      await _initGoogleSignIn();
+
+      debugPrint('[GOOGLE_LOGIN] Step 2: Calling authenticate()...');
+      // Google Sign-In using new API (v7.x)
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+      debugPrint('[GOOGLE_LOGIN] Step 3: Got Google user: ${googleUser.email}');
+
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+      final googleIdToken = googleAuth.idToken;
+      debugPrint('[GOOGLE_LOGIN] Step 4: Google ID Token: ${googleIdToken != null ? "EXISTS (${googleIdToken.length} chars)" : "NULL"}');
+
+      if (googleIdToken == null) {
+        debugPrint('[GOOGLE_LOGIN] ERROR: Google ID Token is null!');
+        return;
+      }
+
+      debugPrint('[GOOGLE_LOGIN] Step 5: Signing in to Firebase...');
+      // Exchange Google token for a Firebase ID token.
+      final credential = GoogleAuthProvider.credential(idToken: googleIdToken);
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      debugPrint('[GOOGLE_LOGIN] Step 6: Firebase user: ${userCredential.user?.uid}');
+
+      final firebaseIdToken = await userCredential.user?.getIdToken(true);
+      debugPrint('[GOOGLE_LOGIN] Step 7: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS (${firebaseIdToken.length} chars)" : "NULL"}');
+
+      if (firebaseIdToken == null) {
+        debugPrint('[GOOGLE_LOGIN] ERROR: Firebase ID Token is null!');
+        return;
+      }
+
+      debugPrint('[GOOGLE_LOGIN] Step 8: Calling backend signInWithGoogle...');
+      await authNotifier.signInWithGoogle(firebaseIdToken);
+
       if (mounted) {
-        context.go(Routes.home);
+        final authState = ref.read(authProvider);
+        debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+
+        if (authState.hasPendingOAuthSignup) {
+          // 신규 사용자: 회원가입 화면으로 이동
+          debugPrint('[GOOGLE_LOGIN] Step 10: New user, redirecting to signup...');
+          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+        } else if (authState.isAuthenticated && !authState.hasError) {
+          debugPrint('[GOOGLE_LOGIN] Step 10: Login successful, router will redirect...');
+          _showWelcomeSnackbar(authState.user?.nickname);
+          // 라우터가 자동으로 board로 리다이렉트합니다
+        } else {
+          debugPrint('[GOOGLE_LOGIN] ERROR: Not authenticated or has error');
+        }
+      }
+    } on GoogleSignInException catch (e) {
+      debugPrint('[GOOGLE_LOGIN] GoogleSignInException: ${e.code} - ${e.description}');
+      // User cancelled the sign-in
+      if (e.code == GoogleSignInExceptionCode.canceled) return;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(e.description ?? ''))),
+        );
+      }
+    } catch (error, stackTrace) {
+      debugPrint('[GOOGLE_LOGIN] Exception: $error');
+      debugPrint('[GOOGLE_LOGIN] StackTrace: $stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString()))),
+        );
       }
     }
   }
 
-  Future<void> _handleGoogleLogin() async {
+  /// Generate a random nonce for Apple Sign In
+  String _generateNonce([int length = 32]) {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+  }
+
+  /// Hash the nonce using SHA256
+  String _sha256ofString(String input) {
+    final bytes = utf8.encode(input);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
+  }
+
+  Future<void> _handleAppleLogin() async {
+    // Apple Sign In is only available on iOS
+    if (!Platform.isIOS) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInNotAvailable)),
+        );
+      }
+      return;
+    }
+
+    // Store notifier reference before async gap to avoid "ref after dispose" error
+    final authNotifier = ref.read(authProvider.notifier);
+
     try {
-      // Google Sign-In
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      debugPrint('[APPLE_LOGIN] Step 1: Generating nonce...');
+      // Generate nonce for security
+      final rawNonce = _generateNonce();
+      final nonce = _sha256ofString(rawNonce);
 
-      if (googleUser == null) return;
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final googleIdToken = googleAuth.idToken;
-      final googleAccessToken = googleAuth.accessToken;
-
-      if (googleIdToken == null) return;
-
-      // Exchange Google token for a Firebase ID token.
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleIdToken,
-        accessToken: googleAccessToken,
+      debugPrint('[APPLE_LOGIN] Step 2: Requesting Apple credential...');
+      // Request Apple Sign In
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: nonce,
       );
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
+      debugPrint('[APPLE_LOGIN] Step 3: Got Apple credential, identityToken: ${appleCredential.identityToken != null ? "EXISTS" : "NULL"}');
+
+      // Create OAuth credential for Firebase
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: appleCredential.identityToken,
+        rawNonce: rawNonce,
       );
+
+      debugPrint('[APPLE_LOGIN] Step 4: Signing in to Firebase...');
+      // Sign in to Firebase with Apple credential
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      debugPrint('[APPLE_LOGIN] Step 5: Firebase user: ${userCredential.user?.uid}');
+
       final firebaseIdToken = await userCredential.user?.getIdToken(true);
+      debugPrint('[APPLE_LOGIN] Step 6: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS" : "NULL"}');
 
-      if (firebaseIdToken == null) return;
+      if (firebaseIdToken == null) {
+        debugPrint('[APPLE_LOGIN] ERROR: Firebase ID Token is null!');
+        return;
+      }
 
-      await ref.read(authProvider.notifier).signInWithGoogle(firebaseIdToken);
+      // Get user name from Apple (only provided on first sign in)
+      final firstName = appleCredential.givenName;
+      final lastName = appleCredential.familyName;
+      debugPrint('[APPLE_LOGIN] Step 7: Name: $firstName $lastName');
+
+      debugPrint('[APPLE_LOGIN] Step 8: Calling backend signInWithApple...');
+      // Sign in with backend
+      await authNotifier.signInWithApple(
+        idToken: firebaseIdToken,
+        authorizationCode: appleCredential.authorizationCode,
+        firstName: firstName,
+        lastName: lastName,
+      );
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        if (authState.isAuthenticated && !authState.hasError) {
-          context.go(Routes.home);
+        debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+
+        if (authState.hasPendingOAuthSignup) {
+          // 신규 사용자: 회원가입 화면으로 이동
+          debugPrint('[APPLE_LOGIN] Step 10: New user, redirecting to signup...');
+          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+        } else if (authState.isAuthenticated && !authState.hasError) {
+          debugPrint('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
+          _showWelcomeSnackbar(authState.user?.nickname);
+          // 라우터가 자동으로 board로 리다이렉트합니다
         }
       }
-    } catch (error) {
+    } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('[APPLE_LOGIN] SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
+      // User cancelled the sign-in
+      if (e.code == AuthorizationErrorCode.canceled) return;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Google Sign-In failed: $error')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(e.message))),
+        );
+      }
+    } catch (error, stackTrace) {
+      debugPrint('[APPLE_LOGIN] Exception: $error');
+      debugPrint('[APPLE_LOGIN] StackTrace: $stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(error.toString()))),
         );
       }
     }
   }
 
   void _handleForgotPassword() {
-    // TODO: 비밀번호 찾기 화면으로 이동 필요
+    context.push(Routes.forgotPassword);
   }
 
   void _handleSignup() {
@@ -131,343 +338,492 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFFE0DBF8), // #E0DBF8
-              Color(0xFFDEF4EB), // #DEF4EB
-            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: AppColors.primaryGradient,
           ),
         ),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              top: 40.h,
+              top: 24.h,
               left: 16.w,
               right: 16.w,
-              bottom: 40.h,
+              bottom: 24.h,
             ),
             child: SingleChildScrollView(
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Language selector
-                      const LanguageSelector(),
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 40.h),
 
-                      SizedBox(height: 16.h),
-
-                      // Login form container
-                      Container(
-                        width: 343.w,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFFFFF),
-                          borderRadius: BorderRadius.circular(40.r),
-                          border: Border.all(
-                            color: const Color(0xFFFFFFFF),
-                            width: 1.w,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFF7C3BEE,
-                              ).withValues(alpha: 0.059), // #7C3BEE0F
-                              offset: Offset(0, 8.h),
-                              blurRadius: 15.r,
-                              spreadRadius: 0,
+                        // Login form container
+                        FadeTransition(
+                          opacity: _staggeredAnimation2,
+                          child: Container(
+                            width: 343.w,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(32.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.shadowStrong,
+                                  offset: Offset(0, 12.h),
+                                  blurRadius: 32.r,
+                                  spreadRadius: -4.r,
+                                ),
+                                BoxShadow(
+                                  color: AppColors.primaryDark
+                                      .withValues(alpha: 0.1),
+                                  offset: Offset(0, 4.h),
+                                  blurRadius: 16.r,
+                                  spreadRadius: 0,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: 25.h,
-                            bottom: 40.h,
-                            left: 24.w,
-                            right: 24.w,
-                          ),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 15.h),
-
-                                // Title
-                                Container(
-                                  width: 275.w,
-                                  height: 38.h,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Xush Kelibsiz!',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: 'Noto Sans',
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 24.sp,
-                                      height: 1.0,
-                                      letterSpacing: -0.03 * 24.sp,
-                                      color: const Color(0xFF111827),
-                                    ),
-                                  ),
-                                ),
-
-                                Container(
-                                  width: 275.w,
-                                  height: 39.h,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Davom etish uchun tizimga kiring',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: 'Noto Sans',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14.sp,
-                                      height: 1.0,
-                                      letterSpacing: -0.03 * 14.sp,
-                                      color: const Color(0xFF6B7280),
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 30.h),
-
-                                // Email Input
-                                CustomAuthTextField(
-                                  controller: _emailController,
-                                  hintText: 'Email',
-                                  prefixIcon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your email';
-                                    }
-                                    if (!RegExp(
-                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                    ).hasMatch(value)) {
-                                      return 'Please enter a valid email';
-                                    }
-                                    return null;
-                                  },
-                                ),
-
-                                SizedBox(height: 20.h),
-
-                                // Password Input
-                                CustomAuthTextField(
-                                  controller: _passwordController,
-                                  hintText: 'Password',
-                                  prefixIcon: Icons.lock_outline,
-                                  obscureText: true,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter your password';
-                                    }
-                                    if (value.length < 6) {
-                                      return 'Password must be at least 6 characters';
-                                    }
-                                    return null;
-                                  },
-                                ),
-
-                                SizedBox(height: 12.h),
-
-                                // Forgot Password
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: _handleForgotPassword,
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: Text(
-                                      'Forgot Password?',
-                                      style: AppTypography.body2.copyWith(
-                                        color: const Color(
-                                          0xFF7C3BEE,
-                                        ), // #7C3BEE
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 20.h),
-
-                                // Login Button
-                                GradientButton(
-                                  text: 'Login',
-                                  onPressed: _handleLogin,
-                                  isLoading: authState.isLoading,
-                                ),
-
-                                SizedBox(height: 24.h),
-
-                                // Divider with text
-                                Stack(
-                                  alignment: Alignment.center,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 28.w,
+                                vertical: 40.h,
+                              ),
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: [
-                                    // Divider line
-                                    Divider(
-                                      color: Colors.grey.shade300,
-                                      thickness: 1,
-                                    ),
-                                    // White background container with text
-                                    Container(
-                                      width: 200.w,
-                                      height: 20.h,
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFFFFFFF),
-                                        borderRadius: BorderRadius.circular(
-                                          15.r,
-                                        ),
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'Yoki ijtimoly tarmoqlar orqali',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: 'Noto Sans',
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 12.sp,
-                                          height: 1.0,
-                                          letterSpacing: -0.03 * 12.sp,
-                                          color: const Color(0xFF6B7280),
-                                        ),
+                                    // Title
+                                    Text(
+                                      'Nonstop',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Noto Sans',
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 28.sp,
+                                        height: 1.2,
+                                        letterSpacing: -0.02 * 28.sp,
+                                        color: AppColors.textPrimary,
                                       ),
                                     ),
-                                  ],
-                                ),
 
-                                SizedBox(height: 24.h),
+                                    SizedBox(height: 8.h),
 
-                                // Google Login Button
-                                OutlinedButton.icon(
-                                  onPressed: _handleGoogleLogin,
-                                  style: OutlinedButton.styleFrom(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 16.h,
-                                      horizontal: 24.w,
-                                    ),
-                                    side: BorderSide(
-                                      color: Colors.grey.shade300,
-                                      width: 1.w,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12.r),
-                                    ),
-                                  ),
-                                  icon: Icon(
-                                    Icons.g_mobiledata,
-                                    size: 24.sp,
-                                    color: Colors.black87,
-                                  ),
-                                  label: Text(
-                                    'Continue with Google',
-                                    style: AppTypography.body1.copyWith(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 32.h),
-
-                                // Signup Text
-                                Container(
-                                  width: 275.w,
-                                  alignment: Alignment.center,
-                                  child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
+                                    Text(
+                                      AppLocalizations.of(context)!.loginToContinue,
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontFamily: 'Noto Sans',
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 14.sp,
-                                        height: 1.0,
-                                        letterSpacing: -0.02 * 14.sp,
-                                        color: Colors.black87,
+                                        fontSize: 15.sp,
+                                        height: 1.4,
+                                        letterSpacing: -0.01 * 15.sp,
+                                        color: AppColors.textSecondary,
                                       ),
-                                      children: [
-                                        const TextSpan(
-                                          text: "Profiling yo'qmi? ",
+                                    ),
+
+                                    SizedBox(height: 32.h),
+
+                                    // Email Input
+                                    CustomAuthTextField(
+                                      controller: _emailController,
+                                      hintText: AppLocalizations.of(context)!.email,
+                                      prefixIcon: Icons.email_outlined,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return AppLocalizations.of(context)!.validationEmailRequired;
+                                        }
+                                        if (!RegExp(
+                                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                        ).hasMatch(value)) {
+                                          return AppLocalizations.of(context)!.validationEmailInvalid;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+
+                                    SizedBox(height: 16.h),
+
+                                    // Password Input
+                                    CustomAuthTextField(
+                                      controller: _passwordController,
+                                      hintText: AppLocalizations.of(context)!.password,
+                                      prefixIcon: Icons.lock_outline,
+                                      obscureText: true,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return AppLocalizations.of(context)!.validationPasswordRequired;
+                                        }
+                                        if (value.length < 6) {
+                                          return AppLocalizations.of(context)!.validationPasswordMin6;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+
+                                    SizedBox(height: 16.h),
+
+                                    // Forgot Password
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton(
+                                        onPressed: _handleForgotPassword,
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 4.w,
+                                            vertical: 4.h,
+                                          ),
+                                          minimumSize: Size.zero,
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                          foregroundColor: AppColors.primary,
+                                          overlayColor: AppColors.primary
+                                              .withValues(alpha: 0.1),
                                         ),
-                                        WidgetSpan(
-                                          child: GestureDetector(
-                                            onTap: _handleSignup,
-                                            child: Text(
-                                              "Ro'yxatdan o'tish",
-                                              style: TextStyle(
-                                                fontFamily: 'Noto Sans',
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 14.sp,
-                                                height: 1.0,
-                                                letterSpacing: -0.02 * 14.sp,
-                                                color: const Color(0xFF7C3BEE),
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                decorationColor: const Color(
-                                                  0xFF7C3BEE,
+                                        child: Text(
+                                          AppLocalizations.of(context)!.forgotPassword,
+                                          style: TextStyle(
+                                            fontFamily: 'Noto Sans',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14.sp,
+                                            height: 1.4,
+                                            letterSpacing: -0.01 * 14.sp,
+                                            color: AppColors.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 24.h),
+
+                                    // Error Message (moved above button)
+                                    if (authState.hasError)
+                                      FadeTransition(
+                                        opacity: _staggeredAnimation3,
+                                        child: Container(
+                                          margin: EdgeInsets.only(bottom: 16.h),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16.w,
+                                            vertical: 12.h,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.errorLight,
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            border: Border.all(
+                                              color: AppColors.error
+                                                  .withValues(alpha: 0.2),
+                                              width: 1.w,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.info_outline_rounded,
+                                                color: AppColors.error,
+                                                size: 20.sp,
+                                              ),
+                                              SizedBox(width: 12.w),
+                                              Expanded(
+                                                child: Text(
+                                                  authState.failure?.message ??
+                                                      AppLocalizations.of(context)!.errorOccurred,
+                                                  style: TextStyle(
+                                                    fontFamily: 'Noto Sans',
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 13.sp,
+                                                    height: 1.4,
+                                                    color: AppColors.errorDark,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-                                SizedBox(height: 2.h),
-
-                                // Error Message
-                                if (authState.hasError)
-                                  Container(
-                                    padding: EdgeInsets.all(12.w),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.error.withValues(
-                                        alpha: 0.1,
                                       ),
-                                      borderRadius: BorderRadius.circular(8.r),
-                                      border: Border.all(
-                                        color: AppColors.error.withValues(
-                                          alpha: 0.3,
+
+                                    // Login Button
+                                    Container(
+                                      height: 56.h,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: AppColors.primaryGradient,
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
                                         ),
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.primary
+                                                .withValues(alpha: 0.3),
+                                            offset: Offset(0, 4.h),
+                                            blurRadius: 12.r,
+                                            spreadRadius: 0,
+                                          ),
+                                        ],
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: authState.isLoading
+                                            ? null
+                                            : _handleLogin,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          foregroundColor: Colors.white,
+                                          shadowColor: Colors.transparent,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16.r),
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                        ),
+                                        child: authState.isLoading
+                                            ? SizedBox(
+                                                width: 24.w,
+                                                height: 24.h,
+                                                child:
+                                                    const CircularProgressIndicator(
+                                                  strokeWidth: 2.5,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(Colors.white),
+                                                ),
+                                              )
+                                            : Text(
+                                                AppLocalizations.of(context)!.login,
+                                                style: TextStyle(
+                                                  fontFamily: 'Noto Sans',
+                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 16.sp,
+                                                  height: 1.4,
+                                                  letterSpacing: 0.01 * 16.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                       ),
                                     ),
-                                    child: Row(
+
+                                    SizedBox(height: 24.h),
+
+                                    // Divider with text
+                                    Row(
                                       children: [
-                                        Icon(
-                                          Icons.error_outline,
-                                          color: AppColors.error,
-                                          size: 20.sp,
-                                        ),
-                                        SizedBox(width: 8.w),
                                         Expanded(
+                                          child: Container(
+                                            height: 1.h,
+                                            color: AppColors.border,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 16.w,
+                                          ),
                                           child: Text(
-                                            authState.failure?.message ??
-                                                'An error occurred',
-                                            style: AppTypography.body2.copyWith(
-                                              color: AppColors.error,
+                                            AppLocalizations.of(context)!.orSocialMedia,
+                                            style: TextStyle(
+                                              fontFamily: 'Noto Sans',
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 13.sp,
+                                              height: 1.4,
+                                              letterSpacing: -0.01 * 13.sp,
+                                              color: AppColors.textTertiary,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Container(
+                                            height: 1.h,
+                                            color: AppColors.border,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 24.h),
+
+                                    // Google Login Button
+                                    Container(
+                                      height: 56.h,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(16.r),
+                                        border: Border.all(
+                                          color: AppColors.border,
+                                          width: 1.5.w,
+                                        ),
+                                      ),
+                                      child: OutlinedButton(
+                                        onPressed: _handleGoogleLogin,
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor:
+                                              AppColors.textPrimary,
+                                          side: BorderSide.none,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16.r),
+                                          ),
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 24.w,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Google Icon (using custom SVG or icon)
+                                            Container(
+                                              width: 24.w,
+                                              height: 24.h,
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(4.r),
+                                              ),
+                                              child: Icon(
+                                                Icons.g_mobiledata,
+                                                size: 28.sp,
+                                                color: AppColors.google,
+                                              ),
+                                            ),
+                                            SizedBox(width: 12.w),
+                                            Text(
+                                              AppLocalizations.of(context)!.continueWithGoogle,
+                                              style: TextStyle(
+                                                fontFamily: 'Noto Sans',
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 15.sp,
+                                                height: 1.4,
+                                                letterSpacing: -0.01 * 15.sp,
+                                                color: AppColors.textPrimary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Apple Login Button (iOS only)
+                                    if (Platform.isIOS) ...[
+                                      SizedBox(height: 12.h),
+                                      Container(
+                                        height: 56.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(16.r),
+                                          color: Colors.black,
+                                        ),
+                                        child: ElevatedButton(
+                                          onPressed: _handleAppleLogin,
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            foregroundColor: Colors.white,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16.r),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 24.w,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              // Apple Icon
+                                              Icon(
+                                                Icons.apple,
+                                                size: 24.sp,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(width: 12.w),
+                                              Text(
+                                                AppLocalizations.of(context)!.continueWithApple,
+                                                style: TextStyle(
+                                                  fontFamily: 'Noto Sans',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 15.sp,
+                                                  height: 1.4,
+                                                  letterSpacing: -0.01 * 15.sp,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+
+                                    SizedBox(height: 28.h),
+
+                                    // Signup Text
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(context)!.noAccount,
+                                          style: TextStyle(
+                                            fontFamily: 'Noto Sans',
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14.sp,
+                                            height: 1.4,
+                                            letterSpacing: -0.01 * 14.sp,
+                                            color: AppColors.textSecondary,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4.w),
+                                        TextButton(
+                                          onPressed: _handleSignup,
+                                          style: TextButton.styleFrom(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 8.w,
+                                              vertical: 4.h,
+                                            ),
+                                            minimumSize: Size.zero,
+                                            tapTargetSize: MaterialTapTargetSize
+                                                .shrinkWrap,
+                                            foregroundColor: AppColors.primary,
+                                            overlayColor: AppColors.primary
+                                                .withValues(alpha: 0.1),
+                                          ),
+                                          child: Text(
+                                            AppLocalizations.of(context)!.signUpLink,
+                                            style: TextStyle(
+                                              fontFamily: 'Noto Sans',
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14.sp,
+                                              height: 1.4,
+                                              letterSpacing: -0.01 * 14.sp,
+                                              color: AppColors.primary,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  AppColors.primary,
+                                              decorationThickness: 2.0,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                              ],
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

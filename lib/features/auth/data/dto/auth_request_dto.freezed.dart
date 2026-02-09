@@ -196,8 +196,11 @@ mixin _$SignUpRequestDto {
   String get email => throw _privateConstructorUsedError;
   String get password => throw _privateConstructorUsedError;
   String get nickname => throw _privateConstructorUsedError;
+  String get birthDate =>
+      throw _privateConstructorUsedError; // Format: "YYYY-MM-DD"
   int? get universityId => throw _privateConstructorUsedError;
   int? get majorId => throw _privateConstructorUsedError;
+  List<int>? get agreedPolicyIds => throw _privateConstructorUsedError;
 
   /// Serializes this SignUpRequestDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -220,8 +223,10 @@ abstract class $SignUpRequestDtoCopyWith<$Res> {
     String email,
     String password,
     String nickname,
+    String birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 }
 
@@ -243,8 +248,10 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? birthDate = null,
     Object? universityId = freezed,
     Object? majorId = freezed,
+    Object? agreedPolicyIds = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -260,6 +267,10 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
                 ? _value.nickname
                 : nickname // ignore: cast_nullable_to_non_nullable
                       as String,
+            birthDate: null == birthDate
+                ? _value.birthDate
+                : birthDate // ignore: cast_nullable_to_non_nullable
+                      as String,
             universityId: freezed == universityId
                 ? _value.universityId
                 : universityId // ignore: cast_nullable_to_non_nullable
@@ -268,6 +279,10 @@ class _$SignUpRequestDtoCopyWithImpl<$Res, $Val extends SignUpRequestDto>
                 ? _value.majorId
                 : majorId // ignore: cast_nullable_to_non_nullable
                       as int?,
+            agreedPolicyIds: freezed == agreedPolicyIds
+                ? _value.agreedPolicyIds
+                : agreedPolicyIds // ignore: cast_nullable_to_non_nullable
+                      as List<int>?,
           )
           as $Val,
     );
@@ -287,8 +302,10 @@ abstract class _$$SignUpRequestDtoImplCopyWith<$Res>
     String email,
     String password,
     String nickname,
+    String birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   });
 }
 
@@ -309,8 +326,10 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
     Object? email = null,
     Object? password = null,
     Object? nickname = null,
+    Object? birthDate = null,
     Object? universityId = freezed,
     Object? majorId = freezed,
+    Object? agreedPolicyIds = freezed,
   }) {
     return _then(
       _$SignUpRequestDtoImpl(
@@ -326,6 +345,10 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
             ? _value.nickname
             : nickname // ignore: cast_nullable_to_non_nullable
                   as String,
+        birthDate: null == birthDate
+            ? _value.birthDate
+            : birthDate // ignore: cast_nullable_to_non_nullable
+                  as String,
         universityId: freezed == universityId
             ? _value.universityId
             : universityId // ignore: cast_nullable_to_non_nullable
@@ -334,6 +357,10 @@ class __$$SignUpRequestDtoImplCopyWithImpl<$Res>
             ? _value.majorId
             : majorId // ignore: cast_nullable_to_non_nullable
                   as int?,
+        agreedPolicyIds: freezed == agreedPolicyIds
+            ? _value._agreedPolicyIds
+            : agreedPolicyIds // ignore: cast_nullable_to_non_nullable
+                  as List<int>?,
       ),
     );
   }
@@ -346,9 +373,11 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
     required this.email,
     required this.password,
     required this.nickname,
+    required this.birthDate,
     this.universityId,
     this.majorId,
-  });
+    final List<int>? agreedPolicyIds,
+  }) : _agreedPolicyIds = agreedPolicyIds;
 
   factory _$SignUpRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$SignUpRequestDtoImplFromJson(json);
@@ -360,13 +389,25 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
   @override
   final String nickname;
   @override
+  final String birthDate;
+  // Format: "YYYY-MM-DD"
+  @override
   final int? universityId;
   @override
   final int? majorId;
+  final List<int>? _agreedPolicyIds;
+  @override
+  List<int>? get agreedPolicyIds {
+    final value = _agreedPolicyIds;
+    if (value == null) return null;
+    if (_agreedPolicyIds is EqualUnmodifiableListView) return _agreedPolicyIds;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname, universityId: $universityId, majorId: $majorId)';
+    return 'SignUpRequestDto(email: $email, password: $password, nickname: $nickname, birthDate: $birthDate, universityId: $universityId, majorId: $majorId, agreedPolicyIds: $agreedPolicyIds)';
   }
 
   @override
@@ -379,9 +420,15 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
                 other.password == password) &&
             (identical(other.nickname, nickname) ||
                 other.nickname == nickname) &&
+            (identical(other.birthDate, birthDate) ||
+                other.birthDate == birthDate) &&
             (identical(other.universityId, universityId) ||
                 other.universityId == universityId) &&
-            (identical(other.majorId, majorId) || other.majorId == majorId));
+            (identical(other.majorId, majorId) || other.majorId == majorId) &&
+            const DeepCollectionEquality().equals(
+              other._agreedPolicyIds,
+              _agreedPolicyIds,
+            ));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -391,8 +438,10 @@ class _$SignUpRequestDtoImpl implements _SignUpRequestDto {
     email,
     password,
     nickname,
+    birthDate,
     universityId,
     majorId,
+    const DeepCollectionEquality().hash(_agreedPolicyIds),
   );
 
   /// Create a copy of SignUpRequestDto
@@ -417,8 +466,10 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
     required final String email,
     required final String password,
     required final String nickname,
+    required final String birthDate,
     final int? universityId,
     final int? majorId,
+    final List<int>? agreedPolicyIds,
   }) = _$SignUpRequestDtoImpl;
 
   factory _SignUpRequestDto.fromJson(Map<String, dynamic> json) =
@@ -431,9 +482,13 @@ abstract class _SignUpRequestDto implements SignUpRequestDto {
   @override
   String get nickname;
   @override
+  String get birthDate; // Format: "YYYY-MM-DD"
+  @override
   int? get universityId;
   @override
   int? get majorId;
+  @override
+  List<int>? get agreedPolicyIds;
 
   /// Create a copy of SignUpRequestDto
   /// with the given fields replaced by the non-null parameter values.

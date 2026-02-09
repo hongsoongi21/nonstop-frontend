@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 
 /// Gradient button for authentication screens
@@ -51,7 +53,12 @@ class GradientButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isLoading ? null : onPressed,
+          onTap: isLoading
+              ? null
+              : () {
+                  HapticFeedback.lightImpact();
+                  onPressed?.call();
+                },
           borderRadius: BorderRadius.circular(15.r),
           child: Center(
             child: isLoading
@@ -59,14 +66,14 @@ class GradientButton extends StatelessWidget {
                     width: 24.w,
                     height: 24.h,
                     child: const CircularProgressIndicator(
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                       strokeWidth: 2,
                     ),
                   )
                 : Text(
                     text,
                     style: AppTypography.body1.copyWith(
-                      color: Colors.white,
+                      color: AppColors.textOnPrimary,
                       fontWeight: FontWeight.w600,
                       fontSize: 16.sp,
                     ),

@@ -47,4 +47,8 @@ abstract class BoardRepository {
   });
   Future<Either<String, void>> deleteComment(int commentId);
   Future<Either<String, void>> toggleCommentLike(int commentId);
+  Future<Either<String, List<PostEntity>>> getMyPosts({
+    int page = 1,
+    int size = 20,
+  });
 }

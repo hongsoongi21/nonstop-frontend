@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
 import '../../data/api/timetable_api_impl.dart';
+import '../../data/dto/semester_dto.dart';
 import '../../data/dto/timetable_dto.dart';
 import '../../data/dto/timetable_entry_dto.dart';
 import '../../domain/entities/day_of_week.dart';
@@ -40,12 +41,14 @@ class TimetableRepositoryImpl implements TimetableRepository {
 
   @override
   Future<Either<Failure, Timetable>> createTimetable({
-    required int semesterId,
+    required int year,
+    required SemesterType semesterType,
     String? title,
     bool isPublic = false,
   }) async {
     final request = TimetableRequestDto(
-      semesterId: semesterId,
+      year: year,
+      semesterType: semesterType,
       title: title,
       isPublic: isPublic,
     );

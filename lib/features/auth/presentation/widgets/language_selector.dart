@@ -1,84 +1,116 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
 
 /// Language selector widget for authentication screens
 ///
-/// Displays three language options: O'zbek | Pyccknn | English
+/// Displays language options: O'zbek | Русский | English
 /// with vertical dividers between them.
 ///
 /// Features:
-/// - Fixed size: 233x43
-/// - Border radius: 12px
-/// - White background with gray border
-class LanguageSelector extends StatefulWidget {
+/// - Persists language preference
+/// - Updates app locale via Riverpod provider
+/// - Samarkand Modern design styling
+class LanguageSelector extends ConsumerWidget {
   const LanguageSelector({super.key});
 
   @override
-  State<LanguageSelector> createState() => _LanguageSelectorState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(localeProvider);
 
-class _LanguageSelectorState extends State<LanguageSelector> {
-  String _selectedLanguage = 'O\'zbek'; // Initial active language
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
-      width: 233.w,
-      height: 43.h,
+      height: 44.h,
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFFFF),
+        color: AppColors.surface,
         border: Border.all(
-          color: const Color(0xFFE0E0E0),
-          width: 1.w,
+          color: AppColors.border,
+          width: 1,
         ),
         borderRadius: BorderRadius.circular(12.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildLanguageButton('O\'zbek'),
+          _buildLanguageButton(
+            context,
+            ref,
+            AppLocale.uzbek,
+            currentLocale.languageCode == 'uz',
+            isFirst: true,
+          ),
           _buildDivider(),
-          _buildLanguageButton('Pyccknn'),
+          _buildLanguageButton(
+            context,
+            ref,
+            AppLocale.russian,
+            currentLocale.languageCode == 'ru',
+          ),
           _buildDivider(),
-          _buildLanguageButton('English'),
+          _buildLanguageButton(
+            context,
+            ref,
+            AppLocale.english,
+            currentLocale.languageCode == 'en',
+            isLast: true,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLanguageButton(String language) {
-    final bool isActive = _selectedLanguage == language;
-
+  Widget _buildLanguageButton(
+    BuildContext context,
+    WidgetRef ref,
+    Locale locale,
+    bool isActive, {
+    bool isFirst = false,
+    bool isLast = false,
+  }) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedLanguage = language;
-          // TODO: 실제 언어 변경 로직 추가
-        });
+        ref.read(localeStateProvider.notifier).setLocale(locale);
       },
-      child: Container(
-        width: 65.w,
-        height: 28.h,
-        alignment: Alignment.center,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        margin: EdgeInsets.symmetric(vertical: 6.h),
         decoration: isActive
             ? BoxDecoration(
-                color: const Color(0xFF7C39ED),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.primary,
+                    AppColors.primaryLight,
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(8.r),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF000000).withOpacity(0.25),
-                    blurRadius: 4.r,
-                    offset: Offset(0, 1.h),
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               )
             : null,
+        alignment: Alignment.center,
         child: Text(
-          language,
-          style: TextStyle(
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w500,
-            color: isActive ? Colors.white : const Color(0xFF111827),
+          AppLocale.getShortName(locale),
+          style: AppTypography.bodySmall.copyWith(
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+            color: isActive ? Colors.white : AppColors.textSecondary,
+            letterSpacing: 0.2,
           ),
         ),
       ),
@@ -87,9 +119,9 @@ class _LanguageSelectorState extends State<LanguageSelector> {
 
   Widget _buildDivider() {
     return Container(
-      width: 1.w,
+      width: 1,
       height: 20.h,
-      color: const Color(0xFFE0E0E0),
+      color: AppColors.border,
     );
   }
 }

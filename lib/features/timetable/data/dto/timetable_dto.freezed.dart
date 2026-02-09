@@ -598,8 +598,9 @@ TimetableRequestDto _$TimetableRequestDtoFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TimetableRequestDto {
-  int? get semesterId =>
-      throw _privateConstructorUsedError; // Required for create, ignored for update
+  int? get year => throw _privateConstructorUsedError; // Required for create
+  @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+  SemesterType? get semesterType => throw _privateConstructorUsedError; // Required for create (FIRST, SECOND, SUMMER, WINTER)
   String? get title => throw _privateConstructorUsedError;
   bool? get isPublic => throw _privateConstructorUsedError;
 
@@ -620,7 +621,13 @@ abstract class $TimetableRequestDtoCopyWith<$Res> {
     $Res Function(TimetableRequestDto) then,
   ) = _$TimetableRequestDtoCopyWithImpl<$Res, TimetableRequestDto>;
   @useResult
-  $Res call({int? semesterId, String? title, bool? isPublic});
+  $Res call({
+    int? year,
+    @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+    SemesterType? semesterType,
+    String? title,
+    bool? isPublic,
+  });
 }
 
 /// @nodoc
@@ -638,16 +645,21 @@ class _$TimetableRequestDtoCopyWithImpl<$Res, $Val extends TimetableRequestDto>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? semesterId = freezed,
+    Object? year = freezed,
+    Object? semesterType = freezed,
     Object? title = freezed,
     Object? isPublic = freezed,
   }) {
     return _then(
       _value.copyWith(
-            semesterId: freezed == semesterId
-                ? _value.semesterId
-                : semesterId // ignore: cast_nullable_to_non_nullable
+            year: freezed == year
+                ? _value.year
+                : year // ignore: cast_nullable_to_non_nullable
                       as int?,
+            semesterType: freezed == semesterType
+                ? _value.semesterType
+                : semesterType // ignore: cast_nullable_to_non_nullable
+                      as SemesterType?,
             title: freezed == title
                 ? _value.title
                 : title // ignore: cast_nullable_to_non_nullable
@@ -671,7 +683,13 @@ abstract class _$$TimetableRequestDtoImplCopyWith<$Res>
   ) = __$$TimetableRequestDtoImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int? semesterId, String? title, bool? isPublic});
+  $Res call({
+    int? year,
+    @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+    SemesterType? semesterType,
+    String? title,
+    bool? isPublic,
+  });
 }
 
 /// @nodoc
@@ -688,16 +706,21 @@ class __$$TimetableRequestDtoImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? semesterId = freezed,
+    Object? year = freezed,
+    Object? semesterType = freezed,
     Object? title = freezed,
     Object? isPublic = freezed,
   }) {
     return _then(
       _$TimetableRequestDtoImpl(
-        semesterId: freezed == semesterId
-            ? _value.semesterId
-            : semesterId // ignore: cast_nullable_to_non_nullable
+        year: freezed == year
+            ? _value.year
+            : year // ignore: cast_nullable_to_non_nullable
                   as int?,
+        semesterType: freezed == semesterType
+            ? _value.semesterType
+            : semesterType // ignore: cast_nullable_to_non_nullable
+                  as SemesterType?,
         title: freezed == title
             ? _value.title
             : title // ignore: cast_nullable_to_non_nullable
@@ -714,14 +737,24 @@ class __$$TimetableRequestDtoImplCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable()
 class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
-  const _$TimetableRequestDtoImpl({this.semesterId, this.title, this.isPublic});
+  const _$TimetableRequestDtoImpl({
+    this.year,
+    @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+    this.semesterType,
+    this.title,
+    this.isPublic,
+  });
 
   factory _$TimetableRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
       _$$TimetableRequestDtoImplFromJson(json);
 
   @override
-  final int? semesterId;
-  // Required for create, ignored for update
+  final int? year;
+  // Required for create
+  @override
+  @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+  final SemesterType? semesterType;
+  // Required for create (FIRST, SECOND, SUMMER, WINTER)
   @override
   final String? title;
   @override
@@ -729,7 +762,7 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
 
   @override
   String toString() {
-    return 'TimetableRequestDto(semesterId: $semesterId, title: $title, isPublic: $isPublic)';
+    return 'TimetableRequestDto(year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic)';
   }
 
   @override
@@ -737,8 +770,9 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TimetableRequestDtoImpl &&
-            (identical(other.semesterId, semesterId) ||
-                other.semesterId == semesterId) &&
+            (identical(other.year, year) || other.year == year) &&
+            (identical(other.semesterType, semesterType) ||
+                other.semesterType == semesterType) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
                 other.isPublic == isPublic));
@@ -746,7 +780,8 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, semesterId, title, isPublic);
+  int get hashCode =>
+      Object.hash(runtimeType, year, semesterType, title, isPublic);
 
   /// Create a copy of TimetableRequestDto
   /// with the given fields replaced by the non-null parameter values.
@@ -767,7 +802,9 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
 
 abstract class _TimetableRequestDto implements TimetableRequestDto {
   const factory _TimetableRequestDto({
-    final int? semesterId,
+    final int? year,
+    @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+    final SemesterType? semesterType,
     final String? title,
     final bool? isPublic,
   }) = _$TimetableRequestDtoImpl;
@@ -776,7 +813,10 @@ abstract class _TimetableRequestDto implements TimetableRequestDto {
       _$TimetableRequestDtoImpl.fromJson;
 
   @override
-  int? get semesterId; // Required for create, ignored for update
+  int? get year; // Required for create
+  @override
+  @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+  SemesterType? get semesterType; // Required for create (FIRST, SECOND, SUMMER, WINTER)
   @override
   String? get title;
   @override

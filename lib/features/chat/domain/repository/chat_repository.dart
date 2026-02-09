@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
+import 'package:nonstop/features/chat/domain/entities/read_receipt.dart';
 
 abstract class ChatRepository {
   /// Connect to the real-time chat service
@@ -39,4 +40,19 @@ abstract class ChatRepository {
     required String name,
     required List<int> userIds,
   });
+
+  /// Subscribe to read receipt updates for a room
+  Stream<ReadReceipt> subscribeToReadReceipts(int roomId);
+
+  /// Mark messages as read up to the given message ID
+  Future<Either<Failure, void>> markAsRead({
+    required int roomId,
+    required int messageId,
+  });
+
+  /// Upload an image for chat and return the URL
+  Future<Either<Failure, String>> uploadChatImage(int roomId, String localFilePath);
+
+  /// Leave a chat room
+  Future<Either<Failure, void>> leaveRoom(int roomId);
 }

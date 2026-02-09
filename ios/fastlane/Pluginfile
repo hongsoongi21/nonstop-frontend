@@ -1,0 +1,4 @@
+# Fastlane Plugins for iOS
+# https://docs.fastlane.tools/plugins/available-plugins/
+
+gem 'fastlane-plugin-firebase_app_distribution'

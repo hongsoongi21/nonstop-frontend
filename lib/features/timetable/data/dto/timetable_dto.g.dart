@@ -62,7 +62,8 @@ Map<String, dynamic> _$$TimetableDetailDtoImplToJson(
 _$TimetableRequestDtoImpl _$$TimetableRequestDtoImplFromJson(
   Map<String, dynamic> json,
 ) => _$TimetableRequestDtoImpl(
-  semesterId: (json['semesterId'] as num?)?.toInt(),
+  year: (json['year'] as num?)?.toInt(),
+  semesterType: _semesterTypeFromJson(json['semesterType'] as String?),
   title: json['title'] as String?,
   isPublic: json['isPublic'] as bool?,
 );
@@ -70,7 +71,8 @@ _$TimetableRequestDtoImpl _$$TimetableRequestDtoImplFromJson(
 Map<String, dynamic> _$$TimetableRequestDtoImplToJson(
   _$TimetableRequestDtoImpl instance,
 ) => <String, dynamic>{
-  'semesterId': instance.semesterId,
+  'year': instance.year,
+  'semesterType': _semesterTypeToJson(instance.semesterType),
   'title': instance.title,
   'isPublic': instance.isPublic,
 };

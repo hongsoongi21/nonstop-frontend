@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,53 +23,67 @@ class MainScaffold extends ConsumerWidget {
     final user = authState.user;
     final isAdmin = user?.isAdmin ?? false;
 
-    return Scaffold(
-      extendBody: true,
-      body: Stack(
-        children: [
-          AppBackground(child: navigationShell),
-          if (kDebugMode) const _DebugPortal(),
-        ],
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        // Dismiss keyboard when tapping outside of input fields (iOS fix)
+        final currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        body: Stack(
+          children: [
+            AppBackground(child: navigationShell),
+            if (kDebugMode) const _DebugPortal(),
+          ],
+        ),
+        bottomNavigationBar: AppBottomNavigationBar(
+          navigationShell: navigationShell,
+        ),
+        floatingActionButton: isAdmin
+            ? AppFab(
+                icon: Icons.admin_panel_settings,
+                tooltip: 'Admin Menu',
+                backgroundColor: AppColors.secondary,
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  // TODO: 관리자 기능 구현
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
+                  );
+                },
+              )
+            : null,
+        floatingActionButtonLocation: isAdmin
+            ? FloatingActionButtonLocation.startFloat
+            : null,
       ),
-      bottomNavigationBar: AppBottomNavigationBar(
-        navigationShell: navigationShell,
-      ),
-      floatingActionButton: isAdmin
-          ? AppFab(
-              icon: Icons.admin_panel_settings,
-              tooltip: 'Admin Menu',
-              backgroundColor: AppColors.secondary,
-              onPressed: () {
-                // TODO: 관리자 기능 구현
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('관리자 기능은 준비 중입니다.')),
-                );
-              },
-            )
-          : null,
     );
   }
 }
 
 /// A floating debug button visible only in debug mode
-class _DebugPortal extends StatelessWidget {
+class _DebugPortal extends ConsumerWidget {
   const _DebugPortal();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Positioned(
       right: 16,
       bottom: 100, // Above bottom nav
       child: FloatingActionButton.small(
         heroTag: 'debug_portal',
-        onPressed: () => _showDebugMenu(context),
+        onPressed: () => _showDebugMenu(context, ref),
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         child: const Icon(Icons.bug_report, color: Colors.white),
       ),
     );
   }
 
-  void _showDebugMenu(BuildContext context) {
+  void _showDebugMenu(BuildContext context, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -93,9 +108,64 @@ class _DebugPortal extends StatelessWidget {
                 context.push(Routes.timetableTest);
               },
             ),
-            // Add more test screens here in the future
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Standard Logout'),
+              subtitle: const Text('App session only'),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(authProvider.notifier).signOut();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.no_accounts),
+              title: const Text('Full Logout'),
+              subtitle: const Text('App + Google sign-out'),
+              onTap: () {
+                Navigator.pop(context);
+                ref.read(authProvider.notifier).signOutFull();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_forever, color: Colors.red),
+              title: const Text(
+                'Delete Account',
+                style: TextStyle(color: Colors.red),
+              ),
+              subtitle: const Text('Soft delete on backend'),
+              onTap: () {
+                Navigator.pop(context);
+                _showDeleteConfirmDialog(context, ref);
+              },
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+          'This will soft-delete your user record on the backend.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ref.read(authProvider.notifier).deleteAccount();
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }
@@ -120,6 +190,9 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use GoRouter's canPop() for consistency with context.pop()
+    final canPop = showBackButton && GoRouter.of(context).canPop();
+
     return AppBar(
       title: Text(title),
       elevation: elevation,
@@ -130,7 +203,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: actions,
       leading:
           leading ??
-          (showBackButton && Navigator.of(context).canPop()
+          (canPop
               ? IconButton(
                   onPressed: () => context.pop(),
                   icon: const Icon(Icons.arrow_back),
@@ -163,7 +236,12 @@ class AppFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: onPressed,
+      onPressed: onPressed != null
+          ? () {
+              HapticFeedback.lightImpact();
+              onPressed!();
+            }
+          : null,
       tooltip: tooltip,
       backgroundColor: backgroundColor ?? AppColors.primary,
       foregroundColor: foregroundColor ?? AppColors.textOnPrimary,
@@ -187,6 +265,7 @@ class AppScaffold extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool extendBody;
   final bool extendBodyBehindAppBar;
+  final bool dismissKeyboardOnTap;
 
   const AppScaffold({
     super.key,
@@ -202,6 +281,7 @@ class AppScaffold extends StatelessWidget {
     this.padding,
     this.extendBody = false,
     this.extendBodyBehindAppBar = false,
+    this.dismissKeyboardOnTap = true,
   });
 
   @override
@@ -217,6 +297,20 @@ class AppScaffold extends StatelessWidget {
 
     if (useGradient && backgroundColor == null) {
       content = AppBackground(child: content);
+    }
+
+    // Wrap with keyboard dismiss functionality for iOS
+    if (dismissKeyboardOnTap) {
+      content = GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          final currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+            currentFocus.unfocus();
+          }
+        },
+        child: content,
+      );
     }
 
     return Scaffold(

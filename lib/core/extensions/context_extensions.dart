@@ -187,9 +187,7 @@ extension ContextExtensions on BuildContext {
   bool get invertColors => MediaQuery.invertColorsOf(this);
   bool get disableAnimations => MediaQuery.disableAnimationsOf(this);
   bool get boldText => MediaQuery.boldTextOf(this);
-  double get textScaleFactor => MediaQuery.textScalerOf(
-    this,
-  ).textScaleFactor; // ignore: deprecated_member_use
+  double get textScaleFactor => MediaQuery.textScalerOf(this).scale(1.0);
 
   // Safe area
   EdgeInsets get safeAreaPadding => MediaQuery.paddingOf(this);

@@ -117,16 +117,20 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
               if (isSelf) {
                 AppLogger.d('🔍 [Search] Filtering out self: ${user.nickname}');
               }
-              return !isSelf;
+
+              // Filter out users who are already friends
+              final isAlreadyFriend = friendsIds.contains(user.id);
+              if (isAlreadyFriend) {
+                AppLogger.d('🔍 [Search] Filtering out existing friend: ${user.nickname}');
+              }
+
+              return !isSelf && !isAlreadyFriend;
             })
             .map((user) {
               AppLogger.d(
-                '🔍 [Search] Checking user ${user.id} (${user.nickname}) - isFriend: ${friendsIds.contains(user.id)}, isRequest: ${requestsIds.contains(user.id)}',
+                '🔍 [Search] Checking user ${user.id} (${user.nickname}) - isRequest: ${requestsIds.contains(user.id)}',
               );
-              if (friendsIds.contains(user.id)) {
-                AppLogger.d('✅ [Search] User ${user.nickname} is a friend');
-                return user.copyWith(status: FriendStatus.accepted);
-              } else if (requestsIds.contains(user.id)) {
+              if (requestsIds.contains(user.id)) {
                 AppLogger.d(
                   '📨 [Search] User ${user.nickname} has pending request',
                 );

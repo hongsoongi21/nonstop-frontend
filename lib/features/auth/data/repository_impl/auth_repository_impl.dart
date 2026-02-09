@@ -33,11 +33,65 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> signInWithGoogle({
+  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({
     required String idToken,
   }) async {
     try {
-      final user = await _authApi.signInWithGoogle(idToken: idToken);
+      final result = await _authApi.signInWithGoogle(idToken: idToken);
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, OAuthLoginResult>> signInWithApple({
+    required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
+  }) async {
+    try {
+      final result = await _authApi.signInWithApple(
+        idToken: idToken,
+        authorizationCode: authorizationCode,
+        firstName: firstName,
+        lastName: lastName,
+      );
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
+  }) async {
+    try {
+      final user = await _authApi.completeOAuthSignup(
+        nickname: nickname,
+        birthDate: birthDate,
+        universityId: universityId,
+        majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
+      );
       return Right(user);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
@@ -55,16 +109,20 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
   }) async {
     try {
       final user = await _authApi.signUp(
         email: email,
         password: password,
         nickname: nickname,
+        birthDate: birthDate,
         universityId: universityId,
         majorId: majorId,
+        agreedPolicyIds: agreedPolicyIds,
       );
       return Right(user);
     } on ServerException catch (e) {
@@ -82,6 +140,20 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, Unit>> signOut() async {
     try {
       await _authApi.signOut();
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> signOutFull() async {
+    try {
+      await _authApi.signOutFull();
       return const Right(unit);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
@@ -117,6 +189,52 @@ class AuthRepositoryImpl implements AuthRepository {
       return const Left(NetworkFailure(message: 'Network connection failed'));
     } on ValidationException catch (e) {
       return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> verifyPasswordResetCode(String email, String code) async {
+    try {
+      await _authApi.verifyPasswordResetCode(email, code);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> confirmPasswordReset(String email, String code, String newPassword) async {
+    try {
+      await _authApi.confirmPasswordReset(email, code, newPassword);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, errors: e.errors));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> sendVerificationEmail(String email) async {
+    try {
+      await _authApi.sendVerificationEmail(email);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
     } catch (e) {
       return Left(UnknownFailure(message: e.toString()));
     }
@@ -234,6 +352,20 @@ class AuthRepositoryImpl implements AuthRepository {
       final dtos = await _authApi.getPolicies();
       final policies = dtos.map((dto) => dto.toDomain()).toList();
       return Right(policies);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
+    } on NetworkException {
+      return const Left(NetworkFailure(message: 'Network connection failed'));
+    } catch (e) {
+      return Left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> agreePolicies(List<int> policyIds) async {
+    try {
+      await _authApi.agreePolicies(policyIds);
+      return const Right(unit);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
     } on NetworkException {

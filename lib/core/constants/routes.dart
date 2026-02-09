@@ -6,7 +6,7 @@ class Routes {
   static const String login = '/login';
   static const String register = '/register';
   static const String onboarding = '/onboarding';
-  // static const String forgotPassword = '/forgot-password';
+  static const String forgotPassword = '/forgot-password';
 
   // 🏠 Main Navigation
   static const String home = '/home';
@@ -16,6 +16,8 @@ class Routes {
   static const String timetable = '/timetable';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String blockedUsers = '/settings/blocked-users';
+  static const String verification = '/verification';
 
   // 👥 Friends
   static const String friendRequests = '/friends/requests';

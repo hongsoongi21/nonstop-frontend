@@ -42,14 +42,47 @@ class TimetableDetailDto with _$TimetableDetailDto {
 }
 
 /// Request DTO for creating/updating a timetable
+/// Backend expects: year (int) + semesterType (enum), NOT semesterId
 @freezed
 class TimetableRequestDto with _$TimetableRequestDto {
   const factory TimetableRequestDto({
-    int? semesterId, // Required for create, ignored for update
+    int? year, // Required for create
+    @JsonKey(toJson: _semesterTypeToJson, fromJson: _semesterTypeFromJson)
+    SemesterType? semesterType, // Required for create (FIRST, SECOND, SUMMER, WINTER)
     String? title,
     bool? isPublic,
   }) = _TimetableRequestDto;
 
   factory TimetableRequestDto.fromJson(Map<String, dynamic> json) =>
       _$TimetableRequestDtoFromJson(json);
+}
+
+String? _semesterTypeToJson(SemesterType? type) {
+  if (type == null) return null;
+  switch (type) {
+    case SemesterType.first:
+      return 'FIRST';
+    case SemesterType.second:
+      return 'SECOND';
+    case SemesterType.summer:
+      return 'SUMMER';
+    case SemesterType.winter:
+      return 'WINTER';
+  }
+}
+
+SemesterType? _semesterTypeFromJson(String? value) {
+  if (value == null) return null;
+  switch (value.toUpperCase()) {
+    case 'FIRST':
+      return SemesterType.first;
+    case 'SECOND':
+      return SemesterType.second;
+    case 'SUMMER':
+      return SemesterType.summer;
+    case 'WINTER':
+      return SemesterType.winter;
+    default:
+      return SemesterType.first;
+  }
 }

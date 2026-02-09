@@ -13,14 +13,14 @@ class SignUpUseCase implements UseCase<User, SignUpParams> {
 
   @override
   Future<Either<Failure, User>> call(SignUpParams params) async {
-    // 백엔드 SignUpRequestDto가 이제 universityId와 majorId를 직접 수신하므로 
-    // 가입 시 한 번에 모든 정보를 전달합니다.
     return await _authRepository.signUp(
       email: params.email,
       password: params.password,
       nickname: params.nickname,
+      birthDate: params.birthDate,
       universityId: params.universityId,
       majorId: params.majorId,
+      agreedPolicyIds: params.agreedPolicyIds,
     );
   }
 }
@@ -30,14 +30,18 @@ class SignUpParams {
   final String email;
   final String password;
   final String nickname;
+  final DateTime birthDate;
   final int? universityId;
   final int? majorId;
+  final List<int>? agreedPolicyIds;
 
   const SignUpParams({
     required this.email,
     required this.password,
     required this.nickname,
+    required this.birthDate,
     this.universityId,
     this.majorId,
+    this.agreedPolicyIds,
   });
 }

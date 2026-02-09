@@ -1,5 +1,18 @@
 {
   "@@locale": "ru",
+  "language": "Язык",
+  "languageSubtitle": "Выберите предпочитаемый язык",
+  "systemDefault": "Системный язык",
+  "loginSuccessWelcome": "Добро пожаловать, {nickname}!",
+  "@loginSuccessWelcome": {
+    "description": "Welcome snackbar message after successful login",
+    "placeholders": {
+      "nickname": {
+        "type": "String",
+        "example": "Иван"
+      }
+    }
+  },
   "helloWorld": "Привет, мир!",
   "@helloWorld": {
     "description": "The conventional newborn programmer greeting"
@@ -55,5 +68,1227 @@
   "selectCommunity": "Выбрать сообщество",
   "@selectCommunity": {
     "description": "Title for community selection modal"
+  },
+  "chat": "Чат",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "Пока нет чатов",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Нажмите + чтобы начать разговор",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Не удалось загрузить чаты",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "Новый чат",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Поиск пользователей...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} выбрано",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Начать чат",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Создать группу",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Название группы",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Введите название группы",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Камера",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Галерея",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Подключено",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Подключение...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Отключено - нажмите для переподключения",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Сегодня",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Вчера",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Введите сообщение...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
+  },
+  "notifications": "Уведомления",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "Отметить все прочитанным",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "Пока нет уведомлений",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "Новые уведомления появятся здесь",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Не удалось загрузить уведомления",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "Повторить",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "Только что",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} минут назад",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} часов назад",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} дней назад",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "login": "Войти",
+  "@login": {
+    "description": "login label/message"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "email label/message"
+  },
+  "password": "Пароль",
+  "@password": {
+    "description": "password label/message"
+  },
+  "forgotPassword": "Забыли пароль?",
+  "@forgotPassword": {
+    "description": "forgotPassword label/message"
+  },
+  "welcomeBack": "Добро пожаловать!",
+  "@welcomeBack": {
+    "description": "welcomeBack label/message"
+  },
+  "loginToContinue": "Войдите, чтобы продолжить",
+  "@loginToContinue": {
+    "description": "loginToContinue label/message"
+  },
+  "continueWithGoogle": "Продолжить с Google",
+  "@continueWithGoogle": {
+    "description": "continueWithGoogle label/message"
+  },
+  "continueWithApple": "Продолжить с Apple",
+  "@continueWithApple": {
+    "description": "continueWithApple label/message"
+  },
+  "appleSignInFailed": "Ошибка входа через Apple: {error}",
+  "@appleSignInFailed": {
+    "description": "appleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "appleSignInNotAvailable": "Вход через Apple доступен только на iOS",
+  "@appleSignInNotAvailable": {
+    "description": "appleSignInNotAvailable message"
+  },
+  "orSocialMedia": "Или через социальные сети",
+  "@orSocialMedia": {
+    "description": "orSocialMedia label/message"
+  },
+  "noAccount": "Нет аккаунта?",
+  "@noAccount": {
+    "description": "noAccount label/message"
+  },
+  "signUpLink": "Зарегистрироваться",
+  "@signUpLink": {
+    "description": "signUpLink label/message"
+  },
+  "validationEmailRequired": "Введите email",
+  "@validationEmailRequired": {
+    "description": "validationEmailRequired label/message"
+  },
+  "validationEmailInvalid": "Введите корректный email",
+  "@validationEmailInvalid": {
+    "description": "validationEmailInvalid label/message"
+  },
+  "validationPasswordRequired": "Введите пароль",
+  "@validationPasswordRequired": {
+    "description": "validationPasswordRequired label/message"
+  },
+  "validationPasswordMin6": "Пароль должен содержать минимум 6 символов",
+  "@validationPasswordMin6": {
+    "description": "validationPasswordMin6 label/message"
+  },
+  "validationPasswordMin8": "Пароль должен содержать минимум 8 символов",
+  "@validationPasswordMin8": {
+    "description": "validationPasswordMin8 label/message"
+  },
+  "googleSignInFailed": "Ошибка входа через Google: {error}",
+  "@googleSignInFailed": {
+    "description": "googleSignInFailed with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createAccount": "Создать аккаунт",
+  "@createAccount": {
+    "description": "createAccount label/message"
+  },
+  "enterYourInfo": "Введите вашу информацию",
+  "@enterYourInfo": {
+    "description": "enterYourInfo label/message"
+  },
+  "nickname": "Никнейм",
+  "@nickname": {
+    "description": "nickname label/message"
+  },
+  "selectUniversity": "Выберите университет",
+  "@selectUniversity": {
+    "description": "selectUniversity label/message"
+  },
+  "selectBirthDate": "Выберите дату рождения",
+  "@selectBirthDate": {
+    "description": "selectBirthDate label/message"
+  },
+  "confirmPassword": "Подтвердите пароль",
+  "@confirmPassword": {
+    "description": "confirmPassword label/message"
+  },
+  "agreeToAll": "Согласен со всем",
+  "@agreeToAll": {
+    "description": "agreeToAll label/message"
+  },
+  "required": "[Обязательно]",
+  "@required": {
+    "description": "required label/message"
+  },
+  "optional": "[Опционально]",
+  "@optional": {
+    "description": "optional label/message"
+  },
+  "view": "[Просмотр]",
+  "@view": {
+    "description": "view label/message"
+  },
+  "haveAccount": "Есть аккаунт?",
+  "@haveAccount": {
+    "description": "haveAccount label/message"
+  },
+  "loginLink": "Войти",
+  "@loginLink": {
+    "description": "loginLink label/message"
+  },
+  "validationNicknameRequired": "Введите никнейм",
+  "@validationNicknameRequired": {
+    "description": "validationNicknameRequired label/message"
+  },
+  "validationNickname2to20": "Никнейм должен содержать 2-20 символов",
+  "@validationNickname2to20": {
+    "description": "validationNickname2to20 label/message"
+  },
+  "validationPasswordsNoMatch": "Пароли не совпадают",
+  "@validationPasswordsNoMatch": {
+    "description": "validationPasswordsNoMatch label/message"
+  },
+  "validationConfirmPassword": "Подтвердите пароль",
+  "@validationConfirmPassword": {
+    "description": "validationConfirmPassword label/message"
+  },
+  "send": "Отправить",
+  "@send": {
+    "description": "send label/message"
+  },
+  "resend": "Отправить снова",
+  "@resend": {
+    "description": "resend label/message"
+  },
+  "verify": "Проверить",
+  "@verify": {
+    "description": "verify label/message"
+  },
+  "sixDigitCode": "6-значный код",
+  "@sixDigitCode": {
+    "description": "sixDigitCode label/message"
+  },
+  "emailVerified": "Email подтвержден",
+  "@emailVerified": {
+    "description": "emailVerified label/message"
+  },
+  "oauthEmailVerified": "Email подтвержден через социальную сеть",
+  "@oauthEmailVerified": {
+    "description": "Message shown when OAuth email is auto-verified"
+  },
+  "verificationCodeSent": "Код подтверждения отправлен!",
+  "@verificationCodeSent": {
+    "description": "verificationCodeSent label/message"
+  },
+  "emailVerifiedSuccess": "Email успешно подтвержден!",
+  "@emailVerifiedSuccess": {
+    "description": "emailVerifiedSuccess label/message"
+  },
+  "invalidCode": "Неверный код",
+  "@invalidCode": {
+    "description": "invalidCode label/message"
+  },
+  "failedToSendCode": "Не удалось отправить код",
+  "@failedToSendCode": {
+    "description": "failedToSendCode label/message"
+  },
+  "pleaseVerifyEmail": "Пожалуйста, сначала подтвердите email",
+  "@pleaseVerifyEmail": {
+    "description": "pleaseVerifyEmail label/message"
+  },
+  "pleaseWaitPoliciesLoad": "Подождите, идет загрузка политик",
+  "@pleaseWaitPoliciesLoad": {
+    "description": "pleaseWaitPoliciesLoad label/message"
+  },
+  "agreeMandatoryPolicies": "Пожалуйста, согласитесь со всеми обязательными политиками",
+  "@agreeMandatoryPolicies": {
+    "description": "agreeMandatoryPolicies label/message"
+  },
+  "pleaseSelectUniversity": "Пожалуйста, выберите университет",
+  "@pleaseSelectUniversity": {
+    "description": "pleaseSelectUniversity label/message"
+  },
+  "pleaseSelectBirthDate": "Пожалуйста, выберите дату рождения",
+  "@pleaseSelectBirthDate": {
+    "description": "pleaseSelectBirthDate label/message"
+  },
+  "signupFailed": "Регистрация не удалась",
+  "@signupFailed": {
+    "description": "signupFailed label/message"
+  },
+  "couldNotLaunch": "Не удалось открыть {url}",
+  "@couldNotLaunch": {
+    "description": "couldNotLaunch with placeholders",
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLaunchingUrl": "Ошибка открытия URL: {error}",
+  "@errorLaunchingUrl": {
+    "description": "errorLaunchingUrl with placeholders",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectYourBirthDate": "Выберите дату рождения",
+  "@selectYourBirthDate": {
+    "description": "selectYourBirthDate label/message"
+  },
+  "noPoliciesAvailable": "Политики недоступны",
+  "@noPoliciesAvailable": {
+    "description": "noPoliciesAvailable label/message"
+  },
+  "resetPassword": "Сброс пароля",
+  "@resetPassword": {
+    "description": "resetPassword label/message"
+  },
+  "enterRegisteredEmail": "Введите зарегистрированный email адрес",
+  "@enterRegisteredEmail": {
+    "description": "enterRegisteredEmail label/message"
+  },
+  "sendCode": "Отправить код",
+  "@sendCode": {
+    "description": "sendCode label/message"
+  },
+  "verifyCode": "Проверить код",
+  "@verifyCode": {
+    "description": "verifyCode label/message"
+  },
+  "codeVerified": "Код подтвержден!",
+  "@codeVerified": {
+    "description": "codeVerified label/message"
+  },
+  "verificationCodeLabel": "Код подтверждения",
+  "@verificationCodeLabel": {
+    "description": "verificationCodeLabel label/message"
+  },
+  "resendCode": "Отправить код повторно",
+  "@resendCode": {
+    "description": "resendCode label/message"
+  },
+  "newPassword": "Новый пароль",
+  "@newPassword": {
+    "description": "newPassword label/message"
+  },
+  "enterNewPassword": "Введите новый пароль",
+  "@enterNewPassword": {
+    "description": "enterNewPassword label/message"
+  },
+  "updatePassword": "Обновить пароль",
+  "@updatePassword": {
+    "description": "updatePassword label/message"
+  },
+  "success": "Успешно!",
+  "@success": {
+    "description": "success label/message"
+  },
+  "passwordChangedSuccess": "Ваш пароль успешно изменен. Теперь вы можете войти с новым паролем.",
+  "@passwordChangedSuccess": {
+    "description": "passwordChangedSuccess label/message"
+  },
+  "stepEmail": "Email",
+  "@stepEmail": {
+    "description": "stepEmail label/message"
+  },
+  "stepVerification": "Проверка",
+  "@stepVerification": {
+    "description": "stepVerification label/message"
+  },
+  "stepNewPassword": "Новый пароль",
+  "@stepNewPassword": {
+    "description": "stepNewPassword label/message"
+  },
+  "validationEnterEmail": "Введите email",
+  "@validationEnterEmail": {
+    "description": "validationEnterEmail label/message"
+  },
+  "validationEnterValidEmail": "Введите корректный email",
+  "@validationEnterValidEmail": {
+    "description": "validationEnterValidEmail label/message"
+  },
+  "validationEnterCode": "Введите код",
+  "@validationEnterCode": {
+    "description": "validationEnterCode label/message"
+  },
+  "validationCodeMinLength": "Код должен содержать минимум 4 цифры",
+  "@validationCodeMinLength": {
+    "description": "validationCodeMinLength label/message"
+  },
+  "validationEnterPassword": "Введите пароль",
+  "@validationEnterPassword": {
+    "description": "validationEnterPassword label/message"
+  },
+  "validationPasswordMinLength": "Пароль должен содержать минимум 8 символов",
+  "@validationPasswordMinLength": {
+    "description": "validationPasswordMinLength label/message"
+  },
+  "validationConfirmNewPassword": "Подтвердите пароль",
+  "@validationConfirmNewPassword": {
+    "description": "validationConfirmNewPassword label/message"
+  },
+  "codeResent": "Код отправлен повторно!",
+  "@codeResent": {
+    "description": "codeResent label/message"
+  },
+  "timetable": "Расписание",
+  "@timetable": {
+    "description": "Timetable screen title"
+  },
+  "addCourse": "Добавить предмет",
+  "@addCourse": {
+    "description": "Button text for adding a course"
+  },
+  "editCourse": "Редактировать предмет",
+  "@editCourse": {
+    "description": "Button text for editing a course"
+  },
+  "dayMonday": "Понедельник",
+  "@dayMonday": {
+    "description": "Monday full name"
+  },
+  "dayTuesday": "Вторник",
+  "@dayTuesday": {
+    "description": "Tuesday full name"
+  },
+  "dayWednesday": "Среда",
+  "@dayWednesday": {
+    "description": "Wednesday full name"
+  },
+  "dayThursday": "Четверг",
+  "@dayThursday": {
+    "description": "Thursday full name"
+  },
+  "dayFriday": "Пятница",
+  "@dayFriday": {
+    "description": "Friday full name"
+  },
+  "daySaturday": "Суббота",
+  "@daySaturday": {
+    "description": "Saturday full name"
+  },
+  "daySunday": "Воскресенье",
+  "@daySunday": {
+    "description": "Sunday full name"
+  },
+  "dayMondayShort": "ПН",
+  "@dayMondayShort": {
+    "description": "Monday short name"
+  },
+  "dayTuesdayShort": "ВТ",
+  "@dayTuesdayShort": {
+    "description": "Tuesday short name"
+  },
+  "dayWednesdayShort": "СР",
+  "@dayWednesdayShort": {
+    "description": "Wednesday short name"
+  },
+  "dayThursdayShort": "ЧТ",
+  "@dayThursdayShort": {
+    "description": "Thursday short name"
+  },
+  "dayFridayShort": "ПТ",
+  "@dayFridayShort": {
+    "description": "Friday short name"
+  },
+  "daySaturdayShort": "СБ",
+  "@daySaturdayShort": {
+    "description": "Saturday short name"
+  },
+  "daySundayShort": "ВС",
+  "@daySundayShort": {
+    "description": "Sunday short name"
+  },
+  "semester": "Семестр",
+  "@semester": {
+    "description": "Semester label"
+  },
+  "semesterSpring": "Весна",
+  "@semesterSpring": {
+    "description": "Spring semester name"
+  },
+  "semesterFall": "Осень",
+  "@semesterFall": {
+    "description": "Fall semester name"
+  },
+  "semesterSummer": "Лето",
+  "@semesterSummer": {
+    "description": "Summer semester name"
+  },
+  "semesterWinter": "Зима",
+  "@semesterWinter": {
+    "description": "Winter semester name"
+  },
+  "gpaCalculator": "Калькулятор GPA",
+  "@gpaCalculator": {
+    "description": "GPA Calculator title"
+  },
+  "creditHours": "Кредитные часы",
+  "@creditHours": {
+    "description": "Credit hours label"
+  },
+  "credits": "кредиты",
+  "@credits": {
+    "description": "Credits text"
+  },
+  "calculateAndTrack": "Рассчитать и отслеживать",
+  "@calculateAndTrack": {
+    "description": "GPA calculator subtitle when empty"
+  },
+  "courseName": "Название предмета",
+  "@courseName": {
+    "description": "Course name field label"
+  },
+  "courseNameHint": "Например: Основы программирования",
+  "@courseNameHint": {
+    "description": "Course name field hint"
+  },
+  "courseNameRequired": "Введите название предмета",
+  "@courseNameRequired": {
+    "description": "Course name required validation message"
+  },
+  "professor": "Преподаватель",
+  "@professor": {
+    "description": "Professor field label"
+  },
+  "professorHint": "Например: Проф. Ким",
+  "@professorHint": {
+    "description": "Professor field hint"
+  },
+  "room": "Аудитория / Место",
+  "@room": {
+    "description": "Room/location field label"
+  },
+  "roomHint": "Например: Аудитория 301",
+  "@roomHint": {
+    "description": "Room field hint"
+  },
+  "color": "Цвет",
+  "@color": {
+    "description": "Color selection label"
+  },
+  "colorDescription": "Выберите цвет для выделения предмета",
+  "@colorDescription": {
+    "description": "Color selection description"
+  },
+  "startTime": "Время начала",
+  "@startTime": {
+    "description": "Start time label"
+  },
+  "endTime": "Время окончания",
+  "@endTime": {
+    "description": "End time label"
+  },
+  "selectDay": "Выберите день",
+  "@selectDay": {
+    "description": "Day selection label"
+  },
+  "dayOfWeek": "День недели",
+  "@dayOfWeek": {
+    "description": "Day of week label"
+  },
+  "timeAndDay": "Время и день",
+  "@timeAndDay": {
+    "description": "Time and day section title"
+  },
+  "basicInfo": "Основная информация",
+  "@basicInfo": {
+    "description": "Basic information section title"
+  },
+  "delete": "Удалить",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "deleteCourse": "Удалить предмет",
+  "@deleteCourse": {
+    "description": "Delete course button text"
+  },
+  "confirmDeleteCourse": "Вы уверены, что хотите удалить этот предмет?",
+  "@confirmDeleteCourse": {
+    "description": "Confirm delete course message"
+  },
+  "courseDeleted": "Предмет удален",
+  "@courseDeleted": {
+    "description": "Course deleted success message"
+  },
+  "courseAdded": "Предмет успешно добавлен",
+  "@courseAdded": {
+    "description": "Course added success message"
+  },
+  "courseUpdated": "Предмет обновлен",
+  "@courseUpdated": {
+    "description": "Course updated success message"
+  },
+  "saveChanges": "Сохранить изменения",
+  "@saveChanges": {
+    "description": "Save changes button text"
+  },
+  "noCoursesAdded": "Предметы не добавлены",
+  "@noCoursesAdded": {
+    "description": "Empty state title when no courses"
+  },
+  "noCoursesDescription": "Добавьте предметы для создания\nнедельного расписания",
+  "@noCoursesDescription": {
+    "description": "Empty state description when no courses"
+  },
+  "loading": "Загрузка...",
+  "@loading": {
+    "description": "Loading state text"
+  },
+  "refresh": "Обновить",
+  "@refresh": {
+    "description": "Refresh tooltip"
+  },
+  "myTimetables": "Мои расписания",
+  "@myTimetables": {
+    "description": "My timetables sheet title"
+  },
+  "createNewTimetable": "Создать новое расписание",
+  "@createNewTimetable": {
+    "description": "Create new timetable button text"
+  },
+  "untitledTimetable": "Расписание без названия",
+  "@untitledTimetable": {
+    "description": "Default name for timetable without title"
+  },
+  "newCourse": "НОВЫЙ ПРЕДМЕТ",
+  "@newCourse": {
+    "description": "New course section label"
+  },
+  "editCourseTitle": "РЕДАКТИРОВАТЬ",
+  "@editCourseTitle": {
+    "description": "Edit course section label"
+  },
+  "createNewCourse": "Создайте новый предмет для расписания",
+  "@createNewCourse": {
+    "description": "New course description"
+  },
+  "updateCourseInfo": "Обновите информацию о предмете",
+  "@updateCourseInfo": {
+    "description": "Edit course description"
+  },
+  "conflict": "КОНФЛИКТ",
+  "@conflict": {
+    "description": "Time conflict label"
+  },
+  "friendsTitle": "Друзья",
+  "@friendsTitle": {
+    "description": "Friends screen title"
+  },
+  "requests": "Полученные",
+  "@requests": {
+    "description": "Friend requests tab label"
+  },
+  "search": "Поиск",
+  "@search": {
+    "description": "Search tab label"
+  },
+  "noFriendsYet": "Пока нет друзей",
+  "@noFriendsYet": {
+    "description": "Empty state title when user has no friends"
+  },
+  "addFriendsViaSearch": "Добавьте друзей через поиск",
+  "@addFriendsViaSearch": {
+    "description": "Empty state subtitle for no friends"
+  },
+  "friend": "Друг",
+  "@friend": {
+    "description": "Friend status label"
+  },
+  "sent": "Отправлено",
+  "@sent": {
+    "description": "Friend request sent status label"
+  },
+  "accept": "Принять",
+  "@accept": {
+    "description": "Accept friend request button"
+  },
+  "reject": "Отклонить",
+  "@reject": {
+    "description": "Reject friend request button"
+  },
+  "removeFriend": "Удалить из друзей",
+  "@removeFriend": {
+    "description": "Remove friend menu option"
+  },
+  "confirmRemoveFriend": "Вы уверены, что хотите удалить {name} из друзей?",
+  "@confirmRemoveFriend": {
+    "description": "Confirmation message for removing friend",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Удалить",
+  "@remove": {
+    "description": "Remove button"
+  },
+  "noRequests": "Нет запросов",
+  "@noRequests": {
+    "description": "Empty state title when there are no friend requests"
+  },
+  "requestsAppearHere": "Запросы в друзья появятся здесь",
+  "@requestsAppearHere": {
+    "description": "Empty state subtitle for no requests"
+  },
+  "searchUsersHint": "Поиск пользователей...",
+  "@searchUsersHint": {
+    "description": "Search input placeholder"
+  },
+  "startSearching": "Начать поиск",
+  "@startSearching": {
+    "description": "Empty state title for search"
+  },
+  "typeInSearchBar": "Введите в строке поиска выше",
+  "@typeInSearchBar": {
+    "description": "Empty state subtitle for search"
+  },
+  "noResults": "Нет результатов",
+  "@noResults": {
+    "description": "Empty state title when search returns no results"
+  },
+  "tryDifferentName": "Попробуйте другое имя",
+  "@tryDifferentName": {
+    "description": "Empty state subtitle for no search results"
+  },
+  "keepTyping": "Продолжайте ввод",
+  "@keepTyping": {
+    "description": "Empty state title when search query is too short"
+  },
+  "minTwoCharacters": "Введите минимум 2 символа для поиска",
+  "@minTwoCharacters": {
+    "description": "Empty state subtitle when search query is too short"
+  },
+  "online": "Онлайн",
+  "@online": {
+    "description": "Online status label"
+  },
+  "offline": "Оффлайн",
+  "@offline": {
+    "description": "Offline status label"
+  },
+  "friendRequestSent": "Запрос в друзья отправлен",
+  "@friendRequestSent": {
+    "description": "Success message after sending friend request"
+  },
+  "friendRequestAccepted": "Запрос в друзья принят",
+  "@friendRequestAccepted": {
+    "description": "Success message after accepting friend request"
+  },
+  "requestRejected": "Запрос отклонен",
+  "@requestRejected": {
+    "description": "Success message after rejecting friend request"
+  },
+  "removedFromFriends": "Удалено из друзей",
+  "@removedFromFriends": {
+    "description": "Success message after removing friend"
+  },
+  "addFriend": "Добавить",
+  "@addFriend": {
+    "description": "Add friend button"
+  },
+  "profile": "Профиль",
+  "@profile": {
+    "description": "Profile screen title"
+  },
+  "settings": "Настройки",
+  "@settings": {
+    "description": "Settings screen title"
+  },
+  "editProfile": "Редактировать профиль",
+  "@editProfile": {
+    "description": "Edit profile button text"
+  },
+  "posts": "Посты",
+  "@posts": {
+    "description": "Posts stat label"
+  },
+  "comments": "Комментарии",
+  "@comments": {
+    "description": "Comments stat label"
+  },
+  "friends": "Друзья",
+  "@friends": {
+    "description": "Friends stat label"
+  },
+  "allPosts": "Все посты",
+  "@allPosts": {
+    "description": "All posts filter tab"
+  },
+  "bookmarks": "Закладки",
+  "@bookmarks": {
+    "description": "Bookmarks filter tab"
+  },
+  "favorites": "Избранное",
+  "@favorites": {
+    "description": "Favorites filter tab"
+  },
+  "privacy": "Приватность",
+  "@privacy": {
+    "description": "Privacy section header"
+  },
+  "account": "Аккаунт",
+  "@account": {
+    "description": "Account section header"
+  },
+  "logout": "Выйти",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "pushNotifications": "Push-уведомления",
+  "@pushNotifications": {
+    "description": "Push notifications setting title"
+  },
+  "pushNotificationsSubtitle": "Получать push-уведомления на этом устройстве",
+  "@pushNotificationsSubtitle": {
+    "description": "Push notifications setting subtitle"
+  },
+  "emailNotifications": "Email-уведомления",
+  "@emailNotifications": {
+    "description": "Email notifications setting title"
+  },
+  "emailNotificationsSubtitle": "Получать обновления по email",
+  "@emailNotificationsSubtitle": {
+    "description": "Email notifications setting subtitle"
+  },
+  "boardNotifications": "Уведомления доски",
+  "@boardNotifications": {
+    "description": "Board notifications setting title"
+  },
+  "boardNotificationsSubtitle": "Новые посты и комментарии",
+  "@boardNotificationsSubtitle": {
+    "description": "Board notifications setting subtitle"
+  },
+  "chatNotifications": "Уведомления чата",
+  "@chatNotifications": {
+    "description": "Chat notifications setting title"
+  },
+  "chatNotificationsSubtitle": "Новые сообщения и ответы",
+  "@chatNotificationsSubtitle": {
+    "description": "Chat notifications setting subtitle"
+  },
+  "timetableNotifications": "Уведомления расписания",
+  "@timetableNotifications": {
+    "description": "Timetable notifications setting title"
+  },
+  "timetableNotificationsSubtitle": "Напоминания о занятиях и обновления",
+  "@timetableNotificationsSubtitle": {
+    "description": "Timetable notifications setting subtitle"
+  },
+  "soundNotifications": "Звуковые уведомления",
+  "@soundNotifications": {
+    "description": "Sound notifications setting title"
+  },
+  "soundNotificationsSubtitle": "Воспроизводить звук для уведомлений",
+  "@soundNotificationsSubtitle": {
+    "description": "Sound notifications setting subtitle"
+  },
+  "allowFriendRequests": "Разрешить запросы в друзья",
+  "@allowFriendRequests": {
+    "description": "Allow friend requests setting title"
+  },
+  "allowFriendRequestsSubtitle": "Позволить другим отправлять вам запросы в друзья",
+  "@allowFriendRequestsSubtitle": {
+    "description": "Allow friend requests setting subtitle"
+  },
+  "showOnlineStatus": "Показывать онлайн статус",
+  "@showOnlineStatus": {
+    "description": "Show online status setting title"
+  },
+  "showOnlineStatusSubtitle": "Позволить друзьям видеть когда вы онлайн",
+  "@showOnlineStatusSubtitle": {
+    "description": "Show online status setting subtitle"
+  },
+  "allowMessageRequests": "Разрешить запросы сообщений",
+  "@allowMessageRequests": {
+    "description": "Allow message requests setting title"
+  },
+  "allowMessageRequestsSubtitle": "Получать сообщения от не-друзей",
+  "@allowMessageRequestsSubtitle": {
+    "description": "Allow message requests setting subtitle"
+  },
+  "showProfileToStrangers": "Показывать профиль незнакомцам",
+  "@showProfileToStrangers": {
+    "description": "Show profile to strangers setting title"
+  },
+  "showProfileToStrangersSubtitle": "Сделать ваш профиль видимым для всех",
+  "@showProfileToStrangersSubtitle": {
+    "description": "Show profile to strangers setting subtitle"
+  },
+  "logoutSubtitle": "Выйти из аккаунта",
+  "@logoutSubtitle": {
+    "description": "Logout subtitle"
+  },
+  "confirmLogout": "Вы уверены, что хотите выйти?",
+  "@confirmLogout": {
+    "description": "Logout confirmation message"
+  },
+  "errorOccurred": "Произошла ошибка",
+  "@errorOccurred": {
+    "description": "Error occurred message"
+  },
+  "notificationsComingSoon": "Уведомления - скоро!",
+  "@notificationsComingSoon": {
+    "description": "Notifications coming soon message"
+  },
+  "editProfileComingSoon": "Редактирование профиля - скоро!",
+  "@editProfileComingSoon": {
+    "description": "Edit profile coming soon message"
+  },
+  "searchComingSoon": "Поиск - скоро!",
+  "@searchComingSoon": {
+    "description": "Search coming soon message"
+  },
+  "filterPrefix": "Фильтр: ",
+  "@filterPrefix": {
+    "description": "Filter prefix for filter tab change"
+  },
+  "profileNotLoaded": "Профиль не загружен",
+  "@profileNotLoaded": {
+    "description": "Profile not loaded message"
+  },
+  "settingsNotLoaded": "Настройки не загружены",
+  "@settingsNotLoaded": {
+    "description": "Settings not loaded message"
+  },
+  "postsLoadError": "Не удалось загрузить посты",
+  "@postsLoadError": {
+    "description": "Posts load error message"
+  },
+  "noPostsYet": "Пока нет постов",
+  "@noPostsYet": {
+    "description": "No posts message"
+  },
+  "confirmNewPassword": "Подтвердите новый пароль",
+  "@confirmNewPassword": {
+    "description": "Confirm new password field label"
+  },
+  "birthDate": "Дата рождения",
+  "@birthDate": {
+    "description": "Birth date field label"
+  },
+  "report": "Жалоба",
+  "@report": {
+    "description": "Report button/dialog title"
+  },
+  "reportReason": "Выберите причину жалобы",
+  "@reportReason": {
+    "description": "Report reason selection label"
+  },
+  "reportReasonSpam": "Спам/Неуместная реклама",
+  "@reportReasonSpam": {
+    "description": "Spam report reason"
+  },
+  "reportReasonAbuse": "Оскорбления/Ругательства",
+  "@reportReasonAbuse": {
+    "description": "Abuse report reason"
+  },
+  "reportReasonSexual": "Сексуальный контент",
+  "@reportReasonSexual": {
+    "description": "Sexual content report reason"
+  },
+  "reportReasonHate": "Разжигание ненависти",
+  "@reportReasonHate": {
+    "description": "Hate speech report reason"
+  },
+  "reportReasonIllegal": "Незаконный контент",
+  "@reportReasonIllegal": {
+    "description": "Illegal content report reason"
+  },
+  "reportReasonPrivacy": "Нарушение конфиденциальности",
+  "@reportReasonPrivacy": {
+    "description": "Privacy violation report reason"
+  },
+  "reportReasonImpersonation": "Выдача себя за другого",
+  "@reportReasonImpersonation": {
+    "description": "Impersonation report reason"
+  },
+  "reportReasonOther": "Другое",
+  "@reportReasonOther": {
+    "description": "Other report reason"
+  },
+  "reportDescription": "Дополнительные детали (необязательно)",
+  "@reportDescription": {
+    "description": "Report description field placeholder"
+  },
+  "reportSubmit": "Отправить жалобу",
+  "@reportSubmit": {
+    "description": "Submit report button text"
+  },
+  "reportSuccess": "Жалоба успешно отправлена",
+  "@reportSuccess": {
+    "description": "Report success message"
+  },
+  "reportAlreadyReported": "Вы уже отправили жалобу",
+  "@reportAlreadyReported": {
+    "description": "Already reported error message"
+  },
+  "blockUser": "Заблокировать пользователя",
+  "@blockUser": {
+    "description": "Block user dialog title"
+  },
+  "blockUserConfirm": "Вы уверены, что хотите заблокировать {name}?",
+  "@blockUserConfirm": {
+    "description": "Block user confirmation message",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "blockUserDescription": "Вы больше не будете получать сообщения или запросы в друзья от этого пользователя.",
+  "@blockUserDescription": {
+    "description": "Block user description text"
+  },
+  "block": "Заблокировать",
+  "@block": {
+    "description": "Block button text"
+  },
+  "unblock": "Разблокировать",
+  "@unblock": {
+    "description": "Unblock button text"
+  },
+  "blockedUsers": "Заблокированные пользователи",
+  "@blockedUsers": {
+    "description": "Blocked users screen title"
+  },
+  "noBlockedUsers": "Нет заблокированных пользователей",
+  "@noBlockedUsers": {
+    "description": "Empty state message for blocked users"
+  },
+  "userBlocked": "Пользователь заблокирован",
+  "@userBlocked": {
+    "description": "Success message after blocking user"
+  },
+  "userUnblocked": "Пользователь разблокирован",
+  "@userUnblocked": {
+    "description": "Success message after unblocking user"
+  },
+  "universityVerification": "Верификация университета",
+  "@universityVerification": {
+    "description": "University verification screen title"
+  },
+  "studentIdVerification": "Студенческий билет",
+  "@studentIdVerification": {
+    "description": "Student ID verification tab label"
+  },
+  "emailVerification": "Верификация email",
+  "@emailVerification": {
+    "description": "Email verification tab label"
+  },
+  "uploadStudentId": "Загрузить студенческий билет",
+  "@uploadStudentId": {
+    "description": "Upload student ID section title"
+  },
+  "selectImage": "Выбрать изображение",
+  "@selectImage": {
+    "description": "Select image button text"
+  },
+  "takePhoto": "Сделать фото",
+  "@takePhoto": {
+    "description": "Take photo option"
+  },
+  "chooseFromGallery": "Выбрать из галереи",
+  "@chooseFromGallery": {
+    "description": "Choose from gallery option"
+  },
+  "submitVerification": "Отправить на верификацию",
+  "@submitVerification": {
+    "description": "Submit verification button text"
+  },
+  "verificationPending": "Верификация находится на рассмотрении",
+  "@verificationPending": {
+    "description": "Verification pending status message"
+  },
+  "verificationApproved": "Верификация одобрена",
+  "@verificationApproved": {
+    "description": "Verification approved status message"
+  },
+  "schoolEmail": "Университетская почта",
+  "@schoolEmail": {
+    "description": "School email input label"
+  },
+  "sendVerificationCode": "Отправить код верификации",
+  "@sendVerificationCode": {
+    "description": "Send verification code button text"
+  },
+  "enterVerificationCode": "Введите код верификации",
+  "@enterVerificationCode": {
+    "description": "Verification code input label"
+  },
+  "codeSent": "Код верификации отправлен на вашу почту",
+  "@codeSent": {
+    "description": "Code sent success message"
+  },
+  "verificationSuccess": "Email успешно верифицирован!",
+  "@verificationSuccess": {
+    "description": "Verification success message"
+  },
+  "timeRemaining": "Осталось времени",
+  "@timeRemaining": {
+    "description": "Countdown timer label"
+  },
+  "deleteAccount": "Удалить аккаунт",
+  "@deleteAccount": {
+    "description": "Delete account button text"
+  },
+  "deleteAccountSubtitle": "Навсегда удалить аккаунт",
+  "@deleteAccountSubtitle": {
+    "description": "Delete account subtitle"
+  },
+  "confirmDeleteAccount": "Вы уверены, что хотите удалить аккаунт?",
+  "@confirmDeleteAccount": {
+    "description": "Delete account confirmation message"
+  },
+  "deleteAccountWarning": "Это действие нельзя отменить. Все ваши данные будут удалены.",
+  "@deleteAccountWarning": {
+    "description": "Delete account warning message"
+  },
+  "deleteAccountSuccess": "Аккаунт успешно удален",
+  "@deleteAccountSuccess": {
+    "description": "Delete account success message"
+  },
+  "deleteAccountFailed": "Не удалось удалить аккаунт",
+  "@deleteAccountFailed": {
+    "description": "Delete account failed message"
+  },
+  "leaveRoom": "Выйти из чата",
+  "@leaveRoom": {
+    "description": "Leave chat room button text"
+  },
+  "leaveRoomConfirm": "Вы уверены, что хотите выйти из этого чата? Вы больше не будете получать сообщения из этого разговора.",
+  "@leaveRoomConfirm": {
+    "description": "Leave room confirmation message"
+  },
+  "leaveRoomSuccess": "Вы покинули чат",
+  "@leaveRoomSuccess": {
+    "description": "Leave room success message"
+  },
+  "latest": "Новые",
+  "@latest": {
+    "description": "Latest filter option for board posts"
+  },
+  "trending": "Популярные",
+  "@trending": {
+    "description": "Trending filter option for board posts"
+  },
+  "mostCommented": "Обсуждаемые",
+  "@mostCommented": {
+    "description": "Most commented filter option for board posts"
+  },
+  "completeProfile": "Заполнить профиль",
+  "@completeProfile": {
+    "description": "Title for incomplete profile completion screen"
+  },
+  "completeProfileSubtitle": "Пожалуйста, заполните необходимую информацию",
+  "@completeProfileSubtitle": {
+    "description": "Subtitle for incomplete profile completion screen"
   }
 }

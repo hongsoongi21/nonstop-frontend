@@ -146,4 +146,16 @@ class BoardRemoteDataSource {
   Future<void> toggleCommentLike(int commentId) async {
     await _dioClient.post('/api/v1/comments/$commentId/like');
   }
+
+  Future<List<PostEntity>> getMyPosts({
+    int page = 1,
+    int size = 20,
+  }) async {
+    final response = await _dioClient.get(
+      '/api/v1/users/me/posts',
+      queryParameters: {'page': page, 'size': size},
+    );
+    final List<dynamic> postsJson = response.data['data'];
+    return postsJson.map((json) => PostEntity.fromJson(json)).toList();
+  }
 }

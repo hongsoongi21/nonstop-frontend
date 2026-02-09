@@ -1,7 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:nonstop/core/errors/failures.dart';
-import '../../data/api/profile_api_mock.dart';
+import 'package:nonstop/core/network/dio_client.dart' show dioClientProvider;
+import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
+    show currentUserProvider;
+import 'package:nonstop/features/board/data/repositories/board_repository_impl.dart';
+import 'package:nonstop/features/board/domain/entities/post.entity.dart';
+import '../../data/api/profile_api.dart';
+import '../../data/api/profile_api_impl.dart';
 import '../../data/repository_impl/profile_repository_impl.dart';
 import '../../domain/entities/profile_stats.dart';
 import '../../domain/entities/user_profile.dart';
@@ -77,8 +83,9 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final GetUserSettingsUseCase getUserSettingsUseCase;
   final UpdateUserSettingsUseCase updateUserSettingsUseCase;
   final GetProfileStatsUseCase getProfileStatsUseCase;
+  final Ref _ref;
 
-  static const String _currentUserId = '1'; // Mock current user
+  String get _currentUserId => _ref.read(currentUserProvider)?.id ?? '';
 
   ProfileNotifier({
     required this.getUserProfileUseCase,
@@ -86,7 +93,9 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     required this.getUserSettingsUseCase,
     required this.updateUserSettingsUseCase,
     required this.getProfileStatsUseCase,
-  }) : super(const ProfileState()) {
+    required Ref ref,
+  }) : _ref = ref,
+       super(const ProfileState()) {
     loadProfile();
   }
 
@@ -333,9 +342,15 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   }
 }
 
+/// Profile API provider
+final profileApiProvider = Provider<ProfileApi>((ref) {
+  final dioClient = ref.read(dioClientProvider);
+  return ProfileApiImpl(dioClient);
+});
+
 /// Repository provider
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
-  final api = ProfileApiMock();
+  final api = ref.watch(profileApiProvider);
   return ProfileRepositoryImpl(api);
 });
 
@@ -371,7 +386,6 @@ final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((re
   final updateUserProfileUseCase = ref.watch(updateUserProfileUseCaseProvider);
   final getUserSettingsUseCase = ref.watch(getUserSettingsUseCaseProvider);
   final updateUserSettingsUseCase = ref.watch(updateUserSettingsUseCaseProvider);
-
   final getProfileStatsUseCase = ref.watch(getProfileStatsUseCaseProvider);
 
   return ProfileNotifier(
@@ -380,6 +394,7 @@ final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((re
     getUserSettingsUseCase: getUserSettingsUseCase,
     updateUserSettingsUseCase: updateUserSettingsUseCase,
     getProfileStatsUseCase: getProfileStatsUseCase,
+    ref: ref,
   );
 });
 
@@ -414,4 +429,14 @@ final isProfileEditingProvider = Provider<bool>((ref) {
 
 final profileCompletionProvider = Provider<int>((ref) {
   return ref.watch(profileProvider).profileCompletion;
+});
+
+/// Provider for current user's posts
+final myPostsProvider = FutureProvider<List<PostEntity>>((ref) async {
+  final boardRepo = ref.watch(boardRepositoryProvider);
+  final result = await boardRepo.getMyPosts(page: 1, size: 20);
+  return result.fold(
+    (error) => <PostEntity>[],
+    (posts) => posts,
+  );
 });

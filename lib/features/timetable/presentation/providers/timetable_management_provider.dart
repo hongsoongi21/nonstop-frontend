@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/dto/semester_dto.dart';
 import '../../data/repository_impl/timetable_repository_impl.dart';
 import '../../domain/entities/day_of_week.dart';
 import '../../domain/entities/semester.dart';
@@ -107,53 +109,60 @@ class TimetableManagementNotifier
 
   /// Create a new timetable
   Future<bool> createTimetable({
-    required int semesterId,
+    required int year,
+    required SemesterType semesterType,
     String? title,
     bool isPublic = false,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
     final result = await _repository.createTimetable(
-      semesterId: semesterId,
+      year: year,
+      semesterType: semesterType,
       title: title,
       isPublic: isPublic,
     );
 
-    return result.fold(
-      (failure) {
-        state = state.copyWith(
-          isLoading: false,
-          error: 'Failed to create timetable',
-        );
-        return false;
-      },
-      (newTimetable) {
-        final updatedList = [...state.myTimetables, newTimetable];
-        state = state.copyWith(isLoading: false, myTimetables: updatedList);
+    if (result.isLeft()) {
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to create timetable',
+      );
+      return false;
+    }
 
-        // Auto-select the new timetable
-        selectTimetable(newTimetable.id);
-        return true;
-      },
-    );
+    final newTimetable = result.getOrElse((_) => throw StateError('Unreachable'));
+    final updatedList = [...state.myTimetables, newTimetable];
+    state = state.copyWith(isLoading: false, myTimetables: updatedList);
+
+    // Auto-select the new timetable (must await to ensure state is set)
+    await selectTimetable(newTimetable.id);
+    debugPrint('[TIMETABLE] createTimetable completed. selectedTimetableId: ${state.selectedTimetableId}');
+    return true;
   }
 
   /// Select and load a specific timetable with its entries
   Future<void> selectTimetable(int timetableId) async {
+    debugPrint('[TIMETABLE] selectTimetable called with id: $timetableId');
     state = state.copyWith(
       isLoading: true,
       clearError: true,
       selectedTimetableId: timetableId,
     );
+    debugPrint('[TIMETABLE] selectedTimetableId set to: ${state.selectedTimetableId}');
 
     final result = await _repository.getTimetableDetail(timetableId);
 
     result.fold(
-      (failure) => state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to load timetable details',
-      ),
+      (failure) {
+        debugPrint('[TIMETABLE] ERROR: Failed to load timetable details');
+        state = state.copyWith(
+          isLoading: false,
+          error: 'Failed to load timetable details',
+        );
+      },
       (detail) {
+        debugPrint('[TIMETABLE] Timetable detail loaded successfully');
         state = state.copyWith(isLoading: false, selectedTimetable: detail);
       },
     );
@@ -240,9 +249,24 @@ class TimetableManagementNotifier
     String? place,
     String? color,
   }) async {
+    debugPrint('[TIMETABLE] addEntry called. selectedTimetableId: ${state.selectedTimetableId}');
+
+    // If no timetable selected, try to initialize first
     if (state.selectedTimetableId == null) {
-      state = state.copyWith(error: 'No timetable selected');
-      return false;
+      debugPrint('[TIMETABLE] No timetable selected, calling initializeTimetable...');
+      await initializeTimetable();
+      debugPrint('[TIMETABLE] After initialization, selectedTimetableId: ${state.selectedTimetableId}');
+
+      // If still no timetable after initialization, return error
+      if (state.selectedTimetableId == null) {
+        debugPrint('[TIMETABLE] ERROR: Still no timetable after initialization');
+        // Keep the existing error if set (e.g., "No semesters available")
+        // or set a generic one
+        if (state.error == null) {
+          state = state.copyWith(error: 'No timetable available. Please create a timetable first.');
+        }
+        return false;
+      }
     }
 
     state = state.copyWith(isLoading: true, clearError: true);
@@ -350,11 +374,13 @@ class TimetableManagementNotifier
   /// - Loads user's timetables
   /// - Auto-creates or auto-selects the appropriate timetable
   Future<void> initializeTimetable() async {
+    debugPrint('[TIMETABLE] initializeTimetable started');
     state = state.copyWith(isLoading: true, clearError: true);
 
     // 1. Load Semesters
     final semResult = await _repository.getSemesters();
     if (semResult.isLeft()) {
+      debugPrint('[TIMETABLE] ERROR: Semesters loading failed');
       state = state.copyWith(
         isLoading: false,
         error: 'Semesters loading failed',
@@ -363,6 +389,7 @@ class TimetableManagementNotifier
     }
 
     final semesters = semResult.getOrElse((_) => []);
+    debugPrint('[TIMETABLE] Loaded ${semesters.length} semesters');
 
     // 2. Find "Current" Semester using backend flag
     // If multiple are marked current (shouldn't happen), take first.
@@ -370,10 +397,12 @@ class TimetableManagementNotifier
     final currentSemester =
         semesters.where((s) => s.isCurrent).firstOrNull ??
         semesters.firstOrNull;
+    debugPrint('[TIMETABLE] Current semester: ${currentSemester?.id}');
 
     // 3. Load User Timetables
     final ttResult = await _repository.getMyTimetables();
     final timetables = ttResult.getOrElse((_) => []);
+    debugPrint('[TIMETABLE] Loaded ${timetables.length} timetables');
 
     state = state.copyWith(semesters: semesters, myTimetables: timetables);
 
@@ -382,22 +411,35 @@ class TimetableManagementNotifier
       final currentTimetables = timetables
           .where((t) => t.semesterId == currentSemester.id)
           .toList();
+      debugPrint('[TIMETABLE] Timetables for current semester: ${currentTimetables.length}');
 
       if (currentTimetables.isEmpty) {
         // Automatically create a default one if none exists for current semester
-        await createTimetable(
-          semesterId: currentSemester.id,
+        debugPrint('[TIMETABLE] Creating new timetable for semester ${currentSemester.id}, year: ${currentSemester.year}, type: ${currentSemester.type}');
+        final created = await createTimetable(
+          year: currentSemester.year,
+          semesterType: currentSemester.type,
           title: 'Asosiy jadval',
         );
+        debugPrint('[TIMETABLE] Timetable created: $created, selectedTimetableId: ${state.selectedTimetableId}');
       } else if (state.selectedTimetableId == null) {
         // Auto-select the first one of the current semester
+        debugPrint('[TIMETABLE] Selecting existing timetable: ${currentTimetables.first.id}');
         await selectTimetable(currentTimetables.first.id);
       }
     } else if (timetables.isNotEmpty && state.selectedTimetableId == null) {
       // Fallback: just select any existing timetable
+      debugPrint('[TIMETABLE] Fallback: selecting first timetable: ${timetables.first.id}');
       await selectTimetable(timetables.first.id);
+    } else {
+      debugPrint('[TIMETABLE] WARNING: No semesters and no timetables available');
+      // Set a clear error message when no semesters are available
+      state = state.copyWith(
+        error: 'No semesters available. Please contact administrator.',
+      );
     }
 
+    debugPrint('[TIMETABLE] initializeTimetable finished. selectedTimetableId: ${state.selectedTimetableId}');
     state = state.copyWith(isLoading: false);
   }
 }

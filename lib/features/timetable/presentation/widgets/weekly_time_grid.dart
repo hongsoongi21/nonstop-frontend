@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/timetable_entry.dart';
 import '../../domain/entities/day_of_week.dart';
 
-/// Weekly time grid widget showing hours and days
+/// Weekly time grid widget showing hours and days - Everytime style
+/// Supports both light and dark themes
 class WeeklyTimeGrid extends StatelessWidget {
   final List<TimetableEntry> entries;
   final Function(TimetableEntry)? onEntryTap;
@@ -14,52 +14,61 @@ class WeeklyTimeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final today = DateTime.now().weekday;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF1A1A1A) : AppColors.border,
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          // Days header
-          _buildDaysHeader(),
-
-          // Time grid
-          Expanded(child: _buildTimeGrid()),
+          _buildDaysHeader(context, today, isDark),
+          Expanded(child: _buildTimeGrid(context, isDark)),
         ],
       ),
     );
   }
 
-  Widget _buildDaysHeader() {
-    final weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+  Widget _buildDaysHeader(BuildContext context, int today, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
+    final weekDays = [
+      {'short': l10n.dayMondayShort, 'day': 1},
+      {'short': l10n.dayTuesdayShort, 'day': 2},
+      {'short': l10n.dayWednesdayShort, 'day': 3},
+      {'short': l10n.dayThursdayShort, 'day': 4},
+      {'short': l10n.dayFridayShort, 'day': 5},
+    ];
+
+    final borderColor = isDark ? const Color(0xFF1A1A1A) : AppColors.border;
+    final defaultTextColor = isDark ? const Color(0xFF999999) : AppColors.textSecondary;
+    final todayTextColor = isDark ? Colors.white : AppColors.primary;
 
     return Container(
-      padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(
-            color: Colors.white.withValues(alpha: 0.3),
-            width: 1,
-          ),
+          bottom: BorderSide(color: borderColor, width: 1),
         ),
       ),
       child: Row(
         children: [
-          // Empty space for time column
-          SizedBox(width: 50),
-
-          // Day headers
-          ...List.generate(5, (index) {
-            final dayName = weekDays[index];
-
+          const SizedBox(width: 48),
+          ...weekDays.map((day) {
+            final isToday = day['day'] == today;
             return Expanded(
               child: Center(
                 child: Text(
-                  dayName,
-                  style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w600,
+                  day['short'] as String,
+                  style: TextStyle(
+                    color: isToday ? todayTextColor : defaultTextColor,
+                    fontSize: 13,
+                    fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
               ),
@@ -70,11 +79,15 @@ class WeeklyTimeGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildTimeGrid() {
+  Widget _buildTimeGrid(BuildContext context, bool isDark) {
     // Time slots from 9 AM to 9 PM
     final timeSlots = List.generate(13, (index) => 9 + index);
 
+    final borderColor = isDark ? const Color(0xFF1A1A1A) : AppColors.borderLight;
+    final hourTextColor = isDark ? const Color(0xFF666666) : AppColors.textTertiary;
+
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Stack(
         children: [
           Row(
@@ -83,16 +96,18 @@ class WeeklyTimeGrid extends StatelessWidget {
               // Time column
               Column(
                 children: timeSlots.map((hour) {
+                  final displayHour = hour > 12 ? hour - 12 : hour;
                   return Container(
-                    height: 80,
-                    width: 50,
+                    height: 60,
+                    width: 48,
                     alignment: Alignment.topCenter,
-                    padding: EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      hour.toString(),
-                      style: AppTypography.labelSmall.copyWith(
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w600,
+                      '$displayHour',
+                      style: TextStyle(
+                        color: hourTextColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   );
@@ -104,13 +119,10 @@ class WeeklyTimeGrid extends StatelessWidget {
                 child: Column(
                   children: timeSlots.map((hour) {
                     return Container(
-                      height: 80,
+                      height: 60,
                       decoration: BoxDecoration(
                         border: Border(
-                          top: BorderSide(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            width: 1,
-                          ),
+                          top: BorderSide(color: borderColor, width: 1),
                         ),
                       ),
                       child: Row(
@@ -120,12 +132,7 @@ class WeeklyTimeGrid extends StatelessWidget {
                               decoration: BoxDecoration(
                                 border: Border(
                                   left: dayIndex > 0
-                                      ? BorderSide(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.2,
-                                          ),
-                                          width: 1,
-                                        )
+                                      ? BorderSide(color: borderColor, width: 1)
                                       : BorderSide.none,
                                 ),
                               ),
@@ -140,9 +147,9 @@ class WeeklyTimeGrid extends StatelessWidget {
             ],
           ),
 
-          // Events Overlay
+          // Course entries overlay
           Positioned.fill(
-            left: 50, // Skip time column
+            left: 48,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final dayWidth = constraints.maxWidth / 5;
@@ -150,29 +157,24 @@ class WeeklyTimeGrid extends StatelessWidget {
                 return Stack(
                   children: entries
                       .where((e) {
-                        // Only show Mon(1) to Fri(5)
                         final dayNum = e.dayOfWeek.weekdayNumber;
                         return dayNum >= 1 && dayNum <= 5;
                       })
                       .map((entry) {
-                        // Check for conflicts
                         final hasConflict = entries.any(
-                          (other) =>
-                              other.id != entry.id && entry.conflictsWith(other),
+                          (other) => other.id != entry.id && entry.conflictsWith(other),
                         );
 
-                        // Calculate position
                         final dayIndex = entry.dayOfWeek.weekdayNumber - 1;
 
                         final startParts = entry.startTime.split(':');
                         final startHour = int.parse(startParts[0]);
                         final startMin = int.parse(startParts[1]);
 
-                        // Grid starts at 9:00. Each hour is 80px.
-                        final double top =
-                            ((startHour - 9) * 80) + (startMin / 60 * 80);
-                        final double height =
-                            (entry.durationInMinutes / 60) * 80;
+                        final double top = ((startHour - 9) * 60) + (startMin / 60 * 60);
+                        final double height = (entry.durationInMinutes / 60) * 60;
+
+                        final courseColor = _getMutedColor(entry.displayColor, isDark);
 
                         return Positioned(
                           left: dayIndex * dayWidth,
@@ -182,61 +184,48 @@ class WeeklyTimeGrid extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () => onEntryTap?.call(entry),
                             child: Container(
-                              margin: EdgeInsets.all(2),
-                              padding: EdgeInsets.all(4),
-                                                          decoration: BoxDecoration(
-                                                            color: Color(
-                                                              entry.displayColor,
-                                                            ).withValues(alpha: hasConflict ? 0.6 : 0.8),
-                                                            borderRadius: BorderRadius.circular(4),
-                                                            border: hasConflict
-                                                                ? Border.all(color: Colors.red, width: 2)
-                                                                : null,
-                                                          ),
-                              
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    entry.subjectName,
-                                    style: AppTypography.caption.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  if (entry.place != null)
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: hasConflict
+                                    ? const Color(0xFFD84545)
+                                    : courseColor,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 6,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
                                     Text(
-                                      entry.place!,
-                                      style: AppTypography.caption.copyWith(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.9,
-                                        ),
-                                        fontSize: 9,
+                                      entry.subjectName,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 11,
+                                        height: 1.2,
                                       ),
-                                      maxLines: 1,
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                  if (height > 40 && entry.professor != null)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2),
-                                      child: Text(
-                                        entry.professor!,
-                                        style: AppTypography.caption.copyWith(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.8,
-                                          ),
-                                          fontSize: 8,
-                                          fontStyle: FontStyle.italic,
+                                    if (entry.place != null) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        entry.place!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                ],
+                                    ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -250,5 +239,25 @@ class WeeklyTimeGrid extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Convert display color to muted pastel for Everytime aesthetic
+  Color _getMutedColor(int colorValue, bool isDark) {
+    final original = Color(colorValue);
+    final hsl = HSLColor.fromColor(original);
+
+    if (isDark) {
+      // Dark mode: muted, slightly darker pastels
+      final muted = hsl
+          .withSaturation((hsl.saturation * 0.5).clamp(0.3, 0.6))
+          .withLightness((hsl.lightness * 0.9).clamp(0.45, 0.65));
+      return muted.toColor();
+    } else {
+      // Light mode: brighter, more vibrant pastels
+      final muted = hsl
+          .withSaturation((hsl.saturation * 0.7).clamp(0.4, 0.7))
+          .withLightness((hsl.lightness).clamp(0.5, 0.7));
+      return muted.toColor();
+    }
   }
 }

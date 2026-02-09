@@ -44,6 +44,17 @@ class FriendRequestDto with _$FriendRequestDto {
       _$FriendRequestDtoFromJson(json);
 }
 
+@freezed
+class BlockedUserDto with _$BlockedUserDto {
+  const factory BlockedUserDto({
+    required UserInfoDto blockedUser,
+    String? blockedAt,
+  }) = _BlockedUserDto;
+
+  factory BlockedUserDto.fromJson(Map<String, dynamic> json) =>
+      _$BlockedUserDtoFromJson(json);
+}
+
 extension FriendDtoExtension on FriendDto {
   Friend toDomain() {
     return Friend(

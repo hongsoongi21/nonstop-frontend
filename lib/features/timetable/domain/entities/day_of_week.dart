@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../../../../core/l10n/app_localizations.dart';
+
 /// Day of week enum for timetable entries
 enum DayOfWeek {
   monday,
@@ -30,22 +33,45 @@ extension DayOfWeekExtension on DayOfWeek {
     }
   }
 
-  String get displayName {
+  /// Get localized display name
+  String displayName(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (this) {
       case DayOfWeek.monday:
-        return 'Dushanba';
+        return l10n.dayMonday;
       case DayOfWeek.tuesday:
-        return 'Seshanba';
+        return l10n.dayTuesday;
       case DayOfWeek.wednesday:
-        return 'Chorshanba';
+        return l10n.dayWednesday;
       case DayOfWeek.thursday:
-        return 'Payshanba';
+        return l10n.dayThursday;
       case DayOfWeek.friday:
-        return 'Juma';
+        return l10n.dayFriday;
       case DayOfWeek.saturday:
-        return 'Shanba';
+        return l10n.daySaturday;
       case DayOfWeek.sunday:
-        return 'Yakshanba';
+        return l10n.daySunday;
+    }
+  }
+
+  /// Get localized short display name
+  String displayNameShort(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (this) {
+      case DayOfWeek.monday:
+        return l10n.dayMondayShort;
+      case DayOfWeek.tuesday:
+        return l10n.dayTuesdayShort;
+      case DayOfWeek.wednesday:
+        return l10n.dayWednesdayShort;
+      case DayOfWeek.thursday:
+        return l10n.dayThursdayShort;
+      case DayOfWeek.friday:
+        return l10n.dayFridayShort;
+      case DayOfWeek.saturday:
+        return l10n.daySaturdayShort;
+      case DayOfWeek.sunday:
+        return l10n.daySundayShort;
     }
   }
 }

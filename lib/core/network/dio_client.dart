@@ -181,6 +181,7 @@ class _AuthInterceptor extends Interceptor {
   final SecureStorageService _secureStorageService;
   final Dio _dio;
   bool _isRefreshing = false;
+  final List<({RequestOptions options, ErrorInterceptorHandler handler})> _pendingRequests = [];
 
   _AuthInterceptor(this._secureStorageService, this._dio);
 
@@ -189,6 +190,12 @@ class _AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    // extra['no-auth'] 플래그가 설정된 경우 토큰 주입을 건너뜁니다.
+    if (options.extra['no-auth'] == true) {
+      super.onRequest(options, handler);
+      return;
+    }
+
     // 보안 저장소에서 JWT 토큰을 가져와 헤더에 주입
     final token = await _secureStorageService.getAccessToken();
     if (token != null) {
@@ -202,49 +209,92 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     // 401 에러(인증 만료) 발생 시 토큰 갱신 시도
-    if (err.response?.statusCode == 401 && !_isRefreshing) {
+    if (err.response?.statusCode == 401) {
       final refreshToken = await _secureStorageService.getRefreshToken();
 
-      if (refreshToken != null) {
-        _isRefreshing = true;
-        AppLogger.w('🔄 Token expired. Attempting refresh...');
+      if (refreshToken == null) {
+        AppLogger.w('⚠️ No refresh token available');
+        await _secureStorageService.deleteAllTokens();
+        return super.onError(err, handler);
+      }
 
-        try {
-          // 토큰 갱신 API 호출용 별도 Dio 인스턴스 생성 (무한 루프 방지)
-          final dio = Dio(BaseOptions(baseUrl: EnvConfig.apiBaseUrl));
-          final response = await dio.post(
-            '/api/v1/auth/refresh',
-            data: {'refreshToken': refreshToken},
-          );
+      // 이미 갱신 중이면 대기열에 추가
+      if (_isRefreshing) {
+        _pendingRequests.add((options: err.requestOptions, handler: handler));
+        return;
+      }
 
-          final apiResponse = response.data as Map<String, dynamic>;
-          if (apiResponse['success'] == true) {
-            final data = apiResponse['data'];
-            final newAccessToken = data['accessToken'];
-            final newRefreshToken = data['refreshToken'];
+      _isRefreshing = true;
+      AppLogger.w('🔄 Token expired. Attempting refresh...');
 
-            AppLogger.s('✅ Token refreshed successfully');
+      try {
+        // 토큰 갱신 API 호출용 별도 Dio 인스턴스 생성 (무한 루프 방지)
+        final dio = Dio(BaseOptions(baseUrl: EnvConfig.apiBaseUrl));
+        final response = await dio.post(
+          '/api/v1/auth/refresh',
+          data: {'refreshToken': refreshToken},
+        );
 
-            // 새 토큰 저장
-            await _secureStorageService.saveAccessToken(newAccessToken);
-            if (newRefreshToken != null) {
-              await _secureStorageService.saveRefreshToken(newRefreshToken);
-            }
+        final apiResponse = response.data as Map<String, dynamic>;
+        if (apiResponse['success'] == true) {
+          final data = apiResponse['data'];
+          final newAccessToken = data['accessToken'];
+          final newRefreshToken = data['refreshToken'];
 
-            // 원래 실패했던 요청 재시도
-            final options = err.requestOptions;
-            options.headers['Authorization'] = 'Bearer $newAccessToken';
+          AppLogger.s('✅ Token refreshed successfully');
 
-            final retryResponse = await _dio.fetch(options);
-            return handler.resolve(retryResponse);
+          // 새 토큰 저장
+          await _secureStorageService.saveAccessToken(newAccessToken);
+          if (newRefreshToken != null) {
+            await _secureStorageService.saveRefreshToken(newRefreshToken);
           }
-        } catch (e) {
-          AppLogger.e('❌ Token refresh failed. Logging out...', e);
-          // 리프레시 실패 시 로그아웃 처리 유도 (토큰 삭제)
-          await _secureStorageService.deleteAllTokens();
-        } finally {
-          _isRefreshing = false;
+
+          // 원래 실패했던 요청 재시도
+          final options = err.requestOptions;
+          options.headers['Authorization'] = 'Bearer $newAccessToken';
+
+          final retryResponse = await _dio.fetch(options);
+          handler.resolve(retryResponse);
+
+          // 대기 중인 요청들도 재시도
+          for (final pending in _pendingRequests) {
+            pending.options.headers['Authorization'] = 'Bearer $newAccessToken';
+            try {
+              final response = await _dio.fetch(pending.options);
+              pending.handler.resolve(response);
+            } catch (e) {
+              pending.handler.reject(
+                DioException(
+                  requestOptions: pending.options,
+                  error: e,
+                ),
+              );
+            }
+          }
+          _pendingRequests.clear();
+          return;
         }
+      } catch (e) {
+        AppLogger.e('❌ Token refresh failed. Logging out...', e);
+        // 리프레시 실패 시 로그아웃 처리 유도 (토큰 삭제)
+        await _secureStorageService.deleteAllTokens();
+
+        // 대기 중인 요청들도 모두 실패 처리
+        for (final pending in _pendingRequests) {
+          pending.handler.reject(
+            DioException(
+              requestOptions: pending.options,
+              error: 'Token refresh failed',
+              response: Response(
+                requestOptions: pending.options,
+                statusCode: 401,
+              ),
+            ),
+          );
+        }
+        _pendingRequests.clear();
+      } finally {
+        _isRefreshing = false;
       }
     }
 

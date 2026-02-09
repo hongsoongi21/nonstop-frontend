@@ -49,3 +49,18 @@ Map<String, dynamic> _$$FriendRequestDtoImplToJson(
   'requester': instance.requester,
   'requestedAt': instance.requestedAt,
 };
+
+_$BlockedUserDtoImpl _$$BlockedUserDtoImplFromJson(Map<String, dynamic> json) =>
+    _$BlockedUserDtoImpl(
+      blockedUser: UserInfoDto.fromJson(
+        json['blockedUser'] as Map<String, dynamic>,
+      ),
+      blockedAt: json['blockedAt'] as String?,
+    );
+
+Map<String, dynamic> _$$BlockedUserDtoImplToJson(
+  _$BlockedUserDtoImpl instance,
+) => <String, dynamic>{
+  'blockedUser': instance.blockedUser,
+  'blockedAt': instance.blockedAt,
+};

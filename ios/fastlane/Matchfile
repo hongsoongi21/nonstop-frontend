@@ -1,0 +1,13 @@
+# Matchfile for iOS code signing
+# https://docs.fastlane.tools/actions/match/
+
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+
+type("appstore") # Default type, can be: appstore, adhoc, development, enterprise
+
+app_identifier([ENV["APP_IDENTIFIER"] || "uz.merge4.nonstop"])
+username(ENV["APPLE_ID"])
+
+# For CI/CD environments
+readonly(is_ci)

@@ -35,13 +35,17 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   @override
   void initState() {
     super.initState();
-    // Pre-select board from state if available
+    // Pre-select board from state if available, or initialize if needed
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(boardProvider);
       if (state.selectedBoard != null) {
         setState(() {
           _selectedBoard = state.selectedBoard;
         });
+      }
+      // If boards are empty and not loading, trigger initialization
+      if (state.boards.isEmpty && !state.isLoading && state.error == null) {
+        ref.read(boardProvider.notifier).initialize();
       }
     });
   }
@@ -54,11 +58,13 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
   }
 
   Future<void> _createPost() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
     if (_selectedBoard == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a board')));
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseSelectBoard)));
       return;
     }
 
@@ -94,9 +100,10 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     final boards = boardState.boards;
     final l10n = AppLocalizations.of(context);
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return AppScaffold(
-      title: 'Create Post',
-      backgroundColor: Colors.transparent,
+      title: l10n.createPost,
+      backgroundColor: isDark ? AppColors.backgroundDark : AppColors.background,
       padding: EdgeInsets.zero,
       body: Container(
         constraints: BoxConstraints(
@@ -122,7 +129,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   children: [
                     // Board Selection
-                    _buildBoardSelector(boards),
+                    _buildBoardSelector(context, boards),
 
                     const SizedBox(height: AppSpacing.lg),
 
@@ -133,14 +140,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       child: AppTextField(
                         controller: _titleController,
                         labelText: l10n.title,
-                        hintText: 'Write a clear, engaging title...',
+                        hintText: l10n.writeClearTitle,
                         maxLines: 2,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a title';
+                            return l10n.pleaseEnterTitle;
                           }
                           if (value.trim().length < 2) {
-                            return 'Title is too short';
+                            return l10n.titleTooShort;
                           }
                           return null;
                         },
@@ -156,11 +163,11 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       child: AppTextField(
                         controller: _contentController,
                         labelText: l10n.content,
-                        hintText: 'Share your thoughts...',
+                        hintText: l10n.shareYourThoughts,
                         maxLines: 8,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'Please enter some content';
+                            return l10n.pleaseEnterContent;
                           }
                           return null;
                         },
@@ -170,7 +177,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                     const SizedBox(height: AppSpacing.lg),
 
                     // Toggles
-                    _buildToggles(),
+                    _buildToggles(context),
 
                     const SizedBox(height: AppSpacing.xl),
                   ],
@@ -196,7 +203,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: AppButton(
-                          text: 'Post',
+                          text: l10n.post,
                           onPressed: _isLoading ? null : _createPost,
                           isLoading: _isLoading,
                           variant: ButtonVariant.primary,
@@ -213,22 +220,78 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     );
   }
 
-  Widget _buildBoardSelector(List<Board> boards) {
+  Widget _buildBoardSelector(BuildContext context, List<Board> boards) {
+    final l10n = AppLocalizations.of(context)!;
+    final boardState = ref.watch(boardProvider);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return GlassContainer(
       borderColor: Colors.transparent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Board',
+            l10n.board,
             style: AppTypography.body2.copyWith(
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          if (boards.isEmpty)
-            const Text('No boards available. Please select a community first.')
+          if (boardState.isLoading)
+            Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  l10n.loading,
+                  style: AppTypography.body2.copyWith(
+                    color: isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            )
+          else if (boardState.error != null)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.errorOccurred,
+                  style: AppTypography.body2.copyWith(color: AppColors.error),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextButton.icon(
+                  onPressed: () => ref.read(boardProvider.notifier).initialize(),
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: Text(l10n.retry),
+                ),
+              ],
+            )
+          else if (boards.isEmpty)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.noBoardsAvailable,
+                  style: AppTypography.body2.copyWith(
+                    color: isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                TextButton.icon(
+                  onPressed: () => ref.read(boardProvider.notifier).initialize(),
+                  icon: const Icon(Icons.refresh, size: 18),
+                  label: Text(l10n.retry),
+                ),
+              ],
+            )
           else
             Wrap(
               spacing: AppSpacing.sm,
@@ -243,19 +306,19 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       setState(() => _selectedBoard = board);
                     }
                   },
-                  backgroundColor: AppColors.surface.withValues(alpha: 0.5),
+                  backgroundColor: (isDarkMode ? AppColors.surfaceDark : AppColors.surface).withValues(alpha: 0.5),
                   selectedColor: AppColors.primary.withValues(alpha: 0.15),
                   checkmarkColor: AppColors.primary,
                   labelStyle: AppTypography.body2.copyWith(
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : (isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary),
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                     side: BorderSide(
-                      color: isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected ? AppColors.primary : (isDarkMode ? AppColors.borderDark : AppColors.border),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -267,21 +330,22 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     );
   }
 
-  Widget _buildToggles() {
+  Widget _buildToggles(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         _buildToggleItem(
           icon: Icons.visibility_off_outlined,
-          title: 'Post Anonymously',
-          subtitle: 'Hide your identity from others',
+          title: l10n.postAnonymously,
+          subtitle: l10n.hideIdentity,
           value: _isAnonymous,
           onChanged: (val) => setState(() => _isAnonymous = val),
         ),
         const SizedBox(height: AppSpacing.md),
         _buildToggleItem(
           icon: Icons.lock_outline,
-          title: 'Secret Post',
-          subtitle: 'Only visible to authorized users',
+          title: l10n.secretPost,
+          subtitle: l10n.onlyVisibleToAuthorized,
           value: _isSecret,
           onChanged: (val) => setState(() => _isSecret = val),
         ),

@@ -67,7 +67,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
                       ? const Center(
                           child: Text('Select a timetable to view classes'),
                         )
-                      : _buildEntriesList(state, notifier),
+                      : _buildEntriesList(context, state, notifier),
                 ),
               ],
             ),
@@ -139,6 +139,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
   }
 
   Widget _buildEntriesList(
+    BuildContext context,
     TimetableManagementState state,
     TimetableManagementNotifier notifier,
   ) {
@@ -166,7 +167,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              day.displayName,
+              day.displayName(context),
               style: AppTypography.titleMedium.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -254,8 +255,11 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
           ElevatedButton(
             onPressed: () async {
               if (selectedSemesterId != null) {
+                final selectedSemester = ref.read(semestersProvider)
+                    .firstWhere((s) => s.id == selectedSemesterId);
                 final success = await notifier.createTimetable(
-                  semesterId: selectedSemesterId!,
+                  year: selectedSemester.year,
+                  semesterType: selectedSemester.type,
                   title: titleController.text.isEmpty
                       ? null
                       : titleController.text,
@@ -316,7 +320,7 @@ class _TimetableTestScreenState extends ConsumerState<TimetableTestScreen> {
                       .map(
                         (d) => DropdownMenuItem(
                           value: d,
-                          child: Text(d.displayName),
+                          child: Text(d.displayName(context)),
                         ),
                       )
                       .toList(),

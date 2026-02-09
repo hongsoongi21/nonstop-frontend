@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
+import 'package:nonstop/core/services/analytics_service.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
-// import 'package:nonstop/features/auth/presentation/screens/email_verification_screen.dart';
+import 'package:nonstop/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
@@ -21,27 +22,50 @@ import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nonstop/features/friends/presentation/screens/friends_screen.dart';
+import 'package:nonstop/features/notification/presentation/screens/notification_screen.dart';
+import 'package:nonstop/features/settings/presentation/screens/blocked_users_screen.dart';
+import 'package:nonstop/features/verification/presentation/screens/verification_screen.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
 /// Main router with authentication guard and bottom navigation
 final routerProvider = Provider<GoRouter>((ref) {
+  // isLoading 등 상태 변화에 라우터가 불필요하게 재계산되는 것을 방지하기 위해
+  // isAuthenticated와 isInitialized만 개별적으로 watch합니다.
+  final isAuthenticated = ref.watch(isAuthenticatedProvider);
+  final isInitialized = ref.watch(isAuthInitializedProvider);
   final authState = ref.watch(authProvider);
+  final analyticsService = ref.watch(analyticsServiceProvider);
 
   return GoRouter(
-    initialLocation: authState.isAuthenticated ? Routes.board : Routes.login,
+    initialLocation: isAuthenticated ? Routes.board : Routes.login,
+    observers: [analyticsService.observer],
     redirect: (context, state) {
-      final isAuthenticated = authState.isAuthenticated;
-      final isGoingToAuth =
-          state.uri.toString() == Routes.login ||
-          state.uri.toString() == Routes.register;
+      final path = state.uri.path;
 
-      // If not authenticated and trying to access protected route, redirect to login
-      if (!isAuthenticated && !isGoingToAuth) {
+      // 초기화가 완료되지 않았으면 리다이렉트하지 않음 (로딩 중)
+      if (!isInitialized) {
+        return null;
+      }
+
+      // 현재 페이지가 로그인, 회원가입, 비밀번호 찾기 페이지인지 확인
+      final isAuthPage = path == Routes.login ||
+          path == Routes.register ||
+          path == Routes.forgotPassword;
+
+      // OAuth 회원가입 대기 중인 경우 (신규 또는 미완성 프로필)
+      // 로그인 페이지에 있으면 회원가입 페이지로 리다이렉트
+      if (authState.hasPendingOAuthSignup && path == Routes.login) {
+        return Routes.register;
+      }
+
+      // 인증되지 않은 상태에서 보호된 경로에 접근하려고 하면 로그인으로 리다이렉트
+      // 단, OAuth 회원가입 대기 중이면 회원가입 페이지 접근 허용
+      if (!isAuthenticated && !isAuthPage && !authState.hasPendingOAuthSignup) {
         return Routes.login;
       }
 
-      // If authenticated and on auth screen, redirect to board
-      if (isAuthenticated && isGoingToAuth) {
+      // 이미 인증된 상태에서 인증 페이지(로그인/회원가입)에 접근하면 게시판으로 리다이렉트
+      if (isAuthenticated && isAuthPage) {
         return Routes.board;
       }
 
@@ -56,19 +80,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: Routes.register,
-        builder: (context, state) =>
-            const SignupScreenV1(), // Using V1 for development
+        builder: (context, state) {
+          // Check for OAuth signup data passed as extra or from auth state
+          final oauthData = state.extra;
+          return SignupScreenV1(oauthSignupData: oauthData);
+        },
       ),
 
       GoRoute(
         path: Routes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-      // GoRoute(
-      //   path: Routes.forgotPassword,
-      //   builder: (context, state) =>
-      //       const EmailVerificationScreen(), // TODO: Create forgot password screen
-      // ),
+      GoRoute(
+        path: Routes.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
 
       // Main app with bottom navigation
       StatefulShellRoute.indexedStack(
@@ -175,8 +201,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
       GoRoute(
+        path: Routes.blockedUsers,
+        builder: (context, state) => const BlockedUsersScreen(),
+      ),
+      GoRoute(
         path: Routes.timetableTest,
         builder: (context, state) => const TimetableTestScreen(),
+      ),
+      GoRoute(
+        path: Routes.notifications,
+        builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: Routes.verification,
+        builder: (context, state) => const VerificationScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

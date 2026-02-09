@@ -30,18 +30,52 @@ class ChatMessage {
   });
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    // Handle both 'id' and 'messageId' field names (backend uses messageId)
+    final id = (json['messageId'] ?? json['id']) as int;
+    // roomId might not be present in some responses
+    final roomId = json['roomId'] as int? ?? 0;
+
+    // Handle clientMessageId as both String and int (backend sends Long)
+    String? clientMessageId;
+    if (json['clientMessageId'] != null) {
+      clientMessageId = json['clientMessageId'].toString();
+    }
+
+    // Parse type - backend sends uppercase enum names
+    final typeStr = json['type']?.toString().toLowerCase() ?? 'text';
+    final type = MessageType.values.firstWhere(
+      (e) => e.name.toLowerCase() == typeStr ||
+             e.name == typeStr ||
+             _mapBackendType(typeStr) == e,
+      orElse: () => MessageType.text,
+    );
+
     return ChatMessage(
-      id: json['id'] as int,
-      roomId: json['roomId'] as int,
+      id: id,
+      roomId: roomId,
       senderId: json['senderId'] as int,
       content: json['content'] as String,
-      type: MessageType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => MessageType.text,
-      ),
+      type: type,
       sentAt: DateTime.parse(json['sentAt'] as String),
-      clientMessageId: json['clientMessageId'] as String?,
+      clientMessageId: clientMessageId,
     );
+  }
+
+  static MessageType _mapBackendType(String type) {
+    switch (type.toUpperCase()) {
+      case 'TEXT':
+        return MessageType.text;
+      case 'IMAGE':
+        return MessageType.image;
+      case 'SYSTEM_INVITE':
+        return MessageType.systemInvite;
+      case 'SYSTEM_LEAVE':
+        return MessageType.systemLeave;
+      case 'SYSTEM_KICK':
+        return MessageType.systemKick;
+      default:
+        return MessageType.text;
+    }
   }
 
   ChatMessage copyWith({

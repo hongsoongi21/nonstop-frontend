@@ -1,0 +1,195 @@
+{
+  "@@locale": "ru",
+  "helloWorld": "Привет, мир!",
+  "@helloWorld": {
+    "description": "The conventional newborn programmer greeting"
+  },
+  "editPost": "Редактировать пост",
+  "@editPost": {
+    "description": "Button text for editing a post"
+  },
+  "cancel": "Отмена",
+  "@cancel": {
+    "description": "Button text for canceling an action"
+  },
+  "save": "Сохранить",
+  "@save": {
+    "description": "Button text for saving changes"
+  },
+  "deletePost": "Удалить пост",
+  "@deletePost": {
+    "description": "Button text for deleting a post"
+  },
+  "confirmDeletePost": "Вы уверены, что хотите удалить этот пост?",
+  "@confirmDeletePost": {
+    "description": "Confirmation message for deleting a post"
+  },
+  "editComment": "Редактировать комментарий",
+  "@editComment": {
+    "description": "Button text for editing a comment"
+  },
+  "deleteComment": "Удалить комментарий",
+  "@deleteComment": {
+    "description": "Button text for deleting a comment"
+  },
+  "confirmDeleteComment": "Вы уверены, что хотите удалить этот комментарий?",
+  "@confirmDeleteComment": {
+    "description": "Confirmation message for deleting a comment"
+  },
+  "universityVerificationRequired": "Требуется верификация университета",
+  "@universityVerificationRequired": {
+    "description": "Message indicating university verification is needed"
+  },
+  "universityVerificationRequiredAccess": "Для доступа к этому сообществу требуется верификация университета",
+  "@universityVerificationRequiredAccess": {
+    "description": "Message for community access requiring university verification"
+  },
+  "title": "Заголовок",
+  "@title": {
+    "description": "Label for title field"
+  },
+  "content": "Содержание",
+  "@content": {
+    "description": "Label for content field"
+  },
+  "selectCommunity": "Выбрать сообщество",
+  "@selectCommunity": {
+    "description": "Title for community selection modal"
+  },
+  "chat": "Чат",
+  "@chat": {
+    "description": "Chat screen title"
+  },
+  "chatListEmpty": "Пока нет чатов",
+  "@chatListEmpty": {
+    "description": "Message when chat list is empty"
+  },
+  "chatListEmptyHint": "Нажмите + чтобы начать разговор",
+  "@chatListEmptyHint": {
+    "description": "Hint for empty chat list"
+  },
+  "chatLoadError": "Не удалось загрузить чаты",
+  "@chatLoadError": {
+    "description": "Error message when chat list fails to load"
+  },
+  "newChat": "Новый чат",
+  "@newChat": {
+    "description": "Title for new chat sheet"
+  },
+  "searchUsers": "Поиск пользователей...",
+  "@searchUsers": {
+    "description": "Placeholder for user search"
+  },
+  "selectedCount": "{count} выбрано",
+  "@selectedCount": {
+    "description": "Shows number of selected users",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "startChat": "Начать чат",
+  "@startChat": {
+    "description": "Button to start a chat"
+  },
+  "createGroup": "Создать группу",
+  "@createGroup": {
+    "description": "Button to create a group"
+  },
+  "groupName": "Название группы",
+  "@groupName": {
+    "description": "Label for group name"
+  },
+  "groupNameHint": "Введите название группы",
+  "@groupNameHint": {
+    "description": "Placeholder for group name input"
+  },
+  "camera": "Камера",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Галерея",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "connectionConnected": "Подключено",
+  "@connectionConnected": {
+    "description": "Connection status connected"
+  },
+  "connectionConnecting": "Подключение...",
+  "@connectionConnecting": {
+    "description": "Connection status connecting"
+  },
+  "connectionDisconnected": "Отключено - нажмите для переподключения",
+  "@connectionDisconnected": {
+    "description": "Connection status disconnected"
+  },
+  "today": "Сегодня",
+  "@today": {
+    "description": "Today label for date separator"
+  },
+  "yesterday": "Вчера",
+  "@yesterday": {
+    "description": "Yesterday label for date separator"
+  },
+  "messageHint": "Введите сообщение...",
+  "@messageHint": {
+    "description": "Placeholder for message input"
+  },
+  "notifications": "Уведомления",
+  "@notifications": {
+    "description": "Notification screen title"
+  },
+  "markAllAsRead": "Отметить все прочитанным",
+  "@markAllAsRead": {
+    "description": "Button to mark all notifications as read"
+  },
+  "noNotificationsYet": "Пока нет уведомлений",
+  "@noNotificationsYet": {
+    "description": "Empty state title for notifications"
+  },
+  "noNotificationsHint": "Новые уведомления появятся здесь",
+  "@noNotificationsHint": {
+    "description": "Empty state hint for notifications"
+  },
+  "notificationLoadError": "Не удалось загрузить уведомления",
+  "@notificationLoadError": {
+    "description": "Error message when notifications fail to load"
+  },
+  "retry": "Повторить",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "justNow": "Только что",
+  "@justNow": {
+    "description": "Time label for notifications less than 1 minute old"
+  },
+  "minutesAgo": "{count} минут назад",
+  "@minutesAgo": {
+    "description": "Time label for notifications in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} часов назад",
+  "@hoursAgo": {
+    "description": "Time label for notifications in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{count} дней назад",
+  "@daysAgo": {
+    "description": "Time label for notifications in days",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

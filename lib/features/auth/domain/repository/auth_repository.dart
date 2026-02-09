@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../../data/api/auth_api.dart';
 import '../entities/policy.dart';
 import '../entities/user.dart';
 
@@ -13,27 +14,58 @@ abstract class AuthRepository {
   });
 
   /// Sign in with Google
-  Future<Either<Failure, User>> signInWithGoogle({
+  /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
+  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({required String idToken});
+
+  /// Sign in with Apple
+  /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
+  Future<Either<Failure, OAuthLoginResult>> signInWithApple({
     required String idToken,
+    String? authorizationCode,
+    String? firstName,
+    String? lastName,
   });
 
-  /// Signs up a new user with email, password, and nickname.
+  /// Signs up a new user with email, password, nickname, and birthDate.
   Future<Either<Failure, User>> signUp({
     required String email,
     required String password,
     required String nickname,
+    required DateTime birthDate,
     int? universityId,
     int? majorId,
+    List<int>? agreedPolicyIds,
+  });
+
+  /// Complete OAuth signup for new users (no password required)
+  Future<Either<Failure, User>> completeOAuthSignup({
+    required String nickname,
+    required DateTime birthDate,
+    int? universityId,
+    int? majorId,
+    List<int>? agreedPolicyIds,
   });
 
   /// Sign out current user
   Future<Either<Failure, Unit>> signOut();
+
+  /// Sign out current user and Google
+  Future<Either<Failure, Unit>> signOutFull();
 
   /// Get current authenticated user
   Future<Either<Failure, User?>> getCurrentUser();
 
   /// Send password reset email
   Future<Either<Failure, Unit>> sendPasswordResetEmail(String email);
+
+  /// Verify password reset code
+  Future<Either<Failure, Unit>> verifyPasswordResetCode(String email, String code);
+
+  /// Confirm password reset with new password
+  Future<Either<Failure, Unit>> confirmPasswordReset(String email, String code, String newPassword);
+
+  /// Send verification code to email
+  Future<Either<Failure, Unit>> sendVerificationEmail(String email);
 
   /// Verify email with confirmation code
   Future<Either<Failure, Unit>> verifyEmail(String code);
@@ -61,9 +93,12 @@ abstract class AuthRepository {
 
   /// Get current access token
   Future<Either<Failure, String?>> getAccessToken();
-  
+
   /// Get policy list
   Future<Either<Failure, List<Policy>>> getPolicies();
+
+  /// Submit policy agreements
+  Future<Either<Failure, Unit>> agreePolicies(List<int> policyIds);
 
   /// Stream of authentication state changes
   Stream<User?> get authStateChanges;
