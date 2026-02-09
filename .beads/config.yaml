@@ -40,7 +40,7 @@
 # Git branch for beads commits (bd sync will commit to this branch)
 # IMPORTANT: Set this for team projects so all clones use the same sync branch.
 # This setting persists across clones (unlike database config which is gitignored).
-# Can also use BEADS_SYNC_BRANCH env var for local override.
+# Can also use BEADS_SYNC_BRANCH .env var for local override.
 # If not set, bd sync will require you to run 'bd config set sync.branch <branch>'.
 # sync-branch: "beads-sync"
 

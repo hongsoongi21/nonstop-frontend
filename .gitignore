@@ -55,3 +55,4 @@ app.*.map.json
 
 # Gemini clipboard
 .gemini-clipboard/
+/.omc/continuation-count.json
