@@ -103,11 +103,8 @@ class BoardRemoteDataSource {
         .eq('id', postId)
         .single();
 
-    // Increment view count
-    await _supabase
-        .from('posts')
-        .update({'view_count': (post['view_count'] as int) + 1})
-        .eq('id', postId);
+    // Atomic view count increment via RPC
+    await _supabase.rpc('increment_view_count', params: {'target_post_id': postId});
 
     final enriched = await _enrichPosts([post]);
     return enriched.first;

@@ -486,8 +486,8 @@ class AuthApiImpl implements AuthApi {
 
   @override
   Future<void> deleteAccount() async {
-    final authUser = _supabase.auth.currentUser;
-    if (authUser == null) {
+    final session = _supabase.auth.currentSession;
+    if (session == null) {
       throw const ServerException(
         message: '인증되지 않은 사용자입니다.',
         statusCode: 401,
@@ -495,14 +495,23 @@ class AuthApiImpl implements AuthApi {
     }
 
     try {
-      await _supabase.from('users').update({
-        'deleted_at': DateTime.now().toIso8601String(),
-        'is_active': false,
-      }).eq('auth_id', authUser.id);
+      // Call Edge Function for full account deletion (soft delete + auth.users delete)
+      final response = await _supabase.functions.invoke(
+        'delete-account',
+        headers: {'Authorization': 'Bearer ${session.accessToken}'},
+      );
+
+      if (response.status != 200) {
+        throw ServerException(
+          message: '계정 삭제 실패',
+          statusCode: response.status,
+        );
+      }
 
       await _supabase.auth.signOut();
       _authStateController.add(null);
     } catch (e) {
+      if (e is ServerException) rethrow;
       throw ServerException(
         message: '계정 삭제 실패: $e',
         statusCode: 500,
