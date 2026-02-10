@@ -259,10 +259,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Google로 로그인을 수행합니다.
   /// 신규 사용자인 경우 pendingOAuthSignup에 데이터가 설정됩니다.
-  Future<void> signInWithGoogle(String idToken) async {
+  Future<void> signInWithGoogle(String idToken, {String? accessToken}) async {
     state = state.copyWith(isLoading: true, clearFailure: true);
     final result = await _googleSignInUseCase(
-      GoogleSignInParams(idToken: idToken),
+      GoogleSignInParams(idToken: idToken, accessToken: accessToken),
     );
     result.fold(
       (failure) => state = state.copyWith(isLoading: false, failure: failure),
@@ -301,6 +301,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 신규 사용자인 경우 pendingOAuthSignup에 데이터가 설정됩니다.
   Future<void> signInWithApple({
     required String idToken,
+    String? nonce,
     String? authorizationCode,
     String? firstName,
     String? lastName,
@@ -309,6 +310,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await _appleSignInUseCase(
       AppleSignInParams(
         idToken: idToken,
+        nonce: nonce,
         authorizationCode: authorizationCode,
         firstName: firstName,
         lastName: lastName,

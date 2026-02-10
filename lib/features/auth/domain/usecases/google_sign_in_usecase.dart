@@ -14,15 +14,17 @@ class GoogleSignInUseCase implements UseCase<OAuthLoginResult, GoogleSignInParam
 
   @override
   Future<Either<Failure, OAuthLoginResult>> call(GoogleSignInParams params) {
-    return _authRepository.signInWithGoogle(idToken: params.idToken);
+    return _authRepository.signInWithGoogle(idToken: params.idToken, accessToken: params.accessToken);
   }
 }
 
 /// Parameters for Google sign in use case
 class GoogleSignInParams {
   final String idToken;
+  final String? accessToken;
 
   const GoogleSignInParams({
     required this.idToken,
+    this.accessToken,
   });
 }

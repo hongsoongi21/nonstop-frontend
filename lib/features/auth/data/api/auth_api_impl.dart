@@ -70,7 +70,49 @@ class AuthApiImpl implements AuthApi {
     List<int>? agreedPolicyIds,
   }) async {
     try {
-      // 1. Create auth user (trigger will create public.users row)
+      final birthDateStr =
+          '${birthDate.year.toString().padLeft(4, '0')}-'
+          '${birthDate.month.toString().padLeft(2, '0')}-'
+          '${birthDate.day.toString().padLeft(2, '0')}';
+
+      // Check if user already has an active session from OTP email verification.
+      // In that case, the auth user already exists - just set the password.
+      final existingAuthUser = _supabase.auth.currentUser;
+      if (existingAuthUser != null && existingAuthUser.email == email) {
+        if (!kReleaseMode) {
+          AppLogger.d('[NONSTOP] User exists from OTP verification, setting password...');
+        }
+
+        // Set password for the OTP-created user
+        await _supabase.auth.updateUser(
+          supa.UserAttributes(password: password),
+        );
+
+        // Update the public.users row with profile info
+        await _supabase.from('users').update({
+          'nickname': nickname,
+          'birth_date': birthDateStr,
+          if (universityId != null) 'university_id': universityId,
+          if (majorId != null) 'major_id': majorId,
+        }).eq('auth_id', existingAuthUser.id);
+
+        // Save policy agreements
+        if (agreedPolicyIds != null && agreedPolicyIds.isNotEmpty) {
+          final userId = await _getUserId(existingAuthUser.id);
+          await _supabase.from('user_policy_agreements').insert(
+            agreedPolicyIds
+                .map((policyId) => {
+                      'user_id': userId,
+                      'policy_id': policyId,
+                    })
+                .toList(),
+          );
+        }
+
+        return await _fetchCurrentUser();
+      }
+
+      // Normal flow: Create a new auth user (trigger will create public.users row)
       final response = await _supabase.auth.signUp(
         email: email,
         password: password,
@@ -88,12 +130,7 @@ class AuthApiImpl implements AuthApi {
         AppLogger.d('[NONSTOP] Supabase sign-up successful for ${response.user!.email}');
       }
 
-      // 2. Update the public.users row with additional info
-      final birthDateStr =
-          '${birthDate.year.toString().padLeft(4, '0')}-'
-          '${birthDate.month.toString().padLeft(2, '0')}-'
-          '${birthDate.day.toString().padLeft(2, '0')}';
-
+      // Update the public.users row with additional info
       await _supabase.from('users').update({
         'nickname': nickname,
         'birth_date': birthDateStr,
@@ -101,7 +138,7 @@ class AuthApiImpl implements AuthApi {
         if (majorId != null) 'major_id': majorId,
       }).eq('auth_id', response.user!.id);
 
-      // 3. Save policy agreements
+      // Save policy agreements
       if (agreedPolicyIds != null && agreedPolicyIds.isNotEmpty) {
         final userId = await _getUserId(response.user!.id);
         await _supabase.from('user_policy_agreements').insert(
@@ -125,11 +162,12 @@ class AuthApiImpl implements AuthApi {
   // ---------------------------------------------------------------------------
 
   @override
-  Future<OAuthLoginResult> signInWithGoogle({required String idToken}) async {
+  Future<OAuthLoginResult> signInWithGoogle({required String idToken, String? accessToken}) async {
     try {
       final response = await _supabase.auth.signInWithIdToken(
         provider: supa.OAuthProvider.google,
         idToken: idToken,
+        accessToken: accessToken,
       );
 
       if (response.user == null) {
@@ -160,6 +198,7 @@ class AuthApiImpl implements AuthApi {
   @override
   Future<OAuthLoginResult> signInWithApple({
     required String idToken,
+    String? nonce,
     String? authorizationCode,
     String? firstName,
     String? lastName,
@@ -168,6 +207,7 @@ class AuthApiImpl implements AuthApi {
       final response = await _supabase.auth.signInWithIdToken(
         provider: supa.OAuthProvider.apple,
         idToken: idToken,
+        nonce: nonce,
       );
 
       if (response.user == null) {
@@ -345,7 +385,10 @@ class AuthApiImpl implements AuthApi {
   Future<void> sendVerificationEmail(String email) async {
     _lastVerificationEmail = email;
     try {
-      await _supabase.auth.resend(type: supa.OtpType.signup, email: email);
+      // Use signInWithOtp to send a 6-digit OTP code for email verification.
+      // This works for both new and existing emails, unlike resend() which
+      // requires a prior signUp call.
+      await _supabase.auth.signInWithOtp(email: email);
     } on supa.AuthException catch (e) {
       throw ServerException(message: e.message, statusCode: 400);
     }
@@ -363,8 +406,10 @@ class AuthApiImpl implements AuthApi {
       await _supabase.auth.verifyOTP(
         email: _lastVerificationEmail!,
         token: code,
-        type: supa.OtpType.signup,
+        type: supa.OtpType.email,
       );
+      // Keep the session active - signUp will detect the existing user
+      // and use updateUser to set the password instead of creating a new user.
     } on supa.AuthException catch (e) {
       throw ServerException(message: e.message, statusCode: 400);
     }

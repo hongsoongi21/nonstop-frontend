@@ -16,6 +16,7 @@ class AppleSignInUseCase implements UseCase<OAuthLoginResult, AppleSignInParams>
   Future<Either<Failure, OAuthLoginResult>> call(AppleSignInParams params) {
     return _authRepository.signInWithApple(
       idToken: params.idToken,
+      nonce: params.nonce,
       authorizationCode: params.authorizationCode,
       firstName: params.firstName,
       lastName: params.lastName,
@@ -26,12 +27,14 @@ class AppleSignInUseCase implements UseCase<OAuthLoginResult, AppleSignInParams>
 /// Parameters for Apple sign in use case
 class AppleSignInParams {
   final String idToken;
+  final String? nonce;
   final String? authorizationCode;
   final String? firstName;
   final String? lastName;
 
   const AppleSignInParams({
     required this.idToken,
+    this.nonce,
     this.authorizationCode,
     this.firstName,
     this.lastName,

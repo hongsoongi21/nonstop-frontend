@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -157,24 +156,28 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         return;
       }
 
-      debugPrint('[GOOGLE_LOGIN] Step 5: Signing in to Firebase...');
-      // Exchange Google token for a Firebase ID token.
-      final credential = GoogleAuthProvider.credential(idToken: googleIdToken);
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
-      debugPrint('[GOOGLE_LOGIN] Step 6: Firebase user: ${userCredential.user?.uid}');
-
-      final firebaseIdToken = await userCredential.user?.getIdToken(true);
-      debugPrint('[GOOGLE_LOGIN] Step 7: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS (${firebaseIdToken.length} chars)" : "NULL"}');
-
-      if (firebaseIdToken == null) {
-        debugPrint('[GOOGLE_LOGIN] ERROR: Firebase ID Token is null!');
-        return;
+      // On iOS, the Google ID token includes a nonce. Supabase needs the
+      // accessToken to verify it. In google_sign_in v7.x, accessToken is
+      // obtained via the authorizationClient.
+      String? accessToken;
+      if (Platform.isIOS) {
+        try {
+          final authClient = googleUser.authorizationClient;
+          final clientAuth = await authClient.authorizationForScopes(<String>['email']);
+          accessToken = clientAuth?.accessToken;
+          if (accessToken == null) {
+            final auth = await authClient.authorizeScopes(<String>['email']);
+            accessToken = auth.accessToken;
+          }
+          debugPrint('[GOOGLE_LOGIN] Step 4b: Got accessToken for iOS nonce verification');
+        } catch (e) {
+          debugPrint('[GOOGLE_LOGIN] Warning: Failed to get accessToken: $e');
+        }
       }
 
-      debugPrint('[GOOGLE_LOGIN] Step 8: Calling backend signInWithGoogle...');
-      await authNotifier.signInWithGoogle(firebaseIdToken);
+      debugPrint('[GOOGLE_LOGIN] Step 5: Calling Supabase signInWithGoogle...');
+      // Pass Google ID Token + accessToken to Supabase (accessToken needed for iOS nonce verification)
+      await authNotifier.signInWithGoogle(googleIdToken, accessToken: accessToken);
 
       if (mounted) {
         final authState = ref.read(authProvider);
@@ -257,34 +260,22 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       );
       debugPrint('[APPLE_LOGIN] Step 3: Got Apple credential, identityToken: ${appleCredential.identityToken != null ? "EXISTS" : "NULL"}');
 
-      // Create OAuth credential for Firebase
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
-
-      debugPrint('[APPLE_LOGIN] Step 4: Signing in to Firebase...');
-      // Sign in to Firebase with Apple credential
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      debugPrint('[APPLE_LOGIN] Step 5: Firebase user: ${userCredential.user?.uid}');
-
-      final firebaseIdToken = await userCredential.user?.getIdToken(true);
-      debugPrint('[APPLE_LOGIN] Step 6: Firebase ID Token: ${firebaseIdToken != null ? "EXISTS" : "NULL"}');
-
-      if (firebaseIdToken == null) {
-        debugPrint('[APPLE_LOGIN] ERROR: Firebase ID Token is null!');
+      final appleIdToken = appleCredential.identityToken;
+      if (appleIdToken == null) {
+        debugPrint('[APPLE_LOGIN] ERROR: Apple Identity Token is null!');
         return;
       }
 
       // Get user name from Apple (only provided on first sign in)
       final firstName = appleCredential.givenName;
       final lastName = appleCredential.familyName;
-      debugPrint('[APPLE_LOGIN] Step 7: Name: $firstName $lastName');
+      debugPrint('[APPLE_LOGIN] Step 4: Name: $firstName $lastName');
 
-      debugPrint('[APPLE_LOGIN] Step 8: Calling backend signInWithApple...');
-      // Sign in with backend
+      debugPrint('[APPLE_LOGIN] Step 5: Calling Supabase signInWithApple...');
+      // Pass Apple Identity Token + rawNonce to Supabase for nonce verification
       await authNotifier.signInWithApple(
-        idToken: firebaseIdToken,
+        idToken: appleIdToken,
+        nonce: rawNonce,
         authorizationCode: appleCredential.authorizationCode,
         firstName: firstName,
         lastName: lastName,

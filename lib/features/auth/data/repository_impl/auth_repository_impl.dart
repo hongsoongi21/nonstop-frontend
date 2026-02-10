@@ -35,9 +35,10 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({
     required String idToken,
+    String? accessToken,
   }) async {
     try {
-      final result = await _authApi.signInWithGoogle(idToken: idToken);
+      final result = await _authApi.signInWithGoogle(idToken: idToken, accessToken: accessToken);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message, statusCode: e.statusCode));
@@ -53,6 +54,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, OAuthLoginResult>> signInWithApple({
     required String idToken,
+    String? nonce,
     String? authorizationCode,
     String? firstName,
     String? lastName,
@@ -60,6 +62,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final result = await _authApi.signInWithApple(
         idToken: idToken,
+        nonce: nonce,
         authorizationCode: authorizationCode,
         firstName: firstName,
         lastName: lastName,

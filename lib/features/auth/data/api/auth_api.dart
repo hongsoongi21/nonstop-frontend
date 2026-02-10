@@ -96,12 +96,13 @@ abstract class AuthApi {
 
   /// Sign in with Google
   /// Returns OAuthExistingUser for existing users, OAuthNewUser for new users
-  Future<OAuthLoginResult> signInWithGoogle({required String idToken});
+  Future<OAuthLoginResult> signInWithGoogle({required String idToken, String? accessToken});
 
   /// Sign in with Apple
   /// Returns OAuthExistingUser for existing users, OAuthNewUser for new users
   Future<OAuthLoginResult> signInWithApple({
     required String idToken,
+    String? nonce,
     String? authorizationCode,
     String? firstName,
     String? lastName,

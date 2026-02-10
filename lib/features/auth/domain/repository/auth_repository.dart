@@ -15,12 +15,13 @@ abstract class AuthRepository {
 
   /// Sign in with Google
   /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
-  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({required String idToken});
+  Future<Either<Failure, OAuthLoginResult>> signInWithGoogle({required String idToken, String? accessToken});
 
   /// Sign in with Apple
   /// Returns OAuthLoginResult - either OAuthExistingUser or OAuthNewUser
   Future<Either<Failure, OAuthLoginResult>> signInWithApple({
     required String idToken,
+    String? nonce,
     String? authorizationCode,
     String? firstName,
     String? lastName,
