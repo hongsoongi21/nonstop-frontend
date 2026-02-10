@@ -725,8 +725,24 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         ),
       ),
       child: universitiesAsync.when(
-        data: (universities) => DropdownButtonFormField<int>(
-          initialValue: _selectedUniversityId,
+        data: (universities) {
+          if (universities.isEmpty) {
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
+              child: Row(
+                children: [
+                  Icon(Icons.school_outlined, color: AppColors.textHint, size: AppSpacing.iconMd.sp),
+                  SizedBox(width: AppSpacing.sm.w),
+                  Text(
+                    'No universities found',
+                    style: AppTypography.body2.copyWith(color: AppColors.textHint),
+                  ),
+                ],
+              ),
+            );
+          }
+          return DropdownButtonFormField<int>(
+          value: _selectedUniversityId,
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context).selectUniversity,
             hintStyle: AppTypography.body2.copyWith(
@@ -775,7 +791,8 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
               _selectedUniversityId = value;
             });
           },
-        ),
+        );
+        },
         loading: () => Center(
             child: CircularProgressIndicator(
               strokeWidth: 2,

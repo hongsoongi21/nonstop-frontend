@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "127473148279-cduudq2flhreiccbtid4b4flt2agk6i5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.merge4.nonstop",
+            "certificate_hash": "3cad17d0ffac98d29f510f8c9a3c1c7273128aa5"
+          }
+        },
+        {
           "client_id": "127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com",
           "client_type": 3
         }
