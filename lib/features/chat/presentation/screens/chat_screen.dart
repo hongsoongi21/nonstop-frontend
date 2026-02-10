@@ -25,6 +25,16 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  bool _isSearching = false;
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatListProvider);
@@ -42,6 +52,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           children: [
             // Clean header
             _buildHeader(context, isDarkMode),
+
+            // Search bar (animated)
+            if (_isSearching)
+              _buildSearchBar(isDarkMode),
 
             // Subtle divider
             Container(
@@ -181,16 +195,38 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return _buildEmptyState(context, isDarkMode);
     }
 
+    final filteredRooms = _searchQuery.isEmpty
+        ? state.rooms
+        : state.rooms.where((room) {
+            final name = room.name?.toLowerCase() ?? '';
+            final lastMsg = room.lastMessage?.content.toLowerCase() ?? '';
+            return name.contains(_searchQuery) || lastMsg.contains(_searchQuery);
+          }).toList();
+
+    if (filteredRooms.isEmpty && _searchQuery.isNotEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Text(
+            AppLocalizations.of(context).noResults,
+            style: AppTypography.bodyLarge.copyWith(
+              color: isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary,
+            ),
+          ),
+        ),
+      );
+    }
+
     return ListView.separated(
       padding: const EdgeInsets.only(top: 0, bottom: 88),
-      itemCount: state.rooms.length,
+      itemCount: filteredRooms.length,
       separatorBuilder: (context, index) => Container(
         margin: const EdgeInsets.only(left: 84),
         height: 1,
         color: borderColor.withValues(alpha: 0.3),
       ),
       itemBuilder: (context, index) {
-        final room = state.rooms[index];
+        final room = filteredRooms[index];
         return ChatRoomTile(
           room: room,
           currentUserId: currentUserId,
@@ -332,12 +368,63 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showSearch(BuildContext context) {
-    // TODO: Implement search functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context).searchComingSoon),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+        _searchQuery = '';
+      }
+    });
+  }
+
+  Widget _buildSearchBar(bool isDarkMode) {
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      child: TextField(
+        controller: _searchController,
+        autofocus: true,
+        style: AppTypography.bodyLarge.copyWith(
+          color: isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary,
+        ),
+        decoration: InputDecoration(
+          hintText: l10n.search,
+          hintStyle: AppTypography.bodyLarge.copyWith(
+            color: isDarkMode ? AppColors.textTertiaryDark : AppColors.textHint,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: isDarkMode ? AppColors.textTertiaryDark : AppColors.textTertiary,
+          ),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: Icon(
+                    Icons.clear,
+                    color: isDarkMode ? AppColors.textTertiaryDark : AppColors.textTertiary,
+                  ),
+                  onPressed: () {
+                    _searchController.clear();
+                    setState(() => _searchQuery = '');
+                  },
+                )
+              : null,
+          filled: true,
+          fillColor: isDarkMode ? AppColors.surfaceVariantDark : AppColors.surfaceVariant,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+        ),
+        onChanged: (value) {
+          setState(() => _searchQuery = value.toLowerCase());
+        },
       ),
     );
   }

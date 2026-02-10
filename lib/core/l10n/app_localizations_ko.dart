@@ -1061,4 +1061,34 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get completeProfileSubtitle => '필수 정보를 입력해 주세요';
+
+  @override
+  String get introduction => '자기소개';
+
+  @override
+  String get introductionHint => '자기소개를 입력하세요...';
+
+  @override
+  String get major => '전공';
+
+  @override
+  String get majorHint => '예: 컴퓨터공학';
+
+  @override
+  String get changePhoto => '사진 변경';
+
+  @override
+  String get profileUpdated => '프로필이 성공적으로 업데이트되었습니다';
+
+  @override
+  String get profileUpdateFailed => '프로필 업데이트에 실패했습니다';
+
+  @override
+  String get avatarUploadFailed => '아바타 업로드에 실패했습니다';
+
+  @override
+  String get selectImageSource => '이미지 소스 선택';
+
+  @override
+  String get introductionMaxLength => '자기소개는 200자 이하여야 합니다';
 }

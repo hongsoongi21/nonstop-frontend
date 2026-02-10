@@ -1075,4 +1075,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get completeProfileSubtitle =>
       'Please fill in the required information';
+
+  @override
+  String get introduction => 'Introduction';
+
+  @override
+  String get introductionHint => 'Tell us about yourself...';
+
+  @override
+  String get major => 'Major';
+
+  @override
+  String get majorHint => 'e.g. Computer Science';
+
+  @override
+  String get changePhoto => 'Change Photo';
+
+  @override
+  String get profileUpdated => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get avatarUploadFailed => 'Failed to upload avatar';
+
+  @override
+  String get selectImageSource => 'Select Image Source';
+
+  @override
+  String get introductionMaxLength =>
+      'Introduction must be 200 characters or less';
 }

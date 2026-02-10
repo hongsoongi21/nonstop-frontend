@@ -1290,5 +1290,17 @@
   "completeProfileSubtitle": "Пожалуйста, заполните необходимую информацию",
   "@completeProfileSubtitle": {
     "description": "Subtitle for incomplete profile completion screen"
-  }
+  },
+  "introduction": "О себе",
+  "introductionHint": "Расскажите о себе...",
+  "major": "Специальность",
+  "majorHint": "напр. Информатика",
+  "changePhoto": "Изменить фото",
+  "profileUpdated": "Профиль успешно обновлён",
+  "profileUpdateFailed": "Не удалось обновить профиль",
+  "avatarUploadFailed": "Не удалось загрузить аватар",
+  "camera": "Камера",
+  "gallery": "Галерея",
+  "selectImageSource": "Выберите источник изображения",
+  "introductionMaxLength": "О себе должно быть не более 200 символов"
 }

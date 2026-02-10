@@ -1428,5 +1428,53 @@
   "completeProfileSubtitle": "Please fill in the required information",
   "@completeProfileSubtitle": {
     "description": "Subtitle for incomplete profile completion screen"
+  },
+  "introduction": "Introduction",
+  "@introduction": {
+    "description": "Introduction field label"
+  },
+  "introductionHint": "Tell us about yourself...",
+  "@introductionHint": {
+    "description": "Introduction field hint text"
+  },
+  "major": "Major",
+  "@major": {
+    "description": "Major field label"
+  },
+  "majorHint": "e.g. Computer Science",
+  "@majorHint": {
+    "description": "Major field hint text"
+  },
+  "changePhoto": "Change Photo",
+  "@changePhoto": {
+    "description": "Change profile photo button text"
+  },
+  "profileUpdated": "Profile updated successfully",
+  "@profileUpdated": {
+    "description": "Profile update success message"
+  },
+  "profileUpdateFailed": "Failed to update profile",
+  "@profileUpdateFailed": {
+    "description": "Profile update failure message"
+  },
+  "avatarUploadFailed": "Failed to upload avatar",
+  "@avatarUploadFailed": {
+    "description": "Avatar upload failure message"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera option label"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery option label"
+  },
+  "selectImageSource": "Select Image Source",
+  "@selectImageSource": {
+    "description": "Image source selection dialog title"
+  },
+  "introductionMaxLength": "Introduction must be 200 characters or less",
+  "@introductionMaxLength": {
+    "description": "Introduction max length validation message"
   }
 }

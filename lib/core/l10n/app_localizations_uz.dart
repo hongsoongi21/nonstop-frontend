@@ -1087,4 +1087,35 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get completeProfileSubtitle =>
       'Iltimos, kerakli ma\'lumotlarni kiriting';
+
+  @override
+  String get introduction => 'O\'zingiz haqida';
+
+  @override
+  String get introductionHint => 'O\'zingiz haqida gapirib bering...';
+
+  @override
+  String get major => 'Mutaxassislik';
+
+  @override
+  String get majorHint => 'masalan, Informatika';
+
+  @override
+  String get changePhoto => 'Rasmni o\'zgartirish';
+
+  @override
+  String get profileUpdated => 'Profil muvaffaqiyatli yangilandi';
+
+  @override
+  String get profileUpdateFailed => 'Profilni yangilab bo\'lmadi';
+
+  @override
+  String get avatarUploadFailed => 'Avatarni yuklab bo\'lmadi';
+
+  @override
+  String get selectImageSource => 'Rasm manbini tanlang';
+
+  @override
+  String get introductionMaxLength =>
+      'O\'zingiz haqida 200 belgidan oshmasligi kerak';
 }

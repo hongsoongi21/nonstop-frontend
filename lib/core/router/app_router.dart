@@ -21,6 +21,7 @@ import 'package:nonstop/features/settings/presentation/screens/settings_screen.d
 import 'package:nonstop/features/chat/presentation/screens/chat_screen.dart';
 import 'package:nonstop/features/chat/presentation/screens/chat_room_screen.dart';
 import 'package:nonstop/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nonstop/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:nonstop/features/friends/presentation/screens/friends_screen.dart';
 import 'package:nonstop/features/notification/presentation/screens/notification_screen.dart';
 import 'package:nonstop/features/settings/presentation/screens/blocked_users_screen.dart';
@@ -195,6 +196,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.home,
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: Routes.editProfile,
+        builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
         path: Routes.settings,

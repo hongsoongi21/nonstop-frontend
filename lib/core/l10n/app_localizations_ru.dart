@@ -1081,4 +1081,35 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get completeProfileSubtitle =>
       'Пожалуйста, заполните необходимую информацию';
+
+  @override
+  String get introduction => 'О себе';
+
+  @override
+  String get introductionHint => 'Расскажите о себе...';
+
+  @override
+  String get major => 'Специальность';
+
+  @override
+  String get majorHint => 'напр. Информатика';
+
+  @override
+  String get changePhoto => 'Изменить фото';
+
+  @override
+  String get profileUpdated => 'Профиль успешно обновлён';
+
+  @override
+  String get profileUpdateFailed => 'Не удалось обновить профиль';
+
+  @override
+  String get avatarUploadFailed => 'Не удалось загрузить аватар';
+
+  @override
+  String get selectImageSource => 'Выберите источник изображения';
+
+  @override
+  String get introductionMaxLength =>
+      'О себе должно быть не более 200 символов';
 }

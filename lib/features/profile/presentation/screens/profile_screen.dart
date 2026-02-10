@@ -176,9 +176,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showNotifications(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.notificationsComingSoon)),
-    );
+    context.push(Routes.notifications);
   }
 
   void _showSettings(BuildContext context) {
@@ -186,9 +184,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _navigateToEditProfile(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context)!.editProfileComingSoon)),
-    );
+    context.push(Routes.editProfile);
   }
 
   void _onFilterTabChanged(BuildContext context, int index) {

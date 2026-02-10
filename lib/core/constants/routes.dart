@@ -16,6 +16,7 @@ class Routes {
   static const String timetable = '/timetable';
   static const String profile = '/profile';
   static const String settings = '/settings';
+  static const String editProfile = '/profile/edit';
   static const String blockedUsers = '/settings/blocked-users';
   static const String verification = '/verification';
 

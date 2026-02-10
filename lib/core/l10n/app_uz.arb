@@ -982,5 +982,17 @@
   "completeProfileSubtitle": "Iltimos, kerakli ma'lumotlarni kiriting",
   "@completeProfileSubtitle": {
     "description": "Subtitle for incomplete profile completion screen"
-  }
+  },
+  "introduction": "O'zingiz haqida",
+  "introductionHint": "O'zingiz haqida gapirib bering...",
+  "major": "Mutaxassislik",
+  "majorHint": "masalan, Informatika",
+  "changePhoto": "Rasmni o'zgartirish",
+  "profileUpdated": "Profil muvaffaqiyatli yangilandi",
+  "profileUpdateFailed": "Profilni yangilab bo'lmadi",
+  "avatarUploadFailed": "Avatarni yuklab bo'lmadi",
+  "camera": "Kamera",
+  "gallery": "Galereya",
+  "selectImageSource": "Rasm manbini tanlang",
+  "introductionMaxLength": "O'zingiz haqida 200 belgidan oshmasligi kerak"
 }

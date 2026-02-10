@@ -83,6 +83,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final GetUserSettingsUseCase getUserSettingsUseCase;
   final UpdateUserSettingsUseCase updateUserSettingsUseCase;
   final GetProfileStatsUseCase getProfileStatsUseCase;
+  final ProfileRepository _repository;
   final Ref _ref;
 
   String get _currentUserId => _ref.read(currentUserProvider)?.id ?? '';
@@ -93,8 +94,10 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     required this.getUserSettingsUseCase,
     required this.updateUserSettingsUseCase,
     required this.getProfileStatsUseCase,
+    required ProfileRepository repository,
     required Ref ref,
-  }) : _ref = ref,
+  }) : _repository = repository,
+       _ref = ref,
        super(const ProfileState()) {
     loadProfile();
   }
@@ -218,6 +221,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     String? bio,
     String? location,
     String? website,
+    String? major,
     String? linkedinUrl,
     String? githubUrl,
     String? instagramUrl,
@@ -234,6 +238,7 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       bio: bio,
       location: location,
       website: website,
+      major: major,
       linkedinUrl: linkedinUrl,
       githubUrl: githubUrl,
       instagramUrl: instagramUrl,
@@ -315,6 +320,37 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
     state = state.copyWith(error: null);
   }
 
+  /// Upload avatar image and update profile
+  Future<bool> uploadAvatar(String imagePath) async {
+    state = state.copyWith(isUploadingAvatar: true);
+
+    final result = await _repository.uploadAvatar(
+      userId: _currentUserId,
+      imagePath: imagePath,
+    );
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(
+          isUploadingAvatar: false,
+          error: _mapFailureToMessage(failure),
+        );
+        return false;
+      },
+      (avatarUrl) {
+        if (state.profile != null) {
+          state = state.copyWith(
+            isUploadingAvatar: false,
+            profile: state.profile!.copyWith(avatarUrl: avatarUrl),
+          );
+        } else {
+          state = state.copyWith(isUploadingAvatar: false);
+        }
+        return true;
+      },
+    );
+  }
+
   /// Refresh profile data
   Future<void> refresh() async {
     await loadProfile();
@@ -387,6 +423,7 @@ final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((re
   final getUserSettingsUseCase = ref.watch(getUserSettingsUseCaseProvider);
   final updateUserSettingsUseCase = ref.watch(updateUserSettingsUseCaseProvider);
   final getProfileStatsUseCase = ref.watch(getProfileStatsUseCaseProvider);
+  final repository = ref.watch(profileRepositoryProvider);
 
   return ProfileNotifier(
     getUserProfileUseCase: getUserProfileUseCase,
@@ -394,6 +431,7 @@ final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((re
     getUserSettingsUseCase: getUserSettingsUseCase,
     updateUserSettingsUseCase: updateUserSettingsUseCase,
     getProfileStatsUseCase: getProfileStatsUseCase,
+    repository: repository,
     ref: ref,
   );
 });

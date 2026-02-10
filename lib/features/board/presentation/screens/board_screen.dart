@@ -11,6 +11,7 @@ import 'package:nonstop/core/l10n/app_localizations.dart';
 import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
+import '../../../../shared/components/block_user_dialog.dart';
 import '../../../../shared/components/report_dialog.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notification/presentation/providers/notification_provider.dart';
@@ -926,11 +927,11 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                 isDark: isDark,
                 onTap: () {
                   Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Coming soon'),
-                      behavior: SnackBarBehavior.floating,
-                    ),
+                  BlockUserDialog.show(
+                    context,
+                    post.isWriterAnonymous
+                        ? l10n.anonymous
+                        : post.writerNickname,
                   );
                 },
               ),

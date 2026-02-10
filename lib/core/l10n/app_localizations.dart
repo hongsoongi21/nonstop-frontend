@@ -2153,6 +2153,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please fill in the required information'**
   String get completeProfileSubtitle;
+
+  /// Introduction field label
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction'**
+  String get introduction;
+
+  /// Introduction field hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about yourself...'**
+  String get introductionHint;
+
+  /// Major field label
+  ///
+  /// In en, this message translates to:
+  /// **'Major'**
+  String get major;
+
+  /// Major field hint text
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Computer Science'**
+  String get majorHint;
+
+  /// Change profile photo button text
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changePhoto;
+
+  /// Profile update success message
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdated;
+
+  /// Profile update failure message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get profileUpdateFailed;
+
+  /// Avatar upload failure message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload avatar'**
+  String get avatarUploadFailed;
+
+  /// Image source selection dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image Source'**
+  String get selectImageSource;
+
+  /// Introduction max length validation message
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction must be 200 characters or less'**
+  String get introductionMaxLength;
 }
 
 class _AppLocalizationsDelegate
