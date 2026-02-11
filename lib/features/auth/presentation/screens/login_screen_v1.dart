@@ -138,11 +138,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
     try {
       debugPrint('[GOOGLE_LOGIN] Step 1: Initializing Google Sign-In...');
-      // Ensure Google Sign-In is initialized
       await _initGoogleSignIn();
 
       debugPrint('[GOOGLE_LOGIN] Step 2: Calling authenticate()...');
-      // Google Sign-In using new API (v7.x)
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
       debugPrint('[GOOGLE_LOGIN] Step 3: Got Google user: ${googleUser.email}');
 
@@ -152,56 +150,99 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       debugPrint('[GOOGLE_LOGIN] Step 4: Google ID Token: ${googleIdToken != null ? "EXISTS (${googleIdToken.length} chars)" : "NULL"}');
 
       if (googleIdToken == null) {
-        debugPrint('[GOOGLE_LOGIN] ERROR: Google ID Token is null!');
+        debugPrint('[GOOGLE_LOGIN] ERROR: Google ID Token is null! serverClientId may be misconfigured.');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.googleSignInFailed('ID Token is null')),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
         return;
       }
 
-      // On iOS, the Google ID token includes a nonce. Supabase needs the
-      // accessToken to verify it. In google_sign_in v7.x, accessToken is
-      // obtained via the authorizationClient.
+      // On iOS, Google ID token includes a nonce that Supabase can't verify
+      // without an access token. In google_sign_in v7.x, auth and authz are
+      // separate - we must use authorizationClient to obtain an access token.
       String? accessToken;
       if (Platform.isIOS) {
         try {
           final authClient = googleUser.authorizationClient;
-          final clientAuth = await authClient.authorizationForScopes(<String>['email']);
+          // Silent check first
+          final clientAuth = await authClient.authorizationForScopes(
+            <String>['openid', 'email', 'profile'],
+          );
           accessToken = clientAuth?.accessToken;
+
           if (accessToken == null) {
-            final auth = await authClient.authorizeScopes(<String>['email']);
+            // Explicit authorization request (may show prompt)
+            final auth = await authClient.authorizeScopes(
+              <String>['openid', 'email', 'profile'],
+            );
             accessToken = auth.accessToken;
           }
-          debugPrint('[GOOGLE_LOGIN] Step 4b: Got accessToken for iOS nonce verification');
+          debugPrint('[GOOGLE_LOGIN] Step 4b: Got accessToken from authorizationClient');
         } catch (e) {
-          debugPrint('[GOOGLE_LOGIN] Warning: Failed to get accessToken: $e');
+          debugPrint('[GOOGLE_LOGIN] WARNING: authorizationClient failed: $e');
+          // On iOS without accessToken, Supabase cannot verify the nonce.
+          // Show error and abort.
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.googleSignInFailed('Access token 획득 실패')),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+      } else if (Platform.isAndroid) {
+        // On Android, get accessToken from authorizationClient as well
+        try {
+          final authClient = googleUser.authorizationClient;
+          final clientAuth = await authClient.authorizationForScopes(
+            <String>['openid', 'email', 'profile'],
+          );
+          accessToken = clientAuth?.accessToken;
+        } catch (e) {
+          debugPrint('[GOOGLE_LOGIN] Android accessToken not available: $e');
         }
       }
 
-      debugPrint('[GOOGLE_LOGIN] Step 5: Calling Supabase signInWithGoogle...');
-      // Pass Google ID Token + accessToken to Supabase (accessToken needed for iOS nonce verification)
+      debugPrint('[GOOGLE_LOGIN] Step 5: Calling Supabase signInWithGoogle... (accessToken: ${accessToken != null ? "YES" : "NO"})');
       await authNotifier.signInWithGoogle(googleIdToken, accessToken: accessToken);
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        debugPrint('[GOOGLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+        debugPrint('[GOOGLE_LOGIN] Step 6: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
 
         if (authState.hasPendingOAuthSignup) {
-          // 신규 사용자: 회원가입 화면으로 이동
-          debugPrint('[GOOGLE_LOGIN] Step 10: New user, redirecting to signup...');
+          debugPrint('[GOOGLE_LOGIN] New user, redirecting to signup...');
           context.go(Routes.register, extra: authState.pendingOAuthSignup);
         } else if (authState.isAuthenticated && !authState.hasError) {
-          debugPrint('[GOOGLE_LOGIN] Step 10: Login successful, router will redirect...');
+          debugPrint('[GOOGLE_LOGIN] Login successful!');
           _showWelcomeSnackbar(authState.user?.nickname);
-          // 라우터가 자동으로 board로 리다이렉트합니다
-        } else {
-          debugPrint('[GOOGLE_LOGIN] ERROR: Not authenticated or has error');
+        } else if (authState.hasError) {
+          debugPrint('[GOOGLE_LOGIN] ERROR from Supabase: ${authState.failure?.message}');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.googleSignInFailed('')),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 5),
+            ),
+          );
         }
       }
     } on GoogleSignInException catch (e) {
       debugPrint('[GOOGLE_LOGIN] GoogleSignInException: ${e.code} - ${e.description}');
-      // User cancelled the sign-in
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(e.description ?? ''))),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.googleSignInFailed(e.description ?? '')),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } catch (error, stackTrace) {
@@ -209,7 +250,11 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
       debugPrint('[GOOGLE_LOGIN] StackTrace: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString()))),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.googleSignInFailed(error.toString())),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     }
