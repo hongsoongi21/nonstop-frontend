@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -32,8 +33,8 @@ class ProfileScreen extends ConsumerWidget {
       showAppBar: false,
       padding: EdgeInsets.zero,
       body: Container(
-        decoration: const BoxDecoration(
-          color: AppColors.background,
+        decoration: BoxDecoration(
+          color: context.backgroundColor,
         ),
         child: isLoading && !isLoaded
             ? const Center(child: AppLoadingIndicator())
@@ -60,14 +61,14 @@ class ProfileScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.errorOccurred,
             style: AppTypography.headlineSmall.copyWith(
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
           SizedBox(height: AppSpacing.sm),
           Text(
             error,
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
             textAlign: TextAlign.center,
           ),
@@ -136,7 +137,7 @@ class ProfileScreen extends ConsumerWidget {
                   child: Text(
                     AppLocalizations.of(context)!.postsLoadError,
                     style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
                 ),
@@ -148,7 +149,7 @@ class ProfileScreen extends ConsumerWidget {
                         child: Text(
                           AppLocalizations.of(context)!.noPostsYet,
                           style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                           ),
                         ),
                       ),
@@ -176,15 +177,15 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showNotifications(BuildContext context) {
-    context.push(Routes.notifications);
+    GoRouter.of(context).push(Routes.notifications);
   }
 
   void _showSettings(BuildContext context) {
-    context.push(Routes.settings);
+    GoRouter.of(context).push(Routes.settings);
   }
 
   void _navigateToEditProfile(BuildContext context) {
-    context.push(Routes.editProfile);
+    GoRouter.of(context).push(Routes.editProfile);
   }
 
   void _onFilterTabChanged(BuildContext context, int index) {
@@ -203,6 +204,6 @@ class ProfileScreen extends ConsumerWidget {
 
   void _onRealPostTapped(BuildContext context, PostEntity post) {
     // Navigate to post detail screen
-    context.push('/board/post/${post.id}');
+    GoRouter.of(context).push('/board/post/${post.id}');
   }
 }

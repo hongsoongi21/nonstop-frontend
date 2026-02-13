@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -91,7 +92,7 @@ class _AddTimetableEntryScreenState
               primary: AppColors.primary,
               onPrimary: Colors.white,
               surface: Colors.white,
-              onSurface: AppColors.textPrimary,
+              onSurface: context.textPrimaryColor,
             ),
           ),
           child: child!,
@@ -164,7 +165,7 @@ class _AddTimetableEntryScreenState
       }
 
       if (success && mounted) {
-        context.pop();
+        GoRouter.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -229,7 +230,7 @@ class _AddTimetableEntryScreenState
                           ? l10n.updateCourseInfo
                           : l10n.createNewCourse,
                       style: AppTypography.body2.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                   ],
@@ -243,10 +244,10 @@ class _AddTimetableEntryScreenState
                 margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: AppColors.border,
+                    color: context.borderColor,
                     width: 1,
                   ),
                   boxShadow: [
@@ -295,10 +296,10 @@ class _AddTimetableEntryScreenState
                 margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: AppColors.border,
+                    color: context.borderColor,
                     width: 1,
                   ),
                   boxShadow: [
@@ -318,10 +319,10 @@ class _AddTimetableEntryScreenState
                     // Day Selector with clean design
                     Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceVariant,
+                        color: context.surfaceVariantColor,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.border,
+                          color: context.borderColor,
                           width: 1,
                         ),
                       ),
@@ -330,7 +331,7 @@ class _AddTimetableEntryScreenState
                         decoration: InputDecoration(
                           labelText: l10n.dayOfWeek,
                           labelStyle: AppTypography.labelSmall.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                             fontWeight: FontWeight.w600,
                           ),
                           prefixIcon: Icon(
@@ -417,10 +418,10 @@ class _AddTimetableEntryScreenState
                 margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: context.surfaceColor,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: AppColors.border,
+                    color: context.borderColor,
                     width: 1,
                   ),
                   boxShadow: [
@@ -439,7 +440,7 @@ class _AddTimetableEntryScreenState
                     Text(
                       l10n.colorDescription,
                       style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),
@@ -470,7 +471,7 @@ class _AddTimetableEntryScreenState
                                       width: 3,
                                     )
                                   : Border.all(
-                                      color: AppColors.border,
+                                      color: context.borderColor,
                                       width: 1,
                                     ),
                               boxShadow: [
@@ -629,7 +630,7 @@ class _AddTimetableEntryScreenState
           .deleteEntry(widget.initialEntry!.id);
 
       if (success && mounted) {
-        context.pop();
+        GoRouter.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.courseDeleted),
@@ -672,7 +673,7 @@ class _AddTimetableEntryScreenState
           title,
           style: AppTypography.titleMedium.copyWith(
             fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             letterSpacing: 0.2,
           ),
         ),
@@ -689,10 +690,10 @@ class _AddTimetableEntryScreenState
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: context.surfaceVariantColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.border,
+          color: context.borderColor,
           width: 1,
         ),
       ),
@@ -705,12 +706,12 @@ class _AddTimetableEntryScreenState
         decoration: InputDecoration(
           labelText: label,
           labelStyle: AppTypography.labelSmall.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
             fontWeight: FontWeight.w600,
           ),
           hintText: hint,
           hintStyle: AppTypography.body2.copyWith(
-            color: AppColors.textTertiary,
+            color: context.textTertiaryColor,
           ),
           prefixIcon: Icon(
             icon,
@@ -760,10 +761,10 @@ class _AddTimetableEntryScreenState
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
+          color: context.surfaceVariantColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.border,
+            color: context.borderColor,
             width: 1,
           ),
         ),
@@ -781,7 +782,7 @@ class _AddTimetableEntryScreenState
                 Text(
                   label,
                   style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -793,7 +794,7 @@ class _AddTimetableEntryScreenState
               _formatTimeOfDay(time),
               style: AppTypography.headline4.copyWith(
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
                 fontFeatures: const [FontFeature.tabularFigures()],
               ),
             ),

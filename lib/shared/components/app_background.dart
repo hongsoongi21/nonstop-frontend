@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// Samarkand Modern gradient background
 /// Rich multi-stop gradient with atmospheric depth
@@ -15,6 +16,8 @@ class AppBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gradientColors = context.backgroundGradientColors;
+
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -26,7 +29,7 @@ class AppBackground extends StatelessWidget {
                 stops: const [0.0, 0.5, 1.0],
                 colors: [
                   AppColors.primary.withValues(alpha: 0.05),
-                  AppColors.background,
+                  context.backgroundColor,
                   AppColors.tertiary.withValues(alpha: 0.03),
                 ],
               )
@@ -35,10 +38,10 @@ class AppBackground extends StatelessWidget {
                 end: Alignment.bottomCenter,
                 stops: const [0.0, 0.4, 0.7, 1.0],
                 colors: [
-                  AppColors.backgroundGradientStart,
-                  AppColors.background,
-                  AppColors.surfaceVariant.withValues(alpha: 0.5),
-                  AppColors.backgroundGradientEnd,
+                  gradientColors[0],
+                  context.backgroundColor,
+                  context.surfaceVariantColor.withValues(alpha: 0.5),
+                  gradientColors[1],
                 ],
               ),
       ),
@@ -49,7 +52,9 @@ class AppBackground extends StatelessWidget {
             child: Opacity(
               opacity: 0.02,
               child: CustomPaint(
-                painter: _NoisePainter(),
+                painter: _NoisePainter(
+                  noiseColor: context.textPrimaryColor,
+                ),
               ),
             ),
           ),
@@ -62,11 +67,15 @@ class AppBackground extends StatelessWidget {
 
 /// Subtle noise texture painter for atmospheric depth
 class _NoisePainter extends CustomPainter {
+  final Color noiseColor;
+
+  _NoisePainter({required this.noiseColor});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.fill
-      ..color = AppColors.textPrimary;
+      ..color = noiseColor;
 
     for (var i = 0; i < 500; i++) {
       final x = (i * 37) % size.width;

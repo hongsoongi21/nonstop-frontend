@@ -60,7 +60,7 @@ class ProfileStats extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _StatItem(
-                  value: '24',
+                  value: '${stats.totalPosts}',
                   label: AppLocalizations.of(context)!.posts,
                   color: AppColors.primary,
                 ),
@@ -80,7 +80,7 @@ class ProfileStats extends StatelessWidget {
                   ),
                 ),
                 _StatItem(
-                  value: '156',
+                  value: '${stats.commentsMade}',
                   label: AppLocalizations.of(context)!.comments,
                   color: AppColors.tertiary,
                 ),
@@ -100,7 +100,7 @@ class ProfileStats extends StatelessWidget {
                   ),
                 ),
                 _StatItem(
-                  value: '48',
+                  value: '${stats.friendsAdded}',
                   label: AppLocalizations.of(context)!.friends,
                   color: AppColors.secondary,
                 ),

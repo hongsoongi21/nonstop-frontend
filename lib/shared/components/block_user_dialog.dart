@@ -3,6 +3,7 @@ import '../../core/l10n/app_localizations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// Confirmation dialog for blocking a user
 class BlockUserDialog extends StatelessWidget {
@@ -21,7 +22,7 @@ class BlockUserDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       ),
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -48,7 +49,7 @@ class BlockUserDialog extends StatelessWidget {
                   child: Text(
                     l10n.blockUser,
                     style: AppTypography.headline5.copyWith(
-                      color: AppColors.textPrimary,
+                      color: context.textPrimaryColor,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -61,7 +62,7 @@ class BlockUserDialog extends StatelessWidget {
             Text(
               l10n.blockUserConfirm(userName),
               style: AppTypography.body1.copyWith(
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -91,7 +92,7 @@ class BlockUserDialog extends StatelessWidget {
                     child: Text(
                       l10n.blockUserDescription,
                       style: AppTypography.body2.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                         height: 1.5,
                       ),
                     ),
@@ -120,7 +121,7 @@ class BlockUserDialog extends StatelessWidget {
                   child: Text(
                     l10n.cancel,
                     style: AppTypography.button.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
                 ),

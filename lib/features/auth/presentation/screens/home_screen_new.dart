@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -199,7 +200,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
           // Notification bell
           Container(
             decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.8),
+              color: context.surfaceColor.withValues(alpha: 0.8),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -220,7 +221,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text(
             'Quick Actions',
             style: AppTypography.headline6.copyWith(
@@ -293,7 +294,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -317,7 +318,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         const SizedBox(height: AppSpacing.lg),
 
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             children: [
               Expanded(
@@ -353,7 +354,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -378,7 +379,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
         // Recent posts placeholder
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Column(
             children: [
               InfoCard(

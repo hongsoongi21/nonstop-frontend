@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -46,17 +47,17 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         centerTitle: false,
         title: Text(
           l10n.notifications,
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
           ),
         ),
         actions: [
@@ -102,7 +103,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
         separatorBuilder: (context, index) => Divider(
           height: 1.h,
           thickness: 1,
-          color: AppColors.divider,
+          color: context.dividerColor,
           indent: 80.w,
         ),
         itemBuilder: (context, index) => Padding(
@@ -122,7 +123,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
           margin: EdgeInsets.symmetric(horizontal: 32.w),
           padding: EdgeInsets.all(32.r),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(20.r),
             boxShadow: [
               BoxShadow(
@@ -153,7 +154,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -196,13 +197,13 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
             Container(
               padding: EdgeInsets.all(24.r),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: context.surfaceVariantColor,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.notifications_none_rounded,
                 size: 64.sp,
-                color: AppColors.textTertiary,
+                color: context.textTertiaryColor,
               ),
             ),
             SizedBox(height: 20.h),
@@ -211,7 +212,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
               style: TextStyle(
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
             SizedBox(height: 8.h),
@@ -219,7 +220,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
               l10n.noNotificationsHint,
               style: TextStyle(
                 fontSize: 14.sp,
-                color: AppColors.textTertiary,
+                color: context.textTertiaryColor,
               ),
             ),
           ],
@@ -234,14 +235,14 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
         _animationController.forward();
       },
       color: AppColors.primary,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       child: ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 8.h),
         itemCount: state.notifications.length,
         separatorBuilder: (context, index) => Divider(
           height: 1.h,
           thickness: 1,
-          color: AppColors.divider,
+          color: context.dividerColor,
           indent: 80.w,
         ),
         itemBuilder: (context, index) {
@@ -270,19 +271,19 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationType.newReply:
       case NotificationType.commentLike:
         if (notification.postId != null) {
-          context.push('/board/post/${notification.postId}');
+          GoRouter.of(context).push('/board/post/${notification.postId}');
         }
         break;
       case NotificationType.chatMessage:
         if (notification.chatRoomId != null) {
-          context.push('/chat/${notification.chatRoomId}');
+          GoRouter.of(context).push('/chat/${notification.chatRoomId}');
         }
         break;
       case NotificationType.friendRequest:
       case NotificationType.friendAccept:
         // Navigate to friends page or user profile
         if (notification.actorId != null) {
-          context.push('/profile/${notification.actorId}');
+          GoRouter.of(context).push('/profile/${notification.actorId}');
         }
         break;
       case NotificationType.announcement:
@@ -332,10 +333,10 @@ class _NotificationTile extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: notification.isRead ? AppColors.surface : AppColors.infoLight,
+          color: notification.isRead ? context.surfaceColor : AppColors.infoLight,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: notification.isRead ? AppColors.border : AppColors.info.withValues(alpha: 0.2),
+            color: notification.isRead ? context.borderColor : AppColors.info.withValues(alpha: 0.2),
             width: 1,
           ),
           boxShadow: notification.isRead
@@ -387,7 +388,7 @@ class _NotificationTile extends StatelessWidget {
                                   fontWeight: notification.isRead
                                       ? FontWeight.w500
                                       : FontWeight.w600,
-                                  color: AppColors.textPrimary,
+                                  color: context.textPrimaryColor,
                                   height: 1.4,
                                 ),
                                 maxLines: 3,
@@ -413,14 +414,14 @@ class _NotificationTile extends StatelessWidget {
                             Icon(
                               Icons.access_time_rounded,
                               size: 12.sp,
-                              color: AppColors.textTertiary,
+                              color: context.textTertiaryColor,
                             ),
                             SizedBox(width: 4.w),
                             Text(
                               _formatTime(notification.createdAt, context),
                               style: TextStyle(
                                 fontSize: 12.sp,
-                                color: AppColors.textTertiary,
+                                color: context.textTertiaryColor,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

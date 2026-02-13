@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
@@ -139,9 +140,9 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
             // === FLOATING ACTION BUTTON ===
             Positioned(
-              right: 20,
-              bottom: 100,
-              child: _buildFloatingWriteButton(context, selectedBoard, l10n),
+              right: 24,
+              bottom: 120,
+              child: _buildFloatingWriteButton(context, selectedBoard, selectedCommunity, l10n),
             ),
           ],
         ),
@@ -182,7 +183,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     required AppLocalizations l10n,
   }) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 16, 16, 8),
       child: Row(
         children: [
           // Community selector (compact)
@@ -307,7 +308,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildSearchBar(BuildContext context, bool isDark, AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, 12),
       child: Container(
         height: 44,
         decoration: BoxDecoration(
@@ -357,7 +358,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     ];
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 4, AppSpacing.md, 12),
       child: Row(
         children: filters.map((filter) {
           final isSelected = _selectedFilter == filter.$1;
@@ -415,7 +416,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         itemCount: boards.length,
         itemBuilder: (context, index) {
           final board = boards[index];
@@ -475,7 +476,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     AppLocalizations l10n,
   ) {
     return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, 120),
       itemCount: posts.length,
       separatorBuilder: (context, index) => Divider(
         color: isDark
@@ -660,21 +661,13 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   Widget _buildFloatingWriteButton(
     BuildContext context,
     dynamic selectedBoard,
+    Community? selectedCommunity,
     AppLocalizations l10n,
   ) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
-        if (selectedBoard != null) {
-          context.go(Routes.boardCreatePath());
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.pleaseSelectBoardFirst),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
+        _showWriteOptions(context, selectedBoard, selectedCommunity, l10n);
       },
       child: Container(
         width: 56,
@@ -699,12 +692,305 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     );
   }
 
+  void _showWriteOptions(BuildContext context, dynamic selectedBoard, Community? selectedCommunity, AppLocalizations l10n) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.cardBackgroundDark : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black12,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              // Write Post option
+              _buildOptionTile(
+                context: context,
+                icon: Icons.edit_outlined,
+                title: 'Write Post',
+                subtitle: selectedBoard != null
+                    ? 'Post to ${selectedBoard.name}'
+                    : l10n.pleaseSelectBoardFirst,
+                enabled: selectedBoard != null,
+                onTap: () {
+                  Navigator.pop(context);
+                  if (selectedBoard != null) {
+                    context.go(Routes.boardCreatePath());
+                  }
+                },
+                isDark: isDark,
+              ),
+              // Create Board option - 대학교 커뮤니티일 때만 표시
+              if (selectedCommunity != null && !selectedCommunity.isGlobal) ...[
+                const SizedBox(height: AppSpacing.sm),
+                _buildOptionTile(
+                  context: context,
+                  icon: Icons.dashboard_customize_outlined,
+                  title: 'Create Board',
+                  subtitle: 'Create a new discussion board',
+                  enabled: true,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showCreateBoardDialog(context);
+                  },
+                  isDark: isDark,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool enabled,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.black.withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: enabled
+                    ? AppColors.primary.withValues(alpha: 0.12)
+                    : (isDark ? Colors.white12 : Colors.black12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: enabled
+                    ? AppColors.primary
+                    : (isDark ? Colors.white30 : AppColors.textTertiary),
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTypography.body1.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: enabled
+                          ? (isDark ? Colors.white : AppColors.textPrimary)
+                          : (isDark ? Colors.white30 : AppColors.textTertiary),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTypography.caption.copyWith(
+                      color: enabled
+                          ? (isDark ? Colors.white60 : AppColors.textSecondary)
+                          : (isDark ? Colors.white30 : AppColors.textTertiary),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCreateBoardDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nameController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final l10n = AppLocalizations.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Create Board',
+          style: AppTypography.headline5.copyWith(
+            fontWeight: FontWeight.w700,
+            color: isDark ? Colors.white : AppColors.textPrimary,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Board name field
+            TextField(
+              controller: nameController,
+              autofocus: true,
+              style: AppTypography.body1.copyWith(
+                color: isDark ? Colors.white : AppColors.textPrimary,
+              ),
+              decoration: InputDecoration(
+                labelText: 'Board Name',
+                labelStyle: AppTypography.body2.copyWith(
+                  color: isDark ? Colors.white60 : AppColors.textSecondary,
+                ),
+                hintText: 'e.g., Study Group',
+                hintStyle: AppTypography.body2.copyWith(
+                  color: isDark ? Colors.white38 : AppColors.textTertiary,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.04),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.all(AppSpacing.md),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            // Board description field (optional)
+            TextField(
+              controller: descriptionController,
+              style: AppTypography.body1.copyWith(
+                color: isDark ? Colors.white : AppColors.textPrimary,
+              ),
+              maxLines: 3,
+              decoration: InputDecoration(
+                labelText: 'Description (Optional)',
+                labelStyle: AppTypography.body2.copyWith(
+                  color: isDark ? Colors.white60 : AppColors.textSecondary,
+                ),
+                hintText: 'Describe the purpose of this board',
+                hintStyle: AppTypography.body2.copyWith(
+                  color: isDark ? Colors.white38 : AppColors.textTertiary,
+                ),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.black.withValues(alpha: 0.04),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.all(AppSpacing.md),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              l10n.cancel,
+              style: AppTypography.buttonSmall.copyWith(
+                color: isDark ? Colors.white60 : AppColors.textSecondary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Board name is required'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+                return;
+              }
+
+              Navigator.pop(context);
+
+              // Show loading indicator
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Creating board...'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 1),
+                ),
+              );
+
+              // Call the provider to create the board
+              final result = await ref.read(boardProvider.notifier).createBoard(
+                name: name,
+                description: descriptionController.text.trim().isEmpty
+                    ? null
+                    : descriptionController.text.trim(),
+              );
+
+              result.fold(
+                (error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to create board: $error'),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                },
+                (board) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Board "${board.name}" created successfully!'),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                },
+              );
+            },
+            child: Text(
+              'Create',
+              style: AppTypography.buttonSmall.copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // ═══════════════════════════════════════════════════════════════════════════
   // SKELETON LOADING
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildSkeletonList() {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, 120),
       itemCount: 6,
       itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 16),
@@ -718,7 +1004,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildErrorMessage(BuildContext context, String error) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 8),
       child: GlassContainer(
         color: AppColors.error.withValues(alpha: 0.1),
         borderColor: AppColors.error.withValues(alpha: 0.3),
@@ -760,7 +1046,6 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     List<Community> communities,
     Community? selectedCommunity,
   ) {
-    final user = ref.read(currentUserProvider);
     final l10n = AppLocalizations.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -798,22 +1083,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
             ),
             const SizedBox(height: 16),
             ...communities.map((c) {
-              final isLocked = c.universityRequired && user?.university == null;
               final isSelected = c.id == selectedCommunity?.id;
+              // 이미 provider에서 필터링되었으므로 lock 체크 불필요
 
               return GestureDetector(
                 onTap: () {
                   HapticFeedback.selectionClick();
-                  if (isLocked) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(l10n.universityVerificationRequiredAccess),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    return;
-                  }
                   ref.read(boardProvider.notifier).selectCommunity(c);
                   Navigator.pop(context);
                 },
@@ -837,15 +1112,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   ),
                   child: Row(
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primary
-                              : (isDark ? Colors.white24 : AppColors.textTertiary),
-                          shape: BoxShape.circle,
-                        ),
+                      // Community 아이콘 (공용 vs 대학교)
+                      Text(
+                        c.isGlobal ? '🌍' : '🏫',
+                        style: const TextStyle(fontSize: 16),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -859,11 +1129,11 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           ),
                         ),
                       ),
-                      if (isLocked)
+                      if (isSelected)
                         Icon(
-                          Icons.lock_rounded,
-                          size: 16,
-                          color: isDark ? Colors.white30 : AppColors.textTertiary,
+                          Icons.check_circle,
+                          size: 18,
+                          color: AppColors.primary,
                         ),
                     ],
                   ),

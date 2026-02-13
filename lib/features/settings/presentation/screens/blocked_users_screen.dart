@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -45,7 +46,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
             end: Alignment.bottomRight,
             colors: [
               AppColors.primary.withValues(alpha: 0.05),
-              AppColors.surface,
+              context.surfaceColor,
               AppColors.secondary.withValues(alpha: 0.05),
             ],
           ),
@@ -73,20 +74,20 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant.withValues(alpha: 0.5),
+                color: context.surfaceVariantColor.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.block,
                 size: 64,
-                color: AppColors.textTertiary,
+                color: context.textTertiaryColor,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               l10n.noBlockedUsers,
               style: AppTypography.headline4.copyWith(
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -94,7 +95,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
             Text(
               'Users you block will appear here',
               style: AppTypography.body1.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -122,14 +123,14 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
             Text(
               l10n.errorOccurred,
               style: AppTypography.headline4.copyWith(
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               error,
               style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -167,10 +168,10 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.5),
+          color: context.borderColor.withValues(alpha: 0.5),
           width: 1,
         ),
         boxShadow: [
@@ -187,7 +188,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
           // Avatar
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.border.withValues(alpha: 0.3),
+            backgroundColor: context.borderColor.withValues(alpha: 0.3),
             backgroundImage: user.blockedUser.profileImageUrl != null
                 ? NetworkImage(user.blockedUser.profileImageUrl!)
                 : null,
@@ -197,7 +198,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
                         ? user.blockedUser.nickname[0].toUpperCase()
                         : '?',
                     style: AppTypography.headline5.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                       fontWeight: FontWeight.w700,
                     ),
                   )
@@ -213,7 +214,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
                 Text(
                   user.blockedUser.nickname,
                   style: AppTypography.body1.copyWith(
-                    color: AppColors.textPrimary,
+                    color: context.textPrimaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                   maxLines: 1,
@@ -224,7 +225,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
                   Text(
                     'Blocked ${timeAgo(DateTime.parse(user.blockedAt!))}',
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
               ],

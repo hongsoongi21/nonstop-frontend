@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -69,18 +70,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final universitiesAsync = ref.watch(universitiesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          icon: Icon(Icons.arrow_back, color: context.textPrimaryColor),
+          onPressed: () => GoRouter.of(context).pop(),
         ),
         title: Text(
           l10n.editProfile,
           style: AppTypography.headlineSmall.copyWith(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -212,7 +213,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.border,
+                      color: context.borderColor,
                       width: 3,
                     ),
                     boxShadow: [
@@ -226,7 +227,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   child: ClipOval(
                     child: _isUploadingAvatar
                         ? Container(
-                            color: AppColors.surfaceVariant,
+                            color: context.surfaceVariantColor,
                             child: const Center(
                               child:
                                   CircularProgressIndicator(strokeWidth: 2),
@@ -239,7 +240,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                                 width: 100,
                                 height: 100,
                                 placeholder: (context, url) => Container(
-                                  color: AppColors.surfaceVariant,
+                                  color: context.surfaceVariantColor,
                                   child: const Center(
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2),
@@ -262,7 +263,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       color: AppColors.primary,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.surface,
+                        color: context.surfaceColor,
                         width: 2,
                       ),
                     ),
@@ -319,7 +320,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Text(
       label,
       style: AppTypography.bodyMedium.copyWith(
-        color: AppColors.textSecondary,
+        color: context.textSecondaryColor,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -341,7 +342,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Text(
             uni.name,
             style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
         );
@@ -358,10 +359,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return InputDecoration(
       hintText: hintText,
       hintStyle: AppTypography.bodyLarge.copyWith(
-        color: AppColors.textHint,
+        color: context.textHintColor,
       ),
       filled: true,
-      fillColor: AppColors.surfaceVariant,
+      fillColor: context.surfaceVariantColor,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         borderSide: BorderSide.none,
@@ -369,7 +370,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         borderSide: BorderSide(
-          color: AppColors.border,
+          color: context.borderColor,
           width: 1,
         ),
       ),
@@ -526,7 +527,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
       );
       if (success) {
-        context.pop();
+        GoRouter.of(context).pop();
       }
     }
   }

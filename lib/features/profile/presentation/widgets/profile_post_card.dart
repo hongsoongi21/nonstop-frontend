@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -41,7 +42,7 @@ class ProfilePostCard extends StatelessWidget {
         bottom: AppSpacing.md,
       ),
       child: Material(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
@@ -50,7 +51,7 @@ class ProfilePostCard extends StatelessWidget {
             padding: EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
               border: Border.all(
-                color: AppColors.border,
+                color: context.borderColor,
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -83,7 +84,7 @@ class ProfilePostCard extends StatelessWidget {
                         post.title,
                         style: AppTypography.titleMedium.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                           height: 1.3,
                         ),
                         maxLines: 2,
@@ -101,7 +102,7 @@ class ProfilePostCard extends StatelessWidget {
                   child: Text(
                     post.preview,
                     style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                       height: 1.5,
                     ),
                     maxLines: 2,
@@ -180,7 +181,7 @@ class _StatBadge extends StatelessWidget {
           style: AppTypography.numeric.copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             height: 1,
           ),
         ),

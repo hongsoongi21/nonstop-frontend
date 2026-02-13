@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../extensions/context_extensions.dart';
 import 'app_animations.dart';
 
 /// Reusable empty state widget with "Samarkand Modern" aesthetic
@@ -104,7 +105,7 @@ class AppEmptyState extends StatelessWidget {
       case EmptyStateVariant.info:
         return AppColors.info;
       case EmptyStateVariant.neutral:
-        return AppColors.textTertiary;
+        return context.textTertiaryColor;
     }
   }
 
@@ -127,7 +128,7 @@ class AppEmptyState extends StatelessWidget {
         Text(
           title,
           style: AppTypography.headline3.copyWith(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             fontWeight: FontWeight.w700,
           ),
           textAlign: TextAlign.center,
@@ -141,7 +142,7 @@ class AppEmptyState extends StatelessWidget {
             child: Text(
               description!,
               style: AppTypography.body1.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 height: 1.6,
               ),
               textAlign: TextAlign.center,

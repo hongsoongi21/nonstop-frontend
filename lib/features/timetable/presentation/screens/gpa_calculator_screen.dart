@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/extensions/context_extensions.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
@@ -28,24 +29,24 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     final notifier = ref.read(gpaProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         title: Text(
           'Grade Calculator',
           style: AppTypography.titleMedium.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          icon: Icon(Icons.arrow_back, color: context.textPrimaryColor),
+          onPressed: () => GoRouter.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.download_outlined, color: AppColors.textPrimary),
+            icon: Icon(Icons.download_outlined, color: context.textPrimaryColor),
             tooltip: 'Import from Timetable',
             onPressed: () {
               // final events = ref.read(timetableEventsProvider);
@@ -62,7 +63,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.refresh, color: AppColors.textPrimary),
+            icon: Icon(Icons.refresh, color: context.textPrimaryColor),
             onPressed: () {
               // Confirm reset
               showDialog(
@@ -111,7 +112,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                       'Courses',
                       style: AppTypography.titleSmall.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                     Spacer(),
@@ -155,7 +156,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
       floatingActionButton: GestureDetector(
         onTap: () => _showAddCourseDialog(context, ref),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 12),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: AppColors.brandGradient,
@@ -203,9 +204,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                 state.totalGpa.toStringAsFixed(2),
                 isMain: true,
               ),
-              Container(width: 1, height: 40, color: AppColors.border),
+              Container(width: 1, height: 40, color: context.borderColor),
               _buildStatItem('Major GPA', state.majorGpa.toStringAsFixed(2)),
-              Container(width: 1, height: 40, color: AppColors.border),
+              Container(width: 1, height: 40, color: context.borderColor),
               _buildStatItem('Credits', state.totalCredits.toStringAsFixed(0)),
             ],
           ),
@@ -219,7 +220,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
       children: [
         Text(
           label,
-          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+          style: AppTypography.caption.copyWith(color: context.textSecondaryColor),
         ),
         SizedBox(height: 4),
         Text(
@@ -231,7 +232,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                 )
               : AppTypography.titleLarge.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
         ),
       ],
@@ -263,7 +264,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+          border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -310,7 +311,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                       Text(
                         '${course.credits} Credits',
                         style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.textSecondaryColor,
                         ),
                       ),
                     ],
@@ -321,9 +322,9 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             Container(
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: context.borderColor),
               ),
               child: Text(
                 course.grade,
@@ -338,7 +339,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
               icon: Icon(
                 Icons.more_vert,
                 size: 20,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
               onPressed: () => _showEditCourseDialog(context, ref, course),
               padding: EdgeInsets.zero,
@@ -356,7 +357,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
     if (grade.startsWith('C')) return Colors.orange;
     if (grade.startsWith('D')) return Colors.deepOrange;
     if (grade == 'F') return Colors.red;
-    return AppColors.textPrimary;
+    return context.textPrimaryColor;
   }
 
   Widget _buildEmptyState() {
@@ -368,20 +369,20 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
             Icon(
               Icons.calculate_outlined,
               size: 64,
-              color: AppColors.textSecondary.withValues(alpha: 0.3),
+              color: context.textSecondaryColor.withValues(alpha: 0.3),
             ),
             SizedBox(height: 16),
             Text(
               'No courses added yet',
               style: AppTypography.bodyLarge.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
             SizedBox(height: 8),
             Text(
               'Add your courses to calculate GPA',
               style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
           ],
@@ -447,7 +448,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: context.surfaceColor,
                 ),
                 autofocus: true,
               ),

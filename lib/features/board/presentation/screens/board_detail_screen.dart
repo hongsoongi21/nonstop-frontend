@@ -5,12 +5,14 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/l10n/app_localizations.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../providers/post_detail_provider.dart';
 import '../../../../shared/components/report_dialog.dart';
+import '../../../../core/extensions/context_extensions.dart';
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
@@ -58,7 +60,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       appBar: _buildAppBar(context),
       body: _buildBody(context, post, comments, postId),
     );
@@ -67,19 +69,19 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   PreferredSizeWidget _buildAppBar(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppBar(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-        color: AppColors.textPrimary,
-        onPressed: () => context.pop(),
+        color: context.textPrimaryColor,
+        onPressed: () => GoRouter.of(context).pop(),
       ),
       title: Text(
         l10n.post,
         style: AppTypography.headline5.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: context.textPrimaryColor,
           letterSpacing: -0.3,
         ),
       ),
@@ -92,7 +94,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             gradient: LinearGradient(
               colors: [
                 Colors.transparent,
-                AppColors.divider.withValues(alpha: 0.3),
+                context.dividerColor.withValues(alpha: 0.3),
                 Colors.transparent,
               ],
             ),
@@ -113,7 +115,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       children: [
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -127,7 +129,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        AppColors.divider.withValues(alpha: 0.4),
+                        context.dividerColor.withValues(alpha: 0.4),
                         Colors.transparent,
                       ],
                     ),
@@ -142,7 +144,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        AppColors.divider.withValues(alpha: 0.4),
+                        context.dividerColor.withValues(alpha: 0.4),
                         Colors.transparent,
                       ],
                     ),
@@ -156,7 +158,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         ),
         if (_replyingToId != null)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 10),
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.06),
               border: Border(
@@ -210,7 +212,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           post.title,
           style: AppTypography.headline3.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             height: 1.3,
             letterSpacing: -0.4,
           ),
@@ -219,7 +221,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         Text(
           post.content,
           style: AppTypography.body1.copyWith(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
             height: 1.65,
             letterSpacing: 0.1,
           ),
@@ -238,19 +240,21 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   }
 
   Widget _buildStatItem(IconData icon, String count) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: AppColors.textTertiary),
-        const SizedBox(width: 4),
-        Text(
-          count,
-          style: AppTypography.body2.copyWith(
-            color: AppColors.textTertiary,
-            fontWeight: FontWeight.w500,
+    return Builder(
+      builder: (context) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: context.textTertiaryColor),
+          const SizedBox(width: 4),
+          Text(
+            count,
+            style: AppTypography.body2.copyWith(
+              color: context.textTertiaryColor,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -346,13 +350,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: context.surfaceVariantColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
                 '${comments.length}',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -369,13 +373,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   Icon(
                     Icons.comment_outlined,
                     size: 48,
-                    color: AppColors.textTertiary.withValues(alpha: 0.4),
+                    color: context.textTertiaryColor.withValues(alpha: 0.4),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     l10n.noCommentsYet,
                     style: AppTypography.body1.copyWith(
-                      color: AppColors.textTertiary,
+                      color: context.textTertiaryColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -383,7 +387,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   Text(
                     l10n.beFirstToComment,
                     style: AppTypography.body2.copyWith(
-                      color: AppColors.textTertiary,
+                      color: context.textTertiaryColor,
                     ),
                   ),
                 ],
@@ -517,7 +521,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 post.isWriterAnonymous ? l10n.anonymous : post.writerNickname,
                 style: AppTypography.body1.copyWith(
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                   letterSpacing: -0.2,
                 ),
                 maxLines: 1,
@@ -548,7 +552,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   Text(
                     timeAgo(post.createdAt),
                     style: AppTypography.caption.copyWith(
-                      color: AppColors.textTertiary,
+                      color: context.textTertiaryColor,
                       fontSize: 12,
                     ),
                   ),
@@ -561,7 +565,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_horiz_rounded,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
               size: 22,
             ),
             offset: const Offset(0, 40),
@@ -590,7 +594,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_horiz_rounded,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
               size: 22,
             ),
             offset: const Offset(0, 40),
@@ -684,7 +688,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             onPressed: () {
               ref.read(postDetailProvider(postId).notifier).deletePost();
               Navigator.pop(context); // Pop dialog
-              context.pop(); // Pop screen
+              GoRouter.of(context).pop(); // Pop screen
             },
             child: Text(
               l10n.deletePost,
@@ -761,10 +765,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         border: Border(
           top: BorderSide(
-            color: AppColors.divider.withValues(alpha: 0.3),
+            color: context.dividerColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -790,7 +794,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     border: Border.all(
                       color: _isAnonymous
                           ? AppColors.primary
-                          : AppColors.border,
+                          : context.borderColor,
                       width: 2,
                     ),
                     color: _isAnonymous
@@ -812,8 +816,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     l10n.postAnonymously,
                     style: AppTypography.body2.copyWith(
                       color: _isAnonymous
-                          ? AppColors.textPrimary
-                          : AppColors.textSecondary,
+                          ? context.textPrimaryColor
+                          : context.textSecondaryColor,
                       fontWeight: _isAnonymous
                           ? FontWeight.w600
                           : FontWeight.w400,
@@ -833,10 +837,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceVariant,
+                      color: context.surfaceVariantColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.5),
+                        color: context.borderColor.withValues(alpha: 0.5),
                         width: 1,
                       ),
                     ),
@@ -848,7 +852,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       decoration: InputDecoration(
                         hintText: l10n.writeComment,
                         hintStyle: AppTypography.body2.copyWith(
-                          color: AppColors.textTertiary,
+                          color: context.textTertiaryColor,
                         ),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
@@ -936,7 +940,7 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveColor = color ?? AppColors.textSecondary;
+    final effectiveColor = color ?? context.textSecondaryColor;
 
     return InkWell(
       onTap: onTap,
@@ -1000,10 +1004,10 @@ class _CommentItem extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant.withValues(alpha: 0.4),
+                    color: context.surfaceVariantColor.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: AppColors.border.withValues(alpha: 0.3),
+                      color: context.borderColor.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -1023,7 +1027,7 @@ class _CommentItem extends StatelessWidget {
                                         : comment.writerNickname,
                                     style: AppTypography.body2.copyWith(
                                       fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
+                                      color: context.textPrimaryColor,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
@@ -1035,7 +1039,7 @@ class _CommentItem extends StatelessWidget {
                                   Icon(
                                     Icons.arrow_forward_rounded,
                                     size: 12,
-                                    color: AppColors.textTertiary,
+                                    color: context.textTertiaryColor,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
@@ -1061,7 +1065,7 @@ class _CommentItem extends StatelessWidget {
                       Text(
                         comment.content,
                         style: AppTypography.body2.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                           height: 1.5,
                         ),
                       ),
@@ -1102,33 +1106,35 @@ class _CommentItem extends StatelessWidget {
     }
 
     // 일반 유저: 이니셜 아바타
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.surfaceVariant,
-            AppColors.surfaceVariant.withValues(alpha: 0.6),
-          ],
+    return Builder(
+      builder: (context) => Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              context.surfaceVariantColor,
+              context.surfaceVariantColor.withValues(alpha: 0.6),
+            ],
+          ),
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: context.borderColor.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.5),
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          comment.writerNickname.isNotEmpty
-              ? comment.writerNickname[0].toUpperCase()
-              : '?',
-          style: AppTypography.body2.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+        child: Center(
+          child: Text(
+            comment.writerNickname.isNotEmpty
+                ? comment.writerNickname[0].toUpperCase()
+                : '?',
+            style: AppTypography.body2.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: context.textSecondaryColor,
+            ),
           ),
         ),
       ),
@@ -1156,7 +1162,7 @@ class _CommentMenu extends StatelessWidget {
       icon: Icon(
         Icons.more_horiz_rounded,
         size: 18,
-        color: AppColors.textTertiary,
+        color: context.textTertiaryColor,
       ),
       padding: EdgeInsets.zero,
       offset: const Offset(0, 30),
@@ -1217,7 +1223,7 @@ class _CommentStatsRow extends StatelessWidget {
           Text(
             timeAgo(comment.createdAt),
             style: AppTypography.caption.copyWith(
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
               fontSize: 12,
             ),
           ),
@@ -1236,7 +1242,7 @@ class _CommentStatsRow extends StatelessWidget {
                     size: 15,
                     color: comment.isLiked
                         ? AppColors.primary
-                        : AppColors.textTertiary,
+                        : context.textTertiaryColor,
                   ),
                   if (comment.likeCount > 0) ...[
                     const SizedBox(width: 4),
@@ -1246,7 +1252,7 @@ class _CommentStatsRow extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                         color: comment.isLiked
                             ? AppColors.primary
-                            : AppColors.textTertiary,
+                            : context.textTertiaryColor,
                         fontSize: 12,
                       ),
                     ),
@@ -1267,14 +1273,14 @@ class _CommentStatsRow extends StatelessWidget {
                     Icon(
                       Icons.reply_rounded,
                       size: 15,
-                      color: AppColors.textTertiary,
+                      color: context.textTertiaryColor,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       l10n.reply,
                       style: AppTypography.caption.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textTertiary,
+                        color: context.textTertiaryColor,
                         fontSize: 12,
                       ),
                     ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -67,11 +68,11 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: AppColors.backgroundGradient,
+            colors: context.backgroundGradientColors,
           ),
         ),
         child: SafeArea(
@@ -80,7 +81,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               // Clean modern header
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
+                  horizontal: AppSpacing.md,
                   vertical: AppSpacing.md,
                 ),
                 child: Column(
@@ -118,7 +119,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                       Text(
                                         currentTimetable?.title ?? l10n.timetable,
                                         style: AppTypography.headline2.copyWith(
-                                          color: AppColors.textPrimary,
+                                          color: context.textPrimaryColor,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: -0.5,
                                         ),
@@ -139,10 +140,10 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                         // Action buttons with refined styling
                         Container(
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: context.surfaceColor,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.border,
+                              color: context.borderColor,
                               width: 1,
                             ),
                           ),
@@ -160,7 +161,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                               Container(
                                 width: 1,
                                 height: 24,
-                                color: AppColors.border,
+                                color: context.borderColor,
                               ),
                               IconButton(
                                 onPressed: () => _showSettings(context, ref),
@@ -185,13 +186,13 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               // Weekly time grid
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
                   child: Stack(
                     children: [
                       WeeklyTimeGrid(
                         entries: entries,
                         onEntryTap: (entry) {
-                          context.push(Routes.timetableCreate, extra: entry);
+                          GoRouter.of(context).push(Routes.timetableCreate, extra: entry);
                         },
                       ),
                       if (entries.isEmpty && !state.isLoading)
@@ -199,10 +200,10 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                           child: Container(
                             padding: EdgeInsets.all(AppSpacing.xl),
                             decoration: BoxDecoration(
-                              color: AppColors.surface,
+                              color: context.surfaceColor,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
-                                color: AppColors.border,
+                                color: context.borderColor,
                                 width: 2,
                               ),
                             ),
@@ -225,7 +226,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 Text(
                                   l10n.noCoursesAdded,
                                   style: AppTypography.headline3.copyWith(
-                                    color: AppColors.textPrimary,
+                                    color: context.textPrimaryColor,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -297,9 +298,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     final hasCourses = gpaState.courses.isNotEmpty;
 
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: GestureDetector(
-        onTap: () => context.go(Routes.gpaCalculator),
+        onTap: () => GoRouter.of(context).go(Routes.gpaCalculator),
         child: Container(
           padding: EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
@@ -393,11 +394,11 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
   }
 
   void _showCreateEventDialog(BuildContext context, WidgetRef ref) {
-    context.push(Routes.timetableCreate);
+    GoRouter.of(context).push(Routes.timetableCreate);
   }
 
   void _showSettings(BuildContext context, WidgetRef ref) {
-    context.go(Routes.settings);
+    GoRouter.of(context).go(Routes.settings);
   }
 
   void _showTimetableSwitcher(BuildContext context, WidgetRef ref) {
@@ -452,7 +453,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               ),
               const SizedBox(height: 20),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

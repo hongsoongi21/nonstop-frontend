@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../extensions/context_extensions.dart';
 
 /// Enhanced text field with better styling and validation
 class AppTextField extends StatefulWidget {
@@ -116,7 +117,7 @@ class _AppTextFieldState extends State<AppTextField> {
                     ? AppColors.error
                     : _isFocused
                         ? AppColors.primary
-                        : AppColors.textSecondary,
+                        : context.textSecondaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -140,7 +141,7 @@ class _AppTextFieldState extends State<AppTextField> {
           onChanged: widget.onChanged,
           onFieldSubmitted: widget.onSubmitted,
           style: AppTypography.body1.copyWith(
-            color: widget.enabled ? AppColors.textPrimary : AppColors.textSecondary,
+            color: widget.enabled ? context.textPrimaryColor : context.textSecondaryColor,
           ),
           decoration: InputDecoration(
             hintText: widget.hintText,
@@ -150,7 +151,7 @@ class _AppTextFieldState extends State<AppTextField> {
             filled: true,
             fillColor: widget.enabled
                 ? Theme.of(context).inputDecorationTheme.fillColor
-                : AppColors.surface.withValues(alpha: 0.5),
+                : context.surfaceColor.withValues(alpha: 0.5),
             prefixIcon: widget.prefixIcon,
             suffixIcon: _buildSuffixIcon(),
             border: _buildBorder(),
@@ -164,10 +165,10 @@ class _AppTextFieldState extends State<AppTextField> {
               vertical: AppSpacing.md,
             ),
             hintStyle: AppTypography.body1.copyWith(
-              color: AppColors.textHint,
+              color: context.textHintColor,
             ),
             helperStyle: AppTypography.caption.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
             errorStyle: AppTypography.caption.copyWith(
               color: AppColors.error,
@@ -183,7 +184,7 @@ class _AppTextFieldState extends State<AppTextField> {
       return IconButton(
         icon: Icon(
           _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-          color: AppColors.textSecondary,
+          color: context.textSecondaryColor,
           size: 20,
         ),
         onPressed: _toggleObscureText,
@@ -206,9 +207,9 @@ class _AppTextFieldState extends State<AppTextField> {
       borderColor = AppColors.primary;
       borderWidth = 2.0;
     } else if (isDisabled) {
-      borderColor = AppColors.border.withValues(alpha: 0.5);
+      borderColor = context.borderColor.withValues(alpha: 0.5);
     } else {
-      borderColor = AppColors.border;
+      borderColor = context.borderColor;
     }
 
     return OutlineInputBorder(
@@ -246,7 +247,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
               Text(
                 'Password strength: ',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
               ),
               Text(
@@ -261,7 +262,7 @@ class PasswordStrengthIndicator extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           LinearProgressIndicator(
             value: strength / 100,
-            backgroundColor: AppColors.surface,
+            backgroundColor: context.surfaceColor,
             valueColor: AlwaysStoppedAnimation<Color>(_getStrengthColor(strength)),
           ),
         ],
@@ -274,13 +275,13 @@ class PasswordStrengthIndicator extends StatelessWidget {
                     Icon(
                       req.isMet ? Icons.check_circle : Icons.radio_button_unchecked,
                       size: 16,
-                      color: req.isMet ? AppColors.success : AppColors.textSecondary,
+                      color: req.isMet ? AppColors.success : context.textSecondaryColor,
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       req.text,
                       style: AppTypography.caption.copyWith(
-                        color: req.isMet ? AppColors.success : AppColors.textSecondary,
+                        color: req.isMet ? AppColors.success : context.textSecondaryColor,
                       ),
                     ),
                   ],

@@ -41,6 +41,21 @@ class BoardRepositoryImpl implements BoardRepository {
   }
 
   @override
+  Future<Either<String, Board>> createBoard(int communityId, {required String name, String? description}) async {
+    try {
+      final result = await _dataSource.createBoard(
+        communityId,
+        name: name,
+        description: description,
+      );
+      return Right(result);
+    } catch (e) {
+      log('createBoard error: $e', name: 'BoardRepository');
+      return Left(e.toString());
+    }
+  }
+
+  @override
   Future<Either<String, List<PostEntity>>> getPosts(
     int boardId, {
     int page = 1,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/core/extensions/context_extensions.dart';
 
 class ImagePickerButton extends StatelessWidget {
   final Function(File imageFile) onImageSelected;
@@ -60,7 +61,7 @@ class ImagePickerButton extends StatelessWidget {
     return IconButton(
       onPressed: () => _showPicker(context),
       icon: const Icon(Icons.camera_alt_outlined),
-      color: AppColors.textSecondary,
+      color: context.textSecondaryColor,
       tooltip: '이미지 첨부',
     );
   }

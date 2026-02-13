@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -402,10 +403,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                         Container(
                           width: 343.w,
                           decoration: BoxDecoration(
-                            color: AppColors.surface,
+                            color: context.surfaceColor,
                             borderRadius: BorderRadius.circular(AppSpacing.radiusXxl.r),
                             border: Border.all(
-                              color: AppColors.border,
+                              color: context.borderColor,
                               width: AppSpacing.borderWidth.w,
                             ),
                             boxShadow: [
@@ -695,7 +696,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
               : l10n.createAccount,
           textAlign: TextAlign.center,
           style: AppTypography.headline2.copyWith(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
           ),
         ),
         SizedBox(height: AppSpacing.xs.h),
@@ -705,7 +706,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
               : l10n.enterYourInfo,
           textAlign: TextAlign.center,
           style: AppTypography.body2.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
         ),
       ],
@@ -717,10 +718,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       width: 275.w,
       height: 55.h,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
         border: Border.all(
-          color: AppColors.border,
+          color: context.borderColor,
           width: AppSpacing.borderWidth.w,
         ),
       ),
@@ -731,11 +732,11 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
               padding: EdgeInsets.symmetric(horizontal: AppSpacing.md.w),
               child: Row(
                 children: [
-                  Icon(Icons.school_outlined, color: AppColors.textHint, size: AppSpacing.iconMd.sp),
+                  Icon(Icons.school_outlined, color: context.textHintColor, size: AppSpacing.iconMd.sp),
                   SizedBox(width: AppSpacing.sm.w),
                   Text(
                     'No universities found',
-                    style: AppTypography.body2.copyWith(color: AppColors.textHint),
+                    style: AppTypography.body2.copyWith(color: context.textHintColor),
                   ),
                 ],
               ),
@@ -746,7 +747,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context).selectUniversity,
             hintStyle: AppTypography.body2.copyWith(
-              color: AppColors.textHint,
+              color: context.textHintColor,
             ),
             prefixIcon: Icon(
               Icons.school_outlined,
@@ -770,9 +771,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
             ),
           ),
           style: AppTypography.body2.copyWith(
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
           ),
-          dropdownColor: AppColors.surface,
+          dropdownColor: context.surfaceColor,
           isExpanded: true,
           items: universities.map((University university) {
             return DropdownMenuItem<int>(
@@ -780,7 +781,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
               child: Text(
                 university.name,
                 style: AppTypography.body2.copyWith(
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -815,10 +816,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         width: 275.w,
         height: 55.h,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
           border: Border.all(
-            color: AppColors.border,
+            color: context.borderColor,
             width: AppSpacing.borderWidth.w,
           ),
         ),
@@ -836,15 +837,15 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                 formattedDate ?? AppLocalizations.of(context).selectBirthDate,
                 style: AppTypography.body2.copyWith(
                   color: formattedDate != null
-                      ? AppColors.textPrimary
-                      : AppColors.textHint,
+                      ? context.textPrimaryColor
+                      : context.textHintColor,
                 ),
               ),
             ),
             Icon(
               Icons.calendar_today,
               size: AppSpacing.iconMd.sp,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
           ],
         ),
@@ -888,10 +889,10 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     return Container(
       width: 275.w,
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: context.surfaceVariantColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd.r),
         border: Border.all(
-          color: AppColors.border,
+          color: context.borderColor,
           width: AppSpacing.borderWidth.w,
         ),
       ),
@@ -930,7 +931,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                       AppLocalizations.of(context).agreeToAll,
                       style: AppTypography.body2.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimaryColor,
                       ),
                     ),
                   ],
@@ -941,7 +942,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
 
               // Divider
               Divider(
-                color: AppColors.divider,
+                color: context.dividerColor,
                 thickness: AppSpacing.borderWidth.h,
                 height: AppSpacing.borderWidth.h,
               ),
@@ -1006,7 +1007,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                 TextSpan(
                   text: label,
                   style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
@@ -1039,7 +1040,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
         textAlign: TextAlign.center,
         text: TextSpan(
           style: AppTypography.body2.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
           children: [
             TextSpan(text: AppLocalizations.of(context).haveAccount),

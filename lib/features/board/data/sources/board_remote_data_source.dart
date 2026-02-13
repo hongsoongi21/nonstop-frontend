@@ -48,6 +48,8 @@ class BoardRemoteDataSource {
               icon: json['icon'] as String?,
               universityRequired: json['university_id'] != null,
               isAnonymous: json['is_anonymous'] as bool? ?? false,
+              isGlobal: json['is_global'] as bool? ?? false,
+              universityId: json['university_id'] as int?,
             ))
         .toList();
   }
@@ -71,6 +73,32 @@ class BoardRemoteDataSource {
               createdAt: DateTime.parse(json['created_at'] as String),
             ))
         .toList();
+  }
+
+  Future<Board> createBoard(int communityId, {
+    required String name,
+    String? description,
+    String type = 'GENERAL',
+  }) async {
+    final result = await _supabase
+        .from('boards')
+        .insert({
+          'community_id': communityId,
+          'name': name,
+          'description': description,
+          'type': type,
+        })
+        .select()
+        .single();
+
+    return Board(
+      id: result['id'] as int,
+      name: result['name'] as String,
+      description: result['description'] as String?,
+      type: _parseBoardType(result['type'] as String),
+      isSecret: result['is_secret'] as bool? ?? false,
+      createdAt: DateTime.parse(result['created_at'] as String),
+    );
   }
 
   // ---------------------------------------------------------------------------

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -232,15 +233,15 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
           l10n.universityVerification,
           style: AppTypography.headline5.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.textPrimaryColor,
           ),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textSecondary,
+          unselectedLabelColor: context.textSecondaryColor,
           labelStyle: AppTypography.subtitle1,
           unselectedLabelStyle: AppTypography.subtitle2,
           indicatorColor: AppColors.primary,
@@ -295,7 +296,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
               child: Text(
                 AppLocalizations.of(context)!.universityVerificationRequired,
                 style: AppTypography.body2.copyWith(
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                 ),
               ),
             ),
@@ -347,14 +348,14 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
             l10n.uploadStudentId,
             style: AppTypography.headline5.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             'Take a photo or upload your student ID card for verification',
             style: AppTypography.body2.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -365,10 +366,10 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
             child: Container(
               height: 240,
               decoration: BoxDecoration(
-                color: AppColors.surfaceVariant,
+                color: context.surfaceVariantColor,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 border: Border.all(
-                  color: AppColors.border,
+                  color: context.borderColor,
                   width: 2,
                   strokeAlign: BorderSide.strokeAlignInside,
                 ),
@@ -387,13 +388,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
                         Icon(
                           Icons.add_photo_alternate_outlined,
                           size: 64,
-                          color: AppColors.textTertiary,
+                          color: context.textTertiaryColor,
                         ),
                         const SizedBox(height: AppSpacing.md),
                         Text(
                           l10n.selectImage,
                           style: AppTypography.body1.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                           ),
                         ),
                       ],
@@ -410,7 +411,7 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
             label: Text(l10n.selectImage),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
+                horizontal: AppSpacing.md,
                 vertical: AppSpacing.md,
               ),
               side: const BorderSide(color: AppColors.primary),
@@ -460,14 +461,14 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
             l10n.emailVerification,
             style: AppTypography.headline5.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             'Enter your university email address to receive a verification code',
             style: AppTypography.body2.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -514,13 +515,13 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
                 Icon(
                   Icons.timer_outlined,
                   size: 16,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   '${l10n.timeRemaining}: ${_formatTime(_remainingSeconds)}',
                   style: AppTypography.body2.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                   ),
                 ),
               ],

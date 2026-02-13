@@ -7,6 +7,7 @@ import 'package:fpdart/fpdart.dart';
 abstract class BoardRepository {
   Future<Either<String, List<Community>>> getCommunities();
   Future<Either<String, List<Board>>> getBoards(int communityId);
+  Future<Either<String, Board>> createBoard(int communityId, {required String name, String? description});
   Future<Either<String, List<PostEntity>>> getPosts(
     int boardId, {
     int page = 1,

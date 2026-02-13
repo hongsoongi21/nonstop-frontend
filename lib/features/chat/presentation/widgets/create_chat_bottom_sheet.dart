@@ -9,6 +9,7 @@ import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/friends/presentation/providers/friend_management_provider.dart';
 import 'package:nonstop/features/friends/domain/entities/friend.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
+import 'package:nonstop/core/extensions/context_extensions.dart';
 
 /// Bottom sheet for creating new 1:1 or group chats
 ///
@@ -120,8 +121,8 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
     setState(() => _isCreating = false);
 
     if (mounted && newRoom != null) {
-      context.pop();
-      context.push(Routes.chatRoomPath(newRoom.id.toString()));
+      GoRouter.of(context).pop();
+      GoRouter.of(context).push(Routes.chatRoomPath(newRoom.id.toString()));
     } else if (mounted) {
       _showError('Failed to create chat');
     }
@@ -168,7 +169,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
       opacity: _fadeAnimation,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: context.backgroundColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
           boxShadow: [
             BoxShadow(
@@ -197,7 +198,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
+        AppSpacing.md,
         AppSpacing.md,
         AppSpacing.md,
         AppSpacing.md,
@@ -205,7 +206,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.border.withValues(alpha: 0.3),
+            color: context.borderColor.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -223,9 +224,9 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
           ),
           IconButton(
             icon: const Icon(Icons.close, size: 24),
-            onPressed: () => context.pop(),
+            onPressed: () => GoRouter.of(context).pop(),
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.surface,
+              backgroundColor: context.surfaceColor,
               shape: const CircleBorder(),
             ),
           ),
@@ -236,13 +237,13 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
 
   Widget _buildSearchField() {
     return Padding(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: AppColors.border.withValues(alpha: 0.2),
+            color: context.borderColor.withValues(alpha: 0.2),
             width: 1.5,
           ),
         ),
@@ -253,11 +254,11 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context).searchUsers,
             hintStyle: AppTypography.bodyLarge.copyWith(
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              color: context.textSecondaryColor.withValues(alpha: 0.5),
             ),
             prefixIcon: Icon(
               Icons.search_rounded,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
               size: 24,
             ),
             suffixIcon: _searchController.text.isNotEmpty
@@ -281,7 +282,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
 
   Widget _buildSelectedUsers() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -289,7 +290,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
           Text(
             AppLocalizations.of(context).selectedCount(_selectedUsers.length),
             style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
               fontSize: 11,
@@ -350,7 +351,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
             child: Icon(
               Icons.close,
               size: 16,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
           ),
         ],
@@ -360,11 +361,11 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
 
   Widget _buildGroupNameInput() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg)
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md)
           .copyWith(bottom: AppSpacing.md),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surfaceColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: AppColors.primary.withValues(alpha: 0.3),
@@ -378,7 +379,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
           decoration: InputDecoration(
             hintText: AppLocalizations.of(context).groupNameHint,
             hintStyle: AppTypography.bodyLarge.copyWith(
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              color: context.textSecondaryColor.withValues(alpha: 0.5),
             ),
             prefixIcon: Icon(
               Icons.group_rounded,
@@ -412,7 +413,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
                 : ListView.builder(
                     shrinkWrap: true,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
+                      horizontal: AppSpacing.md,
                       vertical: AppSpacing.sm,
                     ),
                     itemCount: results.length,
@@ -438,7 +439,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
               Icon(
                 Icons.person_search_rounded,
                 size: 64,
-                color: AppColors.textSecondary.withValues(alpha: 0.3),
+                color: context.textSecondaryColor.withValues(alpha: 0.3),
               ),
               const SizedBox(height: AppSpacing.md),
               Text(
@@ -446,7 +447,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
                     ? 'Start typing to search users'
                     : 'No users found',
                 style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                 ),
               ),
             ],
@@ -511,7 +512,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
                         Text(
                           user.universityName!,
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                           ),
                         ),
                     ],
@@ -524,11 +525,11 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
                     shape: BoxShape.circle,
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.surface,
+                        : context.surfaceColor,
                     border: Border.all(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.border,
+                          : context.borderColor,
                       width: 2,
                     ),
                   ),
@@ -563,7 +564,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
+        horizontal: AppSpacing.md,
         vertical: AppSpacing.md,
       ),
       child: SizedBox(
@@ -573,7 +574,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
           onPressed: canCreate ? _createChat : null,
           style: FilledButton.styleFrom(
             backgroundColor: AppColors.primary,
-            disabledBackgroundColor: AppColors.surface,
+            disabledBackgroundColor: context.surfaceColor,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
@@ -591,7 +592,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
               : Text(
                   buttonText,
                   style: AppTypography.titleMedium.copyWith(
-                    color: canCreate ? Colors.white : AppColors.textSecondary,
+                    color: canCreate ? Colors.white : context.textSecondaryColor,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.3,
                   ),

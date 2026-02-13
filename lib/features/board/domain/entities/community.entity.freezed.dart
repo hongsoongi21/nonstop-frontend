@@ -27,6 +27,8 @@ mixin _$Community {
   String? get icon => throw _privateConstructorUsedError;
   bool get universityRequired => throw _privateConstructorUsedError;
   bool get isAnonymous => throw _privateConstructorUsedError;
+  bool get isGlobal => throw _privateConstructorUsedError; // 공용 커뮤니티 여부
+  int? get universityId => throw _privateConstructorUsedError;
 
   /// Serializes this Community to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -50,6 +52,8 @@ abstract class $CommunityCopyWith<$Res> {
     String? icon,
     bool universityRequired,
     bool isAnonymous,
+    bool isGlobal,
+    int? universityId,
   });
 }
 
@@ -74,6 +78,8 @@ class _$CommunityCopyWithImpl<$Res, $Val extends Community>
     Object? icon = freezed,
     Object? universityRequired = null,
     Object? isAnonymous = null,
+    Object? isGlobal = null,
+    Object? universityId = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -101,6 +107,14 @@ class _$CommunityCopyWithImpl<$Res, $Val extends Community>
                 ? _value.isAnonymous
                 : isAnonymous // ignore: cast_nullable_to_non_nullable
                       as bool,
+            isGlobal: null == isGlobal
+                ? _value.isGlobal
+                : isGlobal // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            universityId: freezed == universityId
+                ? _value.universityId
+                : universityId // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -123,6 +137,8 @@ abstract class _$$CommunityImplCopyWith<$Res>
     String? icon,
     bool universityRequired,
     bool isAnonymous,
+    bool isGlobal,
+    int? universityId,
   });
 }
 
@@ -146,6 +162,8 @@ class __$$CommunityImplCopyWithImpl<$Res>
     Object? icon = freezed,
     Object? universityRequired = null,
     Object? isAnonymous = null,
+    Object? isGlobal = null,
+    Object? universityId = freezed,
   }) {
     return _then(
       _$CommunityImpl(
@@ -173,6 +191,14 @@ class __$$CommunityImplCopyWithImpl<$Res>
             ? _value.isAnonymous
             : isAnonymous // ignore: cast_nullable_to_non_nullable
                   as bool,
+        isGlobal: null == isGlobal
+            ? _value.isGlobal
+            : isGlobal // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        universityId: freezed == universityId
+            ? _value.universityId
+            : universityId // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -188,6 +214,8 @@ class _$CommunityImpl implements _Community {
     this.icon,
     this.universityRequired = false,
     this.isAnonymous = false,
+    this.isGlobal = false,
+    this.universityId,
   });
 
   factory _$CommunityImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +235,16 @@ class _$CommunityImpl implements _Community {
   @override
   @JsonKey()
   final bool isAnonymous;
+  @override
+  @JsonKey()
+  final bool isGlobal;
+  // 공용 커뮤니티 여부
+  @override
+  final int? universityId;
 
   @override
   String toString() {
-    return 'Community(id: $id, name: $name, description: $description, icon: $icon, universityRequired: $universityRequired, isAnonymous: $isAnonymous)';
+    return 'Community(id: $id, name: $name, description: $description, icon: $icon, universityRequired: $universityRequired, isAnonymous: $isAnonymous, isGlobal: $isGlobal, universityId: $universityId)';
   }
 
   @override
@@ -226,7 +260,11 @@ class _$CommunityImpl implements _Community {
             (identical(other.universityRequired, universityRequired) ||
                 other.universityRequired == universityRequired) &&
             (identical(other.isAnonymous, isAnonymous) ||
-                other.isAnonymous == isAnonymous));
+                other.isAnonymous == isAnonymous) &&
+            (identical(other.isGlobal, isGlobal) ||
+                other.isGlobal == isGlobal) &&
+            (identical(other.universityId, universityId) ||
+                other.universityId == universityId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -239,6 +277,8 @@ class _$CommunityImpl implements _Community {
     icon,
     universityRequired,
     isAnonymous,
+    isGlobal,
+    universityId,
   );
 
   /// Create a copy of Community
@@ -263,6 +303,8 @@ abstract class _Community implements Community {
     final String? icon,
     final bool universityRequired,
     final bool isAnonymous,
+    final bool isGlobal,
+    final int? universityId,
   }) = _$CommunityImpl;
 
   factory _Community.fromJson(Map<String, dynamic> json) =
@@ -280,6 +322,10 @@ abstract class _Community implements Community {
   bool get universityRequired;
   @override
   bool get isAnonymous;
+  @override
+  bool get isGlobal; // 공용 커뮤니티 여부
+  @override
+  int? get universityId;
 
   /// Create a copy of Community
   /// with the given fields replaced by the non-null parameter values.

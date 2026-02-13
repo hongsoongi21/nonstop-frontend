@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/theme/app_colors.dart';
 
 /// BuildContext extensions for navigation, theming, and common utilities
 extension ContextExtensions on BuildContext {
@@ -207,4 +208,37 @@ extension ContextExtensions on BuildContext {
   Brightness get brightness => theme.brightness;
   bool get isDarkMode => brightness == Brightness.dark;
   bool get isLightMode => brightness == Brightness.light;
+}
+
+/// Theme-aware color helpers - automatically returns dark/light variant
+extension ThemeAwareColors on BuildContext {
+  // Surfaces
+  Color get backgroundColor => isDarkMode ? AppColors.backgroundDark : AppColors.background;
+  Color get surfaceColor => isDarkMode ? AppColors.surfaceDark : AppColors.surface;
+  Color get surfaceVariantColor => isDarkMode ? AppColors.surfaceVariantDark : AppColors.surfaceVariant;
+  Color get surfaceElevatedColor => isDarkMode ? AppColors.surfaceElevatedDark : AppColors.surfaceElevated;
+  Color get cardColor => isDarkMode ? AppColors.cardBackgroundDark : AppColors.cardBackground;
+  Color get cardAltColor => isDarkMode ? AppColors.cardBackgroundAltDark : AppColors.cardBackgroundAlt;
+
+  // Text
+  Color get textPrimaryColor => isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
+  Color get textSecondaryColor => isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
+  Color get textTertiaryColor => isDarkMode ? AppColors.textTertiaryDark : AppColors.textTertiary;
+  Color get textHintColor => isDarkMode ? AppColors.textHintDark : AppColors.textHint;
+
+  // Borders
+  Color get borderColor => isDarkMode ? AppColors.borderDark : AppColors.border;
+  Color get borderLightColor => isDarkMode ? AppColors.borderLightDark : AppColors.borderLight;
+  Color get borderFocusedColor => isDarkMode ? AppColors.borderFocusedDark : AppColors.borderFocused;
+  Color get dividerColor => isDarkMode ? AppColors.dividerDark : AppColors.divider;
+
+  // Glass
+  Color get glassBackgroundColor => isDarkMode ? AppColors.glassBackgroundDark : AppColors.glassBackground;
+  Color get glassBorderColor => isDarkMode ? AppColors.glassBorderDark : AppColors.glassBorder;
+
+  // Chat
+  Color get messageBubbleReceivedColor => isDarkMode ? AppColors.messageBubbleReceivedDark : AppColors.messageBubbleReceived;
+
+  // Gradients
+  List<Color> get backgroundGradientColors => isDarkMode ? AppColors.backgroundGradientDark : AppColors.backgroundGradient;
 }

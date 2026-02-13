@@ -44,6 +44,10 @@ class AppColors {
   static const Color cardBackground = Color(0xFFFFFFFF);
   static const Color cardBackgroundAlt = Color(0xFFFCFDFE);
 
+  /// Dark mode card backgrounds
+  static const Color cardBackgroundDark = Color(0xFF1E293B);
+  static const Color cardBackgroundAltDark = Color(0xFF253347);
+
   /// Dark mode surfaces
   static const Color backgroundDark = Color(0xFF0F172A);
   static const Color surfaceDark = Color(0xFF1E293B);
@@ -67,6 +71,7 @@ class AppColors {
   static const Color textPrimaryDark = Color(0xFFF8FAFC);
   static const Color textSecondaryDark = Color(0xFFCBD5E1);
   static const Color textTertiaryDark = Color(0xFF64748B);
+  static const Color textHintDark = Color(0xFF475569);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STATUS COLORS
@@ -99,6 +104,8 @@ class AppColors {
 
   static const Color borderDark = Color(0xFF334155);
   static const Color borderLightDark = Color(0xFF475569);
+  static const Color borderFocusedDark = Color(0xFF3A7CA5);
+  static const Color dividerDark = Color(0xFF334155);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SHADOW & OVERLAY COLORS
@@ -109,6 +116,11 @@ class AppColors {
   static const Color shadowStrong = Color(0x2A0F172A);
   static const Color overlay = Color(0x800F172A);
   static const Color ripple = Color(0x1A1E4D7B);
+
+  /// Dark mode shadows
+  static const Color shadowDark = Color(0x40000000);
+  static const Color shadowMediumDark = Color(0x60000000);
+  static const Color overlayDark = Color(0xCC000000);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // GRADIENTS - Samarkand Inspired
@@ -136,6 +148,12 @@ class AppColors {
   static const List<Color> backgroundGradient = [
     Color(0xFFF8FAFC),
     Color(0xFFF1F5F9),
+  ];
+
+  /// Dark background gradient
+  static const List<Color> backgroundGradientDark = [
+    Color(0xFF0F172A),
+    Color(0xFF1E293B),
   ];
 
   /// Premium/accent gradient

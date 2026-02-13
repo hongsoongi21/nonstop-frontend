@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -25,9 +26,9 @@ class LanguageSelector extends ConsumerWidget {
     return Container(
       height: 44.h,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         border: Border.all(
-          color: AppColors.border,
+          color: context.borderColor,
           width: 1,
         ),
         borderRadius: BorderRadius.circular(12.r),
@@ -109,7 +110,7 @@ class LanguageSelector extends ConsumerWidget {
           AppLocale.getShortName(locale),
           style: AppTypography.bodySmall.copyWith(
             fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-            color: isActive ? Colors.white : AppColors.textSecondary,
+            color: isActive ? Colors.white : context.textSecondaryColor,
             letterSpacing: 0.2,
           ),
         ),
@@ -118,10 +119,12 @@ class LanguageSelector extends ConsumerWidget {
   }
 
   Widget _buildDivider() {
-    return Container(
-      width: 1,
-      height: 20.h,
-      color: AppColors.border,
+    return Builder(
+      builder: (context) => Container(
+        width: 1,
+        height: 20.h,
+        color: context.borderColor,
+      ),
     );
   }
 }

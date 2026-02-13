@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -86,11 +87,11 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
         ),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: AppColors.backgroundGradient,
+            colors: context.backgroundGradientColors,
           ),
         ),
         child: SafeArea(
@@ -111,7 +112,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       l10n.friendsTitle,
                       style: AppTypography.headline4.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimaryColor,
                         letterSpacing: -1.2,
                         height: 1.1,
                       ),
@@ -144,7 +145,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
                     labelColor: AppColors.textOnPrimary,
-                    unselectedLabelColor: AppColors.textSecondary,
+                    unselectedLabelColor: context.textSecondaryColor,
                     labelStyle: AppTypography.button.copyWith(
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
@@ -241,10 +242,10 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   child: Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.surfaceColor,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: AppColors.border,
+                        color: context.borderColor,
                         width: 1,
                       ),
                       boxShadow: [
@@ -274,7 +275,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                           child: Text(
                             error,
                             style: AppTypography.body2.copyWith(
-                              color: AppColors.textPrimary,
+                              color: context.textPrimaryColor,
                               fontWeight: FontWeight.w500,
                               letterSpacing: -0.2,
                             ),
@@ -358,12 +359,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppColors.textSecondary.withValues(alpha: 0.1),
+                    color: context.textSecondaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     Icons.more_horiz_rounded,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     size: 20,
                   ),
                 ),
@@ -529,7 +530,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               children: [
                 Icon(
                   Icons.search_rounded,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                   size: 22,
                 ),
                 const SizedBox(width: 12),
@@ -566,13 +567,13 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: AppColors.textSecondary.withValues(alpha: 0.1),
+                        color: context.textSecondaryColor.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         Icons.close_rounded,
                         size: 16,
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                   ),
@@ -674,14 +675,14 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                             width: 56,
                             height: 56,
                             placeholder: (context, url) => Container(
-                              color: AppColors.surfaceVariant,
+                              color: context.surfaceVariantColor,
                               child: const Center(
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColors.surfaceVariant,
-                              child: const Icon(Icons.person, color: AppColors.textSecondary),
+                              color: context.surfaceVariantColor,
+                              child: Icon(Icons.person, color: context.textSecondaryColor),
                             ),
                           ),
                         )
@@ -708,7 +709,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       color: AppColors.chatOnline,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: AppColors.surface,
+                        color: context.surfaceColor,
                         width: 2.5,
                       ),
                       boxShadow: [
@@ -734,7 +735,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   friend.nickname,
                   style: AppTypography.subtitle1.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimaryColor,
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -749,7 +750,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                             if (friend.majorName != null) friend.majorName!,
                           ].join(' • '),
                           style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
+                            color: context.textSecondaryColor,
                             fontSize: 13,
                             letterSpacing: -0.1,
                           ),
@@ -765,7 +766,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     style: AppTypography.caption.copyWith(
                       color: isOnline
                           ? AppColors.chatOnline
-                          : AppColors.textSecondary,
+                          : context.textSecondaryColor,
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
                       letterSpacing: -0.1,
@@ -1020,7 +1021,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 title,
                 style: AppTypography.headline6.copyWith(
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                   letterSpacing: -0.5,
                 ),
                 textAlign: TextAlign.center,
@@ -1029,7 +1030,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               Text(
                 subtitle,
                 style: AppTypography.body2.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.textSecondaryColor,
                   fontSize: 14,
                   height: 1.5,
                   letterSpacing: -0.1,
@@ -1112,7 +1113,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               fontWeight: FontWeight.w600,
             ),
           ),
-          backgroundColor: AppColors.textSecondary,
+          backgroundColor: context.textSecondaryColor,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -1130,7 +1131,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         title: Row(
           children: [
             Container(
@@ -1158,7 +1159,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         content: Text(
           l10n.confirmRemoveFriend(friend.nickname),
           style: AppTypography.body1.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
             height: 1.5,
             letterSpacing: -0.2,
           ),
@@ -1168,7 +1169,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1176,7 +1177,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             child: Text(
               AppLocalizations.of(context)!.cancel,
               style: AppTypography.button.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 fontWeight: FontWeight.w600,
                 letterSpacing: -0.2,
               ),
@@ -1188,7 +1189,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),

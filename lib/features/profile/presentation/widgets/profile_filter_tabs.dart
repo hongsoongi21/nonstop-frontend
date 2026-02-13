@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -49,10 +50,10 @@ class _ProfileFilterTabsState extends State<ProfileFilterTabs>
       margin: EdgeInsets.all(AppSpacing.md),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: context.surfaceVariantColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.border,
+          color: context.borderColor,
           width: 1,
         ),
       ),
@@ -106,7 +107,7 @@ class _FilterTab extends StatelessWidget {
           horizontal: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white : Colors.transparent,
+          color: isSelected ? context.surfaceColor : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           boxShadow: isSelected
               ? [
@@ -127,7 +128,7 @@ class _FilterTab extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               child: Icon(
                 icon,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondaryColor,
                 size: 20,
               ),
             ),
@@ -135,7 +136,7 @@ class _FilterTab extends StatelessWidget {
             Text(
               label,
               style: AppTypography.labelMedium.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondaryColor,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 letterSpacing: 0.3,
               ),

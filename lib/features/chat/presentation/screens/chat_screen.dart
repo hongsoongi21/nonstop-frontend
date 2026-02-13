@@ -92,7 +92,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
+        horizontal: AppSpacing.md,
         vertical: AppSpacing.md,
       ),
       child: Row(
@@ -179,7 +179,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
         itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
+            horizontal: AppSpacing.md,
             vertical: AppSpacing.md,
           ),
           child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
@@ -239,41 +239,49 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
     final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.wifi_off_rounded,
-                size: 40,
-                color: AppColors.error.withValues(alpha: 0.7),
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: AppColors.error.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.wifi_off_rounded,
+                      size: 40,
+                      color: AppColors.error.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    AppLocalizations.of(context).chatLoadError,
+                    style: AppTypography.body1.copyWith(
+                      color: textPrimaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Pull down to retry',
+                    style: AppTypography.body2.copyWith(
+                      color: textSecondaryColor,
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              AppLocalizations.of(context).chatLoadError,
-              style: AppTypography.body1.copyWith(
-                color: textPrimaryColor,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Pull down to retry',
-              style: AppTypography.body2.copyWith(
-                color: textSecondaryColor,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -285,83 +293,91 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
     final primaryColor = isDarkMode ? AppColors.primaryLight : AppColors.primary;
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.08),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.chat_bubble_outline_rounded,
-                size: 56,
-                color: primaryColor.withValues(alpha: 0.5),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            Text(
-              l10n.chatListEmpty,
-              style: AppTypography.headline5.copyWith(
-                color: textPrimaryColor,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              l10n.chatListEmptyHint,
-              style: AppTypography.body2.copyWith(
-                color: textSecondaryColor,
-                height: 1.5,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.xl),
-            // Start conversation button
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  _showCreateChatSheet(context);
-                },
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.08),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 56,
+                      color: primaryColor.withValues(alpha: 0.5),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: primaryColor,
-                    borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: AppSpacing.xl),
+                  Text(
+                    l10n.chatListEmpty,
+                    style: AppTypography.headline5.copyWith(
+                      color: textPrimaryColor,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.add_rounded,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Start a conversation',
-                        style: AppTypography.button.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    l10n.chatListEmptyHint,
+                    style: AppTypography.body2.copyWith(
+                      color: textSecondaryColor,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  // Start conversation button
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        _showCreateChatSheet(context);
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.add_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Start a conversation',
+                              style: AppTypography.button.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -381,7 +397,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
+        horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
       child: TextField(

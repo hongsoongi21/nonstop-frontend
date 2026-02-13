@@ -5,6 +5,7 @@ import '../../core/mock/mock_data.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// Chat bubble component for displaying messages
 class ChatBubble extends StatelessWidget {
@@ -44,14 +45,14 @@ class ChatBubble extends StatelessWidget {
                         width: 32,
                         height: 32,
                         placeholder: (context, url) => Container(
-                          color: AppColors.surfaceVariant,
+                          color: context.surfaceVariantColor,
                           child: const Center(
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColors.surfaceVariant,
-                          child: const Icon(Icons.person, color: AppColors.textSecondary),
+                          color: context.surfaceVariantColor,
+                          child: Icon(Icons.person, color: context.textSecondaryColor),
                         ),
                       ),
                     )
@@ -75,7 +76,7 @@ class ChatBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isMe
                     ? AppColors.messageBubbleSent
-                    : AppColors.messageBubbleReceived,
+                    : context.messageBubbleReceivedColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(isMe ? AppSpacing.radiusMd : 4),
                   topRight: Radius.circular(isMe ? 4 : AppSpacing.radiusMd),
@@ -84,7 +85,7 @@ class ChatBubble extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.shadow,
+                    color: context.isDarkMode ? AppColors.shadowDark : AppColors.shadow,
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   ),
@@ -109,7 +110,7 @@ class ChatBubble extends StatelessWidget {
                   Text(
                     message.content,
                     style: AppTypography.body2.copyWith(
-                      color: isMe ? Colors.white : AppColors.textPrimary,
+                      color: isMe ? Colors.white : context.textPrimaryColor,
                       height: 1.4,
                     ),
                   ),
@@ -120,7 +121,7 @@ class ChatBubble extends StatelessWidget {
                     Text(
                       message.timeAgo,
                       style: AppTypography.caption.copyWith(
-                        color: (isMe ? Colors.white : AppColors.textSecondary)
+                        color: (isMe ? Colors.white : context.textSecondaryColor)
                             .withValues(alpha: 0.7),
                         fontSize: 10,
                       ),
@@ -144,14 +145,14 @@ class ChatBubble extends StatelessWidget {
                         width: 32,
                         height: 32,
                         placeholder: (context, url) => Container(
-                          color: AppColors.surfaceVariant,
+                          color: context.surfaceVariantColor,
                           child: const Center(
                             child: CircularProgressIndicator(strokeWidth: 2),
                           ),
                         ),
                         errorWidget: (context, url, error) => Container(
-                          color: AppColors.surfaceVariant,
-                          child: const Icon(Icons.person, color: AppColors.textSecondary),
+                          color: context.surfaceVariantColor,
+                          child: Icon(Icons.person, color: context.textSecondaryColor),
                         ),
                       ),
                     )
@@ -192,9 +193,9 @@ class ChatInput extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         border: Border(
-          top: BorderSide(color: AppColors.border),
+          top: BorderSide(color: context.borderColor),
         ),
       ),
       child: Row(
@@ -204,7 +205,7 @@ class ChatInput extends StatelessWidget {
             onPressed: () {},
             icon: Icon(
               Icons.attach_file,
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -219,14 +220,14 @@ class ChatInput extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: hintText,
                 hintStyle: AppTypography.body2.copyWith(
-                  color: AppColors.textHint,
+                  color: context.textHintColor,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: AppColors.background,
+                fillColor: context.backgroundColor,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: AppSpacing.md,
                   vertical: AppSpacing.sm,
@@ -298,7 +299,7 @@ class TypingIndicator extends StatelessWidget {
               vertical: AppSpacing.sm,
             ),
             decoration: BoxDecoration(
-              color: AppColors.messageBubbleReceived,
+              color: context.messageBubbleReceivedColor,
               borderRadius: BorderRadius.only(
                 topRight: Radius.circular(AppSpacing.radiusMd),
                 bottomLeft: Radius.circular(AppSpacing.radiusMd),
@@ -310,7 +311,7 @@ class TypingIndicator extends StatelessWidget {
                 Text(
                   '$userName is typing',
                   style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontStyle: FontStyle.italic,
                   ),
                 ),

@@ -11,6 +11,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/dto/auth_response_dto.dart';
@@ -219,7 +220,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
         if (authState.hasPendingOAuthSignup) {
           debugPrint('[GOOGLE_LOGIN] New user, redirecting to signup...');
-          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+          GoRouter.of(context).go(Routes.register, extra: authState.pendingOAuthSignup);
         } else if (authState.isAuthenticated && !authState.hasError) {
           debugPrint('[GOOGLE_LOGIN] Login successful!');
           _showWelcomeSnackbar(authState.user?.nickname);
@@ -333,7 +334,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         if (authState.hasPendingOAuthSignup) {
           // 신규 사용자: 회원가입 화면으로 이동
           debugPrint('[APPLE_LOGIN] Step 10: New user, redirecting to signup...');
-          context.go(Routes.register, extra: authState.pendingOAuthSignup);
+          GoRouter.of(context).go(Routes.register, extra: authState.pendingOAuthSignup);
         } else if (authState.isAuthenticated && !authState.hasError) {
           debugPrint('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
@@ -361,16 +362,31 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
   }
 
   void _handleForgotPassword() {
-    context.push(Routes.forgotPassword);
+    GoRouter.of(context).push(Routes.forgotPassword);
   }
 
   void _handleSignup() {
-    context.go(Routes.register);
+    GoRouter.of(context).go(Routes.register);
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (next.hasError && !(previous?.hasError ?? false)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              next.failure?.message ?? AppLocalizations.of(context)!.errorOccurred,
+            ),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    });
 
     return Scaffold(
       body: Container(
@@ -408,7 +424,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                           child: Container(
                             width: 343.w,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: context.surfaceColor,
                               borderRadius: BorderRadius.circular(32.r),
                               boxShadow: [
                                 BoxShadow(
@@ -448,7 +464,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         fontSize: 28.sp,
                                         height: 1.2,
                                         letterSpacing: -0.02 * 28.sp,
-                                        color: AppColors.textPrimary,
+                                        color: context.textPrimaryColor,
                                       ),
                                     ),
 
@@ -463,7 +479,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         fontSize: 15.sp,
                                         height: 1.4,
                                         letterSpacing: -0.01 * 15.sp,
-                                        color: AppColors.textSecondary,
+                                        color: context.textSecondaryColor,
                                       ),
                                     ),
 
@@ -542,52 +558,6 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
                                     SizedBox(height: 24.h),
 
-                                    // Error Message (moved above button)
-                                    if (authState.hasError)
-                                      FadeTransition(
-                                        opacity: _staggeredAnimation3,
-                                        child: Container(
-                                          margin: EdgeInsets.only(bottom: 16.h),
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 16.w,
-                                            vertical: 12.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.errorLight,
-                                            borderRadius:
-                                                BorderRadius.circular(12.r),
-                                            border: Border.all(
-                                              color: AppColors.error
-                                                  .withValues(alpha: 0.2),
-                                              width: 1.w,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.info_outline_rounded,
-                                                color: AppColors.error,
-                                                size: 20.sp,
-                                              ),
-                                              SizedBox(width: 12.w),
-                                              Expanded(
-                                                child: Text(
-                                                  authState.failure?.message ??
-                                                      AppLocalizations.of(context)!.errorOccurred,
-                                                  style: TextStyle(
-                                                    fontFamily: 'Noto Sans',
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 13.sp,
-                                                    height: 1.4,
-                                                    color: AppColors.errorDark,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-
                                     // Login Button
                                     Container(
                                       height: 56.h,
@@ -657,7 +627,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         Expanded(
                                           child: Container(
                                             height: 1.h,
-                                            color: AppColors.border,
+                                            color: context.borderColor,
                                           ),
                                         ),
                                         Padding(
@@ -672,14 +642,14 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                               fontSize: 13.sp,
                                               height: 1.4,
                                               letterSpacing: -0.01 * 13.sp,
-                                              color: AppColors.textTertiary,
+                                              color: context.textTertiaryColor,
                                             ),
                                           ),
                                         ),
                                         Expanded(
                                           child: Container(
                                             height: 1.h,
-                                            color: AppColors.border,
+                                            color: context.borderColor,
                                           ),
                                         ),
                                       ],
@@ -694,16 +664,16 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         borderRadius:
                                             BorderRadius.circular(16.r),
                                         border: Border.all(
-                                          color: AppColors.border,
+                                          color: context.borderColor,
                                           width: 1.5.w,
                                         ),
                                       ),
                                       child: OutlinedButton(
                                         onPressed: _handleGoogleLogin,
                                         style: OutlinedButton.styleFrom(
-                                          backgroundColor: Colors.white,
+                                          backgroundColor: context.surfaceColor,
                                           foregroundColor:
-                                              AppColors.textPrimary,
+                                              context.textPrimaryColor,
                                           side: BorderSide.none,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
@@ -722,7 +692,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                               width: 24.w,
                                               height: 24.h,
                                               decoration: BoxDecoration(
-                                                color: Colors.white,
+                                                color: context.surfaceColor,
                                                 borderRadius:
                                                     BorderRadius.circular(4.r),
                                               ),
@@ -741,7 +711,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                                 fontSize: 15.sp,
                                                 height: 1.4,
                                                 letterSpacing: -0.01 * 15.sp,
-                                                color: AppColors.textPrimary,
+                                                color: context.textPrimaryColor,
                                               ),
                                             ),
                                           ],
@@ -815,7 +785,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                             fontSize: 14.sp,
                                             height: 1.4,
                                             letterSpacing: -0.01 * 14.sp,
-                                            color: AppColors.textSecondary,
+                                            color: context.textSecondaryColor,
                                           ),
                                         ),
                                         SizedBox(width: 4.w),

@@ -13,6 +13,7 @@ import 'package:nonstop/features/chat/presentation/widgets/date_separator.dart';
 import 'package:nonstop/shared/components/report_dialog.dart';
 import 'package:nonstop/shared/components/block_user_dialog.dart';
 import 'package:nonstop/features/friends/data/api/friend_api_impl.dart';
+import 'package:nonstop/core/extensions/context_extensions.dart';
 
 class ChatRoomScreen extends ConsumerStatefulWidget {
   final int roomId;
@@ -117,19 +118,19 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           ),
         ),
         elevation: 0,
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         surfaceTintColor: Colors.transparent,
         shadowColor: AppColors.shadow,
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
+              color: context.surfaceVariantColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert_rounded, size: 22),
-              color: AppColors.surface,
+              color: context.surfaceColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -153,7 +154,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       Text(
                         l10n.report,
                         style: AppTypography.body2.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                     ],
@@ -168,7 +169,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                       Text(
                         l10n.blockUser,
                         style: AppTypography.body2.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                     ],
@@ -179,12 +180,12 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                   value: 'leave',
                   child: Row(
                     children: [
-                      const Icon(Icons.exit_to_app_rounded, color: AppColors.textSecondary),
+                      Icon(Icons.exit_to_app_rounded, color: context.textSecondaryColor),
                       const SizedBox(width: 12),
                       Text(
                         l10n.leaveRoom,
                         style: AppTypography.body2.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                         ),
                       ),
                     ],
@@ -201,8 +202,8 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              AppColors.background,
-              AppColors.surfaceVariant.withValues(alpha: 0.3),
+              context.backgroundColor,
+              context.surfaceVariantColor.withValues(alpha: 0.3),
             ],
           ),
         ),
@@ -289,7 +290,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             Text(
               'Loading messages...',
               style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 fontSize: 14,
               ),
             ),
@@ -398,7 +399,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -413,7 +414,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: context.borderColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -446,7 +447,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 subtitle: Text(
                   'Take a photo',
                   style: AppTypography.body2.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontSize: 13,
                   ),
                 ),
@@ -493,7 +494,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 subtitle: Text(
                   'Choose from gallery',
                   style: AppTypography.body2.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontSize: 13,
                   ),
                 ),
@@ -582,7 +583,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surfaceColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -595,7 +596,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
         content: Text(
           l10n.leaveRoomConfirm,
           style: AppTypography.body2.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
         ),
         actions: [
@@ -604,7 +605,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
             child: Text(
               l10n.cancel,
               style: AppTypography.body2.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
           ),
@@ -657,7 +658,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -672,7 +673,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: context.borderColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -698,7 +699,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 subtitle: Text(
                   'Report this message',
                   style: AppTypography.body2.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     fontSize: 13,
                   ),
                 ),

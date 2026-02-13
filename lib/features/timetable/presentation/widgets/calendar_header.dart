@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -46,13 +47,15 @@ class WeekCalendarHeader extends StatelessWidget {
 
           // Date title
           Expanded(
-            child: Text(
-              _getWeekTitle(),
-              style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
+            child: Builder(
+              builder: (context) => Text(
+                _getWeekTitle(),
+                style: AppTypography.headlineSmall.copyWith(
+                  color: context.textPrimaryColor,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
 
@@ -124,13 +127,13 @@ class _NavigationButton extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.sm),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.3),
+          color: context.surfaceColor.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
           icon,
           size: 22,
-          color: AppColors.textPrimary,
+          color: context.textPrimaryColor,
         ),
       ),
     );

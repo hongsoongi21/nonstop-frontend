@@ -4,6 +4,7 @@ import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/core/extensions/context_extensions.dart';
 
 class DateSeparator extends StatelessWidget {
   final DateTime date;
@@ -22,18 +23,18 @@ class DateSeparator extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Expanded(child: Divider(color: AppColors.border)),
+          Expanded(child: Divider(color: context.borderColor)),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Text(
               _formatDate(context, date),
               style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          Expanded(child: Divider(color: AppColors.border)),
+          Expanded(child: Divider(color: context.borderColor)),
         ],
       ),
     );

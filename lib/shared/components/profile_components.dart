@@ -5,6 +5,7 @@ import '../../core/mock/mock_data.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// User profile card component
 class UserProfileCard extends StatelessWidget {
@@ -49,14 +50,14 @@ class UserProfileCard extends StatelessWidget {
                               width: 64,
                               height: 64,
                               placeholder: (context, url) => Container(
-                                color: AppColors.surfaceVariant,
+                                color: context.surfaceVariantColor,
                                 child: const Center(
                                   child: CircularProgressIndicator(strokeWidth: 2),
                                 ),
                               ),
                               errorWidget: (context, url, error) => Container(
-                                color: AppColors.surfaceVariant,
-                                child: const Icon(Icons.person, color: AppColors.textSecondary),
+                                color: context.surfaceVariantColor,
+                                child: Icon(Icons.person, color: context.textSecondaryColor),
                               ),
                             ),
                           )
@@ -79,7 +80,7 @@ class UserProfileCard extends StatelessWidget {
                           color: AppColors.chatOnline,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppColors.surface,
+                            color: context.surfaceColor,
                             width: 3,
                           ),
                         ),
@@ -109,7 +110,7 @@ class UserProfileCard extends StatelessWidget {
                     Text(
                       user.email,
                       style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
 
@@ -131,13 +132,13 @@ class UserProfileCard extends StatelessWidget {
                           Icon(
                             Icons.school,
                             size: 14,
-                            color: AppColors.textHint,
+                            color: context.textHintColor,
                           ),
                           SizedBox(width: 4),
                           Text(
                             user.university.shortName,
                             style: AppTypography.caption.copyWith(
-                              color: AppColors.textHint,
+                              color: context.textHintColor,
                             ),
                           ),
                         ],
@@ -163,7 +164,7 @@ class UserProfileCard extends StatelessWidget {
               // Action button
               Icon(
                 Icons.chevron_right,
-                color: AppColors.textHint,
+                color: context.textHintColor,
               ),
             ],
           ),
@@ -233,7 +234,7 @@ class UserListItem extends StatelessWidget {
                   color: AppColors.chatOnline,
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppColors.surface,
+                    color: context.surfaceColor,
                     width: 2,
                   ),
                 ),
@@ -251,18 +252,18 @@ class UserListItem extends StatelessWidget {
           ? Text(
               subtitle!,
               style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             )
           : Text(
               '${user.major ?? 'Student'} • ${user.university.shortName}',
               style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
               ),
             ),
       trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.textHint,
+        color: context.textHintColor,
       ),
     );
   }
@@ -353,14 +354,14 @@ class UniversityCard extends StatelessWidget {
                           width: 48,
                           height: 48,
                           placeholder: (context, url) => Container(
-                            color: AppColors.surfaceVariant,
+                            color: context.surfaceVariantColor,
                             child: const Center(
                               child: CircularProgressIndicator(strokeWidth: 2),
                             ),
                           ),
                           errorWidget: (context, url, error) => Container(
-                            color: AppColors.surfaceVariant,
-                            child: const Icon(Icons.image, color: AppColors.textSecondary),
+                            color: context.surfaceVariantColor,
+                            child: Icon(Icons.image, color: context.textSecondaryColor),
                           ),
                         ),
                       )
@@ -388,7 +389,7 @@ class UniversityCard extends StatelessWidget {
                     Text(
                       university.shortName,
                       style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                   ],
@@ -434,7 +435,7 @@ class _StatItem extends StatelessWidget {
         Text(
           label,
           style: AppTypography.caption.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
         ),
       ],
@@ -466,17 +467,17 @@ class AchievementBadge extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isEarned ? color.withValues(alpha: 0.1) : AppColors.surface,
+          color: isEarned ? color.withValues(alpha: 0.1) : context.surfaceColor,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
-            color: isEarned ? color : AppColors.border,
+            color: isEarned ? color : context.borderColor,
           ),
         ),
         child: Column(
           children: [
             Icon(
               icon,
-              color: isEarned ? color : AppColors.textHint,
+              color: isEarned ? color : context.textHintColor,
               size: 32,
             ),
 
@@ -486,7 +487,7 @@ class AchievementBadge extends StatelessWidget {
               title,
               style: AppTypography.body2.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isEarned ? AppColors.textPrimary : AppColors.textHint,
+                color: isEarned ? context.textPrimaryColor : context.textHintColor,
               ),
               textAlign: TextAlign.center,
             ),
@@ -496,7 +497,7 @@ class AchievementBadge extends StatelessWidget {
             Text(
               description,
               style: AppTypography.caption.copyWith(
-                color: isEarned ? AppColors.textSecondary : AppColors.textHint,
+                color: isEarned ? context.textSecondaryColor : context.textHintColor,
               ),
               textAlign: TextAlign.center,
             ),

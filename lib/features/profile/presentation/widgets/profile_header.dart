@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -173,14 +174,14 @@ class ProfileHeader extends StatelessWidget {
                             width: 100,
                             height: 100,
                             placeholder: (context, url) => Container(
-                              color: AppColors.surfaceVariant,
+                              color: context.surfaceVariantColor,
                               child: const Center(
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ),
                             errorWidget: (context, url, error) => Container(
-                              color: AppColors.surfaceVariant,
-                              child: const Icon(Icons.person, color: AppColors.textSecondary, size: 40),
+                              color: context.surfaceVariantColor,
+                              child: Icon(Icons.person, color: context.textSecondaryColor, size: 40),
                             ),
                           )
                         : Container(

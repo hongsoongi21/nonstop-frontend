@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_typography.dart';
+import '../extensions/context_extensions.dart';
 import 'app_animations.dart';
 
 /// Error display widget with "Samarkand Modern" aesthetic
@@ -158,7 +159,7 @@ class AppErrorDisplay extends StatelessWidget {
             child: Text(
               message!,
               style: AppTypography.body1.copyWith(
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 height: 1.6,
               ),
               textAlign: TextAlign.center,
@@ -235,9 +236,9 @@ class AppErrorDisplay extends StatelessWidget {
       margin: EdgeInsets.symmetric(horizontal: AppSpacing.xl),
       padding: EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
+        color: context.surfaceVariantColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,13 +248,13 @@ class AppErrorDisplay extends StatelessWidget {
               Icon(
                 Icons.code_rounded,
                 size: 16,
-                color: AppColors.textTertiary,
+                color: context.textTertiaryColor,
               ),
               SizedBox(width: AppSpacing.xs),
               Text(
                 'Technical Details',
                 style: AppTypography.caption.copyWith(
-                  color: AppColors.textTertiary,
+                  color: context.textTertiaryColor,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.5,
                 ),
@@ -264,7 +265,7 @@ class AppErrorDisplay extends StatelessWidget {
           Text(
             technicalDetails!,
             style: AppTypography.code.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
               fontSize: 12,
             ),
           ),

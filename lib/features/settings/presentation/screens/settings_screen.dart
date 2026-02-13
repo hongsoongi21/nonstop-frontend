@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/routes.dart';
+import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -34,7 +35,7 @@ class SettingsScreen extends ConsumerWidget {
             end: Alignment.bottomRight,
             colors: [
               AppColors.primary.withValues(alpha: 0.05),
-              AppColors.surface,
+              context.surfaceColor,
               AppColors.secondary.withValues(alpha: 0.05),
             ],
           ),
@@ -64,14 +65,14 @@ class SettingsScreen extends ConsumerWidget {
           Text(
             AppLocalizations.of(context)!.errorOccurred,
             style: AppTypography.headlineSmall.copyWith(
-              color: AppColors.textPrimary,
+              color: context.textPrimaryColor,
             ),
           ),
           SizedBox(height: AppSpacing.sm),
           Text(
             error,
             style: AppTypography.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: context.textSecondaryColor,
             ),
             textAlign: TextAlign.center,
           ),
@@ -93,7 +94,7 @@ class SettingsScreen extends ConsumerWidget {
     final notifier = ref.read(profileProvider.notifier);
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(AppSpacing.lg),
+      padding: EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -229,7 +230,7 @@ class SettingsScreen extends ConsumerWidget {
                 context: context,
                 icon: Icons.block,
                 title: AppLocalizations.of(context)!.blockedUsers,
-                onTap: () => context.push(Routes.blockedUsers),
+                onTap: () => GoRouter.of(context).push(Routes.blockedUsers),
               ),
             ],
           ),
@@ -273,12 +274,12 @@ class SettingsScreen extends ConsumerWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.textTertiary.withValues(alpha: 0.1),
+                color: context.textTertiaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
               child: Icon(
                 Icons.logout_outlined,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 size: AppSpacing.iconMd,
               ),
             ),
@@ -290,7 +291,7 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     AppLocalizations.of(context)!.logout,
                     style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textPrimary,
+                      color: context.textPrimaryColor,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -298,7 +299,7 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     AppLocalizations.of(context)!.logoutSubtitle,
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
                 ],
@@ -306,7 +307,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
               size: AppSpacing.iconMd,
             ),
           ],
@@ -384,7 +385,7 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     l10n.deleteAccountSubtitle,
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondaryColor,
                     ),
                   ),
                 ],
@@ -392,7 +393,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
               size: AppSpacing.iconMd,
             ),
           ],
@@ -458,35 +459,39 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Text(
-      title,
-      style: AppTypography.titleLarge.copyWith(
-        color: AppColors.textPrimary,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.3,
+    return Builder(
+      builder: (context) => Text(
+        title,
+        style: AppTypography.titleLarge.copyWith(
+          color: context.textPrimaryColor,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
+        ),
       ),
     );
   }
 
   Widget _buildSettingsCard({required List<Widget> children}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(
-          color: AppColors.border.withValues(alpha: 0.5),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Builder(
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(
+            color: context.borderColor.withValues(alpha: 0.5),
+            width: 1,
           ),
-        ],
-      ),
-      child: Column(
-        children: children,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadow,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: children,
+        ),
       ),
     );
   }
@@ -512,12 +517,12 @@ class SettingsScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: value
                   ? AppColors.primary.withValues(alpha: 0.1)
-                  : AppColors.textTertiary.withValues(alpha: 0.08),
+                  : context.textTertiaryColor.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             ),
             child: Icon(
               icon,
-              color: value ? AppColors.primary : AppColors.textSecondary,
+              color: value ? AppColors.primary : context.textSecondaryColor,
               size: AppSpacing.iconMd,
             ),
           ),
@@ -529,7 +534,7 @@ class SettingsScreen extends ConsumerWidget {
                 Text(
                   title,
                   style: AppTypography.bodyLarge.copyWith(
-                    color: AppColors.textPrimary,
+                    color: context.textPrimaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -537,7 +542,7 @@ class SettingsScreen extends ConsumerWidget {
                 Text(
                   subtitle,
                   style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondaryColor,
                     height: 1.3,
                   ),
                 ),
@@ -550,8 +555,8 @@ class SettingsScreen extends ConsumerWidget {
             onChanged: onChanged,
             activeThumbColor: AppColors.primary,
             activeTrackColor: AppColors.primary.withValues(alpha: 0.3),
-            inactiveThumbColor: AppColors.textTertiary,
-            inactiveTrackColor: AppColors.border,
+            inactiveThumbColor: context.textTertiaryColor,
+            inactiveTrackColor: context.borderColor,
           ),
         ],
       ),
@@ -578,12 +583,12 @@ class SettingsScreen extends ConsumerWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.textTertiary.withValues(alpha: 0.1),
+                color: context.textTertiaryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
               child: Icon(
                 icon,
-                color: AppColors.textSecondary,
+                color: context.textSecondaryColor,
                 size: AppSpacing.iconMd,
               ),
             ),
@@ -592,14 +597,14 @@ class SettingsScreen extends ConsumerWidget {
               child: Text(
                 title,
                 style: AppTypography.bodyLarge.copyWith(
-                  color: AppColors.textPrimary,
+                  color: context.textPrimaryColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             Icon(
               Icons.chevron_right,
-              color: AppColors.textTertiary,
+              color: context.textTertiaryColor,
             ),
           ],
         ),
@@ -645,7 +650,7 @@ class SettingsScreen extends ConsumerWidget {
                       Text(
                         AppLocalizations.of(context)!.language,
                         style: AppTypography.bodyLarge.copyWith(
-                          color: AppColors.textPrimary,
+                          color: context.textPrimaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -653,7 +658,7 @@ class SettingsScreen extends ConsumerWidget {
                       Text(
                         AppLocalizations.of(context)!.languageSubtitle,
                         style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
+                          color: context.textSecondaryColor,
                         ),
                       ),
                     ],
@@ -674,7 +679,7 @@ class SettingsScreen extends ConsumerWidget {
                     SizedBox(width: AppSpacing.xs),
                     Icon(
                       Icons.chevron_right,
-                      color: AppColors.textTertiary,
+                      color: context.textTertiaryColor,
                       size: AppSpacing.iconMd,
                     ),
                   ],
@@ -693,7 +698,7 @@ class SettingsScreen extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surfaceColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppSpacing.radiusXl),
@@ -711,7 +716,7 @@ class SettingsScreen extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.border,
+                  color: context.borderColor,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -721,7 +726,7 @@ class SettingsScreen extends ConsumerWidget {
                 child: Text(
                   l10n.language,
                   style: AppTypography.titleLarge.copyWith(
-                    color: AppColors.textPrimary,
+                    color: context.textPrimaryColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -741,7 +746,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               Divider(
                 height: 1,
-                color: AppColors.border.withValues(alpha: 0.3),
+                color: context.borderColor.withValues(alpha: 0.3),
                 indent: AppSpacing.lg,
                 endIndent: AppSpacing.lg,
               ),
@@ -793,7 +798,7 @@ class SettingsScreen extends ConsumerWidget {
             else if (icon != null)
               Icon(
                 icon,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? AppColors.primary : context.textSecondaryColor,
                 size: 24,
               ),
             SizedBox(width: AppSpacing.md),
@@ -806,7 +811,7 @@ class SettingsScreen extends ConsumerWidget {
                     style: AppTypography.bodyLarge.copyWith(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.textPrimary,
+                          : context.textPrimaryColor,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
@@ -814,7 +819,7 @@ class SettingsScreen extends ConsumerWidget {
                     Text(
                       subtitle,
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: context.textSecondaryColor,
                       ),
                     ),
                 ],
@@ -833,58 +838,62 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildDivider() {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: AppColors.border.withValues(alpha: 0.3),
-      indent: AppSpacing.md + 40 + AppSpacing.md, // Align with text
+    return Builder(
+      builder: (context) => Divider(
+        height: 1,
+        thickness: 1,
+        color: context.borderColor.withValues(alpha: 0.3),
+        indent: AppSpacing.md + 40 + AppSpacing.md, // Align with text
+      ),
     );
   }
 
   Widget _buildVersionInfo() {
-    return Center(
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceVariant.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-              border: Border.all(
-                color: AppColors.border.withValues(alpha: 0.3),
-                width: 1,
+    return Builder(
+      builder: (context) => Center(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: context.surfaceVariantColor.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                border: Border.all(
+                  color: context.borderColor.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: AppSpacing.iconSm,
+                    color: context.textTertiaryColor,
+                  ),
+                  SizedBox(width: AppSpacing.xs),
+                  Text(
+                    'Version 1.0.0',
+                    style: AppTypography.caption.copyWith(
+                      color: context.textSecondaryColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: AppSpacing.iconSm,
-                  color: AppColors.textTertiary,
-                ),
-                SizedBox(width: AppSpacing.xs),
-                Text(
-                  'Version 1.0.0',
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+            SizedBox(height: AppSpacing.sm),
+            Text(
+              '© 2024 NonStop',
+              style: AppTypography.captionSmall.copyWith(
+                color: context.textTertiaryColor,
+              ),
             ),
-          ),
-          SizedBox(height: AppSpacing.sm),
-          Text(
-            '© 2024 NonStop',
-            style: AppTypography.captionSmall.copyWith(
-              color: AppColors.textTertiary,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

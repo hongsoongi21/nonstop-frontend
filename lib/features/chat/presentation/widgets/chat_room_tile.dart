@@ -39,7 +39,7 @@ class ChatRoomTile extends StatelessWidget {
             .withValues(alpha: 0.04),
         child: Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
+            horizontal: AppSpacing.md,
             vertical: AppSpacing.md + 2,
           ),
           child: Row(

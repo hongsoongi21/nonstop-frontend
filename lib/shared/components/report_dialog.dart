@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../features/report/data/api/report_api_impl.dart';
 import '../../features/report/data/dto/report_dto.dart';
 import '../../core/l10n/app_localizations.dart';
+import '../../core/extensions/context_extensions.dart';
 
 /// Report target type for the dialog
 enum ReportTargetType {
@@ -194,7 +195,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(AppSpacing.radiusXl),
           topRight: Radius.circular(AppSpacing.radiusXl),
@@ -222,7 +223,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.border,
+            color: context.borderColor,
             width: AppSpacing.borderWidth,
           ),
         ),
@@ -239,12 +240,12 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
             child: Text(
               l10n.report,
               style: AppTypography.headline5.copyWith(
-                color: AppColors.textPrimary,
+                color: context.textPrimaryColor,
               ),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.close, color: AppColors.textSecondary),
+            icon: Icon(Icons.close, color: context.textSecondaryColor),
             onPressed: () => Navigator.of(context).pop(false),
           ),
         ],
@@ -264,7 +265,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
         Text(
           l10n.reportReason,
           style: AppTypography.subtitle2.copyWith(
-            color: AppColors.textSecondary,
+            color: context.textSecondaryColor,
           ),
         ),
         SizedBox(height: AppSpacing.md),
@@ -301,7 +302,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
             ),
             decoration: BoxDecoration(
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? AppColors.primary : context.borderColor,
                 width: isSelected ? 2 : 1,
               ),
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -312,7 +313,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
                   isSelected
                       ? Icons.check_circle
                       : Icons.radio_button_unchecked,
-                  color: isSelected ? AppColors.primary : AppColors.textTertiary,
+                  color: isSelected ? AppColors.primary : context.textTertiaryColor,
                   size: 20,
                 ),
                 SizedBox(width: AppSpacing.md),
@@ -322,7 +323,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
                     style: AppTypography.body2.copyWith(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.textPrimary,
+                          : context.textPrimaryColor,
                       fontWeight:
                           isSelected ? FontWeight.w600 : FontWeight.w400,
                     ),
@@ -347,24 +348,24 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
         decoration: InputDecoration(
           hintText: l10n.reportDescription,
           hintStyle: AppTypography.body2.copyWith(
-            color: AppColors.textTertiary,
+            color: context.textTertiaryColor,
           ),
           filled: true,
-          fillColor: AppColors.surfaceVariant,
+          fillColor: context.surfaceVariantColor,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: context.borderColor),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            borderSide: BorderSide(color: AppColors.border),
+            borderSide: BorderSide(color: context.borderColor),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             borderSide: BorderSide(color: AppColors.primary, width: 2),
           ),
         ),
-        style: AppTypography.body2.copyWith(color: AppColors.textPrimary),
+        style: AppTypography.body2.copyWith(color: context.textPrimaryColor),
       ),
     );
   }
@@ -381,7 +382,7 @@ class _ReportDialogContentState extends ConsumerState<_ReportDialogContent> {
           onPressed: isEnabled ? _submitReport : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.error,
-            disabledBackgroundColor: AppColors.border,
+            disabledBackgroundColor: context.borderColor,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),

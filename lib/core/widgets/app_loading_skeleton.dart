@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_spacing.dart';
+import '../extensions/context_extensions.dart';
 
 /// Skeleton loading components with shimmer effect
 /// Provides visual feedback during content loading with "Samarkand Modern" aesthetic
@@ -56,11 +57,11 @@ class AppLoadingSkeleton extends StatelessWidget {
             : BoxShape.rectangle,
       ),
       child: _ShimmerEffect(
-        baseColor: AppColors.surfaceVariant,
-        highlightColor: AppColors.surface,
+        baseColor: context.surfaceVariantColor,
+        highlightColor: context.surfaceColor,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.surfaceVariant,
+            color: context.surfaceVariantColor,
             borderRadius: shape == SkeletonShape.circle
                 ? null
                 : (borderRadius ?? BorderRadius.circular(AppSpacing.radiusMd)),
@@ -116,13 +117,14 @@ class SkeletonLayouts {
     bool hasFooter = true,
     EdgeInsetsGeometry? padding,
   }) {
-    return Container(
-      margin: padding ?? EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
-      ),
+    return Builder(
+      builder: (context) => Container(
+        margin: padding ?? EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(color: context.borderColor),
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -164,19 +166,21 @@ class SkeletonLayouts {
           ),
         ],
       ),
+      ),
     );
   }
 
   /// Post skeleton (for social feeds)
   static Widget post({EdgeInsetsGeometry? padding}) {
-    return Container(
-      margin: padding ?? EdgeInsets.all(AppSpacing.md),
-      padding: EdgeInsets.all(AppSpacing.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(color: AppColors.border),
-      ),
+    return Builder(
+      builder: (context) => Container(
+        margin: padding ?? EdgeInsets.all(AppSpacing.md),
+        padding: EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          border: Border.all(color: context.borderColor),
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -220,6 +224,7 @@ class SkeletonLayouts {
             ],
           ),
         ],
+      ),
       ),
     );
   }

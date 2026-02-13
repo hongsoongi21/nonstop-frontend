@@ -12,6 +12,8 @@ class Community with _$Community {
     String? icon,
     @Default(false) bool universityRequired,
     @Default(false) bool isAnonymous,
+    @Default(false) bool isGlobal,  // 공용 커뮤니티 여부
+    int? universityId,  // 대학교 ID (is_global=false일 때)
   }) = _Community;
 
   factory Community.fromJson(Map<String, dynamic> json) =>
