@@ -388,7 +388,14 @@ class AuthApiImpl implements AuthApi {
       // Use signInWithOtp to send a 6-digit OTP code for email verification.
       // This works for both new and existing emails, unlike resend() which
       // requires a prior signUp call.
-      await _supabase.auth.signInWithOtp(email: email);
+      //
+      // IMPORTANT: Set shouldCreateUser: false to prevent auto-login on magic link click
+      // and emailRedirectTo: null to disable magic link in email (OTP code only)
+      await _supabase.auth.signInWithOtp(
+        email: email,
+        emailRedirectTo: null, // Disable magic link, send OTP code only
+        shouldCreateUser: false, // Prevent creating user from OTP login
+      );
     } on supa.AuthException catch (e) {
       throw ServerException(message: e.message, statusCode: 400);
     }
