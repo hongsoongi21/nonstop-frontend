@@ -5,6 +5,7 @@ import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../data/repositories/board_repository_impl.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import 'post_detail_provider.dart';
 
 /// State for board interactions
 class BoardState {
@@ -227,6 +228,8 @@ class BoardNotifier extends StateNotifier<BoardState> {
         return post;
       }).toList();
       state = state.copyWith(posts: updatedPosts);
+      // Sync like state to detail view if it's currently loaded
+      _ref.invalidate(postDetailProvider(postId));
     });
   }
 

@@ -114,7 +114,7 @@ class BoardRemoteDataSource {
 
     final posts = await _supabase
         .from('posts')
-        .select('*, users(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname)')
         .eq('board_id', boardId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: false)
@@ -127,7 +127,7 @@ class BoardRemoteDataSource {
   Future<PostEntity> getPostDetail(int postId) async {
     final post = await _supabase
         .from('posts')
-        .select('*, users(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname)')
         .eq('id', postId)
         .single();
 
@@ -159,7 +159,7 @@ class BoardRemoteDataSource {
           'is_secret': isSecret,
           // TODO: imageUrls - add image_urls column and Supabase Storage integration
         })
-        .select('*, users(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname)')
         .single();
 
     return _mapToPost(
@@ -189,7 +189,7 @@ class BoardRemoteDataSource {
           'updated_at': DateTime.now().toIso8601String(),
         })
         .eq('id', postId)
-        .select('*, users(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname)')
         .single();
 
     final enriched = await _enrichPosts([result]);
@@ -241,7 +241,7 @@ class BoardRemoteDataSource {
 
     final comments = await _supabase
         .from('comments')
-        .select('*, users(nickname)')
+        .select('*, users!comments_user_id_fkey(nickname)')
         .eq('post_id', postId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: true);
@@ -323,7 +323,7 @@ class BoardRemoteDataSource {
           if (upperCommentId != null) 'upper_comment_id': upperCommentId,
           'depth': upperCommentId != null ? 1 : 0,
         })
-        .select('*, users(nickname)')
+        .select('*, users!comments_user_id_fkey(nickname)')
         .single();
 
     return _mapToComment(result, likeCount: 0, isLiked: false, isMine: true);
@@ -346,7 +346,7 @@ class BoardRemoteDataSource {
           'updated_at': DateTime.now().toIso8601String(),
         })
         .eq('id', commentId)
-        .select('*, users(nickname)')
+        .select('*, users!comments_user_id_fkey(nickname)')
         .single();
 
     final likes = await _supabase
@@ -421,7 +421,7 @@ class BoardRemoteDataSource {
 
     final posts = await _supabase
         .from('posts')
-        .select('*, users(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname)')
         .eq('user_id', currentUserId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: false)

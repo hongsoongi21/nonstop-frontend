@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/routes.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -271,20 +272,18 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationType.newReply:
       case NotificationType.commentLike:
         if (notification.postId != null) {
-          GoRouter.of(context).push('/board/post/${notification.postId}');
+          GoRouter.of(context).push(Routes.boardDetailPath(notification.postId.toString()));
         }
         break;
       case NotificationType.chatMessage:
         if (notification.chatRoomId != null) {
-          GoRouter.of(context).push('/chat/${notification.chatRoomId}');
+          GoRouter.of(context).push(Routes.chatRoomPath(notification.chatRoomId.toString()));
         }
         break;
       case NotificationType.friendRequest:
       case NotificationType.friendAccept:
-        // Navigate to friends page or user profile
-        if (notification.actorId != null) {
-          GoRouter.of(context).push('/profile/${notification.actorId}');
-        }
+        // Navigate to friends page for friend-related notifications
+        GoRouter.of(context).push(Routes.friends);
         break;
       case NotificationType.announcement:
         // Show announcement detail or do nothing
@@ -333,7 +332,11 @@ class _NotificationTile extends StatelessWidget {
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
         decoration: BoxDecoration(
-          color: notification.isRead ? context.surfaceColor : AppColors.infoLight,
+          color: notification.isRead
+              ? context.surfaceColor
+              : (context.isDarkMode
+                  ? const Color(0xFF1E3A5F)
+                  : AppColors.infoLight),
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: notification.isRead ? context.borderColor : AppColors.info.withValues(alpha: 0.2),

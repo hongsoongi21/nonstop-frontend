@@ -75,43 +75,6 @@ class AuthApiImpl implements AuthApi {
           '${birthDate.month.toString().padLeft(2, '0')}-'
           '${birthDate.day.toString().padLeft(2, '0')}';
 
-      // Check if user already has an active session from OTP email verification.
-      // In that case, the auth user already exists - just set the password.
-      final existingAuthUser = _supabase.auth.currentUser;
-      if (existingAuthUser != null && existingAuthUser.email == email) {
-        if (!kReleaseMode) {
-          AppLogger.d('[NONSTOP] User exists from OTP verification, setting password...');
-        }
-
-        // Set password for the OTP-created user
-        await _supabase.auth.updateUser(
-          supa.UserAttributes(password: password),
-        );
-
-        // Update the public.users row with profile info
-        await _supabase.from('users').update({
-          'nickname': nickname,
-          'birth_date': birthDateStr,
-          if (universityId != null) 'university_id': universityId,
-          if (majorId != null) 'major_id': majorId,
-        }).eq('auth_id', existingAuthUser.id);
-
-        // Save policy agreements
-        if (agreedPolicyIds != null && agreedPolicyIds.isNotEmpty) {
-          final userId = await _getUserId(existingAuthUser.id);
-          await _supabase.from('user_policy_agreements').insert(
-            agreedPolicyIds
-                .map((policyId) => {
-                      'user_id': userId,
-                      'policy_id': policyId,
-                    })
-                .toList(),
-          );
-        }
-
-        return await _fetchCurrentUser();
-      }
-
       // Normal flow: Create a new auth user (trigger will create public.users row)
       final response = await _supabase.auth.signUp(
         email: email,
@@ -385,19 +348,24 @@ class AuthApiImpl implements AuthApi {
   Future<void> sendVerificationEmail(String email) async {
     _lastVerificationEmail = email;
     try {
-      // Use signInWithOtp to send a 6-digit OTP code for email verification.
-      // This works for both new and existing emails, unlike resend() which
-      // requires a prior signUp call.
-      //
-      // IMPORTANT: Set shouldCreateUser: false to prevent auto-login on magic link click
-      // and emailRedirectTo: null to disable magic link in email (OTP code only)
-      await _supabase.auth.signInWithOtp(
-        email: email,
-        emailRedirectTo: null, // Disable magic link, send OTP code only
-        shouldCreateUser: false, // Prevent creating user from OTP login
+      final response = await _supabase.functions.invoke(
+        'send-verification-email',
+        body: {'email': email},
       );
-    } on supa.AuthException catch (e) {
-      throw ServerException(message: e.message, statusCode: 400);
+
+      if (response.status != 200) {
+        final data = response.data as Map<String, dynamic>?;
+        throw ServerException(
+          message: data?['error'] as String? ?? '인증 이메일 발송에 실패했습니다.',
+          statusCode: response.status,
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(
+        message: '인증 이메일 발송 실패: $e',
+        statusCode: 500,
+      );
     }
   }
 
@@ -410,15 +378,27 @@ class AuthApiImpl implements AuthApi {
       );
     }
     try {
-      await _supabase.auth.verifyOTP(
-        email: _lastVerificationEmail!,
-        token: code,
-        type: supa.OtpType.email,
+      final response = await _supabase.functions.invoke(
+        'verify-email-code',
+        body: {
+          'email': _lastVerificationEmail!,
+          'code': code,
+        },
       );
-      // Keep the session active - signUp will detect the existing user
-      // and use updateUser to set the password instead of creating a new user.
-    } on supa.AuthException catch (e) {
-      throw ServerException(message: e.message, statusCode: 400);
+
+      if (response.status != 200) {
+        final data = response.data as Map<String, dynamic>?;
+        throw ServerException(
+          message: data?['error'] as String? ?? '유효하지 않거나 만료된 인증 코드입니다.',
+          statusCode: response.status,
+        );
+      }
+    } catch (e) {
+      if (e is ServerException) rethrow;
+      throw ServerException(
+        message: '이메일 인증 실패: $e',
+        statusCode: 500,
+      );
     }
   }
 

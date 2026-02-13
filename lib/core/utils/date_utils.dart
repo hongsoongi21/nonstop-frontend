@@ -1,5 +1,6 @@
 String timeAgo(DateTime dateTime) {
-  final duration = DateTime.now().difference(dateTime);
+  final localDateTime = dateTime.toLocal();
+  final duration = DateTime.now().difference(localDateTime);
   if (duration.inDays > 7) {
     return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   }
