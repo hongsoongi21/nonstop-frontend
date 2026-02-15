@@ -40,7 +40,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Nonstop <onboarding@resend.dev>",
+        from: "Nonstop <noreply@nonstop-app.com>",
         to: [email],
         subject: "Nonstop - Email Verification Code",
         html: `
