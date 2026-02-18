@@ -324,12 +324,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             onTap: () =>
                 ref.read(postDetailProvider(postId).notifier).toggleLike(),
           ),
-          const SizedBox(width: 24),
-          _ActionButton(
-            icon: Icons.bookmark_border_rounded,
-            label: l10n.save,
-            onTap: () {},
-          ),
         ],
       ),
     );

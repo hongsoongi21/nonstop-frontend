@@ -76,12 +76,17 @@ class TimetableApiImpl implements TimetableApi {
           .order('year', ascending: false)
           .order('type');
 
+      final now = DateTime.now();
+      final currentYear = _getCurrentAcademicYear(now);
+      final currentType = _getCurrentSemesterType(now);
+
       final list = (data as List)
           .map((json) => SemesterDto(
                 id: json['id'] as int,
                 year: json['year'] as int,
                 type: _parseSemesterType(json['type'] as String),
-                isCurrent: false,
+                isCurrent: json['year'] == currentYear &&
+                    json['type'] == _semesterTypeToDbString(currentType),
               ))
           .toList();
 
@@ -345,6 +350,23 @@ class TimetableApiImpl implements TimetableApi {
       case SemesterType.winter:
         return 'WINTER';
     }
+  }
+
+  /// Determine the current academic year based on current date.
+  /// In Uzbekistan: academic year starts September.
+  /// Sep-Dec → that year, Jan-Aug → previous year.
+  static int _getCurrentAcademicYear(DateTime now) {
+    return now.month >= 9 ? now.year : now.year - 1;
+  }
+
+  /// Determine the current semester type based on current date.
+  /// FIRST: September - January
+  /// SECOND: February - June
+  /// SUMMER: July - August
+  static SemesterType _getCurrentSemesterType(DateTime now) {
+    if (now.month >= 9 || now.month <= 1) return SemesterType.first;
+    if (now.month >= 2 && now.month <= 6) return SemesterType.second;
+    return SemesterType.summer;
   }
 
   TimetableDto _mapToTimetableDto(Map<String, dynamic> json) {

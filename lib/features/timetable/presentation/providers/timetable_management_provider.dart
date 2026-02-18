@@ -432,10 +432,23 @@ class TimetableManagementNotifier
       debugPrint('[TIMETABLE] Fallback: selecting first timetable: ${timetables.first.id}');
       await selectTimetable(timetables.first.id);
     } else {
-      debugPrint('[TIMETABLE] WARNING: No semesters and no timetables available');
-      // Set a clear error message when no semesters are available
-      state = state.copyWith(
-        error: 'No semesters available. Please contact administrator.',
+      // No semesters exist yet - determine current academic semester and create timetable
+      debugPrint('[TIMETABLE] No semesters found. Auto-creating current semester timetable.');
+      final now = DateTime.now();
+      final autoYear = now.month >= 9 ? now.year : now.year - 1;
+      final SemesterType autoType;
+      if (now.month >= 9 || now.month <= 1) {
+        autoType = SemesterType.first;
+      } else if (now.month >= 2 && now.month <= 6) {
+        autoType = SemesterType.second;
+      } else {
+        autoType = SemesterType.summer;
+      }
+      debugPrint('[TIMETABLE] Auto-creating timetable for year=$autoYear, type=$autoType');
+      await createTimetable(
+        year: autoYear,
+        semesterType: autoType,
+        title: 'Asosiy jadval',
       );
     }
 

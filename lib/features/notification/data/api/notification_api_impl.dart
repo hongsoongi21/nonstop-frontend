@@ -43,7 +43,9 @@ class NotificationApiImpl implements NotificationApi {
           postId: map['post_id'] as int?,
           commentId: map['comment_id'] as int?,
           chatRoomId: map['chat_room_id'] as int?,
-          message: map['message'] as String? ?? '',
+          message: (map['message'] as String?)?.isNotEmpty == true
+              ? map['message'] as String
+              : _buildFallbackMessage(map['type'] as String?, map['actor_nickname'] as String?),
           isRead: map['is_read'] as bool? ?? false,
           createdAt: map['created_at'] != null
               ? parseUtcDateTime(map['created_at'] as String)
@@ -105,6 +107,28 @@ class NotificationApiImpl implements NotificationApi {
         return NotificationType.announcement;
       default:
         return NotificationType.announcement;
+    }
+  }
+
+  static String _buildFallbackMessage(String? type, String? actorNickname) {
+    final actor = actorNickname ?? 'Someone';
+    switch (type) {
+      case 'POST_LIKE':
+        return '$actor liked your post';
+      case 'COMMENT_LIKE':
+        return '$actor liked your comment';
+      case 'NEW_COMMENT':
+        return '$actor commented on your post';
+      case 'NEW_REPLY':
+        return '$actor replied to your comment';
+      case 'FRIEND_REQUEST':
+        return '$actor sent you a friend request';
+      case 'FRIEND_ACCEPT':
+        return '$actor accepted your friend request';
+      case 'CHAT_MESSAGE':
+        return '$actor sent you a message';
+      default:
+        return 'You have a new notification';
     }
   }
 }
