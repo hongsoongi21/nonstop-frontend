@@ -6,6 +6,7 @@ import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
     show currentUserProvider;
 import 'package:nonstop/features/board/data/repositories/board_repository_impl.dart';
 import 'package:nonstop/features/board/domain/entities/post.entity.dart';
+import 'package:nonstop/features/board/presentation/providers/board_provider.dart';
 import '../../data/api/profile_api.dart';
 import '../../data/api/profile_api_impl.dart';
 import '../../data/repository_impl/profile_repository_impl.dart';
@@ -176,6 +177,13 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         return false;
       },
       (profile) {
+        // Update board posts if displayName changed
+        final oldDisplayName = state.profile?.displayName;
+        final newDisplayName = profile.displayName;
+        if (oldDisplayName != null && newDisplayName != null && oldDisplayName != newDisplayName) {
+          _ref.read(boardProvider.notifier).updateMyPostsNickname(newDisplayName);
+        }
+
         state = state.copyWith(
           isLoading: false,
           profile: profile,
@@ -478,3 +486,6 @@ final myPostsProvider = FutureProvider<List<PostEntity>>((ref) async {
     (posts) => posts,
   );
 });
+
+/// Provider for tracking selected filter tab on profile screen
+final profileFilterIndexProvider = StateProvider<int>((ref) => 0);

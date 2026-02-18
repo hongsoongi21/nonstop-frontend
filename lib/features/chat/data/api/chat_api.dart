@@ -265,11 +265,13 @@ class ChatApiImpl implements ChatApi {
       'user_b_id': userB,
     });
 
-    // Add both users as members
-    await _supabase.from('chat_room_members').insert([
+    // Add both users as members (separate inserts for RLS compatibility)
+    await _supabase.from('chat_room_members').insert(
       {'room_id': roomId, 'user_id': currentUserId},
+    );
+    await _supabase.from('chat_room_members').insert(
       {'room_id': roomId, 'user_id': targetUserId},
-    ]);
+    );
 
     return ChatRoom(
       id: roomId,
@@ -296,20 +298,24 @@ class ChatApiImpl implements ChatApi {
 
     final roomId = roomData['id'] as int;
 
-    // Add creator + invited users as members
-    final allUserIds = {currentUserId, ...userIds}.toList();
+    // Insert creator first (RLS: user_id = me), then others (RLS: EXISTS check)
     await _supabase.from('chat_room_members').insert(
-      allUserIds
-          .map((uid) => {'room_id': roomId, 'user_id': uid})
-          .toList(),
+      {'room_id': roomId, 'user_id': currentUserId},
     );
+    for (final uid in userIds) {
+      if (uid != currentUserId) {
+        await _supabase.from('chat_room_members').insert(
+          {'room_id': roomId, 'user_id': uid},
+        );
+      }
+    }
 
     return ChatRoom(
       id: roomId,
       type: ChatRoomType.group,
       name: name,
       unreadCount: 0,
-      memberIds: allUserIds,
+      memberIds: [currentUserId, ...userIds.where((uid) => uid != currentUserId)],
       updatedAt: DateTime.parse(roomData['updated_at'] as String),
     );
   }

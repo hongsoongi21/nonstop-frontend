@@ -50,6 +50,11 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
     _animationController.forward();
 
     _searchController.addListener(_onSearchChanged);
+
+    // Load and show all friends initially
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(friendManagementProvider.notifier).searchFriends('');
+    });
   }
 
   @override
@@ -63,11 +68,7 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
 
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    if (query.isNotEmpty) {
-      ref.read(friendManagementProvider.notifier).searchUsers(query);
-    } else {
-      ref.read(friendManagementProvider.notifier).searchUsers('');
-    }
+    ref.read(friendManagementProvider.notifier).searchFriends(query);
   }
 
   void _toggleUserSelection(Friend user) {
@@ -444,8 +445,8 @@ class _CreateChatBottomSheetState extends ConsumerState<CreateChatBottomSheet>
               const SizedBox(height: AppSpacing.md),
               Text(
                 _searchController.text.isEmpty
-                    ? 'Start typing to search users'
-                    : 'No users found',
+                    ? 'No friends yet'
+                    : 'No friends found',
                 style: AppTypography.bodyMedium.copyWith(
                   color: context.textSecondaryColor,
                 ),

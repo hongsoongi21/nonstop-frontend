@@ -11,12 +11,14 @@ import '../../domain/entities/user_profile.dart';
 /// Profile header widget - Hero section with dramatic gradient and elevated avatar
 class ProfileHeader extends StatelessWidget {
   final UserProfile profile;
+  final String? universityName;
   final VoidCallback? onNotificationPressed;
   final VoidCallback? onSettingsPressed;
 
   const ProfileHeader({
     super.key,
     required this.profile,
+    this.universityName,
     this.onNotificationPressed,
     this.onSettingsPressed,
   });
@@ -246,7 +248,7 @@ class ProfileHeader extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (profile.universityId != null) ...[
+                      if (profile.universityId != null && universityName != null) ...[
                         const Icon(
                           Icons.school_outlined,
                           color: Colors.white,
@@ -254,7 +256,7 @@ class ProfileHeader extends StatelessWidget {
                         ),
                         SizedBox(width: AppSpacing.xxs),
                         Text(
-                          'TUIT',
+                          universityName!,
                           style: AppTypography.bodySmall.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -263,7 +265,7 @@ class ProfileHeader extends StatelessWidget {
                         ),
                       ],
                       if (profile.major != null) ...[
-                        if (profile.universityId != null)
+                        if (profile.universityId != null && universityName != null)
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: AppSpacing.xs),
                             child: Container(

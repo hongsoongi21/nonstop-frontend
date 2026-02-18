@@ -41,6 +41,9 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
       if (state.selectedBoard != null) {
         setState(() {
           _selectedBoard = state.selectedBoard;
+          if (state.selectedBoard!.type == BoardType.anonymous) {
+            _isAnonymous = true;
+          }
         });
       }
       // If boards are empty and not loading, trigger initialization
@@ -71,11 +74,12 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     setState(() => _isLoading = true);
 
     final repo = ref.read(boardRepositoryProvider);
+    final isAnonymous = _isAnonymous || (_selectedBoard?.type == BoardType.anonymous);
     final result = await repo.createPost(
       _selectedBoard!.id,
       title: _titleController.text.trim(),
       content: _contentController.text.trim(),
-      isAnonymous: _isAnonymous,
+      isAnonymous: isAnonymous,
       isSecret: _isSecret,
     );
 
@@ -113,11 +117,17 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.background,
-              AppColors.primary.withValues(alpha: 0.05),
-              AppColors.secondary.withValues(alpha: 0.1),
-            ],
+            colors: isDark
+                ? [
+                    AppColors.backgroundDark,
+                    AppColors.primary.withValues(alpha: 0.08),
+                    AppColors.backgroundDark,
+                  ]
+                : [
+                    AppColors.background,
+                    AppColors.primary.withValues(alpha: 0.05),
+                    AppColors.secondary.withValues(alpha: 0.1),
+                  ],
           ),
         ),
         child: Form(
@@ -303,7 +313,12 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                   selected: isSelected,
                   onSelected: (selected) {
                     if (selected) {
-                      setState(() => _selectedBoard = board);
+                      setState(() {
+                        _selectedBoard = board;
+                        if (board.type == BoardType.anonymous) {
+                          _isAnonymous = true;
+                        }
+                      });
                     }
                   },
                   backgroundColor: (isDarkMode ? AppColors.surfaceDark : AppColors.surface).withValues(alpha: 0.5),
@@ -337,9 +352,13 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
         _buildToggleItem(
           icon: Icons.visibility_off_outlined,
           title: l10n.postAnonymously,
-          subtitle: l10n.hideIdentity,
+          subtitle: _selectedBoard?.type == BoardType.anonymous
+              ? l10n.hideIdentity
+              : l10n.hideIdentity,
           value: _isAnonymous,
-          onChanged: (val) => setState(() => _isAnonymous = val),
+          onChanged: _selectedBoard?.type == BoardType.anonymous
+              ? null
+              : (val) => setState(() => _isAnonymous = val),
         ),
         const SizedBox(height: AppSpacing.md),
         _buildToggleItem(
@@ -358,7 +377,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     required String title,
     required String subtitle,
     required bool value,
-    required ValueChanged<bool> onChanged,
+    ValueChanged<bool>? onChanged,
   }) {
     return GlassContainer(
       borderColor: Colors.transparent,

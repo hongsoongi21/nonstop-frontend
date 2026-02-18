@@ -251,6 +251,18 @@ class BoardNotifier extends StateNotifier<BoardState> {
     );
   }
 
+  /// Update writer nickname on all of the current user's posts (for profile nickname change)
+  void updateMyPostsNickname(String newNickname) {
+    state = state.copyWith(
+      posts: state.posts.map((post) {
+        if (post.isMine) {
+          return post.copyWith(writerNickname: newNickname);
+        }
+        return post;
+      }).toList(),
+    );
+  }
+
   /// Mark that the board list needs to be refreshed (e.g., after comment added)
   void markNeedsRefresh() {
     state = state.copyWith(needsRefresh: true);

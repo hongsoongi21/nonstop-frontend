@@ -14,11 +14,11 @@ import '../../../../shared/components/glass_container.dart';
 import '../../../../shared/components/main_scaffold.dart';
 import '../../../../shared/components/block_user_dialog.dart';
 import '../../../../shared/components/report_dialog.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notification/presentation/providers/notification_provider.dart';
 import '../providers/board_provider.dart';
 import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
+import '../../domain/entities/board.entity.dart';
 import '../../../../core/utils/date_utils.dart';
 
 /// Filter options for board posts
@@ -34,8 +34,14 @@ class BoardScreen extends ConsumerStatefulWidget {
 class _BoardScreenState extends ConsumerState<BoardScreen> {
   BoardFilter _selectedFilter = BoardFilter.latest;
   bool _showSearch = false;
+  String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
+
+  bool _isAnonymousBoard() {
+    final boardState = ref.read(boardProvider);
+    return boardState.selectedBoard?.type == BoardType.anonymous;
+  }
 
   @override
   void dispose() {
@@ -68,6 +74,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
     // Sort posts based on filter
     final sortedPosts = _getSortedPosts(posts);
+    final filteredPosts = _searchQuery.isEmpty
+        ? sortedPosts
+        : sortedPosts.where((post) {
+            return post.title.toLowerCase().contains(_searchQuery) ||
+                   post.content.toLowerCase().contains(_searchQuery);
+          }).toList();
 
     return AppScaffold(
       title: l10n.board,
@@ -84,7 +96,11 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
             currentFocus.unfocus();
           }
           if (_showSearch) {
-            setState(() => _showSearch = false);
+            setState(() {
+              _showSearch = false;
+              _searchQuery = '';
+              _searchController.clear();
+            });
           }
         },
         child: Stack(
@@ -112,12 +128,12 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                         : const SizedBox.shrink(),
                   ),
 
-                  // === FILTER PILLS ===
-                  _buildFilterPills(context, isDark, l10n),
-
                   // === BOARD CHIPS (smaller, subtle) ===
                   if (boards.isNotEmpty)
                     _buildBoardChips(context, boards, selectedBoard, isDark),
+
+                  // === FILTER PILLS ===
+                  _buildFilterPills(context, isDark, l10n),
 
                   // === ERROR MESSAGE ===
                   if (error != null) _buildErrorMessage(context, error),
@@ -129,9 +145,9 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                           ref.read(boardProvider.notifier).refreshPosts(),
                       child: isLoading && posts.isEmpty
                           ? _buildSkeletonList()
-                          : sortedPosts.isEmpty
+                          : filteredPosts.isEmpty
                               ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
-                              : _buildPostsList(context, sortedPosts, isDark, l10n),
+                              : _buildPostsList(context, filteredPosts, isDark, l10n),
                     ),
                   ),
                 ],
@@ -340,7 +356,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
             ),
           ),
           onChanged: (value) {
-            // TODO: Implement search
+            setState(() => _searchQuery = value.trim().toLowerCase());
           },
         ),
       ),
@@ -523,7 +539,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      (post.isWriterAnonymous
+                      (post.isWriterAnonymous || _isAnonymousBoard()
                               ? '?'
                               : post.writerNickname.isNotEmpty
                                   ? post.writerNickname[0].toUpperCase()
@@ -537,7 +553,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  post.isWriterAnonymous ? l10n.anonymous : post.writerNickname,
+                  (post.isWriterAnonymous || _isAnonymousBoard()) ? l10n.anonymous : post.writerNickname,
                   style: AppTypography.caption.copyWith(
                     color: isDark ? Colors.white60 : AppColors.textSecondary,
                     fontWeight: FontWeight.w500,

@@ -151,6 +151,32 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     );
   }
 
+  Future<void> searchFriends(String query) async {
+    // Ensure friends are loaded first
+    if (state.friends.isEmpty) {
+      AppLogger.d('🔍 [SearchFriends] Friends not loaded, loading now...');
+      await loadFriends();
+    }
+
+    // If query is empty, show all friends
+    if (query.isEmpty) {
+      state = state.copyWith(searchResults: state.friends);
+      return;
+    }
+
+    // Filter friends by nickname (case-insensitive contains)
+    final queryLower = query.toLowerCase();
+    final filteredFriends = state.friends
+        .where((friend) => friend.nickname.toLowerCase().contains(queryLower))
+        .toList();
+
+    AppLogger.d(
+      '🔍 [SearchFriends] Query: "$query", Found: ${filteredFriends.length}/${state.friends.length}',
+    );
+
+    state = state.copyWith(searchResults: filteredFriends);
+  }
+
   Future<bool> sendRequest(String userId) async {
     final result = await _repository.requestFriend(userId);
     return result.fold((failure) {

@@ -68,53 +68,65 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
   }
 
   Future<void> markAsRead(int notificationId) async {
+    // Optimistic update
+    final previousNotifications = state.notifications;
+    final updatedNotifications = state.notifications.map((n) {
+      if (n.id == notificationId) {
+        return AppNotification(
+          id: n.id,
+          actorId: n.actorId,
+          actorNickname: n.actorNickname,
+          type: n.type,
+          postId: n.postId,
+          commentId: n.commentId,
+          chatRoomId: n.chatRoomId,
+          message: n.message,
+          isRead: true,
+          createdAt: n.createdAt,
+        );
+      }
+      return n;
+    }).toList();
+    state = state.copyWith(notifications: updatedNotifications);
+
+    // Sync with server
     final result = await _repository.markAsRead(notificationId);
     result.fold(
-      (error) => null, // Silently fail, can show toast if needed
-      (_) {
-        final updatedNotifications = state.notifications.map((n) {
-          if (n.id == notificationId) {
-            return AppNotification(
-              id: n.id,
-              actorId: n.actorId,
-              actorNickname: n.actorNickname,
-              type: n.type,
-              postId: n.postId,
-              commentId: n.commentId,
-              chatRoomId: n.chatRoomId,
-              message: n.message,
-              isRead: true,
-              createdAt: n.createdAt,
-            );
-          }
-          return n;
-        }).toList();
-        state = state.copyWith(notifications: updatedNotifications);
+      (error) {
+        // Revert on failure
+        state = state.copyWith(notifications: previousNotifications);
       },
+      (_) => null,
     );
   }
 
   Future<void> markAllAsRead() async {
+    // Optimistic update - immediately mark all as read in UI
+    final previousNotifications = state.notifications;
+    final updatedNotifications = state.notifications.map((n) {
+      return AppNotification(
+        id: n.id,
+        actorId: n.actorId,
+        actorNickname: n.actorNickname,
+        type: n.type,
+        postId: n.postId,
+        commentId: n.commentId,
+        chatRoomId: n.chatRoomId,
+        message: n.message,
+        isRead: true,
+        createdAt: n.createdAt,
+      );
+    }).toList();
+    state = state.copyWith(notifications: updatedNotifications);
+
+    // Then sync with server
     final result = await _repository.markAllAsRead();
     result.fold(
-      (error) => null,
-      (_) {
-        final updatedNotifications = state.notifications.map((n) {
-          return AppNotification(
-            id: n.id,
-            actorId: n.actorId,
-            actorNickname: n.actorNickname,
-            type: n.type,
-            postId: n.postId,
-            commentId: n.commentId,
-            chatRoomId: n.chatRoomId,
-            message: n.message,
-            isRead: true,
-            createdAt: n.createdAt,
-          );
-        }).toList();
-        state = state.copyWith(notifications: updatedNotifications);
+      (error) {
+        // Revert on failure
+        state = state.copyWith(notifications: previousNotifications);
       },
+      (_) => null, // Already updated
     );
   }
 

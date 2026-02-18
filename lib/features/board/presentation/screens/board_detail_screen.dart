@@ -9,8 +9,10 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
+import '../../domain/entities/board.entity.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../providers/post_detail_provider.dart';
+import '../providers/board_provider.dart';
 import '../../../../shared/components/report_dialog.dart';
 import '../../../../core/extensions/context_extensions.dart';
 
@@ -28,6 +30,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   final FocusNode _commentFocusNode = FocusNode();
   bool _isAnonymous = false;
   int? _replyingToId;
+
+  bool _isAnonymousBoard() {
+    final boardState = ref.read(boardProvider);
+    return boardState.selectedBoard?.type == BoardType.anonymous;
+  }
 
   @override
   void dispose() {
@@ -150,7 +157,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 _buildCommentsSection(context, comments, postId),
               ],
             ),
@@ -363,7 +370,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
         if (comments.isEmpty)
           Container(
             padding: const EdgeInsets.symmetric(vertical: 40),
@@ -457,7 +464,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   /// 게시글 작성자 아바타 - 익명은 DiceBear, 일반은 이니셜
   Widget _buildPostAuthorAvatar(PostEntity post) {
-    if (post.isWriterAnonymous) {
+    if (post.isWriterAnonymous || _isAnonymousBoard()) {
       // 익명 유저: DiceBear 아바타 (게시글 ID를 seed로 사용)
       final avatar = DiceBearBuilder(
         seed: 'post-anon-${post.id}',
@@ -518,7 +525,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                post.isWriterAnonymous ? l10n.anonymous : post.writerNickname,
+                (post.isWriterAnonymous || _isAnonymousBoard()) ? l10n.anonymous : post.writerNickname,
                 style: AppTypography.body1.copyWith(
                   fontWeight: FontWeight.w700,
                   color: context.textPrimaryColor,
@@ -784,35 +791,37 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
+            GestureDetector(
+              onTap: () => setState(() => _isAnonymous = !_isAnonymous),
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _isAnonymous
+                            ? AppColors.primary
+                            : context.borderColor,
+                        width: 2,
+                      ),
                       color: _isAnonymous
                           ? AppColors.primary
-                          : context.borderColor,
-                      width: 2,
+                          : Colors.transparent,
                     ),
-                    color: _isAnonymous
-                        ? AppColors.primary
-                        : Colors.transparent,
+                    child: _isAnonymous
+                        ? const Icon(
+                            Icons.check,
+                            size: 12,
+                            color: AppColors.textOnPrimary,
+                          )
+                        : null,
                   ),
-                  child: _isAnonymous
-                      ? const Icon(
-                          Icons.check,
-                          size: 12,
-                          color: AppColors.textOnPrimary,
-                        )
-                      : null,
-                ),
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap: () => setState(() => _isAnonymous = !_isAnonymous),
-                  child: Text(
+                  const SizedBox(width: 8),
+                  Text(
                     l10n.postAnonymously,
                     style: AppTypography.body2.copyWith(
                       color: _isAnonymous
@@ -823,8 +832,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                           : FontWeight.w400,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             Row(

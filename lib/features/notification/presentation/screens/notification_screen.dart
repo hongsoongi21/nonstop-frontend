@@ -272,21 +272,19 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
       case NotificationType.newReply:
       case NotificationType.commentLike:
         if (notification.postId != null) {
-          GoRouter.of(context).push(Routes.boardDetailPath(notification.postId.toString()));
+          context.go(Routes.boardDetailPath(notification.postId.toString()));
         }
         break;
       case NotificationType.chatMessage:
         if (notification.chatRoomId != null) {
-          GoRouter.of(context).push(Routes.chatRoomPath(notification.chatRoomId.toString()));
+          context.go(Routes.chatRoomPath(notification.chatRoomId.toString()));
         }
         break;
       case NotificationType.friendRequest:
       case NotificationType.friendAccept:
-        // Navigate to friends page for friend-related notifications
-        GoRouter.of(context).push(Routes.friends);
+        context.go(Routes.friends);
         break;
       case NotificationType.announcement:
-        // Show announcement detail or do nothing
         break;
     }
   }

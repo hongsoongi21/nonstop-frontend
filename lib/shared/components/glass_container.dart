@@ -37,15 +37,20 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final borderR = borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg);
-    final effectiveBorderColor = borderColor ?? AppColors.border.withValues(alpha: 0.5);
+    final effectiveBorderColor = borderColor ??
+        (isDark ? AppColors.borderDark : AppColors.border).withValues(alpha: 0.5);
+    final effectiveColor = isDark && color == Colors.white
+        ? AppColors.surfaceDark
+        : color;
 
     Widget container = Container(
       width: width,
       height: height,
       margin: margin,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: opacity),
+        color: effectiveColor.withValues(alpha: opacity),
         borderRadius: borderR,
         border: showBorder
             ? Border.all(
@@ -53,20 +58,22 @@ class GlassContainer extends StatelessWidget {
                 width: AppSpacing.borderWidth,
               )
             : null,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 16,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: AppColors.shadowMedium,
-            blurRadius: 32,
-            offset: const Offset(0, 8),
-            spreadRadius: 0,
-          ),
-        ],
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: AppColors.shadow,
+                  blurRadius: 16,
+                  offset: const Offset(0, 2),
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: AppColors.shadowMedium,
+                  blurRadius: 32,
+                  offset: const Offset(0, 8),
+                  spreadRadius: 0,
+                ),
+              ],
       ),
       child: ClipRRect(
         borderRadius: borderR,
@@ -77,10 +84,15 @@ class GlassContainer extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0.1),
-                  Colors.white.withValues(alpha: 0.05),
-                ],
+                colors: isDark
+                    ? [
+                        Colors.white.withValues(alpha: 0.03),
+                        Colors.white.withValues(alpha: 0.01),
+                      ]
+                    : [
+                        Colors.white.withValues(alpha: 0.1),
+                        Colors.white.withValues(alpha: 0.05),
+                      ],
               ),
             ),
             child: Padding(

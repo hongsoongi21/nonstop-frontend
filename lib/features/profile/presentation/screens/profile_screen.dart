@@ -10,6 +10,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
 import '../../../../shared/components/main_scaffold.dart' as scaffold;
+import '../../../auth/presentation/providers/university_provider.dart';
 import '../../../board/domain/entities/post.entity.dart';
 import '../../domain/entities/user_profile.dart';
 import '../providers/profile_provider.dart';
@@ -90,6 +91,20 @@ class ProfileScreen extends ConsumerWidget {
   ) {
     final notifier = ref.read(profileProvider.notifier);
     final myPostsAsync = ref.watch(myPostsProvider);
+    final selectedFilterIndex = ref.watch(profileFilterIndexProvider);
+    final universitiesAsync = ref.watch(universitiesProvider);
+    final universityName = universitiesAsync.whenOrNull(
+      data: (universities) {
+        if (profile.universityId == null) return null;
+        final uniId = int.tryParse(profile.universityId.toString());
+        if (uniId == null) return null;
+        try {
+          return universities.firstWhere((u) => u.id == uniId).name;
+        } catch (_) {
+          return null;
+        }
+      },
+    );
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -103,6 +118,7 @@ class ProfileScreen extends ConsumerWidget {
             // Profile Header - Hero section
             ProfileHeader(
               profile: profile,
+              universityName: universityName,
               onNotificationPressed: () => _showNotifications(context),
               onSettingsPressed: () => _showSettings(context),
             ),
@@ -118,55 +134,80 @@ class ProfileScreen extends ConsumerWidget {
 
             // Filter Tabs
             ProfileFilterTabs(
-              onTabChanged: (index) => _onFilterTabChanged(context, index),
+              onTabChanged: (index) => _onFilterTabChanged(context, ref, index),
             ),
 
             SizedBox(height: AppSpacing.xs),
 
-            // Posts List
-            myPostsAsync.when(
-              loading: () => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(32),
-                  child: AppLoadingIndicator(),
+            // Content based on selected tab
+            if (selectedFilterIndex == 0)
+              // Posts Tab
+              myPostsAsync.when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: AppLoadingIndicator(),
+                  ),
                 ),
-              ),
-              error: (error, stack) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Text(
-                    AppLocalizations.of(context)!.postsLoadError,
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: context.textSecondaryColor,
+                error: (error, stack) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      AppLocalizations.of(context)!.postsLoadError,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: context.textSecondaryColor,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              data: (posts) => posts.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Text(
-                          AppLocalizations.of(context)!.noPostsYet,
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: context.textSecondaryColor,
+                data: (posts) => posts.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Text(
+                            AppLocalizations.of(context)!.noPostsYet,
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: context.textSecondaryColor,
+                            ),
                           ),
                         ),
+                      )
+                    : Column(
+                        children: posts.map((post) => ProfilePostCard(
+                          post: ProfilePost(
+                            title: post.title,
+                            preview: post.content,
+                            views: post.viewCount,
+                            likes: post.likeCount,
+                            comments: post.commentCount,
+                          ),
+                          onTap: () => _onRealPostTapped(context, post),
+                        )).toList(),
                       ),
-                    )
-                  : Column(
-                      children: posts.map((post) => ProfilePostCard(
-                        post: ProfilePost(
-                          title: post.title,
-                          preview: post.content,
-                          views: post.viewCount,
-                          likes: post.likeCount,
-                          comments: post.commentCount,
+              )
+            else
+              // Comments Tab - Coming Soon
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(48),
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.chat_bubble_outline,
+                        size: 48,
+                        color: context.textTertiaryColor,
+                      ),
+                      SizedBox(height: AppSpacing.md),
+                      Text(
+                        AppLocalizations.of(context)!.comments,
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: context.textSecondaryColor,
                         ),
-                        onTap: () => _onRealPostTapped(context, post),
-                      )).toList(),
-                    ),
-            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
             // Bottom padding
             SizedBox(height: AppSpacing.xxxl),
@@ -188,12 +229,8 @@ class ProfileScreen extends ConsumerWidget {
     GoRouter.of(context).push(Routes.editProfile);
   }
 
-  void _onFilterTabChanged(BuildContext context, int index) {
-    final l10n = AppLocalizations.of(context)!;
-    final filters = [l10n.allPosts, l10n.comments, l10n.bookmarks, l10n.favorites];
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${l10n.filterPrefix}${filters[index]}')),
-    );
+  void _onFilterTabChanged(BuildContext context, WidgetRef ref, int index) {
+    ref.read(profileFilterIndexProvider.notifier).state = index;
   }
 
   void _onPostTapped(BuildContext context, ProfilePost post) {
@@ -204,6 +241,6 @@ class ProfileScreen extends ConsumerWidget {
 
   void _onRealPostTapped(BuildContext context, PostEntity post) {
     // Navigate to post detail screen
-    GoRouter.of(context).push('/board/post/${post.id}');
+    context.go(Routes.boardDetailPath(post.id.toString()));
   }
 }
