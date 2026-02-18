@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/supabase/supabase_provider.dart';
+import '../../../../core/utils/date_utils.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/user.dart';
 import '../dto/auth_response_dto.dart';
@@ -662,10 +663,10 @@ class AuthApiImpl implements AuthApi {
       preferredLanguage: data['preferred_language'] as String?,
       isUniversityVerified: data['is_verified'] as bool? ?? false,
       createdAt: data['created_at'] != null
-          ? DateTime.parse(data['created_at'] as String)
+          ? parseUtcDateTime(data['created_at'] as String)
           : null,
       updatedAt: data['updated_at'] != null
-          ? DateTime.parse(data['updated_at'] as String)
+          ? parseUtcDateTime(data['updated_at'] as String)
           : null,
     );
   }

@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:nonstop/core/errors/exceptions.dart';
+import 'package:nonstop/core/utils/date_utils.dart';
 import '../dto/profile_stats_dto.dart';
 import '../dto/user_profile_dto.dart';
 import '../dto/user_settings_dto.dart';
@@ -61,10 +62,10 @@ class ProfileApiImpl implements ProfileApi {
         showPhone: false,
         showGpa: false,
         createdAt: data['created_at'] != null
-            ? DateTime.parse(data['created_at'] as String)
+            ? parseUtcDateTime(data['created_at'] as String)
             : null,
         updatedAt: data['updated_at'] != null
-            ? DateTime.parse(data['updated_at'] as String)
+            ? parseUtcDateTime(data['updated_at'] as String)
             : null,
       );
 

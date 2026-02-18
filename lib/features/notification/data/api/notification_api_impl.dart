@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/exceptions.dart';
+import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/app_notification.dart';
 import 'notification_api.dart';
 
@@ -45,7 +46,7 @@ class NotificationApiImpl implements NotificationApi {
           message: map['message'] as String? ?? '',
           isRead: map['is_read'] as bool? ?? false,
           createdAt: map['created_at'] != null
-              ? DateTime.parse(map['created_at'] as String)
+              ? parseUtcDateTime(map['created_at'] as String)
               : DateTime.now(),
         );
       }).toList();

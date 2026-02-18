@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nonstop/core/errors/failures.dart';
+import 'package:nonstop/core/utils/date_utils.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
@@ -120,7 +121,7 @@ class ChatRepositoryImpl implements ChatRepository {
       content: data['content'] as String? ?? '',
       type: type,
       sentAt: data['sent_at'] != null
-          ? DateTime.parse(data['sent_at'] as String)
+          ? parseUtcDateTime(data['sent_at'] as String)
           : DateTime.now(),
       clientMessageId: data['client_message_id']?.toString(),
     );

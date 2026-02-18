@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:nonstop/core/utils/date_utils.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 
@@ -135,7 +136,7 @@ class ChatApiImpl implements ChatApi {
         lastMessage: lastMessage,
         memberIds: membersByRoom[roomId],
         updatedAt: room['updated_at'] != null
-            ? DateTime.parse(room['updated_at'] as String)
+            ? parseUtcDateTime(room['updated_at'] as String)
             : null,
       );
     }).toList()
@@ -175,7 +176,7 @@ class ChatApiImpl implements ChatApi {
       content: data['content'] as String? ?? '',
       type: type,
       sentAt: data['sent_at'] != null
-          ? DateTime.parse(data['sent_at'] as String)
+          ? parseUtcDateTime(data['sent_at'] as String)
           : DateTime.now(),
       clientMessageId: data['client_message_id']?.toString(),
     );
@@ -242,7 +243,7 @@ class ChatApiImpl implements ChatApi {
         name: room['name'] as String?,
         unreadCount: 0,
         memberIds: [currentUserId, targetUserId],
-        updatedAt: DateTime.parse(room['updated_at'] as String),
+        updatedAt: parseUtcDateTime(room['updated_at'] as String),
       );
     }
 
@@ -278,7 +279,7 @@ class ChatApiImpl implements ChatApi {
       type: ChatRoomType.oneToOne,
       unreadCount: 0,
       memberIds: [currentUserId, targetUserId],
-      updatedAt: DateTime.parse(roomData['updated_at'] as String),
+      updatedAt: parseUtcDateTime(roomData['updated_at'] as String),
     );
   }
 
@@ -316,7 +317,7 @@ class ChatApiImpl implements ChatApi {
       name: name,
       unreadCount: 0,
       memberIds: [currentUserId, ...userIds.where((uid) => uid != currentUserId)],
-      updatedAt: DateTime.parse(roomData['updated_at'] as String),
+      updatedAt: parseUtcDateTime(roomData['updated_at'] as String),
     );
   }
 

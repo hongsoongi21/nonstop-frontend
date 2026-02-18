@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/supabase/supabase_provider.dart';
+import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/board.entity.dart';
 import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
@@ -70,7 +71,7 @@ class BoardRemoteDataSource {
               description: json['description'] as String?,
               type: _parseBoardType(json['type'] as String),
               isSecret: json['is_secret'] as bool? ?? false,
-              createdAt: DateTime.parse(json['created_at'] as String),
+              createdAt: parseUtcDateTime(json['created_at'] as String),
             ))
         .toList();
   }
@@ -97,7 +98,7 @@ class BoardRemoteDataSource {
       description: result['description'] as String?,
       type: _parseBoardType(result['type'] as String),
       isSecret: result['is_secret'] as bool? ?? false,
-      createdAt: DateTime.parse(result['created_at'] as String),
+      createdAt: parseUtcDateTime(result['created_at'] as String),
     );
   }
 
@@ -529,9 +530,9 @@ class BoardRemoteDataSource {
       isSecret: data['is_secret'] as bool? ?? false,
       isLiked: isLiked,
       isMine: isMine,
-      createdAt: DateTime.parse(data['created_at'] as String),
+      createdAt: parseUtcDateTime(data['created_at'] as String),
       updatedAt: data['updated_at'] != null
-          ? DateTime.parse(data['updated_at'] as String)
+          ? parseUtcDateTime(data['updated_at'] as String)
           : null,
     );
   }
@@ -560,9 +561,9 @@ class BoardRemoteDataSource {
       likeCount: likeCount,
       isLiked: isLiked,
       isMine: isMine,
-      createdAt: DateTime.parse(data['created_at'] as String),
+      createdAt: parseUtcDateTime(data['created_at'] as String),
       updatedAt: data['updated_at'] != null
-          ? DateTime.parse(data['updated_at'] as String)
+          ? parseUtcDateTime(data['updated_at'] as String)
           : null,
     );
   }
