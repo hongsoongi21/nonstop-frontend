@@ -96,7 +96,7 @@ class WeeklyTimeGrid extends StatelessWidget {
               // Time column
               Column(
                 children: timeSlots.map((hour) {
-                  final displayHour = hour > 12 ? hour - 12 : hour;
+                  final displayHour = hour;
                   return Container(
                     height: 60,
                     width: 48,

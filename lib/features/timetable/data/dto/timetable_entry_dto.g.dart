@@ -18,6 +18,7 @@ _$TimetableEntryDtoImpl _$$TimetableEntryDtoImplFromJson(
   endTime: json['endTime'] as String,
   place: json['place'] as String?,
   color: json['color'] as String?,
+  credit: (json['credit'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$TimetableEntryDtoImplToJson(
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$TimetableEntryDtoImplToJson(
   'endTime': instance.endTime,
   'place': instance.place,
   'color': instance.color,
+  'credit': instance.credit,
 };
 
 _$TimetableEntryRequestDtoImpl _$$TimetableEntryRequestDtoImplFromJson(
@@ -44,6 +46,7 @@ _$TimetableEntryRequestDtoImpl _$$TimetableEntryRequestDtoImplFromJson(
   endTime: json['endTime'] as String,
   place: json['place'] as String?,
   color: json['color'] as String?,
+  credit: (json['credit'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$TimetableEntryRequestDtoImplToJson(
@@ -56,4 +59,5 @@ Map<String, dynamic> _$$TimetableEntryRequestDtoImplToJson(
   'endTime': instance.endTime,
   'place': instance.place,
   'color': instance.color,
+  'credit': instance.credit,
 };

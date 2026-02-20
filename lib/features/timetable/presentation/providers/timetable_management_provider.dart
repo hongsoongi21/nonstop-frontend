@@ -124,9 +124,16 @@ class TimetableManagementNotifier
     );
 
     if (result.isLeft()) {
+      final errorMsg = result.fold(
+        (failure) => failure.maybeWhen(
+          server: (message, _, __) => message,
+          orElse: () => 'Failed to create timetable',
+        ),
+        (_) => 'Failed to create timetable',
+      );
       state = state.copyWith(
         isLoading: false,
-        error: 'Failed to create timetable',
+        error: errorMsg,
       );
       return false;
     }
@@ -248,6 +255,7 @@ class TimetableManagementNotifier
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   }) async {
     debugPrint('[TIMETABLE] addEntry called. selectedTimetableId: ${state.selectedTimetableId}');
 
@@ -280,6 +288,7 @@ class TimetableManagementNotifier
       endTime: endTime,
       place: place,
       color: color,
+      credit: credit,
     );
 
     return result.fold(
@@ -308,6 +317,7 @@ class TimetableManagementNotifier
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
@@ -320,6 +330,7 @@ class TimetableManagementNotifier
       endTime: endTime,
       place: place,
       color: color,
+      credit: credit,
     );
 
     return result.fold(

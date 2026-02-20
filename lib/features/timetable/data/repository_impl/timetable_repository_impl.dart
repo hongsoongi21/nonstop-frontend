@@ -101,6 +101,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   }) async {
     final request = TimetableEntryRequestDto(
       subjectName: subjectName,
@@ -110,6 +111,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
       endTime: endTime,
       place: place,
       color: color,
+      credit: credit,
     );
     final result = await _api.addEntry(timetableId, request);
     return result.match(
@@ -128,6 +130,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   }) async {
     final request = TimetableEntryRequestDto(
       subjectName: subjectName,
@@ -137,6 +140,7 @@ class TimetableRepositoryImpl implements TimetableRepository {
       endTime: endTime,
       place: place,
       color: color,
+      credit: credit,
     );
     final result = await _api.updateEntry(entryId, request);
     return result.match(

@@ -186,27 +186,64 @@ class ProfileScreen extends ConsumerWidget {
                       ),
               )
             else
-              // Comments Tab - Coming Soon
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(48),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.chat_bubble_outline,
-                        size: 48,
-                        color: context.textTertiaryColor,
-                      ),
-                      SizedBox(height: AppSpacing.md),
-                      Text(
-                        AppLocalizations.of(context)!.comments,
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: context.textSecondaryColor,
-                        ),
-                      ),
-                    ],
+              // Comments Tab
+              ref.watch(myCommentsProvider).when(
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: AppLoadingIndicator(),
                   ),
                 ),
+                error: (error, stack) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      AppLocalizations.of(context)!.errorOccurred,
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: context.textSecondaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                data: (comments) => comments.isEmpty
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(48),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline,
+                                size: 48,
+                                color: context.textTertiaryColor,
+                              ),
+                              SizedBox(height: AppSpacing.md),
+                              Text(
+                                AppLocalizations.of(context)!.comments,
+                                style: AppTypography.bodyMedium.copyWith(
+                                  color: context.textSecondaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Column(
+                        children: comments.map((comment) {
+                          final postData = comment['posts'] as Map<String, dynamic>?;
+                          final postTitle = postData?['title'] as String? ?? '';
+                          final postId = postData?['id'];
+                          final content = comment['content'] as String? ?? '';
+                          final createdAt = comment['created_at'] as String?;
+
+                          return _buildCommentCard(
+                            context,
+                            content: content,
+                            postTitle: postTitle,
+                            postId: postId,
+                            createdAt: createdAt,
+                          );
+                        }).toList(),
+                      ),
               ),
 
             // Bottom padding
@@ -242,5 +279,94 @@ class ProfileScreen extends ConsumerWidget {
   void _onRealPostTapped(BuildContext context, PostEntity post) {
     // Navigate to post detail screen
     context.go(Routes.boardDetailPath(post.id.toString()));
+  }
+
+  Widget _buildCommentCard(
+    BuildContext context, {
+    required String content,
+    required String postTitle,
+    dynamic postId,
+    String? createdAt,
+  }) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: postId != null
+            ? () => context.go(Routes.boardDetailPath(postId.toString()))
+            : null,
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (postTitle.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.article_outlined,
+                      size: 14,
+                      color: context.textTertiaryColor,
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        postTitle,
+                        style: AppTypography.caption.copyWith(
+                          color: context.textSecondaryColor,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: AppSpacing.xs),
+              ],
+              Text(
+                content,
+                style: AppTypography.body2.copyWith(
+                  color: context.textPrimaryColor,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (createdAt != null) ...[
+                SizedBox(height: AppSpacing.xs),
+                Text(
+                  _formatCommentDate(createdAt),
+                  style: AppTypography.caption.copyWith(
+                    color: context.textTertiaryColor,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatCommentDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      final now = DateTime.now();
+      final diff = now.difference(date);
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      if (diff.inDays < 7) return '${diff.inDays}d ago';
+      return '${date.month}/${date.day}';
+    } catch (_) {
+      return '';
+    }
   }
 }

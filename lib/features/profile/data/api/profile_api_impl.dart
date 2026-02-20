@@ -95,6 +95,26 @@ class ProfileApiImpl implements ProfileApi {
       if (profile.universityId != null) {
         updateData['university_id'] = profile.universityId;
       }
+      if (profile.major != null && profile.major!.isNotEmpty) {
+        // Look up or create major in majors table
+        final existingMajor = await _supabase
+            .from('majors')
+            .select('id')
+            .eq('name', profile.major!)
+            .maybeSingle();
+
+        if (existingMajor != null) {
+          updateData['major_id'] = existingMajor['id'];
+        } else {
+          // Create new major entry
+          final newMajor = await _supabase
+              .from('majors')
+              .insert({'name': profile.major!})
+              .select('id')
+              .single();
+          updateData['major_id'] = newMajor['id'];
+        }
+      }
 
       if (updateData.isNotEmpty) {
         updateData['updated_at'] = DateTime.now().toIso8601String();

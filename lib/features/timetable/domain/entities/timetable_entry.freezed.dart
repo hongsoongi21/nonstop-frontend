@@ -26,6 +26,7 @@ mixin _$TimetableEntry {
   String get endTime => throw _privateConstructorUsedError; // Format: "HH:mm"
   String? get place => throw _privateConstructorUsedError;
   String? get color => throw _privateConstructorUsedError;
+  int? get credit => throw _privateConstructorUsedError;
 
   /// Create a copy of TimetableEntry
   /// with the given fields replaced by the non-null parameter values.
@@ -51,6 +52,7 @@ abstract class $TimetableEntryCopyWith<$Res> {
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -78,6 +80,7 @@ class _$TimetableEntryCopyWithImpl<$Res, $Val extends TimetableEntry>
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -117,6 +120,10 @@ class _$TimetableEntryCopyWithImpl<$Res, $Val extends TimetableEntry>
                 ? _value.color
                 : color // ignore: cast_nullable_to_non_nullable
                       as String?,
+            credit: freezed == credit
+                ? _value.credit
+                : credit // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -142,6 +149,7 @@ abstract class _$$TimetableEntryImplCopyWith<$Res>
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -168,6 +176,7 @@ class __$$TimetableEntryImplCopyWithImpl<$Res>
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _$TimetableEntryImpl(
@@ -207,6 +216,10 @@ class __$$TimetableEntryImplCopyWithImpl<$Res>
             ? _value.color
             : color // ignore: cast_nullable_to_non_nullable
                   as String?,
+        credit: freezed == credit
+            ? _value.credit
+            : credit // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -225,6 +238,7 @@ class _$TimetableEntryImpl extends _TimetableEntry {
     required this.endTime,
     this.place,
     this.color,
+    this.credit,
   }) : super._();
 
   @override
@@ -247,10 +261,12 @@ class _$TimetableEntryImpl extends _TimetableEntry {
   final String? place;
   @override
   final String? color;
+  @override
+  final int? credit;
 
   @override
   String toString() {
-    return 'TimetableEntry(id: $id, timetableId: $timetableId, subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color)';
+    return 'TimetableEntry(id: $id, timetableId: $timetableId, subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color, credit: $credit)';
   }
 
   @override
@@ -271,7 +287,8 @@ class _$TimetableEntryImpl extends _TimetableEntry {
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.place, place) || other.place == place) &&
-            (identical(other.color, color) || other.color == color));
+            (identical(other.color, color) || other.color == color) &&
+            (identical(other.credit, credit) || other.credit == credit));
   }
 
   @override
@@ -286,6 +303,7 @@ class _$TimetableEntryImpl extends _TimetableEntry {
     endTime,
     place,
     color,
+    credit,
   );
 
   /// Create a copy of TimetableEntry
@@ -311,6 +329,7 @@ abstract class _TimetableEntry extends TimetableEntry {
     required final String endTime,
     final String? place,
     final String? color,
+    final int? credit,
   }) = _$TimetableEntryImpl;
   const _TimetableEntry._() : super._();
 
@@ -332,6 +351,8 @@ abstract class _TimetableEntry extends TimetableEntry {
   String? get place;
   @override
   String? get color;
+  @override
+  int? get credit;
 
   /// Create a copy of TimetableEntry
   /// with the given fields replaced by the non-null parameter values.

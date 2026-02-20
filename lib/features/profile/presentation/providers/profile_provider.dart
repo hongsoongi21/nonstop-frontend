@@ -489,3 +489,29 @@ final myPostsProvider = FutureProvider<List<PostEntity>>((ref) async {
 
 /// Provider for tracking selected filter tab on profile screen
 final profileFilterIndexProvider = StateProvider<int>((ref) => 0);
+
+/// Provider for current user's comments
+final myCommentsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  final supabase = ref.read(supabaseClientProvider);
+  final authUser = supabase.auth.currentUser;
+  if (authUser == null) return [];
+
+  // Get user's internal ID
+  final userData = await supabase
+      .from('users')
+      .select('id')
+      .eq('auth_id', authUser.id)
+      .single();
+  final userId = userData['id'] as int;
+
+  // Fetch comments with post title for context
+  final data = await supabase
+      .from('comments')
+      .select('id, content, created_at, post_id, posts(id, title)')
+      .eq('user_id', userId)
+      .isFilter('deleted_at', null)
+      .order('created_at', ascending: false)
+      .limit(20);
+
+  return (data as List).cast<Map<String, dynamic>>();
+});

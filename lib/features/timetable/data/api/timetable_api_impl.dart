@@ -147,7 +147,7 @@ class TimetableApiImpl implements TimetableApi {
               .single();
           final universityId = user['university_id'] as int?;
           if (universityId == null) {
-            return left(const ApiException('University not set'));
+            return left(const ApiException('Please set your university in Profile settings to create a timetable'));
           }
 
           final newSemester = await _supabase
@@ -254,6 +254,7 @@ class TimetableApiImpl implements TimetableApi {
             'end_time': request.endTime,
             'place': request.place,
             'color': request.color,
+            'credit': request.credit,
           })
           .select()
           .single();
@@ -280,6 +281,7 @@ class TimetableApiImpl implements TimetableApi {
             'end_time': request.endTime,
             'place': request.place,
             'color': request.color,
+            'credit': request.credit,
           })
           .eq('id', entryId)
           .select()
@@ -420,6 +422,7 @@ class TimetableApiImpl implements TimetableApi {
       endTime: formatTime(json['end_time'] as String?),
       place: json['place'] as String?,
       color: json['color'] as String?,
+      credit: json['credit'] as int?,
     );
   }
 }

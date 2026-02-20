@@ -31,6 +31,7 @@ class _AddTimetableEntryScreenState
   final _subjectController = TextEditingController();
   final _professorController = TextEditingController();
   final _placeController = TextEditingController();
+  final _creditController = TextEditingController();
 
   DayOfWeek _selectedDay = DayOfWeek.monday;
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
@@ -47,6 +48,7 @@ class _AddTimetableEntryScreenState
       _subjectController.text = entry.subjectName;
       _professorController.text = entry.professor ?? '';
       _placeController.text = entry.place ?? '';
+      _creditController.text = entry.credit?.toString() ?? '';
       _selectedDay = entry.dayOfWeek;
 
       final startParts = entry.startTime.split(':');
@@ -78,6 +80,7 @@ class _AddTimetableEntryScreenState
     _subjectController.dispose();
     _professorController.dispose();
     _placeController.dispose();
+    _creditController.dispose();
     super.dispose();
   }
 
@@ -147,6 +150,9 @@ class _AddTimetableEntryScreenState
               ? null
               : _placeController.text.trim(),
           color: '#${_selectedColor.value.toRadixString(16).substring(2)}',
+          credit: _creditController.text.trim().isEmpty
+              ? null
+              : int.tryParse(_creditController.text.trim()),
         );
       } else {
         success = await notifier.addEntry(
@@ -161,6 +167,9 @@ class _AddTimetableEntryScreenState
               ? null
               : _placeController.text.trim(),
           color: '#${_selectedColor.value.toRadixString(16).substring(2)}',
+          credit: _creditController.text.trim().isEmpty
+              ? null
+              : int.tryParse(_creditController.text.trim()),
         );
       }
 
@@ -284,6 +293,13 @@ class _AddTimetableEntryScreenState
                       label: l10n.room,
                       hint: l10n.roomHint,
                       icon: Icons.location_on_outlined,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _buildTextField(
+                      controller: _creditController,
+                      label: 'Credits',
+                      hint: '3',
+                      icon: Icons.school_outlined,
                     ),
                   ],
                 ),

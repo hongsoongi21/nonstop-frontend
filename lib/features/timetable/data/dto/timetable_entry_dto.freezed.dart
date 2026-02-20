@@ -33,6 +33,7 @@ mixin _$TimetableEntryDto {
       throw _privateConstructorUsedError; // Format: "HH:mm" (e.g., "10:30")
   String? get place => throw _privateConstructorUsedError;
   String? get color => throw _privateConstructorUsedError;
+  int? get credit => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableEntryDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -62,6 +63,7 @@ abstract class $TimetableEntryDtoCopyWith<$Res> {
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -89,6 +91,7 @@ class _$TimetableEntryDtoCopyWithImpl<$Res, $Val extends TimetableEntryDto>
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -128,6 +131,10 @@ class _$TimetableEntryDtoCopyWithImpl<$Res, $Val extends TimetableEntryDto>
                 ? _value.color
                 : color // ignore: cast_nullable_to_non_nullable
                       as String?,
+            credit: freezed == credit
+                ? _value.credit
+                : credit // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -154,6 +161,7 @@ abstract class _$$TimetableEntryDtoImplCopyWith<$Res>
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -180,6 +188,7 @@ class __$$TimetableEntryDtoImplCopyWithImpl<$Res>
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _$TimetableEntryDtoImpl(
@@ -219,6 +228,10 @@ class __$$TimetableEntryDtoImplCopyWithImpl<$Res>
             ? _value.color
             : color // ignore: cast_nullable_to_non_nullable
                   as String?,
+        credit: freezed == credit
+            ? _value.credit
+            : credit // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -238,6 +251,7 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
     required this.endTime,
     this.place,
     this.color,
+    this.credit,
   });
 
   factory _$TimetableEntryDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -264,10 +278,12 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
   final String? place;
   @override
   final String? color;
+  @override
+  final int? credit;
 
   @override
   String toString() {
-    return 'TimetableEntryDto(id: $id, timetableId: $timetableId, subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color)';
+    return 'TimetableEntryDto(id: $id, timetableId: $timetableId, subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color, credit: $credit)';
   }
 
   @override
@@ -288,7 +304,8 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.place, place) || other.place == place) &&
-            (identical(other.color, color) || other.color == color));
+            (identical(other.color, color) || other.color == color) &&
+            (identical(other.credit, credit) || other.credit == credit));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -304,6 +321,7 @@ class _$TimetableEntryDtoImpl implements _TimetableEntryDto {
     endTime,
     place,
     color,
+    credit,
   );
 
   /// Create a copy of TimetableEntryDto
@@ -335,6 +353,7 @@ abstract class _TimetableEntryDto implements TimetableEntryDto {
     required final String endTime,
     final String? place,
     final String? color,
+    final int? credit,
   }) = _$TimetableEntryDtoImpl;
 
   factory _TimetableEntryDto.fromJson(Map<String, dynamic> json) =
@@ -359,6 +378,8 @@ abstract class _TimetableEntryDto implements TimetableEntryDto {
   String? get place;
   @override
   String? get color;
+  @override
+  int? get credit;
 
   /// Create a copy of TimetableEntryDto
   /// with the given fields replaced by the non-null parameter values.
@@ -384,6 +405,7 @@ mixin _$TimetableEntryRequestDto {
   String get endTime => throw _privateConstructorUsedError; // Format: "HH:mm"
   String? get place => throw _privateConstructorUsedError;
   String? get color => throw _privateConstructorUsedError;
+  int? get credit => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableEntryRequestDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -411,6 +433,7 @@ abstract class $TimetableEntryRequestDtoCopyWith<$Res> {
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -439,6 +462,7 @@ class _$TimetableEntryRequestDtoCopyWithImpl<
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -470,6 +494,10 @@ class _$TimetableEntryRequestDtoCopyWithImpl<
                 ? _value.color
                 : color // ignore: cast_nullable_to_non_nullable
                       as String?,
+            credit: freezed == credit
+                ? _value.credit
+                : credit // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -494,6 +522,7 @@ abstract class _$$TimetableEntryRequestDtoImplCopyWith<$Res>
     String endTime,
     String? place,
     String? color,
+    int? credit,
   });
 }
 
@@ -522,6 +551,7 @@ class __$$TimetableEntryRequestDtoImplCopyWithImpl<$Res>
     Object? endTime = null,
     Object? place = freezed,
     Object? color = freezed,
+    Object? credit = freezed,
   }) {
     return _then(
       _$TimetableEntryRequestDtoImpl(
@@ -553,6 +583,10 @@ class __$$TimetableEntryRequestDtoImplCopyWithImpl<$Res>
             ? _value.color
             : color // ignore: cast_nullable_to_non_nullable
                   as String?,
+        credit: freezed == credit
+            ? _value.credit
+            : credit // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -570,6 +604,7 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
     required this.endTime,
     this.place,
     this.color,
+    this.credit,
   });
 
   factory _$TimetableEntryRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -592,10 +627,12 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
   final String? place;
   @override
   final String? color;
+  @override
+  final int? credit;
 
   @override
   String toString() {
-    return 'TimetableEntryRequestDto(subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color)';
+    return 'TimetableEntryRequestDto(subjectName: $subjectName, professor: $professor, dayOfWeek: $dayOfWeek, startTime: $startTime, endTime: $endTime, place: $place, color: $color, credit: $credit)';
   }
 
   @override
@@ -613,7 +650,8 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
                 other.startTime == startTime) &&
             (identical(other.endTime, endTime) || other.endTime == endTime) &&
             (identical(other.place, place) || other.place == place) &&
-            (identical(other.color, color) || other.color == color));
+            (identical(other.color, color) || other.color == color) &&
+            (identical(other.credit, credit) || other.credit == credit));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -627,6 +665,7 @@ class _$TimetableEntryRequestDtoImpl implements _TimetableEntryRequestDto {
     endTime,
     place,
     color,
+    credit,
   );
 
   /// Create a copy of TimetableEntryRequestDto
@@ -656,6 +695,7 @@ abstract class _TimetableEntryRequestDto implements TimetableEntryRequestDto {
     required final String endTime,
     final String? place,
     final String? color,
+    final int? credit,
   }) = _$TimetableEntryRequestDtoImpl;
 
   factory _TimetableEntryRequestDto.fromJson(Map<String, dynamic> json) =
@@ -676,6 +716,8 @@ abstract class _TimetableEntryRequestDto implements TimetableEntryRequestDto {
   String? get place;
   @override
   String? get color;
+  @override
+  int? get credit;
 
   /// Create a copy of TimetableEntryRequestDto
   /// with the given fields replaced by the non-null parameter values.

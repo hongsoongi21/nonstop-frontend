@@ -62,6 +62,7 @@ class TimetableEntryDto with _$TimetableEntryDto {
     required String endTime, // Format: "HH:mm" (e.g., "10:30")
     String? place,
     String? color,
+    int? credit,
   }) = _TimetableEntryDto;
 
   factory TimetableEntryDto.fromJson(Map<String, dynamic> json) =>
@@ -83,6 +84,7 @@ class TimetableEntryRequestDto with _$TimetableEntryRequestDto {
     required String endTime, // Format: "HH:mm"
     String? place,
     String? color,
+    int? credit,
   }) = _TimetableEntryRequestDto;
 
   factory TimetableEntryRequestDto.fromJson(Map<String, dynamic> json) =>

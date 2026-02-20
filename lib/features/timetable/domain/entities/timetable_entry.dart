@@ -19,6 +19,7 @@ class TimetableEntry with _$TimetableEntry {
     required String endTime, // Format: "HH:mm"
     String? place,
     String? color,
+    int? credit,
   }) = _TimetableEntry;
 
   const TimetableEntry._();
@@ -35,6 +36,7 @@ class TimetableEntry with _$TimetableEntry {
       endTime: dto.endTime,
       place: dto.place,
       color: dto.color,
+      credit: dto.credit,
     );
   }
 

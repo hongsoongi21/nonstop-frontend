@@ -38,6 +38,7 @@ abstract class TimetableRepository {
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   });
   Future<Either<Failure, TimetableEntry>> updateEntry({
     required int entryId,
@@ -48,6 +49,7 @@ abstract class TimetableRepository {
     required String endTime,
     String? place,
     String? color,
+    int? credit,
   });
   Future<Either<Failure, Unit>> deleteEntry(int entryId);
 

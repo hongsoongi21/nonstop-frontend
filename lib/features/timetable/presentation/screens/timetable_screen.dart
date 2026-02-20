@@ -43,7 +43,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     // Find current semester name (if any) or generic date
     final semesterName = currentTimetable != null
         ? '${currentTimetable.year} - ${currentTimetable.semesterType.displayName(context)}'
-        : l10n.loading;
+        : '';
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -147,31 +147,13 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                               width: 1,
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                onPressed: () => notifier.initializeTimetable(),
-                                icon: Icon(
-                                  Icons.refresh_rounded,
-                                  color: AppColors.primary,
-                                ),
-                                tooltip: l10n.refresh,
-                              ),
-                              Container(
-                                width: 1,
-                                height: 24,
-                                color: context.borderColor,
-                              ),
-                              IconButton(
-                                onPressed: () => _showSettings(context, ref),
-                                icon: Icon(
-                                  Icons.settings_outlined,
-                                  color: AppColors.primary,
-                                ),
-                                tooltip: l10n.settings,
-                              ),
-                            ],
+                          child: IconButton(
+                            onPressed: () => notifier.initializeTimetable(),
+                            icon: Icon(
+                              Icons.refresh_rounded,
+                              color: AppColors.primary,
+                            ),
+                            tooltip: l10n.refresh,
                           ),
                         ),
                       ],
@@ -395,10 +377,6 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
   void _showCreateEventDialog(BuildContext context, WidgetRef ref) {
     GoRouter.of(context).push(Routes.timetableCreate);
-  }
-
-  void _showSettings(BuildContext context, WidgetRef ref) {
-    GoRouter.of(context).go(Routes.settings);
   }
 
   void _showTimetableSwitcher(BuildContext context, WidgetRef ref) {
