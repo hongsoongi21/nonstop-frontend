@@ -164,7 +164,8 @@ final routerProvider = Provider<GoRouter>((ref) {
                       final roomId =
                           int.tryParse(state.pathParameters['roomId'] ?? '') ??
                           0;
-                      return ChatRoomScreen(roomId: roomId);
+                      final roomName = state.extra as String?;
+                      return ChatRoomScreen(roomId: roomId, roomName: roomName);
                     },
                   ),
                 ],

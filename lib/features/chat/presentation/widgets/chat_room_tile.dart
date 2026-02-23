@@ -32,7 +32,7 @@ class ChatRoomTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}'),
+        onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}', extra: room.name),
         splashColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)
             .withValues(alpha: 0.08),
         highlightColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)

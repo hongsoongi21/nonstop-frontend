@@ -297,9 +297,10 @@ class _AddTimetableEntryScreenState
                     const SizedBox(height: AppSpacing.md),
                     _buildTextField(
                       controller: _creditController,
-                      label: 'Credits',
+                      label: l10n.credits,
                       hint: '3',
                       icon: Icons.school_outlined,
+                      keyboardType: TextInputType.number,
                     ),
                   ],
                 ),
@@ -703,6 +704,7 @@ class _AddTimetableEntryScreenState
     required String hint,
     required IconData icon,
     String? Function(String?)? validator,
+    TextInputType? keyboardType,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -716,6 +718,7 @@ class _AddTimetableEntryScreenState
       child: TextFormField(
         controller: controller,
         validator: validator,
+        keyboardType: keyboardType,
         style: AppTypography.body1.copyWith(
           fontWeight: FontWeight.w600,
         ),

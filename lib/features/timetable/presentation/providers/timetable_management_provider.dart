@@ -227,18 +227,18 @@ class TimetableManagementNotifier
         return false;
       },
       (_) {
+        final wasSelected = state.selectedTimetableId == timetableId;
         final updatedList = state.myTimetables
             .where((t) => t.id != timetableId)
             .toList();
         state = state.copyWith(
           isLoading: false,
           myTimetables: updatedList,
-          clearSelectedTimetable: state.selectedTimetableId == timetableId,
+          clearSelectedTimetable: wasSelected,
         );
 
         // Auto-select first timetable if we deleted the selected one
-        if (state.selectedTimetableId == timetableId &&
-            updatedList.isNotEmpty) {
+        if (wasSelected && updatedList.isNotEmpty) {
           selectTimetable(updatedList.first.id);
         }
         return true;
@@ -464,7 +464,9 @@ class TimetableManagementNotifier
     }
 
     debugPrint('[TIMETABLE] initializeTimetable finished. selectedTimetableId: ${state.selectedTimetableId}');
-    state = state.copyWith(isLoading: false);
+    if (state.isLoading) {
+      state = state.copyWith(isLoading: false);
+    }
   }
 }
 

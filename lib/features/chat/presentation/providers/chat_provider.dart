@@ -161,9 +161,13 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   ChatRoomNotifier(this._repository, this._ref, this.roomId)
       : super(ChatRoomState()) {
-    loadHistory();
+    _initialize();
     subscribe();
     _subscribeToReadReceipts();
+  }
+
+  Future<void> _initialize() async {
+    await loadHistory();
     markMessagesAsRead();
   }
 

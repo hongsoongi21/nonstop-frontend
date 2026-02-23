@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/supabase/supabase_provider.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart'
-    show currentUserProvider;
+    show currentUserProvider, authProvider;
 import 'package:nonstop/features/board/data/repositories/board_repository_impl.dart';
 import 'package:nonstop/features/board/domain/entities/post.entity.dart';
 import 'package:nonstop/features/board/presentation/providers/board_provider.dart';
@@ -182,6 +182,14 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         final newDisplayName = profile.displayName;
         if (oldDisplayName != null && newDisplayName != null && oldDisplayName != newDisplayName) {
           _ref.read(boardProvider.notifier).updateMyPostsNickname(newDisplayName);
+        }
+
+        // Update auth state if university changed
+        final oldUniversityId = state.profile?.universityId;
+        final newUniversityId = profile.universityId;
+        if (oldUniversityId != newUniversityId) {
+          final newUniIdInt = int.tryParse(newUniversityId ?? '');
+          _ref.read(authProvider.notifier).updateUniversityId(newUniIdInt);
         }
 
         state = state.copyWith(

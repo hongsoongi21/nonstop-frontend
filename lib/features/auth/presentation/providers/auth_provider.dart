@@ -383,6 +383,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(clearPendingOAuthSignup: true);
   }
 
+  /// 프로필에서 대학교 변경 시 사용자 상태 업데이트
+  void updateUniversityId(int? universityId) {
+    if (state.user == null) return;
+    state = state.copyWith(user: state.user!.copyWith(universityId: universityId));
+  }
+
   /// 로그아웃을 수행하고 모든 인증 상태를 초기화합니다.
   Future<void> signOut() async {
     state = state.copyWith(isLoading: true);

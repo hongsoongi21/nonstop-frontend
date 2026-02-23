@@ -5,6 +5,7 @@ import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../data/repositories/board_repository_impl.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/domain/entities/user.dart';
 import 'post_detail_provider.dart';
 
 /// State for board interactions
@@ -58,6 +59,12 @@ class BoardNotifier extends StateNotifier<BoardState> {
 
   BoardNotifier(this._ref) : super(const BoardState()) {
     initialize();
+    // Listen for user university changes and re-initialize the community list
+    _ref.listen<User?>(currentUserProvider, (previous, next) {
+      if (previous?.universityId != next?.universityId) {
+        initialize();
+      }
+    });
   }
 
   Future<void> initialize() async {
