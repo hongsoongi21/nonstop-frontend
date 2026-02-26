@@ -85,10 +85,19 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
       ),
       (room) {
         createdRoom = room;
-        state = ChatListState(
-          isLoading: false,
-          rooms: [room, ...state.rooms],
-        );
+        final alreadyExists = state.rooms.any((r) => r.id == room.id);
+        if (alreadyExists) {
+          // Room already in list - no need to add duplicate
+          state = ChatListState(
+            isLoading: false,
+            rooms: state.rooms,
+          );
+        } else {
+          state = ChatListState(
+            isLoading: false,
+            rooms: [room, ...state.rooms],
+          );
+        }
       },
     );
     return createdRoom;
@@ -240,6 +249,9 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
     state = state.copyWith(
       messages: [message, ...state.messages],
     );
+
+    // Mark as read since user is currently viewing this room
+    markMessagesAsRead();
   }
 
   Future<void> sendMessage(
@@ -408,6 +420,8 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   void dispose() {
     _subscription?.cancel();
     _readReceiptSubscription?.cancel();
+    // Refresh chat list to update unread counts when leaving the room
+    _ref.read(chatListProvider.notifier).loadRooms();
     super.dispose();
   }
 }

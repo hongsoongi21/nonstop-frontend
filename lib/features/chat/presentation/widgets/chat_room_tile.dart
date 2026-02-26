@@ -5,6 +5,7 @@ import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 
 /// Clean, minimal chat room tile following Swiss design principles
@@ -172,7 +173,9 @@ class ChatRoomTile extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final displayName = room.name ?? 'Chat';
     final hasLastMessage = room.lastMessage != null;
-    final lastMessageContent = hasLastMessage ? room.lastMessage!.content : '';
+    final lastMessageContent = hasLastMessage
+        ? _formatLastMessage(room.lastMessage!)
+        : '';
 
     final textPrimaryColor = isDarkMode ? AppColors.textPrimaryDark : AppColors.textPrimary;
     final textSecondaryColor = isDarkMode ? AppColors.textSecondaryDark : AppColors.textSecondary;
@@ -277,6 +280,22 @@ class ChatRoomTile extends StatelessWidget {
         ],
       ],
     );
+  }
+
+  /// Format last message content for display in room list
+  String _formatLastMessage(ChatMessage message) {
+    switch (message.type) {
+      case MessageType.image:
+        return '📷 사진';
+      case MessageType.systemInvite:
+        return '${message.content}님이 초대되었습니다';
+      case MessageType.systemLeave:
+        return '${message.content}님이 나갔습니다';
+      case MessageType.systemKick:
+        return '${message.content}님이 강퇴되었습니다';
+      default:
+        return message.content;
+    }
   }
 
   /// Format timestamp as "Xm ago", "Xh ago", "Xd ago"

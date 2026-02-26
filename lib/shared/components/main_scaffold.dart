@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/constants/routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/app_navigation.dart';
@@ -34,12 +32,7 @@ class MainScaffold extends ConsumerWidget {
       },
       child: Scaffold(
         extendBody: true,
-        body: Stack(
-          children: [
-            AppBackground(child: navigationShell),
-            if (kDebugMode) const _DebugPortal(),
-          ],
-        ),
+        body: AppBackground(child: navigationShell),
         bottomNavigationBar: AppBottomNavigationBar(
           navigationShell: navigationShell,
         ),
@@ -60,112 +53,6 @@ class MainScaffold extends ConsumerWidget {
         floatingActionButtonLocation: isAdmin
             ? FloatingActionButtonLocation.startFloat
             : null,
-      ),
-    );
-  }
-}
-
-/// A floating debug button visible only in debug mode
-class _DebugPortal extends ConsumerWidget {
-  const _DebugPortal();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Positioned(
-      right: 16,
-      bottom: 100, // Above bottom nav
-      child: FloatingActionButton.small(
-        heroTag: 'debug_portal',
-        onPressed: () => _showDebugMenu(context, ref),
-        backgroundColor: Colors.red.withValues(alpha: 0.8),
-        child: const Icon(Icons.bug_report, color: Colors.white),
-      ),
-    );
-  }
-
-  void _showDebugMenu(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Developer Menu',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.table_chart),
-              title: const Text('Timetable Integration Test'),
-              subtitle: const Text(
-                'Test real backend connection for schedules',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                context.push(Routes.timetableTest);
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Standard Logout'),
-              subtitle: const Text('App session only'),
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(authProvider.notifier).signOut();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.no_accounts),
-              title: const Text('Full Logout'),
-              subtitle: const Text('App + Google sign-out'),
-              onTap: () {
-                Navigator.pop(context);
-                ref.read(authProvider.notifier).signOutFull();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_forever, color: Colors.red),
-              title: const Text(
-                'Delete Account',
-                style: TextStyle(color: Colors.red),
-              ),
-              subtitle: const Text('Soft delete on backend'),
-              onTap: () {
-                Navigator.pop(context);
-                _showDeleteConfirmDialog(context, ref);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showDeleteConfirmDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Account?'),
-        content: const Text(
-          'This will soft-delete your user record on the backend.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ref.read(authProvider.notifier).deleteAccount();
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
       ),
     );
   }

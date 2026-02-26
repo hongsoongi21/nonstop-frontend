@@ -268,21 +268,21 @@ function jsonResponse(body: Record<string, unknown>, status = 200): Response {
 function buildNotificationMessage(type: string, actorNickname: string): string {
   switch (type) {
     case "POST_LIKE":
-      return `${actorNickname} liked your post`;
+      return `${actorNickname}님이 게시글에 좋아요를 눌렀습니다`;
     case "COMMENT_LIKE":
-      return `${actorNickname} liked your comment`;
+      return `${actorNickname}님이 댓글에 좋아요를 눌렀습니다`;
     case "NEW_COMMENT":
-      return `${actorNickname} commented on your post`;
+      return `${actorNickname}님이 게시글에 댓글을 남겼습니다`;
     case "NEW_REPLY":
-      return `${actorNickname} replied to your comment`;
+      return `${actorNickname}님이 댓글에 답글을 남겼습니다`;
     case "FRIEND_REQUEST":
-      return `${actorNickname} sent you a friend request`;
+      return `${actorNickname}님이 친구를 추가하였습니다`;
     case "FRIEND_ACCEPT":
-      return `${actorNickname} accepted your friend request`;
+      return `${actorNickname}님이 친구 요청을 수락하였습니다`;
     case "CHAT_MESSAGE":
-      return `${actorNickname} sent you a message`;
+      return `${actorNickname}님이 메시지를 보냈습니다`;
     default:
-      return "You have a new notification";
+      return "새로운 알림이 있습니다";
   }
 }
 
@@ -290,15 +290,15 @@ function buildFcmTitle(type: string): string {
   switch (type) {
     case "POST_LIKE":
     case "COMMENT_LIKE":
-      return "New Like";
+      return "좋아요";
     case "NEW_COMMENT":
     case "NEW_REPLY":
-      return "New Comment";
+      return "댓글";
     case "FRIEND_REQUEST":
     case "FRIEND_ACCEPT":
-      return "Friends";
+      return "친구";
     case "CHAT_MESSAGE":
-      return "New Message";
+      return "새 메시지";
     default:
       return "Nonstop";
   }

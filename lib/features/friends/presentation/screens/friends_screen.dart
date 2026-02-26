@@ -324,10 +324,19 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     }
 
     if (friends.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.people_outline,
-        title: l10n.noFriendsYet,
-        subtitle: l10n.addFriendsViaSearch,
+      return AppRefreshIndicator(
+        onRefresh: () =>
+            ref.read(friendManagementProvider.notifier).loadFriends(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            _buildEmptyState(
+              icon: Icons.people_outline,
+              title: l10n.noFriendsYet,
+              subtitle: l10n.addFriendsViaSearch,
+            ),
+          ],
+        ),
       );
     }
 
@@ -423,10 +432,19 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     }
 
     if (requests.isEmpty) {
-      return _buildEmptyState(
-        icon: Icons.mail_outline,
-        title: l10n.noRequests,
-        subtitle: l10n.requestsAppearHere,
+      return AppRefreshIndicator(
+        onRefresh: () =>
+            ref.read(friendManagementProvider.notifier).loadRequests(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            _buildEmptyState(
+              icon: Icons.mail_outline,
+              title: l10n.noRequests,
+              subtitle: l10n.requestsAppearHere,
+            ),
+          ],
+        ),
       );
     }
 
@@ -638,9 +656,6 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Widget _buildFriendCard({required Friend friend, Widget? trailing, VoidCallback? onTap}) {
-    // Determine if friend is online (based on status if available)
-    final bool isOnline = friend.status == FriendStatus.accepted;
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -697,31 +712,6 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         ),
                 ),
               ),
-              // Online status indicator
-              if (isOnline)
-                Positioned(
-                  right: 2,
-                  bottom: 2,
-                  child: Container(
-                    width: 14,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: AppColors.chatOnline,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: context.surfaceColor,
-                        width: 2.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.chatOnline.withValues(alpha: 0.4),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
             ],
           ),
           const SizedBox(width: AppSpacing.md),
@@ -759,18 +749,6 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                         ),
                       ),
                     ],
-                  )
-                else
-                  Text(
-                    isOnline ? AppLocalizations.of(context)!.online : AppLocalizations.of(context)!.offline,
-                    style: AppTypography.caption.copyWith(
-                      color: isOnline
-                          ? AppColors.chatOnline
-                          : context.textSecondaryColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.1,
-                    ),
                   ),
               ],
             ),

@@ -117,6 +117,30 @@ class ChatApiImpl implements ChatApi {
       membersByRoom[roomId]!.add(m['user_id'] as int);
     }
 
+    // Resolve nicknames for 1:1 rooms
+    final oneToOneRooms = (rooms as List).where((r) => r['type'] == 'ONE_TO_ONE').toList();
+    final otherUserIds = <int>{};
+    for (final room in oneToOneRooms) {
+      final roomId = room['id'] as int;
+      final members = membersByRoom[roomId] ?? [];
+      for (final memberId in members) {
+        if (memberId != currentUserId) {
+          otherUserIds.add(memberId);
+        }
+      }
+    }
+
+    final nicknameMap = <int, String>{};
+    if (otherUserIds.isNotEmpty) {
+      final users = await _supabase
+          .from('users')
+          .select('id, nickname')
+          .inFilter('id', otherUserIds.toList());
+      for (final u in users as List) {
+        nicknameMap[u['id'] as int] = u['nickname'] as String? ?? '';
+      }
+    }
+
     // Build ChatRoom entities
     return (rooms as List).map((room) {
       final roomId = room['id'] as int;
@@ -131,7 +155,7 @@ class ChatApiImpl implements ChatApi {
         type: room['type'] == 'GROUP'
             ? ChatRoomType.group
             : ChatRoomType.oneToOne,
-        name: room['name'] as String?,
+        name: room['name'] as String? ?? _resolveOneToOneName(room, membersByRoom, nicknameMap, currentUserId),
         unreadCount: unreadCounts[roomId] ?? 0,
         lastMessage: lastMessage,
         memberIds: membersByRoom[roomId],
@@ -147,6 +171,23 @@ class ChatApiImpl implements ChatApi {
             b.lastMessage?.sentAt ?? b.updatedAt ?? DateTime(2000);
         return bTime.compareTo(aTime);
       });
+  }
+
+  String? _resolveOneToOneName(
+    Map<String, dynamic> room,
+    Map<int, List<int>> membersByRoom,
+    Map<int, String> nicknameMap,
+    int currentUserId,
+  ) {
+    if (room['type'] != 'ONE_TO_ONE') return null;
+    final roomId = room['id'] as int;
+    final members = membersByRoom[roomId] ?? [];
+    for (final memberId in members) {
+      if (memberId != currentUserId) {
+        return nicknameMap[memberId];
+      }
+    }
+    return null;
   }
 
   ChatMessage _mapToMessage(Map<String, dynamic> data) {
@@ -199,6 +240,14 @@ class ChatApiImpl implements ChatApi {
   Future<ChatRoom> createOneToOneRoom(int targetUserId) async {
     final currentUserId = await _getCurrentUserId();
 
+    // Fetch target user's nickname for room display
+    final targetUser = await _supabase
+        .from('users')
+        .select('nickname')
+        .eq('id', targetUserId)
+        .maybeSingle();
+    final targetNickname = targetUser?['nickname'] as String?;
+
     // Check if 1:1 room already exists (LEAST/GREATEST ensures order)
     final userA =
         currentUserId < targetUserId ? currentUserId : targetUserId;
@@ -240,7 +289,7 @@ class ChatApiImpl implements ChatApi {
       return ChatRoom(
         id: roomId,
         type: ChatRoomType.oneToOne,
-        name: room['name'] as String?,
+        name: room['name'] as String? ?? targetNickname,
         unreadCount: 0,
         memberIds: [currentUserId, targetUserId],
         updatedAt: parseUtcDateTime(room['updated_at'] as String),
@@ -277,6 +326,7 @@ class ChatApiImpl implements ChatApi {
     return ChatRoom(
       id: roomId,
       type: ChatRoomType.oneToOne,
+      name: targetNickname,
       unreadCount: 0,
       memberIds: [currentUserId, targetUserId],
       updatedAt: parseUtcDateTime(roomData['updated_at'] as String),

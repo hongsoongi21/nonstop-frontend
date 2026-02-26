@@ -47,23 +47,6 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      floatingActionButton: entries.isNotEmpty
-          ? FloatingActionButton.extended(
-              onPressed: state.isLoading
-                  ? null
-                  : () => _showCreateEventDialog(context, ref),
-              backgroundColor: AppColors.primary,
-              elevation: 8,
-              icon: Icon(Icons.add_rounded, color: Colors.white),
-              label: Text(
-                l10n.addCourse,
-                style: AppTypography.button.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            )
-          : null,
       body: Container(
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height,
@@ -261,12 +244,47 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                 ),
               ),
 
-              SizedBox(height: AppSpacing.md),
+              // Bottom section: Add Course button + GPA Calculator
+              Padding(
+                padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.md),
+                child: Column(
+                  children: [
+                    // Add course button (always visible when timetable exists)
+                    if (currentTimetable != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: state.isLoading
+                                ? null
+                                : () => _showCreateEventDialog(context, ref),
+                            icon: Icon(Icons.add_rounded, size: 20),
+                            label: Text(
+                              l10n.addCourse,
+                              style: AppTypography.button.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 4,
+                              shadowColor: AppColors.primary.withValues(alpha: 0.3),
+                            ),
+                          ),
+                        ),
+                      ),
 
-              // GPA Calculator section (like everytime app)
-              _buildGPACalculator(context, ref),
-
-              SizedBox(height: AppSpacing.md),
+                    // GPA Calculator card
+                    _buildGPACalculator(context, ref),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -279,97 +297,59 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
     final gpaState = ref.watch(gpaProvider);
     final hasCourses = gpaState.courses.isNotEmpty;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-      child: GestureDetector(
-        onTap: () => GoRouter.of(context).go(Routes.gpaCalculator),
-        child: Container(
-          padding: EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primaryDark,
-              ],
+    return GestureDetector(
+      onTap: () => GoRouter.of(context).go(Routes.gpaCalculator),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: context.surfaceColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: context.borderColor,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.calculate_outlined,
+              color: AppColors.primary,
+              size: 20,
             ),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.3),
-                offset: Offset(0, 4),
-                blurRadius: 16,
+            SizedBox(width: 10),
+            Text(
+              l10n.gpaCalculator,
+              style: AppTypography.body2.copyWith(
+                color: context.textSecondaryColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
               ),
-            ],
-          ),
-          child: Row(
-            children: [
+            ),
+            if (hasCourses) ...[
+              SizedBox(width: 8),
               Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: Icon(
-                  Icons.calculate_outlined,
-                  color: Colors.white,
-                  size: 28,
+                child: Text(
+                  gpaState.totalGpa.toStringAsFixed(2),
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 12,
+                  ),
                 ),
               ),
-              SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.gpaCalculator,
-                      style: AppTypography.titleMedium.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      hasCourses
-                          ? '${gpaState.totalGpa.toStringAsFixed(2)} • ${gpaState.totalCredits.toStringAsFixed(0)} ${l10n.credits}'
-                          : l10n.calculateAndTrack,
-                      style: AppTypography.caption.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (hasCourses)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    gpaState.totalGpa.toStringAsFixed(2),
-                    style: AppTypography.headline3.copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w900,
-                      fontFeatures: [FontFeature.tabularFigures()],
-                    ),
-                  ),
-                )
-              else
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  color: Colors.white,
-                  size: 24,
-                ),
             ],
-          ),
+            Spacer(),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: context.textSecondaryColor,
+              size: 20,
+            ),
+          ],
         ),
       ),
     );

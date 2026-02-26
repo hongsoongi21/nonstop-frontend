@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
@@ -303,6 +305,8 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildImageBubble() {
+    final bool isLocalFile = message.isSending && !message.content.startsWith('http');
+
     return Builder(
       builder: (context) {
         final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -315,7 +319,7 @@ class MessageBubble extends StatelessWidget {
         final shadowColor = isDarkMode ? Colors.black38 : AppColors.shadowMedium;
 
         return GestureDetector(
-          onTap: onImageTap,
+          onTap: isLocalFile ? null : onImageTap,
           child: Container(
             constraints: const BoxConstraints(
               maxWidth: 260,
@@ -338,131 +342,190 @@ class MessageBubble extends StatelessWidget {
               child: Stack(
                 fit: StackFit.passthrough,
                 children: [
-                  CachedNetworkImage(
-                    imageUrl: message.content,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            surfaceVariantColor,
-                            surfaceVariantColor.withValues(alpha: 0.7),
-                          ],
+                  if (isLocalFile)
+                    Image.file(
+                      File(message.content),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: surfaceVariantColor,
+                        child: Center(
+                          child: Icon(
+                            Icons.broken_image_rounded,
+                            size: 36,
+                            color: textSecondaryColor,
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 32,
-                              height: 32,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  isMe ? AppColors.primary : AppColors.tertiary,
+                    )
+                  else
+                    CachedNetworkImage(
+                      imageUrl: message.content,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              surfaceVariantColor,
+                              surfaceVariantColor.withValues(alpha: 0.7),
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 32,
+                                height: 32,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    isMe ? AppColors.primary : AppColors.tertiary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Loading image...',
-                              style: AppTypography.caption.copyWith(
-                                color: textSecondaryColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(height: 12),
+                              Text(
+                                'Loading image...',
+                                style: AppTypography.caption.copyWith(
+                                  color: textSecondaryColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.errorLight,
+                              AppColors.errorLight.withValues(alpha: 0.7),
+                            ],
+                          ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.8),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.broken_image_rounded,
+                                  size: 36,
+                                  color: AppColors.error,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Failed to load',
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.error,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    errorWidget: (context, url, error) => Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.errorLight,
-                            AppColors.errorLight.withValues(alpha: 0.7),
-                          ],
+                  // Upload progress overlay for local files
+                  if (isLocalFile)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.4),
+                        ),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const SizedBox(
+                                  width: 32,
+                                  height: 32,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.5,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '업로드 중...',
+                                  style: AppTypography.caption.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      child: Center(
-                        child: Column(
+                    ),
+                  // Tap overlay hint (only for loaded images)
+                  if (!isLocalFile)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.7),
+                              Colors.black.withValues(alpha: 0.3),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.8),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.broken_image_rounded,
-                                size: 36,
-                                color: AppColors.error,
-                              ),
+                            Icon(
+                              Icons.fullscreen_rounded,
+                              size: 16,
+                              color: Colors.white.withValues(alpha: 0.95),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(width: 6),
                             Text(
-                              'Failed to load',
+                              'Tap to view full size',
                               style: AppTypography.caption.copyWith(
-                                color: AppColors.error,
+                                color: Colors.white.withValues(alpha: 0.95),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
+                                letterSpacing: 0.2,
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  // Tap overlay hint
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withValues(alpha: 0.7),
-                            Colors.black.withValues(alpha: 0.3),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.fullscreen_rounded,
-                            size: 16,
-                            color: Colors.white.withValues(alpha: 0.95),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            'Tap to view full size',
-                            style: AppTypography.caption.copyWith(
-                              color: Colors.white.withValues(alpha: 0.95),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
