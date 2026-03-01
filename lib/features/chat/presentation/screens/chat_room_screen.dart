@@ -352,6 +352,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
           },
           child: Column(
             children: [
+              if (showDateSeparator) DateSeparator(date: message.sentAt),
               MessageBubble(
                 message: message,
                 isMe: isMe,
@@ -370,7 +371,6 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                     ? () => _handleReportMessage(context, message.id)
                     : null,
               ),
-              if (showDateSeparator) DateSeparator(date: message.sentAt),
             ],
           ),
         );

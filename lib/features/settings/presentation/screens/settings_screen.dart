@@ -6,6 +6,7 @@ import '../../../../core/constants/routes.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/providers/package_info_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -251,7 +252,7 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.xl),
 
           // Version Info
-          _buildVersionInfo(),
+          _buildVersionInfo(ref),
 
           SizedBox(height: AppSpacing.xl),
         ],
@@ -848,7 +849,14 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildVersionInfo() {
+  Widget _buildVersionInfo(WidgetRef ref) {
+    final packageInfoAsync = ref.watch(packageInfoProvider);
+    final versionText = packageInfoAsync.when(
+      data: (info) => 'Version ${info.version} (${info.buildNumber})',
+      loading: () => 'Version ...',
+      error: (_, __) => 'Version -',
+    );
+
     return Builder(
       builder: (context) => Center(
         child: Column(
@@ -876,7 +884,7 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                   SizedBox(width: AppSpacing.xs),
                   Text(
-                    'Version 1.0.0',
+                    versionText,
                     style: AppTypography.caption.copyWith(
                       color: context.textSecondaryColor,
                       fontWeight: FontWeight.w500,
@@ -887,7 +895,7 @@ class SettingsScreen extends ConsumerWidget {
             ),
             SizedBox(height: AppSpacing.sm),
             Text(
-              '© 2024 NonStop',
+              '© 2026 NonStop',
               style: AppTypography.captionSmall.copyWith(
                 color: context.textTertiaryColor,
               ),

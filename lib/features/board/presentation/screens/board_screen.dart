@@ -204,30 +204,36 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         children: [
           // Community selector (compact)
           if (communities.isNotEmpty)
-            GestureDetector(
-              onTap: () => _showCommunityPicker(
-                context,
-                communities,
-                selectedCommunity,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    selectedCommunity?.name ?? l10n.selectCommunity,
-                    style: AppTypography.headline3.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : AppColors.textPrimary,
-                      letterSpacing: -0.5,
+            Flexible(
+              child: GestureDetector(
+                onTap: () => _showCommunityPicker(
+                  context,
+                  communities,
+                  selectedCommunity,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        selectedCommunity?.name ?? l10n.selectCommunity,
+                        style: AppTypography.headline3.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : AppColors.textPrimary,
+                          letterSpacing: -0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: isDark ? Colors.white54 : AppColors.textSecondary,
-                    size: 24,
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: isDark ? Colors.white54 : AppColors.textSecondary,
+                      size: 24,
+                    ),
+                  ],
+                ),
               ),
             )
           else

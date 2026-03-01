@@ -570,7 +570,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                   child: Text(isEditing ? 'Save Changes' : 'Add Course'),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 20),
             ],
           ),
         ),
