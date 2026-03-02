@@ -78,7 +78,7 @@ class ChatApiMock implements ChatApi {
   }
 
   @override
-  Future<ChatRoom> createOneToOneRoom(int targetUserId) async {
+  Future<ChatRoom> createOneToOneRoom(int targetUserId, {String? roomName}) async {
     await Future.delayed(const Duration(seconds: 1));
     return ChatRoom(
       id: 99,

@@ -8,7 +8,7 @@ import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 abstract class ChatApi {
   Future<List<ChatRoom>> getMyChatRooms();
   Future<List<ChatMessage>> getMessages(int roomId, int limit, int offset);
-  Future<ChatRoom> createOneToOneRoom(int targetUserId);
+  Future<ChatRoom> createOneToOneRoom(int targetUserId, {String? roomName});
   Future<ChatRoom> createGroupRoom(String name, List<int> userIds);
 
   Future<void> leaveRoom(int roomId);
@@ -237,7 +237,7 @@ class ChatApiImpl implements ChatApi {
   }
 
   @override
-  Future<ChatRoom> createOneToOneRoom(int targetUserId) async {
+  Future<ChatRoom> createOneToOneRoom(int targetUserId, {String? roomName}) async {
     final currentUserId = await _getCurrentUserId();
 
     // Fetch target user's nickname for room display
@@ -302,6 +302,7 @@ class ChatApiImpl implements ChatApi {
         .insert({
           'type': 'ONE_TO_ONE',
           'creator_id': currentUserId,
+          if (roomName != null) 'name': roomName,
         })
         .select()
         .single();
@@ -326,7 +327,7 @@ class ChatApiImpl implements ChatApi {
     return ChatRoom(
       id: roomId,
       type: ChatRoomType.oneToOne,
-      name: targetNickname,
+      name: roomName ?? targetNickname,
       unreadCount: 0,
       memberIds: [currentUserId, targetUserId],
       updatedAt: parseUtcDateTime(roomData['updated_at'] as String),

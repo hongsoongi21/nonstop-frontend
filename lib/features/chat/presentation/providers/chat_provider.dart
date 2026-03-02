@@ -74,8 +74,8 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     );
   }
 
-  Future<ChatRoom?> createOneToOneRoom(int targetUserId) async {
-    final result = await _repository.createOneToOneRoom(targetUserId);
+  Future<ChatRoom?> createOneToOneRoom(int targetUserId, {String? roomName}) async {
+    final result = await _repository.createOneToOneRoom(targetUserId, roomName: roomName);
     ChatRoom? createdRoom;
     result.fold(
       (failure) => state = ChatListState(

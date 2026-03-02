@@ -60,7 +60,7 @@ class ChatRoomTile extends StatelessWidget {
   Widget _buildAvatar(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final isGroup = room.type == ChatRoomType.group;
-    final displayName = room.name ?? 'Chat';
+    final displayName = room.name ?? '채팅';
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
 
     // Determine avatar image URL
@@ -171,7 +171,7 @@ class ChatRoomTile extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, bool hasUnread) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final displayName = room.name ?? 'Chat';
+    final displayName = room.name ?? '채팅';
     final hasLastMessage = room.lastMessage != null;
     final lastMessageContent = hasLastMessage
         ? _formatLastMessage(room.lastMessage!)
@@ -217,7 +217,7 @@ class ChatRoomTile extends StatelessWidget {
           )
         else
           Text(
-            'No messages yet',
+            '아직 메시지가 없습니다',
             style: AppTypography.body2.copyWith(
               color: textHintColor,
               fontSize: 14,

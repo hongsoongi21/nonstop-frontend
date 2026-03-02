@@ -177,9 +177,9 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<Either<Failure, ChatRoom>> createOneToOneRoom(
-      int targetUserId) async {
+      int targetUserId, {String? roomName}) async {
     try {
-      final result = await _api.createOneToOneRoom(targetUserId);
+      final result = await _api.createOneToOneRoom(targetUserId, roomName: roomName);
       return Right(result);
     } catch (e) {
       return Left(Failure.server(message: e.toString(), statusCode: 500));

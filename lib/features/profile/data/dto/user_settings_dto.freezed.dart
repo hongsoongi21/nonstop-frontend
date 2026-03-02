@@ -480,7 +480,7 @@ class _$UserSettingsDtoImpl extends _UserSettingsDto {
     this.enableSoundNotifications = false,
     this.allowFriendRequests = true,
     this.showOnlineStatus = true,
-    this.allowMessageRequests = false,
+    this.allowMessageRequests = true,
     this.showProfileToStrangers = true,
     this.themeMode = 'system',
     this.language = 'en',

@@ -480,7 +480,7 @@ class _$UserSettingsImpl extends _UserSettings {
     this.enableSoundNotifications = false,
     this.allowFriendRequests = true,
     this.showOnlineStatus = true,
-    this.allowMessageRequests = false,
+    this.allowMessageRequests = true,
     this.showProfileToStrangers = true,
     this.themeMode = AppThemeMode.system,
     this.language = 'en',

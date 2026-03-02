@@ -7,6 +7,7 @@ import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/core/widgets/app_loading_skeleton.dart';
 import 'package:nonstop/features/auth/presentation/providers/auth_provider.dart';
+import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
 import 'package:nonstop/features/chat/presentation/widgets/chat_room_tile.dart';
 import 'package:nonstop/features/chat/presentation/widgets/connection_status_bar.dart';
@@ -195,9 +196,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return _buildEmptyState(context, isDarkMode);
     }
 
+    final numberedRooms = _numberAnonymousRooms(state.rooms);
     final filteredRooms = _searchQuery.isEmpty
-        ? state.rooms
-        : state.rooms.where((room) {
+        ? numberedRooms
+        : numberedRooms.where((room) {
             final name = room.name?.toLowerCase() ?? '';
             final lastMsg = room.lastMessage?.content.toLowerCase() ?? '';
             return name.contains(_searchQuery) || lastMsg.contains(_searchQuery);
@@ -443,6 +445,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         },
       ),
     );
+  }
+
+  List<ChatRoom> _numberAnonymousRooms(List<ChatRoom> rooms) {
+    int anonymousCount = 0;
+    final result = <ChatRoom>[];
+    for (final room in rooms) {
+      if (room.name == '익명') {
+        anonymousCount++;
+        if (anonymousCount == 1) {
+          result.add(room);
+        } else {
+          result.add(ChatRoom(
+            id: room.id,
+            type: room.type,
+            name: '익명($anonymousCount)',
+            unreadCount: room.unreadCount,
+            lastMessage: room.lastMessage,
+            memberIds: room.memberIds,
+            updatedAt: room.updatedAt,
+            imageUrl: room.imageUrl,
+          ));
+        }
+      } else {
+        result.add(room);
+      }
+    }
+    return result;
   }
 
   void _showCreateChatSheet(BuildContext context) {

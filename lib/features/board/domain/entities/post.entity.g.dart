@@ -21,6 +21,8 @@ _$PostEntityImpl _$$PostEntityImplFromJson(Map<String, dynamic> json) =>
       isSecret: json['isSecret'] as bool? ?? false,
       isLiked: json['isLiked'] as bool? ?? false,
       isMine: json['isMine'] as bool? ?? false,
+      writerId: (json['writerId'] as num?)?.toInt(),
+      writerAuthId: json['writerAuthId'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
@@ -45,6 +47,8 @@ Map<String, dynamic> _$$PostEntityImplToJson(_$PostEntityImpl instance) =>
       'isSecret': instance.isSecret,
       'isLiked': instance.isLiked,
       'isMine': instance.isMine,
+      'writerId': instance.writerId,
+      'writerAuthId': instance.writerAuthId,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'imageUrls': instance.imageUrls,

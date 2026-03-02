@@ -20,7 +20,7 @@ _$UserSettingsDtoImpl _$$UserSettingsDtoImplFromJson(
   enableSoundNotifications: json['enableSoundNotifications'] as bool? ?? false,
   allowFriendRequests: json['allowFriendRequests'] as bool? ?? true,
   showOnlineStatus: json['showOnlineStatus'] as bool? ?? true,
-  allowMessageRequests: json['allowMessageRequests'] as bool? ?? false,
+  allowMessageRequests: json['allowMessageRequests'] as bool? ?? true,
   showProfileToStrangers: json['showProfileToStrangers'] as bool? ?? true,
   themeMode: json['themeMode'] as String? ?? 'system',
   language: json['language'] as String? ?? 'en',

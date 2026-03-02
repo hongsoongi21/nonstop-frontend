@@ -115,7 +115,7 @@ class BoardRemoteDataSource {
 
     final posts = await _supabase
         .from('posts')
-        .select('*, users!posts_user_id_fkey(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname, auth_id)')
         .eq('board_id', boardId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: false)
@@ -128,7 +128,7 @@ class BoardRemoteDataSource {
   Future<PostEntity> getPostDetail(int postId) async {
     final post = await _supabase
         .from('posts')
-        .select('*, users!posts_user_id_fkey(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname, auth_id)')
         .eq('id', postId)
         .single();
 
@@ -160,7 +160,7 @@ class BoardRemoteDataSource {
           'is_secret': isSecret,
           // TODO: imageUrls - add image_urls column and Supabase Storage integration
         })
-        .select('*, users!posts_user_id_fkey(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname, auth_id)')
         .single();
 
     return _mapToPost(
@@ -190,7 +190,7 @@ class BoardRemoteDataSource {
           'updated_at': DateTime.now().toIso8601String(),
         })
         .eq('id', postId)
-        .select('*, users!posts_user_id_fkey(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname, auth_id)')
         .single();
 
     final enriched = await _enrichPosts([result]);
@@ -422,7 +422,7 @@ class BoardRemoteDataSource {
 
     final posts = await _supabase
         .from('posts')
-        .select('*, users!posts_user_id_fkey(nickname)')
+        .select('*, users!posts_user_id_fkey(nickname, auth_id)')
         .eq('user_id', currentUserId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: false)
@@ -530,6 +530,8 @@ class BoardRemoteDataSource {
       isSecret: data['is_secret'] as bool? ?? false,
       isLiked: isLiked,
       isMine: isMine,
+      writerId: data['user_id'] as int?,
+      writerAuthId: userMap?['auth_id'] as String?,
       createdAt: parseUtcDateTime(data['created_at'] as String),
       updatedAt: data['updated_at'] != null
           ? parseUtcDateTime(data['updated_at'] as String)

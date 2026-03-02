@@ -85,20 +85,100 @@ class _AddTimetableEntryScreenState
   }
 
   Future<void> _selectTime(BuildContext context, bool isStart) async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: isStart ? _startTime : _endTime,
+      initialEntryMode: TimePickerEntryMode.input,
       builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: context.textPrimaryColor,
-            ),
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            alwaysUse24HourFormat: true,
           ),
-          child: child!,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              colorScheme: isDarkMode
+                  ? ColorScheme.dark(
+                      primary: AppColors.primary,
+                      onPrimary: Colors.white,
+                      surface: const Color(0xFF2C2C2E),
+                      onSurface: Colors.white,
+                      secondary: AppColors.primary,
+                      onSecondary: Colors.white,
+                    )
+                  : ColorScheme.light(
+                      primary: AppColors.primary,
+                      onPrimary: Colors.white,
+                      surface: Colors.white,
+                      onSurface: const Color(0xFF1C1C1E),
+                      secondary: AppColors.primary,
+                      onSecondary: Colors.white,
+                    ),
+              timePickerTheme: TimePickerThemeData(
+                backgroundColor:
+                    isDarkMode ? const Color(0xFF1C1C1E) : Colors.white,
+                hourMinuteColor: isDarkMode
+                    ? AppColors.primary.withValues(alpha: 0.15)
+                    : AppColors.primary.withValues(alpha: 0.08),
+                hourMinuteTextColor:
+                    isDarkMode ? Colors.white : const Color(0xFF1C1C1E),
+                dayPeriodColor: isDarkMode
+                    ? AppColors.primary.withValues(alpha: 0.15)
+                    : AppColors.primary.withValues(alpha: 0.08),
+                dayPeriodTextColor:
+                    isDarkMode ? Colors.white : const Color(0xFF1C1C1E),
+                dialHandColor: AppColors.primary,
+                dialBackgroundColor: isDarkMode
+                    ? const Color(0xFF2C2C2E)
+                    : const Color(0xFFF2F2F7),
+                dialTextColor:
+                    isDarkMode ? Colors.white : const Color(0xFF1C1C1E),
+                entryModeIconColor: AppColors.primary,
+                helpTextStyle: AppTypography.labelSmall.copyWith(
+                  color: isDarkMode ? Colors.white70 : const Color(0xFF6C6C70),
+                  fontWeight: FontWeight.w600,
+                ),
+                hourMinuteTextStyle: AppTypography.headline4.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 32,
+                ),
+                inputDecorationTheme: InputDecorationTheme(
+                  filled: true,
+                  fillColor: isDarkMode
+                      ? AppColors.primary.withValues(alpha: 0.15)
+                      : AppColors.primary.withValues(alpha: 0.08),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.primary,
+                      width: 2,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.primary,
+                  textStyle: AppTypography.button.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ),
+            child: child!,
+          ),
         );
       },
     );

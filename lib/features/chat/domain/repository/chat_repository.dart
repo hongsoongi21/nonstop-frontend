@@ -35,7 +35,7 @@ abstract class ChatRepository {
   });
 
   /// Create a 1:1 chat room
-  Future<Either<Failure, ChatRoom>> createOneToOneRoom(int targetUserId);
+  Future<Either<Failure, ChatRoom>> createOneToOneRoom(int targetUserId, {String? roomName});
 
   /// Create a group chat room
   Future<Either<Failure, ChatRoom>> createGroupRoom({

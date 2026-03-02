@@ -19,7 +19,7 @@ class UserSettingsDto with _$UserSettingsDto {
     @Default(false) bool enableSoundNotifications,
     @Default(true) bool allowFriendRequests,
     @Default(true) bool showOnlineStatus,
-    @Default(false) bool allowMessageRequests,
+    @Default(true) bool allowMessageRequests,
     @Default(true) bool showProfileToStrangers,
     @Default('system') String themeMode,
     @Default('en') String language,

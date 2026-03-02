@@ -19,6 +19,8 @@ class PostEntity with _$PostEntity {
     @Default(false) bool isSecret,
     @Default(false) bool isLiked,
     @Default(false) bool isMine,
+    int? writerId,
+    String? writerAuthId,
     required DateTime createdAt,
     DateTime? updatedAt,
     List<String>? imageUrls,

@@ -20,7 +20,7 @@ class UserSettings with _$UserSettings {
     // Privacy settings
     @Default(true) bool allowFriendRequests,
     @Default(true) bool showOnlineStatus,
-    @Default(false) bool allowMessageRequests,
+    @Default(true) bool allowMessageRequests,
     @Default(true) bool showProfileToStrangers,
 
     // Appearance settings

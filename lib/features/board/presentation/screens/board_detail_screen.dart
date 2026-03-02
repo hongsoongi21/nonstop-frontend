@@ -15,6 +15,10 @@ import '../providers/post_detail_provider.dart';
 import '../providers/board_provider.dart';
 import '../../../../shared/components/report_dialog.dart';
 import '../../../../core/extensions/context_extensions.dart';
+import '../../../../features/chat/presentation/providers/chat_provider.dart';
+import '../../../../features/friends/presentation/providers/friend_management_provider.dart';
+import '../../../../core/supabase/supabase_provider.dart';
+import '../../../../core/constants/routes.dart';
 
 class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
@@ -30,6 +34,28 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   final FocusNode _commentFocusNode = FocusNode();
   bool _isAnonymous = false;
   int? _replyingToId;
+  bool _writerAllowChat = true;
+  bool _hasFetchedPermission = false;
+
+  Future<void> _fetchWriterChatPermission(PostEntity post) async {
+    if (post.isMine || post.writerAuthId == null) return;
+    try {
+      final supabase = ref.read(supabaseClientProvider);
+      final settings = await supabase
+          .from('user_settings')
+          .select('allow_message_requests')
+          .eq('user_id', post.writerAuthId!)
+          .maybeSingle();
+      if (mounted) {
+        setState(() {
+          _writerAllowChat =
+              settings?['allow_message_requests'] as bool? ?? true;
+        });
+      }
+    } catch (_) {
+      // Default to true if fetch fails
+    }
+  }
 
   bool _isAnonymousBoard() {
     final boardState = ref.read(boardProvider);
@@ -64,6 +90,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         );
       }
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (!post.isMine && !_hasFetchedPermission) {
+      _hasFetchedPermission = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _fetchWriterChatPermission(post);
+      });
     }
 
     return Scaffold(
@@ -609,9 +642,63 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   targetType: ReportTargetType.post,
                   targetId: post.id,
                 );
+              } else if (value == 'add_friend') {
+                if (post.writerAuthId != null) {
+                  final success = await ref
+                      .read(friendManagementProvider.notifier)
+                      .sendRequest(post.writerAuthId!);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success ? '친구 요청을 보냈습니다' : '친구 요청에 실패했습니다',
+                        ),
+                        backgroundColor:
+                            success ? AppColors.success : AppColors.error,
+                      ),
+                    );
+                  }
+                }
+              } else if (value == 'start_chat') {
+                if (post.writerId != null) {
+                  final room = await ref
+                      .read(chatListProvider.notifier)
+                      .createOneToOneRoom(
+                        post.writerId!,
+                        roomName: post.isWriterAnonymous ? '익명' : null,
+                      );
+                  if (room != null && mounted) {
+                    GoRouter.of(context).push(
+                      '${Routes.chat}/${room.id}',
+                      extra: room.name,
+                    );
+                  }
+                }
               }
             },
             itemBuilder: (context) => [
+              if (!post.isWriterAnonymous)
+                const PopupMenuItem(
+                  value: 'add_friend',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_add_outlined, size: 20),
+                      SizedBox(width: 8),
+                      Text('친구 추가'),
+                    ],
+                  ),
+                ),
+              if (_writerAllowChat)
+                const PopupMenuItem(
+                  value: 'start_chat',
+                  child: Row(
+                    children: [
+                      Icon(Icons.chat_bubble_outline, size: 20),
+                      SizedBox(width: 8),
+                      Text('채팅하기'),
+                    ],
+                  ),
+                ),
               PopupMenuItem(
                 value: 'report',
                 child: Text(
