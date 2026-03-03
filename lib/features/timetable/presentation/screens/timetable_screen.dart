@@ -388,165 +388,160 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               minChildSize: 0.3,
               maxChildSize: 0.8,
               expand: false,
-              builder: (context, scrollController) => Column(
+              builder: (context, scrollController) => Stack(
                 children: [
-                  // Handle bar
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12, bottom: 8),
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: context.textTertiaryColor.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(2),
+                  Column(
+                    children: [
+                      // Handle bar
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12, bottom: 8),
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: context.textTertiaryColor.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  // Title row
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        Text(
-                          l10n.myTimetables,
-                          style: AppTypography.titleLarge.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      // Title row
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: 8,
                         ),
-                        const Spacer(),
-                        Text(
-                          '${timetables.length}개',
-                          style: AppTypography.caption.copyWith(
-                            color: context.textSecondaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  // Timetable list
-                  Expanded(
-                    child: ListView(
-                      controller: scrollController,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      children: [
-                        for (final entry in grouped.entries) ...[
-                          // Semester header
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              AppSpacing.md,
-                              12,
-                              AppSpacing.md,
-                              4,
-                            ),
-                            child: Text(
-                              _formatSemesterKey(context, entry.key),
-                              style: AppTypography.overline.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.2,
+                        child: Row(
+                          children: [
+                            Text(
+                              l10n.myTimetables,
+                              style: AppTypography.titleLarge.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                          // Timetables in this semester
-                          ...entry.value.map((tt) {
-                            final isSelected = tt.id == selectedId;
-                            return ListTile(
-                              leading: Icon(
-                                isSelected
-                                    ? Icons.check_circle
-                                    : Icons.calendar_today_outlined,
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : context.textSecondaryColor,
-                                size: 22,
+                            const Spacer(),
+                            Text(
+                              '${timetables.length}개',
+                              style: AppTypography.caption.copyWith(
+                                color: context.textSecondaryColor,
                               ),
-                              title: Text(
-                                tt.title ?? l10n.untitledTimetable,
-                                style: AppTypography.body1.copyWith(
-                                  fontWeight: isSelected
-                                      ? FontWeight.w700
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : context.textPrimaryColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      // Timetable list
+                      Expanded(
+                        child: ListView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          children: [
+                            for (final entry in grouped.entries) ...[
+                              // Semester header
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSpacing.md,
+                                  12,
+                                  AppSpacing.md,
+                                  4,
+                                ),
+                                child: Text(
+                                  _formatSemesterKey(context, entry.key),
+                                  style: AppTypography.overline.copyWith(
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 1.2,
+                                  ),
                                 ),
                               ),
-                              trailing: !isSelected
-                                  ? IconButton(
-                                      icon: Icon(
-                                        Icons.delete_outline,
-                                        size: 20,
-                                        color: AppColors.error.withValues(alpha: 0.6),
-                                      ),
-                                      onPressed: () async {
-                                        final confirm = await showDialog<bool>(
-                                          context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            title: const Text('시간표 삭제'),
-                                            content: Text(
-                                              '"${tt.title ?? l10n.untitledTimetable}"을(를) 삭제하시겠습니까?',
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(ctx, false),
-                                                child: Text(l10n.cancel),
-                                              ),
-                                              TextButton(
-                                                onPressed: () =>
-                                                    Navigator.pop(ctx, true),
-                                                child: Text(
-                                                  l10n.delete,
-                                                  style: const TextStyle(
-                                                    color: AppColors.error,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                              // Timetables in this semester
+                              ...entry.value.map((tt) {
+                                final isSelected = tt.id == selectedId;
+                                return ListTile(
+                                  leading: Icon(
+                                    isSelected
+                                        ? Icons.check_circle
+                                        : Icons.calendar_today_outlined,
+                                    color: isSelected
+                                        ? AppColors.primary
+                                        : context.textSecondaryColor,
+                                    size: 22,
+                                  ),
+                                  title: Text(
+                                    tt.title ?? l10n.untitledTimetable,
+                                    style: AppTypography.body1.copyWith(
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? AppColors.primary
+                                          : context.textPrimaryColor,
+                                    ),
+                                  ),
+                                  trailing: !isSelected
+                                      ? IconButton(
+                                          icon: Icon(
+                                            Icons.delete_outline,
+                                            size: 20,
+                                            color: AppColors.error.withValues(alpha: 0.6),
                                           ),
-                                        );
-                                        if (confirm == true) {
-                                          await notifier.deleteTimetable(tt.id);
-                                        }
-                                      },
-                                    )
-                                  : null,
-                              onTap: () {
-                                notifier.selectTimetable(tt.id);
-                                Navigator.pop(context);
-                              },
-                            );
-                          }),
-                        ],
-                      ],
-                    ),
-                  ),
-                  // Create new timetable button
-                  Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _showCreateTimetableDialog(context, ref);
-                        },
-                        icon: const Icon(Icons.add_rounded, size: 20),
-                        label: const Text('새 시간표 만들기'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
+                                          onPressed: () async {
+                                            final confirm = await showDialog<bool>(
+                                              context: context,
+                                              builder: (ctx) => AlertDialog(
+                                                title: const Text('시간표 삭제'),
+                                                content: Text(
+                                                  '"${tt.title ?? l10n.untitledTimetable}"을(를) 삭제하시겠습니까?',
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(ctx, false),
+                                                    child: Text(l10n.cancel),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(ctx, true),
+                                                    child: Text(
+                                                      l10n.delete,
+                                                      style: const TextStyle(
+                                                        color: AppColors.error,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                            if (confirm == true) {
+                                              await notifier.deleteTimetable(tt.id);
+                                            }
+                                          },
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    notifier.selectTimetable(tt.id);
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              }),
+                            ],
+                            // Spacer so FAB doesn't cover last list item
+                            const SizedBox(height: 80),
+                          ],
                         ),
                       ),
+                    ],
+                  ),
+                  // Create new timetable FAB - always visible regardless of scroll position
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showCreateTimetableDialog(context, ref);
+                      },
+                      backgroundColor: AppColors.primary,
+                      child: const Icon(Icons.add_rounded, color: Colors.white),
                     ),
                   ),
                 ],

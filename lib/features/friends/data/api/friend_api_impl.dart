@@ -128,6 +128,11 @@ class FriendApiImpl implements FriendApi {
       });
 
       return right(unit);
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') {
+        return left(const ApiException('이미 친구 요청을 보냈습니다'));
+      }
+      return left(ApiException(e.toString()));
     } catch (e) {
       return left(ApiException(e.toString()));
     }

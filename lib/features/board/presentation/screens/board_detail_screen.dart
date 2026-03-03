@@ -476,13 +476,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     }
                   }
                 },
-          onStartChat: comment.isWriterAnonymous || comment.isMine
+          onStartChat: comment.isMine
               ? null
               : () async {
                   if (comment.writerId != null) {
                     final room = await ref
                         .read(chatListProvider.notifier)
-                        .createOneToOneRoom(comment.writerId!);
+                        .createOneToOneRoom(comment.writerId!, roomName: comment.isWriterAnonymous ? '익명' : null);
                     if (room != null && mounted) {
                       GoRouter.of(context).push(
                         '${Routes.chat}/${room.id}',
@@ -538,13 +538,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                         }
                       }
                     },
-              onStartChat: reply.isWriterAnonymous || reply.isMine
+              onStartChat: reply.isMine
                   ? null
                   : () async {
                       if (reply.writerId != null) {
                         final room = await ref
                             .read(chatListProvider.notifier)
-                            .createOneToOneRoom(reply.writerId!);
+                            .createOneToOneRoom(reply.writerId!, roomName: reply.isWriterAnonymous ? '익명' : null);
                         if (room != null && mounted) {
                           GoRouter.of(context).push(
                             '${Routes.chat}/${room.id}',
@@ -1378,17 +1378,16 @@ class _CommentMenu extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (!isWriterAnonymous)
-                const PopupMenuItem(
-                  value: 'start_chat',
-                  child: Row(
-                    children: [
-                      Icon(Icons.chat_bubble_outline, size: 20),
-                      SizedBox(width: 8),
-                      Text('채팅하기'),
-                    ],
-                  ),
+              const PopupMenuItem(
+                value: 'start_chat',
+                child: Row(
+                  children: [
+                    Icon(Icons.chat_bubble_outline, size: 20),
+                    SizedBox(width: 8),
+                    Text('채팅하기'),
+                  ],
                 ),
+              ),
               PopupMenuItem(
                 value: 'report',
                 child: Text(
