@@ -20,6 +20,8 @@ _$CommentEntityImpl _$$CommentEntityImplFromJson(Map<String, dynamic> json) =>
       isLiked: json['isLiked'] as bool? ?? false,
       isDeleted: json['isDeleted'] as bool? ?? false,
       isMine: json['isMine'] as bool? ?? false,
+      writerId: (json['writerId'] as num?)?.toInt(),
+      writerAuthId: json['writerAuthId'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
@@ -48,6 +50,8 @@ Map<String, dynamic> _$$CommentEntityImplToJson(_$CommentEntityImpl instance) =>
       'isLiked': instance.isLiked,
       'isDeleted': instance.isDeleted,
       'isMine': instance.isMine,
+      'writerId': instance.writerId,
+      'writerAuthId': instance.writerAuthId,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'imageUrls': instance.imageUrls,

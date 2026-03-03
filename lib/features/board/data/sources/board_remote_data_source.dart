@@ -242,7 +242,7 @@ class BoardRemoteDataSource {
 
     final comments = await _supabase
         .from('comments')
-        .select('*, users!comments_user_id_fkey(nickname)')
+        .select('*, users!comments_user_id_fkey(nickname, auth_id)')
         .eq('post_id', postId)
         .isFilter('deleted_at', null)
         .order('created_at', ascending: true);
@@ -563,6 +563,8 @@ class BoardRemoteDataSource {
       likeCount: likeCount,
       isLiked: isLiked,
       isMine: isMine,
+      writerId: data['user_id'] as int?,
+      writerAuthId: userMap?['auth_id'] as String?,
       createdAt: parseUtcDateTime(data['created_at'] as String),
       updatedAt: data['updated_at'] != null
           ? parseUtcDateTime(data['updated_at'] as String)

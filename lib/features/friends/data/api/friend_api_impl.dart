@@ -116,7 +116,10 @@ class FriendApiImpl implements FriendApi {
   Future<Either<ApiException, Unit>> requestFriend(String userId) async {
     try {
       final currentUserId = await _getCurrentUserId();
-      final targetUserId = int.parse(userId);
+      final targetUserId = int.tryParse(userId);
+      if (targetUserId == null) {
+        return left(const ApiException('Invalid user ID format'));
+      }
 
       await _supabase.from('friends').insert({
         'sender_id': currentUserId,

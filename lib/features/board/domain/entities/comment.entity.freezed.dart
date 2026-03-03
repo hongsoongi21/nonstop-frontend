@@ -33,6 +33,8 @@ mixin _$CommentEntity {
   bool get isLiked => throw _privateConstructorUsedError;
   bool get isDeleted => throw _privateConstructorUsedError;
   bool get isMine => throw _privateConstructorUsedError;
+  int? get writerId => throw _privateConstructorUsedError;
+  String? get writerAuthId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime? get updatedAt => throw _privateConstructorUsedError;
   List<String>? get imageUrls => throw _privateConstructorUsedError;
@@ -68,6 +70,8 @@ abstract class $CommentEntityCopyWith<$Res> {
     bool isLiked,
     bool isDeleted,
     bool isMine,
+    int? writerId,
+    String? writerAuthId,
     DateTime createdAt,
     DateTime? updatedAt,
     List<String>? imageUrls,
@@ -102,6 +106,8 @@ class _$CommentEntityCopyWithImpl<$Res, $Val extends CommentEntity>
     Object? isLiked = null,
     Object? isDeleted = null,
     Object? isMine = null,
+    Object? writerId = freezed,
+    Object? writerAuthId = freezed,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? imageUrls = freezed,
@@ -157,6 +163,14 @@ class _$CommentEntityCopyWithImpl<$Res, $Val extends CommentEntity>
                 ? _value.isMine
                 : isMine // ignore: cast_nullable_to_non_nullable
                       as bool,
+            writerId: freezed == writerId
+                ? _value.writerId
+                : writerId // ignore: cast_nullable_to_non_nullable
+                      as int?,
+            writerAuthId: freezed == writerAuthId
+                ? _value.writerAuthId
+                : writerAuthId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -201,6 +215,8 @@ abstract class _$$CommentEntityImplCopyWith<$Res>
     bool isLiked,
     bool isDeleted,
     bool isMine,
+    int? writerId,
+    String? writerAuthId,
     DateTime createdAt,
     DateTime? updatedAt,
     List<String>? imageUrls,
@@ -234,6 +250,8 @@ class __$$CommentEntityImplCopyWithImpl<$Res>
     Object? isLiked = null,
     Object? isDeleted = null,
     Object? isMine = null,
+    Object? writerId = freezed,
+    Object? writerAuthId = freezed,
     Object? createdAt = null,
     Object? updatedAt = freezed,
     Object? imageUrls = freezed,
@@ -289,6 +307,14 @@ class __$$CommentEntityImplCopyWithImpl<$Res>
             ? _value.isMine
             : isMine // ignore: cast_nullable_to_non_nullable
                   as bool,
+        writerId: freezed == writerId
+            ? _value.writerId
+            : writerId // ignore: cast_nullable_to_non_nullable
+                  as int?,
+        writerAuthId: freezed == writerAuthId
+            ? _value.writerAuthId
+            : writerAuthId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -326,6 +352,8 @@ class _$CommentEntityImpl implements _CommentEntity {
     this.isLiked = false,
     this.isDeleted = false,
     this.isMine = false,
+    this.writerId,
+    this.writerAuthId,
     required this.createdAt,
     this.updatedAt,
     final List<String>? imageUrls,
@@ -367,6 +395,10 @@ class _$CommentEntityImpl implements _CommentEntity {
   @JsonKey()
   final bool isMine;
   @override
+  final int? writerId;
+  @override
+  final String? writerAuthId;
+  @override
   final DateTime createdAt;
   @override
   final DateTime? updatedAt;
@@ -391,7 +423,7 @@ class _$CommentEntityImpl implements _CommentEntity {
 
   @override
   String toString() {
-    return 'CommentEntity(id: $id, postId: $postId, upperCommentId: $upperCommentId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, content: $content, type: $type, depth: $depth, likeCount: $likeCount, isLiked: $isLiked, isDeleted: $isDeleted, isMine: $isMine, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls, replies: $replies)';
+    return 'CommentEntity(id: $id, postId: $postId, upperCommentId: $upperCommentId, writerNickname: $writerNickname, isWriterAnonymous: $isWriterAnonymous, content: $content, type: $type, depth: $depth, likeCount: $likeCount, isLiked: $isLiked, isDeleted: $isDeleted, isMine: $isMine, writerId: $writerId, writerAuthId: $writerAuthId, createdAt: $createdAt, updatedAt: $updatedAt, imageUrls: $imageUrls, replies: $replies)';
   }
 
   @override
@@ -416,6 +448,10 @@ class _$CommentEntityImpl implements _CommentEntity {
             (identical(other.isDeleted, isDeleted) ||
                 other.isDeleted == isDeleted) &&
             (identical(other.isMine, isMine) || other.isMine == isMine) &&
+            (identical(other.writerId, writerId) ||
+                other.writerId == writerId) &&
+            (identical(other.writerAuthId, writerAuthId) ||
+                other.writerAuthId == writerAuthId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             (identical(other.updatedAt, updatedAt) ||
@@ -443,6 +479,8 @@ class _$CommentEntityImpl implements _CommentEntity {
     isLiked,
     isDeleted,
     isMine,
+    writerId,
+    writerAuthId,
     createdAt,
     updatedAt,
     const DeepCollectionEquality().hash(_imageUrls),
@@ -477,6 +515,8 @@ abstract class _CommentEntity implements CommentEntity {
     final bool isLiked,
     final bool isDeleted,
     final bool isMine,
+    final int? writerId,
+    final String? writerAuthId,
     required final DateTime createdAt,
     final DateTime? updatedAt,
     final List<String>? imageUrls,
@@ -510,6 +550,10 @@ abstract class _CommentEntity implements CommentEntity {
   bool get isDeleted;
   @override
   bool get isMine;
+  @override
+  int? get writerId;
+  @override
+  String? get writerAuthId;
   @override
   DateTime get createdAt;
   @override

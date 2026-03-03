@@ -530,76 +530,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top row: Author + Time + Menu
-            Row(
-              children: [
-                // Author avatar placeholder
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Center(
-                    child: Text(
-                      (post.isWriterAnonymous || _isAnonymousBoard()
-                              ? '?'
-                              : post.writerNickname.isNotEmpty
-                                  ? post.writerNickname[0].toUpperCase()
-                                  : '?'),
-                      style: AppTypography.captionSmall.copyWith(
-                        color: isDark ? Colors.white60 : AppColors.primary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  (post.isWriterAnonymous || _isAnonymousBoard()) ? l10n.anonymous : post.writerNickname,
-                  style: AppTypography.caption.copyWith(
-                    color: isDark ? Colors.white60 : AppColors.textSecondary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 3,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white24 : AppColors.textTertiary,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  timeAgo(post.createdAt),
-                  style: AppTypography.caption.copyWith(
-                    color: isDark ? Colors.white38 : AppColors.textTertiary,
-                  ),
-                ),
-                const Spacer(),
-                // Menu icon
-                GestureDetector(
-                  onTap: () => _showPostMenu(context, post),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.more_horiz,
-                      size: 18,
-                      color: isDark ? Colors.white30 : AppColors.textTertiary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            // Title only - NO content preview
+            // Title first
             Text(
               post.title,
               style: AppTypography.body1.copyWith(
@@ -611,31 +542,57 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-
-            const SizedBox(height: 12),
-
-            // Bottom row: Small stats
+            const SizedBox(height: 6),
+            // Content preview - one line
+            Text(
+              post.content,
+              style: AppTypography.body2.copyWith(
+                color: isDark ? Colors.white54 : AppColors.textSecondary,
+                height: 1.4,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 10),
+            // Bottom row: Time + stats + menu
             Row(
               children: [
-                // Views
+                Text(
+                  timeAgo(post.createdAt),
+                  style: AppTypography.caption.copyWith(
+                    color: isDark ? Colors.white38 : AppColors.textTertiary,
+                    fontSize: 12,
+                  ),
+                ),
+                const SizedBox(width: 12),
                 _buildSmallStat(
                   icon: Icons.remove_red_eye_outlined,
                   count: post.viewCount,
                   isDark: isDark,
                 ),
-                const SizedBox(width: 16),
-                // Likes
+                const SizedBox(width: 12),
                 _buildSmallStat(
                   icon: Icons.favorite_border_rounded,
                   count: post.likeCount,
                   isDark: isDark,
                 ),
-                const SizedBox(width: 16),
-                // Comments
+                const SizedBox(width: 12),
                 _buildSmallStat(
                   icon: Icons.chat_bubble_outline_rounded,
                   count: post.commentCount,
                   isDark: isDark,
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () => _showPostMenu(context, post),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.more_horiz,
+                      size: 16,
+                      color: isDark ? Colors.white30 : AppColors.textTertiary,
+                    ),
+                  ),
                 ),
               ],
             ),

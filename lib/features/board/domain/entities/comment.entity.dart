@@ -25,6 +25,8 @@ class CommentEntity with _$CommentEntity {
     @Default(false) bool isLiked,
     @Default(false) bool isDeleted,
     @Default(false) bool isMine,
+    int? writerId,
+    String? writerAuthId,
     required DateTime createdAt,
     DateTime? updatedAt,
     List<String>? imageUrls,

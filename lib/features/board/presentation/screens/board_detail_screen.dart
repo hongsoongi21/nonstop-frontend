@@ -456,6 +456,41 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               targetId: comment.id,
             );
           },
+          onAddFriend: comment.isWriterAnonymous || comment.isMine
+              ? null
+              : () async {
+                  if (comment.writerId != null) {
+                    final success = await ref
+                        .read(friendManagementProvider.notifier)
+                        .sendRequest(comment.writerId.toString());
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            success ? '친구 요청을 보냈습니다' : '친구 요청에 실패했습니다',
+                          ),
+                          backgroundColor:
+                              success ? AppColors.success : AppColors.error,
+                        ),
+                      );
+                    }
+                  }
+                },
+          onStartChat: comment.isWriterAnonymous || comment.isMine
+              ? null
+              : () async {
+                  if (comment.writerId != null) {
+                    final room = await ref
+                        .read(chatListProvider.notifier)
+                        .createOneToOneRoom(comment.writerId!);
+                    if (room != null && mounted) {
+                      GoRouter.of(context).push(
+                        '${Routes.chat}/${room.id}',
+                        extra: room.name,
+                      );
+                    }
+                  }
+                },
         ),
       );
       // Add nested replies (동일 선상에 배치, 부모 닉네임 멘션 표시)
@@ -481,6 +516,43 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   targetId: reply.id,
                 );
               },
+              onAddFriend: reply.isWriterAnonymous || reply.isMine
+                  ? null
+                  : () async {
+                      if (reply.writerId != null) {
+                        final success = await ref
+                            .read(friendManagementProvider.notifier)
+                            .sendRequest(reply.writerId.toString());
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? '친구 요청을 보냈습니다'
+                                    : '친구 요청에 실패했습니다',
+                              ),
+                              backgroundColor:
+                                  success ? AppColors.success : AppColors.error,
+                            ),
+                          );
+                        }
+                      }
+                    },
+              onStartChat: reply.isWriterAnonymous || reply.isMine
+                  ? null
+                  : () async {
+                      if (reply.writerId != null) {
+                        final room = await ref
+                            .read(chatListProvider.notifier)
+                            .createOneToOneRoom(reply.writerId!);
+                        if (room != null && mounted) {
+                          GoRouter.of(context).push(
+                            '${Routes.chat}/${room.id}',
+                            extra: room.name,
+                          );
+                        }
+                      }
+                    },
             ),
           );
         }
@@ -643,10 +715,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   targetId: post.id,
                 );
               } else if (value == 'add_friend') {
-                if (post.writerAuthId != null) {
+                if (post.writerId != null) {
                   final success = await ref
                       .read(friendManagementProvider.notifier)
-                      .sendRequest(post.writerAuthId!);
+                      .sendRequest(post.writerId.toString());
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -1065,6 +1137,8 @@ class _CommentItem extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onReport;
+  final VoidCallback? onAddFriend;
+  final VoidCallback? onStartChat;
 
   const _CommentItem({
     required this.comment,
@@ -1075,6 +1149,8 @@ class _CommentItem extends StatelessWidget {
     this.onEdit,
     this.onDelete,
     this.onReport,
+    this.onAddFriend,
+    this.onStartChat,
   });
 
   @override
@@ -1145,9 +1221,12 @@ class _CommentItem extends StatelessWidget {
                           ),
                           _CommentMenu(
                             isMine: comment.isMine,
+                            isWriterAnonymous: comment.isWriterAnonymous,
                             onEdit: onEdit,
                             onDelete: onDelete,
                             onReport: onReport,
+                            onAddFriend: onAddFriend,
+                            onStartChat: onStartChat,
                           ),
                         ],
                       ),
@@ -1234,15 +1313,21 @@ class _CommentItem extends StatelessWidget {
 
 class _CommentMenu extends StatelessWidget {
   final bool isMine;
+  final bool isWriterAnonymous;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onReport;
+  final VoidCallback? onAddFriend;
+  final VoidCallback? onStartChat;
 
   const _CommentMenu({
     required this.isMine,
+    this.isWriterAnonymous = false,
     this.onEdit,
     this.onDelete,
     this.onReport,
+    this.onAddFriend,
+    this.onStartChat,
   });
 
   @override
@@ -1264,6 +1349,10 @@ class _CommentMenu extends StatelessWidget {
           onDelete?.call();
         } else if (value == 'report') {
           onReport?.call();
+        } else if (value == 'add_friend') {
+          onAddFriend?.call();
+        } else if (value == 'start_chat') {
+          onStartChat?.call();
         }
       },
       itemBuilder: (context) => isMine
@@ -1278,6 +1367,28 @@ class _CommentMenu extends StatelessWidget {
               ),
             ]
           : [
+              if (!isWriterAnonymous)
+                const PopupMenuItem(
+                  value: 'add_friend',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person_add_outlined, size: 20),
+                      SizedBox(width: 8),
+                      Text('친구 추가'),
+                    ],
+                  ),
+                ),
+              if (!isWriterAnonymous)
+                const PopupMenuItem(
+                  value: 'start_chat',
+                  child: Row(
+                    children: [
+                      Icon(Icons.chat_bubble_outline, size: 20),
+                      SizedBox(width: 8),
+                      Text('채팅하기'),
+                    ],
+                  ),
+                ),
               PopupMenuItem(
                 value: 'report',
                 child: Text(
