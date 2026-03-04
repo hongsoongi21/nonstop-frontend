@@ -460,17 +460,17 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               ? null
               : () async {
                   if (comment.writerId != null) {
-                    final success = await ref
+                    final error = await ref
                         .read(friendManagementProvider.notifier)
                         .sendRequest(comment.writerId.toString());
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            success ? '친구 요청을 보냈습니다' : '친구 요청에 실패했습니다',
+                            error ?? '친구 요청을 보냈습니다',
                           ),
                           backgroundColor:
-                              success ? AppColors.success : AppColors.error,
+                              error == null ? AppColors.success : AppColors.error,
                         ),
                       );
                     }
@@ -520,19 +520,17 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ? null
                   : () async {
                       if (reply.writerId != null) {
-                        final success = await ref
+                        final error = await ref
                             .read(friendManagementProvider.notifier)
                             .sendRequest(reply.writerId.toString());
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                success
-                                    ? '친구 요청을 보냈습니다'
-                                    : '친구 요청에 실패했습니다',
+                                error ?? '친구 요청을 보냈습니다',
                               ),
                               backgroundColor:
-                                  success ? AppColors.success : AppColors.error,
+                                  error == null ? AppColors.success : AppColors.error,
                             ),
                           );
                         }
@@ -716,17 +714,17 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 );
               } else if (value == 'add_friend') {
                 if (post.writerId != null) {
-                  final success = await ref
+                  final error = await ref
                       .read(friendManagementProvider.notifier)
                       .sendRequest(post.writerId.toString());
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          success ? '친구 요청을 보냈습니다' : '친구 요청에 실패했습니다',
+                          error ?? '친구 요청을 보냈습니다',
                         ),
                         backgroundColor:
-                            success ? AppColors.success : AppColors.error,
+                            error == null ? AppColors.success : AppColors.error,
                       ),
                     );
                   }
