@@ -994,5 +994,21 @@
   "camera": "Kamera",
   "gallery": "Galereya",
   "selectImageSource": "Rasm manbini tanlang",
-  "introductionMaxLength": "O'zingiz haqida 200 belgidan oshmasligi kerak"
+  "introductionMaxLength": "O'zingiz haqida 200 belgidan oshmasligi kerak",
+  "sentRequests": "Yuborilgan so'rovlar",
+  "@sentRequests": {
+    "description": "Sent friend requests tab label"
+  },
+  "cancelRequest": "So'rovni bekor qilish",
+  "@cancelRequest": {
+    "description": "Cancel friend request button"
+  },
+  "requestCancelled": "So'rov bekor qilindi",
+  "@requestCancelled": {
+    "description": "Success message after cancelling friend request"
+  },
+  "alreadyRequested": "Allaqachon so'rov yuborilgan",
+  "@alreadyRequested": {
+    "description": "Error message when friend request already sent"
+  }
 }

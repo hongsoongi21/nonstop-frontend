@@ -1106,4 +1106,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get introductionMaxLength =>
       'Introduction must be 200 characters or less';
+
+  @override
+  String get sentRequests => 'Sent Requests';
+
+  @override
+  String get cancelRequest => 'Cancel Request';
+
+  @override
+  String get requestCancelled => 'Request cancelled';
+
+  @override
+  String get alreadyRequested => 'Already requested';
 }

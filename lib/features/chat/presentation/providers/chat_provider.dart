@@ -301,6 +301,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                   (m) => m.id == clientMsgId ? m.copyWith(isSending: false) : m)
               .toList(),
         );
+        markMessagesAsRead();
       },
     );
   }
@@ -392,6 +393,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
                         : m)
                     .toList(),
               );
+              markMessagesAsRead();
             },
           );
         },

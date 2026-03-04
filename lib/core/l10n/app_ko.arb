@@ -998,5 +998,21 @@
   "camera": "카메라",
   "gallery": "갤러리",
   "selectImageSource": "이미지 소스 선택",
-  "introductionMaxLength": "자기소개는 200자 이하여야 합니다"
+  "introductionMaxLength": "자기소개는 200자 이하여야 합니다",
+  "sentRequests": "보낸 요청",
+  "@sentRequests": {
+    "description": "Sent friend requests tab label"
+  },
+  "cancelRequest": "요청 취소",
+  "@cancelRequest": {
+    "description": "Cancel friend request button"
+  },
+  "requestCancelled": "요청이 취소되었습니다",
+  "@requestCancelled": {
+    "description": "Success message after cancelling friend request"
+  },
+  "alreadyRequested": "이미 요청한 상대방입니다",
+  "@alreadyRequested": {
+    "description": "Error message when friend request already sent"
+  }
 }

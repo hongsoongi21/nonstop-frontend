@@ -2213,6 +2213,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Introduction must be 200 characters or less'**
   String get introductionMaxLength;
+
+  /// Sent friend requests tab label
+  ///
+  /// In en, this message translates to:
+  /// **'Sent Requests'**
+  String get sentRequests;
+
+  /// Cancel friend request button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get cancelRequest;
+
+  /// Success message after cancelling friend request
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancelled'**
+  String get requestCancelled;
+
+  /// Error message when friend request already sent
+  ///
+  /// In en, this message translates to:
+  /// **'Already requested'**
+  String get alreadyRequested;
 }
 
 class _AppLocalizationsDelegate

@@ -110,6 +110,44 @@ class FriendApiImpl implements FriendApi {
   }
 
   // ---------------------------------------------------------------------------
+  // Sent Requests
+  // ---------------------------------------------------------------------------
+  @override
+  Future<Either<ApiException, List<FriendRequestDto>>>
+      getSentRequests() async {
+    try {
+      final currentUserId = await _getCurrentUserId();
+
+      // Get WAITING requests where I'm the sender
+      final data = await _supabase
+          .from('friends')
+          .select(
+              '*, receiver:users!friends_receiver_id_fkey(id, nickname, profile_image_url)')
+          .eq('sender_id', currentUserId)
+          .eq('status', 'WAITING')
+          .isFilter('deleted_at', null)
+          .order('created_at', ascending: false);
+
+      final list = (data as List).map((json) {
+        final receiverData = json['receiver'] as Map<String, dynamic>;
+        return FriendRequestDto(
+          requestId: json['id'],
+          requester: UserInfoDto(
+            userId: receiverData['id'],
+            nickname: receiverData['nickname'] as String? ?? '',
+            profileImageUrl: receiverData['profile_image_url'] as String?,
+          ),
+          requestedAt: json['created_at'] as String?,
+        );
+      }).toList();
+
+      return right(list);
+    } catch (e) {
+      return left(ApiException(e.toString()));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Friend Actions
   // ---------------------------------------------------------------------------
   @override

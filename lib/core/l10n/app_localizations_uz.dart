@@ -1118,4 +1118,16 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get introductionMaxLength =>
       'O\'zingiz haqida 200 belgidan oshmasligi kerak';
+
+  @override
+  String get sentRequests => 'Yuborilgan so\'rovlar';
+
+  @override
+  String get cancelRequest => 'So\'rovni bekor qilish';
+
+  @override
+  String get requestCancelled => 'So\'rov bekor qilindi';
+
+  @override
+  String get alreadyRequested => 'Allaqachon so\'rov yuborilgan';
 }

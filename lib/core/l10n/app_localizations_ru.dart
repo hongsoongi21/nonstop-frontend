@@ -1112,4 +1112,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get introductionMaxLength =>
       'О себе должно быть не более 200 символов';
+
+  @override
+  String get sentRequests => 'Отправленные запросы';
+
+  @override
+  String get cancelRequest => 'Отменить запрос';
+
+  @override
+  String get requestCancelled => 'Запрос отменён';
+
+  @override
+  String get alreadyRequested => 'Запрос уже отправлен';
 }

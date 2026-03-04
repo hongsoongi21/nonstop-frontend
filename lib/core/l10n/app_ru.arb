@@ -1302,5 +1302,21 @@
   "camera": "Камера",
   "gallery": "Галерея",
   "selectImageSource": "Выберите источник изображения",
-  "introductionMaxLength": "О себе должно быть не более 200 символов"
+  "introductionMaxLength": "О себе должно быть не более 200 символов",
+  "sentRequests": "Отправленные запросы",
+  "@sentRequests": {
+    "description": "Sent friend requests tab label"
+  },
+  "cancelRequest": "Отменить запрос",
+  "@cancelRequest": {
+    "description": "Cancel friend request button"
+  },
+  "requestCancelled": "Запрос отменён",
+  "@requestCancelled": {
+    "description": "Success message after cancelling friend request"
+  },
+  "alreadyRequested": "Запрос уже отправлен",
+  "@alreadyRequested": {
+    "description": "Error message when friend request already sent"
+  }
 }

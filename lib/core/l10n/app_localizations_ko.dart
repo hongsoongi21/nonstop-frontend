@@ -1091,4 +1091,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get introductionMaxLength => '자기소개는 200자 이하여야 합니다';
+
+  @override
+  String get sentRequests => '보낸 요청';
+
+  @override
+  String get cancelRequest => '요청 취소';
+
+  @override
+  String get requestCancelled => '요청이 취소되었습니다';
+
+  @override
+  String get alreadyRequested => '이미 요청한 상대방입니다';
 }

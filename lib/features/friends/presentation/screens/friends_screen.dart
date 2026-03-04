@@ -34,11 +34,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     // Load friends and requests on init
     Future.microtask(() {
       ref.read(friendManagementProvider.notifier).loadFriends();
       ref.read(friendManagementProvider.notifier).loadRequests();
+      ref.read(friendManagementProvider.notifier).loadSentRequests();
     });
   }
 
@@ -75,9 +76,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     final friendState = ref.watch(friendManagementProvider);
     final friends = friendState.friends;
     final requests = friendState.requests;
+    final sentRequests = friendState.sentRequests;
     final searchResults = friendState.searchResults;
     final isLoading = friendState.isLoading;
-    final error = friendState.error;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -223,6 +224,35 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                       ),
                       Tab(
                         height: 44,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(l10n.sentRequests),
+                            if (sentRequests.isNotEmpty) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.textOnPrimary.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  '${sentRequests.length}',
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        height: 44,
                         child: Text(l10n.search),
                       ),
                     ],
@@ -231,60 +261,6 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
               ),
 
               const SizedBox(height: AppSpacing.md),
-
-              // Error Message
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: context.borderColor,
-                        width: 1,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.shadow,
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppColors.errorLight,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.wifi_off_rounded,
-                            color: AppColors.error,
-                            size: 18,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Text(
-                            error,
-                            style: AppTypography.body2.copyWith(
-                              color: context.textPrimaryColor,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: -0.2,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
               // Tab Views
               Expanded(
@@ -295,6 +271,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                     _buildFriendsList(friends, isLoading),
                     // Friend Requests
                     _buildRequestsList(requests, isLoading),
+                    // Sent Requests
+                    _buildSentRequestsList(sentRequests, isLoading),
                     // Search
                     _buildSearch(searchResults, isLoading),
                   ],
@@ -528,6 +506,102 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
         },
       ),
     );
+  }
+
+  Widget _buildSentRequestsList(List<Friend> sentRequests, bool isLoading) {
+    final l10n = AppLocalizations.of(context)!;
+    if (isLoading && sentRequests.isEmpty) {
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        itemCount: 6,
+        itemBuilder: (context, index) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+          child: SkeletonLayouts.listItem(hasAvatar: true, hasSubtitle: true),
+        ),
+      );
+    }
+
+    if (sentRequests.isEmpty) {
+      return AppRefreshIndicator(
+        onRefresh: () =>
+            ref.read(friendManagementProvider.notifier).loadSentRequests(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            _buildEmptyState(
+              icon: Icons.send_outlined,
+              title: l10n.sentRequests,
+              subtitle: '보낸 요청이 없습니다',
+            ),
+          ],
+        ),
+      );
+    }
+
+    return AppRefreshIndicator(
+      onRefresh: () =>
+          ref.read(friendManagementProvider.notifier).loadSentRequests(),
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        itemCount: sentRequests.length,
+        itemBuilder: (context, index) {
+          final request = sentRequests[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+            child: _buildFriendCard(
+              friend: request,
+              trailing: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _cancelRequest(request),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.error,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _cancelRequest(Friend friend) async {
+    final notifier = ref.read(friendManagementProvider.notifier);
+    notifier.cancelRequest(friend.relationshipId ?? friend.id);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.requestCancelled),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
   }
 
   Widget _buildSearch(List<Friend> searchResults, bool isLoading) {
@@ -1023,11 +1097,12 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   }
 
   Future<void> _sendRequest(Friend user) async {
-    final success = await ref
+    final errorMessage = await ref
         .read(friendManagementProvider.notifier)
         .sendRequest(user.id);
-    if (success && mounted) {
-      final l10n = AppLocalizations.of(context)!;
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
+    if (errorMessage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1048,6 +1123,23 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
       ref
           .read(friendManagementProvider.notifier)
           .searchUsers(_searchController.text.trim());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            errorMessage,
+            style: AppTypography.body1.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
     }
   }
 

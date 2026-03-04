@@ -35,6 +35,20 @@ class FriendRepositoryImpl implements FriendRepository {
   }
 
   @override
+  Future<Either<Failure, List<Friend>>> getSentRequests() async {
+    final result = await _api.getSentRequests();
+    return result.match(
+      (error) => Left(ServerFailure(message: error.message, statusCode: 500)),
+      (dtos) => Right(
+        dtos
+            .map((dto) =>
+                dto.toDomain().copyWith(status: FriendStatus.pendingSent))
+            .toList(),
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, Unit>> requestFriend(String userId) async {
     final result = await _api.requestFriend(userId);
     return result.match(

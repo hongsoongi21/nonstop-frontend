@@ -10,6 +10,7 @@ class FriendManagementState {
   final String? error;
   final List<Friend> friends;
   final List<Friend> requests;
+  final List<Friend> sentRequests;
   final List<Friend> searchResults;
   final Set<String> sentRequestUserIds;
 
@@ -18,6 +19,7 @@ class FriendManagementState {
     this.error,
     this.friends = const [],
     this.requests = const [],
+    this.sentRequests = const [],
     this.searchResults = const [],
     this.sentRequestUserIds = const {},
   });
@@ -27,6 +29,7 @@ class FriendManagementState {
     String? error,
     List<Friend>? friends,
     List<Friend>? requests,
+    List<Friend>? sentRequests,
     List<Friend>? searchResults,
     Set<String>? sentRequestUserIds,
     bool clearError = false,
@@ -36,6 +39,7 @@ class FriendManagementState {
       error: clearError ? null : (error ?? this.error),
       friends: friends ?? this.friends,
       requests: requests ?? this.requests,
+      sentRequests: sentRequests ?? this.sentRequests,
       searchResults: searchResults ?? this.searchResults,
       sentRequestUserIds: sentRequestUserIds ?? this.sentRequestUserIds,
     );
@@ -70,6 +74,23 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     );
   }
 
+  Future<void> loadSentRequests() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    final result = await _repository.getSentRequests();
+    result.fold(
+      (failure) =>
+          state = state.copyWith(isLoading: false, error: failure.message),
+      (sentRequests) {
+        final sentIds = sentRequests.map((r) => r.id).toSet();
+        state = state.copyWith(
+          isLoading: false,
+          sentRequests: sentRequests,
+          sentRequestUserIds: sentIds,
+        );
+      },
+    );
+  }
+
   Future<void> searchUsers(String query) async {
     if (query.isEmpty) {
       state = state.copyWith(searchResults: []);
@@ -81,6 +102,7 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
       AppLogger.d('🔍 [Search] Friends/requests not loaded, loading now...');
       await loadFriends();
       await loadRequests();
+      await loadSentRequests();
     }
 
     state = state.copyWith(isLoading: true, clearError: true);
@@ -177,11 +199,11 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
     state = state.copyWith(searchResults: filteredFriends);
   }
 
-  Future<bool> sendRequest(String userId) async {
+  Future<String?> sendRequest(String userId) async {
     final result = await _repository.requestFriend(userId);
     return result.fold((failure) {
       state = state.copyWith(error: failure.message);
-      return false;
+      return failure.message;
     }, (unit) {
       final updatedSentIds = {...state.sentRequestUserIds, userId};
       final updatedResults = state.searchResults
@@ -197,7 +219,8 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
         sentRequestUserIds: updatedSentIds,
         searchResults: updatedResults,
       );
-      return true;
+      loadSentRequests();
+      return null;
     });
   }
 
@@ -239,6 +262,28 @@ class FriendManagementNotifier extends StateNotifier<FriendManagementState> {
       },
       (unit) {
         loadFriends();
+        return true;
+      },
+    );
+  }
+
+  Future<bool> cancelRequest(String friendId) async {
+    final result = await _repository.cancelRequest(friendId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(error: failure.message);
+        return false;
+      },
+      (unit) {
+        final updatedSentRequests = state.sentRequests
+            .where((r) => r.relationshipId != friendId)
+            .toList();
+        final updatedSentIds =
+            updatedSentRequests.map((r) => r.id).toSet();
+        state = state.copyWith(
+          sentRequests: updatedSentRequests,
+          sentRequestUserIds: updatedSentIds,
+        );
         return true;
       },
     );
