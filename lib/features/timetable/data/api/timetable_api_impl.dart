@@ -355,20 +355,18 @@ class TimetableApiImpl implements TimetableApi {
   }
 
   /// Determine the current academic year based on current date.
-  /// In Uzbekistan: academic year starts September.
-  /// Sep-Dec → that year, Jan-Aug → previous year.
+  /// Korean academic calendar: year starts March.
+  /// Mar-Dec → that year, Jan-Feb → previous year.
   static int _getCurrentAcademicYear(DateTime now) {
-    return now.month >= 9 ? now.year : now.year - 1;
+    return now.month <= 2 ? now.year - 1 : now.year;
   }
 
   /// Determine the current semester type based on current date.
-  /// FIRST: September - January
-  /// SECOND: February - June
-  /// SUMMER: July - August
+  /// FIRST (1학기): March - August
+  /// SECOND (2학기): September - February
   static SemesterType _getCurrentSemesterType(DateTime now) {
-    if (now.month >= 9 || now.month <= 1) return SemesterType.first;
-    if (now.month >= 2 && now.month <= 6) return SemesterType.second;
-    return SemesterType.summer;
+    if (now.month >= 3 && now.month <= 8) return SemesterType.first;
+    return SemesterType.second;
   }
 
   TimetableDto _mapToTimetableDto(Map<String, dynamic> json) {

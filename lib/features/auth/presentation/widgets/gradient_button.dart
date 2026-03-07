@@ -16,17 +16,19 @@ class GradientButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
+  final String? semanticsId;
 
   const GradientButton({
     super.key,
     required this.text,
     this.onPressed,
     this.isLoading = false,
+    this.semanticsId,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Widget button = Container(
       width: 275.w,
       height: 55.h,
       decoration: BoxDecoration(
@@ -73,5 +75,14 @@ class GradientButton extends StatelessWidget {
         ),
       ),
     );
+
+    if (semanticsId != null) {
+      button = Semantics(
+        identifier: semanticsId,
+        child: button,
+      );
+    }
+
+    return button;
   }
 }

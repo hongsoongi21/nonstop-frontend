@@ -190,7 +190,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 _buildCommentsSection(context, comments, postId),
               ],
             ),
@@ -397,7 +397,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         if (comments.isEmpty)
           Container(
             padding: const EdgeInsets.symmetric(vertical: 40),

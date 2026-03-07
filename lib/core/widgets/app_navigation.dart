@@ -63,30 +63,35 @@ class AppBottomNavigationBar extends StatelessWidget {
               activeIcon: Icons.people_alt,
               label: 'Board',
               isActive: navigationShell.currentIndex == 0,
+              semanticsId: 'nav_board',
             ),
             _buildNavItem(
               icon: Icons.calendar_month_outlined,
               activeIcon: Icons.calendar_month,
               label: 'Timetable',
               isActive: navigationShell.currentIndex == 1,
+              semanticsId: 'nav_timetable',
             ),
             _buildNavItem(
               icon: Icons.chat_bubble_outline,
               activeIcon: Icons.chat_bubble,
               label: 'Chat',
               isActive: navigationShell.currentIndex == 2,
+              semanticsId: 'nav_chat',
             ),
             _buildNavItem(
               icon: Icons.group_outlined,
               activeIcon: Icons.group,
               label: 'Friends',
               isActive: navigationShell.currentIndex == 3,
+              semanticsId: 'nav_friends',
             ),
             _buildNavItem(
               icon: Icons.person_outline,
               activeIcon: Icons.person,
               label: 'Profile',
               isActive: navigationShell.currentIndex == 4,
+              semanticsId: 'nav_profile',
             ),
           ],
         ),
@@ -99,9 +104,12 @@ class AppBottomNavigationBar extends StatelessWidget {
     required IconData activeIcon,
     required String label,
     required bool isActive,
+    String? semanticsId,
   }) {
     return BottomNavigationBarItem(
-      icon: Container(
+      icon: Semantics(
+        identifier: semanticsId,
+        child: Container(
         padding: const EdgeInsets.only(bottom: 4, top: 8),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
@@ -145,6 +153,7 @@ class AppBottomNavigationBar extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
       label: label,
     );

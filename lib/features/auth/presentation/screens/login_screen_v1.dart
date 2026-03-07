@@ -491,6 +491,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                       hintText: AppLocalizations.of(context)!.email,
                                       prefixIcon: Icons.email_outlined,
                                       keyboardType: TextInputType.emailAddress,
+                                      semanticsId: 'login_email_field',
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return AppLocalizations.of(context)!.validationEmailRequired;
@@ -512,6 +513,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                       hintText: AppLocalizations.of(context)!.password,
                                       prefixIcon: Icons.lock_outline,
                                       obscureText: true,
+                                      semanticsId: 'login_password_field',
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return AppLocalizations.of(context)!.validationPasswordRequired;
@@ -559,7 +561,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                     SizedBox(height: 24.h),
 
                                     // Login Button
-                                    Container(
+                                    Semantics(
+                                      identifier: 'login_submit_button',
+                                      child: Container(
                                       height: 56.h,
                                       decoration: BoxDecoration(
                                         gradient: const LinearGradient(
@@ -618,6 +622,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                               ),
                                       ),
                                     ),
+                                    ),
 
                                     SizedBox(height: 24.h),
 
@@ -658,7 +663,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                     SizedBox(height: 24.h),
 
                                     // Google Login Button
-                                    Container(
+                                    Semantics(
+                                      identifier: 'login_google_button',
+                                      child: Container(
                                       height: 56.h,
                                       decoration: BoxDecoration(
                                         borderRadius:
@@ -718,11 +725,14 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                         ),
                                       ),
                                     ),
+                                    ),
 
                                     // Apple Login Button (iOS only)
                                     if (Platform.isIOS) ...[
                                       SizedBox(height: 12.h),
-                                      Container(
+                                      Semantics(
+                                        identifier: 'login_apple_button',
+                                        child: Container(
                                         height: 56.h,
                                         decoration: BoxDecoration(
                                           borderRadius:
@@ -768,12 +778,15 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                           ),
                                         ),
                                       ),
+                                      ),
                                     ],
 
                                     SizedBox(height: 28.h),
 
                                     // Signup Text
-                                    Row(
+                                    Semantics(
+                                      identifier: 'login_signup_link',
+                                      child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
@@ -821,6 +834,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                           ),
                                         ),
                                       ],
+                                    ),
                                     ),
                                   ],
                                 ),

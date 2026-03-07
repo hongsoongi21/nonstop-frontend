@@ -434,9 +434,13 @@ class TimetableManagementNotifier
         );
         debugPrint('[TIMETABLE] Timetable created: $created, selectedTimetableId: ${state.selectedTimetableId}');
       } else if (state.selectedTimetableId == null) {
-        // Auto-select the first one of the current semester
-        debugPrint('[TIMETABLE] Selecting existing timetable: ${currentTimetables.first.id}');
-        await selectTimetable(currentTimetables.first.id);
+        // Auto-select "Asosiy jadval" first, otherwise fallback to first
+        final defaultTt = currentTimetables.firstWhere(
+          (t) => t.title == 'Asosiy jadval',
+          orElse: () => currentTimetables.first,
+        );
+        debugPrint('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
+        await selectTimetable(defaultTt.id);
       }
     } else if (timetables.isNotEmpty && state.selectedTimetableId == null) {
       // Fallback: just select any existing timetable
@@ -446,14 +450,12 @@ class TimetableManagementNotifier
       // No semesters exist yet - determine current academic semester and create timetable
       debugPrint('[TIMETABLE] No semesters found. Auto-creating current semester timetable.');
       final now = DateTime.now();
-      final autoYear = now.month >= 9 ? now.year : now.year - 1;
+      final autoYear = now.month <= 2 ? now.year - 1 : now.year;
       final SemesterType autoType;
-      if (now.month >= 9 || now.month <= 1) {
+      if (now.month >= 3 && now.month <= 8) {
         autoType = SemesterType.first;
-      } else if (now.month >= 2 && now.month <= 6) {
-        autoType = SemesterType.second;
       } else {
-        autoType = SemesterType.summer;
+        autoType = SemesterType.second;
       }
       debugPrint('[TIMETABLE] Auto-creating timetable for year=$autoYear, type=$autoType');
       await createTimetable(

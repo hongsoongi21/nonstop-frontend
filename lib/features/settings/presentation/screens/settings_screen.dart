@@ -192,16 +192,6 @@ class SettingsScreen extends ConsumerWidget {
               _buildDivider(),
               _buildSwitchTile(
                 context: context,
-                icon: Icons.circle,
-                title: AppLocalizations.of(context)!.showOnlineStatus,
-                subtitle: AppLocalizations.of(context)!.showOnlineStatusSubtitle,
-                value: settings.showOnlineStatus,
-                onChanged: (value) =>
-                    notifier.updatePrivacySettings(onlineStatus: value),
-              ),
-              _buildDivider(),
-              _buildSwitchTile(
-                context: context,
                 icon: Icons.message_outlined,
                 title: AppLocalizations.of(context)!.allowMessageRequests,
                 subtitle: AppLocalizations.of(context)!.allowMessageRequestsSubtitle,

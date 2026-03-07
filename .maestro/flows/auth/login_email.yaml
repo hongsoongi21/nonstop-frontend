@@ -1,0 +1,22 @@
+appId: uz.merge4.nonstop
+name: "Email Login Flow"
+tags:
+  - smoke
+  - auth
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "login_email_field"
+- tapOn:
+    id: "login_email_field"
+- inputText: "hongdroid94@naver.com"
+- tapOn:
+    id: "login_password_field"
+- inputText: "test1234"
+- tapOn:
+    id: "login_submit_button"
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000

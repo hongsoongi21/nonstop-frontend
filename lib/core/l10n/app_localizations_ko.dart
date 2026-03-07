@@ -772,10 +772,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get semester => '학기';
 
   @override
-  String get semesterSpring => '봄';
+  String get semesterSpring => '1학기';
 
   @override
-  String get semesterFall => '가을';
+  String get semesterFall => '2학기';
 
   @override
   String get semesterSummer => '여름';

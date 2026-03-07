@@ -170,8 +170,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.textOnPrimary.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: context.textSecondaryColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
                                   '${friends.length}',
@@ -236,8 +236,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.textOnPrimary.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: context.textSecondaryColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
                                   '${sentRequests.length}',

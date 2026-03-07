@@ -43,7 +43,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     // Find current semester name (if any) or generic date
     final semesterName = currentTimetable != null
-        ? '${currentTimetable.year} - ${currentTimetable.semesterType.displayName(context)}'
+        ? '${currentTimetable.year} ${currentTimetable.semesterType.displayName(context)}'
         : '';
 
     return Scaffold(
@@ -119,25 +119,6 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        // Action buttons with refined styling
-                        Container(
-                          decoration: BoxDecoration(
-                            color: context.surfaceColor,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: context.borderColor,
-                              width: 1,
-                            ),
-                          ),
-                          child: IconButton(
-                            onPressed: () => notifier.initializeTimetable(),
-                            icon: Icon(
-                              Icons.refresh_rounded,
-                              color: AppColors.primary,
-                            ),
-                            tooltip: l10n.refresh,
                           ),
                         ),
                       ],
@@ -587,13 +568,11 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
 
     // Determine current semester defaults
     final now = DateTime.now();
-    int selectedYear = now.month >= 9 ? now.year : now.year - 1;
+    int selectedYear = now.month <= 2 ? now.year - 1 : now.year;
     SemesterType selectedType =
-        (now.month >= 9 || now.month <= 1)
+        (now.month >= 3 && now.month <= 8)
             ? SemesterType.first
-            : (now.month >= 2 && now.month <= 6)
-                ? SemesterType.second
-                : SemesterType.summer;
+            : SemesterType.second;
 
     // Count existing preliminary timetables for auto-numbering
     final existingTimetables = state.myTimetables

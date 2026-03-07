@@ -19,6 +19,7 @@ class CustomAuthTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool readOnly;
   final Widget? suffix;
+  final String? semanticsId;
 
   const CustomAuthTextField({
     super.key,
@@ -30,6 +31,7 @@ class CustomAuthTextField extends StatefulWidget {
     this.validator,
     this.readOnly = false,
     this.suffix,
+    this.semanticsId,
   });
 
   @override
@@ -82,7 +84,7 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField> {
         ? AppColors.authFieldHintDark
         : AppColors.authFieldHint;
 
-    return Container(
+    Widget field = Container(
       width: 275.w,
       height: 55.h,
       decoration: BoxDecoration(
@@ -125,6 +127,15 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField> {
         validator: widget.validator,
       ),
     );
+
+    if (widget.semanticsId != null) {
+      field = Semantics(
+        identifier: widget.semanticsId,
+        child: field,
+      );
+    }
+
+    return field;
   }
 
   Widget? _buildSuffixIcon(Color iconColor) {
