@@ -1,0 +1,26 @@
+appId: uz.merge4.nonstop
+name: "Board - Browse and Filter"
+tags:
+  - smoke
+  - board
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Board should be default tab with filter tabs visible
+- assertVisible: "Latest"
+- assertVisible: "Trending"
+- assertVisible: "Most Discussed"
+
+# Switch to Trending filter
+- tapOn: "Trending"
+
+# Switch to Most Discussed
+- tapOn: "Most Discussed"
+
+# Switch back to Latest
+- tapOn: "Latest"

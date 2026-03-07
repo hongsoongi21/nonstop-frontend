@@ -1,0 +1,53 @@
+appId: uz.merge4.nonstop
+name: "Settings - Verify Sections"
+tags:
+  - settings
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Profile tab
+- tapOn:
+    id: "nav_profile"
+- extendedWaitUntil:
+    visible:
+      id: "nav_profile"
+    timeout: 5000
+
+# Tap settings gear icon
+- tapOn:
+    id: "profile_settings_btn"
+- extendedWaitUntil:
+    visible:
+      id: "settings_language"
+    timeout: 5000
+
+# Verify top sections visible
+- assertVisible:
+    id: "settings_language"
+- assertVisible:
+    id: "settings_push_notifications"
+
+# Tap push notifications toggle
+- tapOn:
+    id: "settings_push_notifications"
+
+# Toggle it back
+- tapOn:
+    id: "settings_push_notifications"
+
+# Scroll down to verify logout section
+- scroll
+- extendedWaitUntil:
+    visible:
+      id: "settings_logout_btn"
+    timeout: 3000
+- assertVisible:
+    id: "settings_logout_btn"
+
+# Go back
+- back

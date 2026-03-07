@@ -158,7 +158,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
             Positioned(
               right: 24,
               bottom: 120,
-              child: _buildFloatingWriteButton(context, selectedBoard, selectedCommunity, l10n),
+              child: Semantics(
+                identifier: 'board_fab',
+                child: _buildFloatingWriteButton(context, selectedBoard, selectedCommunity, l10n),
+              ),
             ),
           ],
         ),
@@ -508,7 +511,10 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
       ),
       itemBuilder: (context, index) {
         final post = posts[index];
-        return _buildMinimalPostCard(context, post, isDark, l10n);
+        return Semantics(
+          identifier: 'board_post_$index',
+          child: _buildMinimalPostCard(context, post, isDark, l10n),
+        );
       },
     );
   }
@@ -697,21 +703,24 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               ),
               const SizedBox(height: AppSpacing.lg),
               // Write Post option
-              _buildOptionTile(
-                context: context,
-                icon: Icons.edit_outlined,
-                title: 'Write Post',
-                subtitle: selectedBoard != null
-                    ? 'Post to ${selectedBoard.name}'
-                    : l10n.pleaseSelectBoardFirst,
-                enabled: selectedBoard != null,
-                onTap: () {
-                  Navigator.pop(context);
-                  if (selectedBoard != null) {
-                    context.go(Routes.boardCreatePath());
-                  }
-                },
-                isDark: isDark,
+              Semantics(
+                identifier: 'board_write_post_option',
+                child: _buildOptionTile(
+                  context: context,
+                  icon: Icons.edit_outlined,
+                  title: 'Write Post',
+                  subtitle: selectedBoard != null
+                      ? 'Post to ${selectedBoard.name}'
+                      : l10n.pleaseSelectBoardFirst,
+                  enabled: selectedBoard != null,
+                  onTap: () {
+                    Navigator.pop(context);
+                    if (selectedBoard != null) {
+                      context.go(Routes.boardCreatePath());
+                    }
+                  },
+                  isDark: isDark,
+                ),
               ),
               // Create Board option - 대학교 커뮤니티일 때만 표시
               if (selectedCommunity != null && !selectedCommunity.isGlobal) ...[

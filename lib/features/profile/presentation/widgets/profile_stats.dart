@@ -111,7 +111,9 @@ class ProfileStats extends StatelessWidget {
           SizedBox(height: AppSpacing.md),
 
           // Edit Profile Button - Bold and prominent
-          InkWell(
+          Semantics(
+            identifier: 'profile_edit_btn',
+            child: InkWell(
             onTap: onEditProfilePressed,
             borderRadius: BorderRadius.circular(16),
             child: Container(
@@ -156,6 +158,7 @@ class ProfileStats extends StatelessWidget {
                 ],
               ),
             ),
+          ),
           ),
         ],
       ),

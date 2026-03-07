@@ -1,0 +1,30 @@
+appId: uz.merge4.nonstop
+name: "Profile and Settings Navigation"
+tags:
+  - smoke
+  - profile
+  - settings
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Profile tab
+- tapOn:
+    id: "nav_profile"
+- extendedWaitUntil:
+    visible: "Posts"
+    timeout: 5000
+
+# Verify profile screen tabs
+- assertVisible: "Posts"
+- assertVisible: "Comments"
+
+# Switch to Comments tab
+- tapOn: "Comments"
+
+# Switch back to Posts tab
+- tapOn: "Posts"

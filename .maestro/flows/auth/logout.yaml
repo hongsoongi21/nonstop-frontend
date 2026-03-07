@@ -1,0 +1,64 @@
+appId: uz.merge4.nonstop
+name: "Logout Flow"
+tags:
+  - auth
+  - settings
+---
+# Start fresh and login first
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: "login_email_field"
+- tapOn:
+    id: "login_email_field"
+- inputText: "hongdroid94@naver.com"
+- tapOn:
+    id: "login_password_field"
+- inputText: "test1234"
+- tapOn:
+    id: "login_submit_button"
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Profile tab
+- tapOn:
+    id: "nav_profile"
+- extendedWaitUntil:
+    visible:
+      id: "nav_profile"
+    timeout: 5000
+
+# Tap settings gear icon
+- tapOn:
+    id: "profile_settings_btn"
+- extendedWaitUntil:
+    visible:
+      id: "settings_language"
+    timeout: 5000
+
+# Scroll down to find Logout button
+- scroll
+- extendedWaitUntil:
+    visible:
+      id: "settings_logout_btn"
+    timeout: 3000
+
+# Tap Logout button
+- tapOn:
+    id: "settings_logout_btn"
+
+# Wait for dialog, then tap the Logout BUTTON (index 1, not the title)
+- extendedWaitUntil:
+    visible: "Are you sure you want to logout?"
+    timeout: 3000
+- tapOn:
+    text: "Logout"
+    index: 1
+
+# Should navigate back to login screen
+- extendedWaitUntil:
+    visible:
+      id: "login_email_field"
+    timeout: 10000

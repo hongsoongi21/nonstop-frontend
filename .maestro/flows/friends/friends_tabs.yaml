@@ -1,0 +1,36 @@
+appId: uz.merge4.nonstop
+name: "Friends - Browse Tabs"
+tags:
+  - smoke
+  - friends
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Friends tab
+- tapOn:
+    id: "nav_friends"
+- extendedWaitUntil:
+    visible:
+      id: "friends_tab_friends"
+    timeout: 5000
+
+# Switch to Received tab
+- tapOn:
+    id: "friends_tab_received"
+
+# Switch to Sent Requests tab
+- tapOn:
+    id: "friends_tab_sent"
+
+# Switch to Search tab
+- tapOn:
+    id: "friends_tab_search"
+
+# Return to Friends tab
+- tapOn:
+    id: "friends_tab_friends"

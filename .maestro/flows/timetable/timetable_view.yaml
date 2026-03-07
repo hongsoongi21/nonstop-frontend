@@ -1,0 +1,23 @@
+appId: uz.merge4.nonstop
+name: "Timetable - View Screen"
+tags:
+  - smoke
+  - timetable
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Timetable tab
+- tapOn:
+    id: "nav_timetable"
+- extendedWaitUntil:
+    visible: "Add Course"
+    timeout: 5000
+
+# Verify timetable screen elements
+- assertVisible: "Add Course"
+- assertVisible: "GPA Calculator"

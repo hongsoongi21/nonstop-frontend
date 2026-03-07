@@ -144,43 +144,49 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                     const SizedBox(height: AppSpacing.lg),
 
                     // Title Field
-                    GlassContainer(
-                      borderColor: Colors.transparent,
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: AppTextField(
-                        controller: _titleController,
-                        labelText: l10n.title,
-                        hintText: l10n.writeClearTitle,
-                        maxLines: 2,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.pleaseEnterTitle;
-                          }
-                          if (value.trim().length < 2) {
-                            return l10n.titleTooShort;
-                          }
-                          return null;
-                        },
+                    Semantics(
+                      identifier: 'create_post_title',
+                      child: GlassContainer(
+                        borderColor: Colors.transparent,
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: AppTextField(
+                          controller: _titleController,
+                          labelText: l10n.title,
+                          hintText: l10n.writeClearTitle,
+                          maxLines: 2,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.pleaseEnterTitle;
+                            }
+                            if (value.trim().length < 2) {
+                              return l10n.titleTooShort;
+                            }
+                            return null;
+                          },
+                        ),
                       ),
                     ),
 
                     const SizedBox(height: AppSpacing.lg),
 
                     // Content Field
-                    GlassContainer(
-                      borderColor: Colors.transparent,
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: AppTextField(
-                        controller: _contentController,
-                        labelText: l10n.content,
-                        hintText: l10n.shareYourThoughts,
-                        maxLines: 8,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return l10n.pleaseEnterContent;
-                          }
-                          return null;
-                        },
+                    Semantics(
+                      identifier: 'create_post_content',
+                      child: GlassContainer(
+                        borderColor: Colors.transparent,
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: AppTextField(
+                          controller: _contentController,
+                          labelText: l10n.content,
+                          hintText: l10n.shareYourThoughts,
+                          maxLines: 8,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return l10n.pleaseEnterContent;
+                            }
+                            return null;
+                          },
+                        ),
                       ),
                     ),
 
@@ -212,11 +218,14 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
-                        child: AppButton(
-                          text: l10n.post,
-                          onPressed: _isLoading ? null : _createPost,
-                          isLoading: _isLoading,
-                          variant: ButtonVariant.primary,
+                        child: Semantics(
+                          identifier: 'create_post_submit',
+                          child: AppButton(
+                            text: l10n.post,
+                            onPressed: _isLoading ? null : _createPost,
+                            isLoading: _isLoading,
+                            variant: ButtonVariant.primary,
+                          ),
                         ),
                       ),
                     ],
@@ -349,16 +358,19 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
     final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
-        _buildToggleItem(
-          icon: Icons.visibility_off_outlined,
-          title: l10n.postAnonymously,
-          subtitle: _selectedBoard?.type == BoardType.anonymous
-              ? l10n.hideIdentity
-              : l10n.hideIdentity,
-          value: _isAnonymous,
-          onChanged: _selectedBoard?.type == BoardType.anonymous
-              ? null
-              : (val) => setState(() => _isAnonymous = val),
+        Semantics(
+          identifier: 'create_post_anonymous_toggle',
+          child: _buildToggleItem(
+            icon: Icons.visibility_off_outlined,
+            title: l10n.postAnonymously,
+            subtitle: _selectedBoard?.type == BoardType.anonymous
+                ? l10n.hideIdentity
+                : l10n.hideIdentity,
+            value: _isAnonymous,
+            onChanged: _selectedBoard?.type == BoardType.anonymous
+                ? null
+                : (val) => setState(() => _isAnonymous = val),
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
         _buildToggleItem(

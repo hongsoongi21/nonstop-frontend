@@ -102,7 +102,10 @@ class SettingsScreen extends ConsumerWidget {
           // Language Section
           _buildSectionHeader(AppLocalizations.of(context)!.language),
           SizedBox(height: AppSpacing.sm),
-          _buildLanguageSection(context, ref),
+          Semantics(
+            identifier: 'settings_language',
+            child: _buildLanguageSection(context, ref),
+          ),
 
           SizedBox(height: AppSpacing.xl),
 
@@ -111,14 +114,17 @@ class SettingsScreen extends ConsumerWidget {
           SizedBox(height: AppSpacing.sm),
           _buildSettingsCard(
             children: [
-              _buildSwitchTile(
-                context: context,
-                icon: Icons.notifications_active_outlined,
-                title: AppLocalizations.of(context)!.pushNotifications,
-                subtitle: AppLocalizations.of(context)!.pushNotificationsSubtitle,
-                value: settings.enablePushNotifications,
-                onChanged: (value) =>
-                    notifier.updateNotificationSettings(push: value),
+              Semantics(
+                identifier: 'settings_push_notifications',
+                child: _buildSwitchTile(
+                  context: context,
+                  icon: Icons.notifications_active_outlined,
+                  title: AppLocalizations.of(context)!.pushNotifications,
+                  subtitle: AppLocalizations.of(context)!.pushNotificationsSubtitle,
+                  value: settings.enablePushNotifications,
+                  onChanged: (value) =>
+                      notifier.updateNotificationSettings(push: value),
+                ),
               ),
               _buildDivider(),
               _buildSwitchTile(
@@ -251,57 +257,60 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () => _showLogoutDialog(context, ref),
-      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.md,
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: context.textTertiaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+    return Semantics(
+      identifier: 'settings_logout_btn',
+      child: InkWell(
+        onTap: () => _showLogoutDialog(context, ref),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: context.textTertiaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: Icon(
+                  Icons.logout_outlined,
+                  color: context.textSecondaryColor,
+                  size: AppSpacing.iconMd,
+                ),
               ),
-              child: Icon(
-                Icons.logout_outlined,
-                color: context.textSecondaryColor,
+              SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.logout,
+                      style: AppTypography.bodyLarge.copyWith(
+                        color: context.textPrimaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(height: AppSpacing.xxs),
+                    Text(
+                      AppLocalizations.of(context)!.logoutSubtitle,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: context.textSecondaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: context.textTertiaryColor,
                 size: AppSpacing.iconMd,
               ),
-            ),
-            SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.logout,
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: context.textPrimaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: AppSpacing.xxs),
-                  Text(
-                    AppLocalizations.of(context)!.logoutSubtitle,
-                    style: AppTypography.bodySmall.copyWith(
-                      color: context.textSecondaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: context.textTertiaryColor,
-              size: AppSpacing.iconMd,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -315,20 +324,26 @@ class SettingsScreen extends ConsumerWidget {
         title: Text(l10n.logout),
         content: Text(l10n.confirmLogout),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
+          Semantics(
+            identifier: 'settings_logout_cancel',
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l10n.cancel),
+            ),
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              await ref.read(authProvider.notifier).signOut();
-              if (context.mounted) {
-                context.go(Routes.login);
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.logout),
+          Semantics(
+            identifier: 'settings_logout_confirm',
+            child: TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await ref.read(authProvider.notifier).signOut();
+                if (context.mounted) {
+                  context.go(Routes.login);
+                }
+              },
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
+              child: Text(l10n.logout),
+            ),
           ),
         ],
       ),

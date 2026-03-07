@@ -347,15 +347,18 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             },
           ),
           const SizedBox(width: 24),
-          _ActionButton(
-            icon: post.isLiked
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
-            label: l10n.like,
-            color: post.isLiked ? AppColors.primary : null,
-            isActive: post.isLiked,
-            onTap: () =>
-                ref.read(postDetailProvider(postId).notifier).toggleLike(),
+          Semantics(
+            identifier: 'board_detail_like_btn',
+            child: _ActionButton(
+              icon: post.isLiked
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
+              label: l10n.like,
+              color: post.isLiked ? AppColors.primary : null,
+              isActive: post.isLiked,
+              onTap: () =>
+                  ref.read(postDetailProvider(postId).notifier).toggleLike(),
+            ),
           ),
         ],
       ),
@@ -991,84 +994,90 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: context.surfaceVariantColor,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: context.borderColor.withValues(alpha: 0.5),
-                        width: 1,
+                  child: Semantics(
+                    identifier: 'board_detail_comment_input',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
                       ),
-                    ),
-                    child: TextField(
-                      controller: _commentController,
-                      focusNode: _commentFocusNode,
-                      maxLines: null,
-                      style: AppTypography.body2,
-                      decoration: InputDecoration(
-                        hintText: l10n.writeComment,
-                        hintStyle: AppTypography.body2.copyWith(
-                          color: context.textTertiaryColor,
+                      decoration: BoxDecoration(
+                        color: context.surfaceVariantColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: context.borderColor.withValues(alpha: 0.5),
+                          width: 1,
                         ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        filled: false,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
+                      ),
+                      child: TextField(
+                        controller: _commentController,
+                        focusNode: _commentFocusNode,
+                        maxLines: null,
+                        style: AppTypography.body2,
+                        decoration: InputDecoration(
+                          hintText: l10n.writeComment,
+                          hintStyle: AppTypography.body2.copyWith(
+                            color: context.textTertiaryColor,
+                          ),
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          filled: false,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10,
+                          ),
+                          isDense: true,
                         ),
-                        isDense: true,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [AppColors.primary, AppColors.primaryDark],
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                        offset: const Offset(0, 2),
-                        blurRadius: 8,
+                Semantics(
+                  identifier: 'board_detail_comment_send',
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppColors.primary, AppColors.primaryDark],
                       ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
                       borderRadius: BorderRadius.circular(22),
-                      onTap: () {
-                        if (_commentController.text.trim().isEmpty) return;
-                        ref
-                            .read(postDetailProvider(postId).notifier)
-                            .addComment(
-                              _commentController.text.trim(),
-                              upperCommentId: _replyingToId,
-                              isAnonymous: _isAnonymous,
-                            );
-                        _commentController.clear();
-                        setState(() => _replyingToId = null);
-                        _commentFocusNode.unfocus();
-                      },
-                      child: const Center(
-                        child: Icon(
-                          Icons.send_rounded,
-                          color: AppColors.textOnPrimary,
-                          size: 20,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          offset: const Offset(0, 2),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(22),
+                        onTap: () {
+                          if (_commentController.text.trim().isEmpty) return;
+                          ref
+                              .read(postDetailProvider(postId).notifier)
+                              .addComment(
+                                _commentController.text.trim(),
+                                upperCommentId: _replyingToId,
+                                isAnonymous: _isAnonymous,
+                              );
+                          _commentController.clear();
+                          setState(() => _replyingToId = null);
+                          _commentFocusNode.unfocus();
+                        },
+                        child: const Center(
+                          child: Icon(
+                            Icons.send_rounded,
+                            color: AppColors.textOnPrimary,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ),

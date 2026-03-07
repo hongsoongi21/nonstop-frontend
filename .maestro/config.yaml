@@ -1,1 +1,4 @@
 appId: uz.merge4.nonstop
+
+flows:
+  - "flows/**/*.yaml"

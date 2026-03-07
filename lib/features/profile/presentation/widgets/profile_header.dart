@@ -118,22 +118,25 @@ class ProfileHeader extends StatelessWidget {
                           ),
                           SizedBox(width: AppSpacing.sm),
                           // Settings
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha:0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withValues(alpha:0.3),
-                                width: 1,
+                          Semantics(
+                            identifier: 'profile_settings_btn',
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha:0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha:0.3),
+                                  width: 1,
+                                ),
                               ),
-                            ),
-                            child: IconButton(
-                              onPressed: onSettingsPressed,
-                              icon: const Icon(Icons.settings_outlined),
-                              color: Colors.white,
-                              iconSize: 22,
-                              padding: const EdgeInsets.all(8),
-                              constraints: const BoxConstraints(),
+                              child: IconButton(
+                                onPressed: onSettingsPressed,
+                                icon: const Icon(Icons.settings_outlined),
+                                color: Colors.white,
+                                iconSize: 22,
+                                padding: const EdgeInsets.all(8),
+                                constraints: const BoxConstraints(),
+                              ),
                             ),
                           ),
                         ],

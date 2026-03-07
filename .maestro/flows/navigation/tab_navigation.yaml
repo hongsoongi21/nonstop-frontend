@@ -1,0 +1,55 @@
+appId: uz.merge4.nonstop
+name: "Tab Navigation - All 5 tabs"
+tags:
+  - smoke
+  - navigation
+---
+# Prerequisite: user is logged in (login flow ran first)
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Tab 1: Board (default) - verify filter tabs visible
+- assertVisible:
+    id: "nav_board"
+- assertVisible: "Latest"
+
+# Tab 2: Timetable
+- tapOn:
+    id: "nav_timetable"
+- extendedWaitUntil:
+    visible: "Add Course"
+    timeout: 5000
+
+# Tab 3: Chat
+- tapOn:
+    id: "nav_chat"
+- extendedWaitUntil:
+    visible:
+      id: "nav_chat"
+    timeout: 5000
+
+# Tab 4: Friends
+- tapOn:
+    id: "nav_friends"
+- extendedWaitUntil:
+    visible:
+      id: "nav_friends"
+    timeout: 5000
+
+# Tab 5: Profile
+- tapOn:
+    id: "nav_profile"
+- extendedWaitUntil:
+    visible:
+      id: "nav_profile"
+    timeout: 5000
+
+# Return to Board
+- tapOn:
+    id: "nav_board"
+- extendedWaitUntil:
+    visible: "Latest"
+    timeout: 5000

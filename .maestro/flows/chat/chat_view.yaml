@@ -1,0 +1,22 @@
+appId: uz.merge4.nonstop
+name: "Chat - View Screen"
+tags:
+  - smoke
+  - chat
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Navigate to Chat tab
+- tapOn:
+    id: "nav_chat"
+- extendedWaitUntil:
+    visible: "Chat"
+    timeout: 5000
+
+# Verify chat screen is visible
+- assertVisible: "Chat"

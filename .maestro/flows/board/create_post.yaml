@@ -1,0 +1,58 @@
+appId: uz.merge4.nonstop
+name: "Board - Create Post"
+tags:
+  - board
+  - crud
+---
+# Prerequisite: user is logged in
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "nav_board"
+    timeout: 10000
+
+# Tap FAB to open write options
+- tapOn:
+    id: "board_fab"
+- extendedWaitUntil:
+    visible:
+      id: "board_write_post_option"
+    timeout: 3000
+
+# Tap Write Post option
+- tapOn:
+    id: "board_write_post_option"
+
+# Wait for create post screen
+- extendedWaitUntil:
+    visible:
+      id: "create_post_title"
+    timeout: 5000
+
+# Fill in title
+- tapOn:
+    id: "create_post_title"
+- inputText: "Maestro E2E Test Post"
+
+# Dismiss keyboard to reveal content field
+- hideKeyboard
+
+# Scroll down to reveal content field
+- scroll
+
+# Fill in content
+- tapOn:
+    id: "create_post_content"
+- inputText: "This is an automated test post created by Maestro."
+
+# Dismiss keyboard
+- hideKeyboard
+
+# Submit the post
+- tapOn:
+    id: "create_post_submit"
+
+# Should navigate back to board screen
+- extendedWaitUntil:
+    visible: "Latest"
+    timeout: 10000
