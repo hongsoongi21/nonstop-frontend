@@ -132,6 +132,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   blur: 20,
                   child: TabBar(
                     controller: _tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
                     indicator: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),
