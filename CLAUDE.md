@@ -30,12 +30,21 @@ maestro test .maestro/flows/                         # All flows
 # Analysis
 flutter analyze
 
-# Deploy (Fastlane + Firebase App Distribution)
-cd android && bundle exec fastlane firebase_internal build_number:31
-cd ios && bundle exec fastlane firebase_internal build_number:31
-# Or direct Firebase CLI:
-flutter build apk --release && firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk --app 1:127473148279:android:2109fc50be2bbc3ec2c172
-flutter build ipa --release --export-options-plist=ios/ExportOptions-firebase.plist && firebase appdistribution:distribute build/ios/ipa/nonstop.ipa --app 1:127473148279:ios:1fe527d213701a6dc2c172
+# Deploy to Firebase App Distribution
+# IMPORTANT: Always use --release (NOT --debug). Debug builds crash on real devices.
+# Android:
+flutter build apk --release --build-number=<N>
+firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+  --app 1:127473148279:android:2109fc50be2bbc3ec2c172 \
+  --release-notes "v1.0.5+<N>: description"
+# iOS (uses ExportOptions-dev.plist for development signing):
+flutter build ipa --release --build-number=<N> --export-options-plist=ios/ExportOptions-dev.plist
+firebase appdistribution:distribute build/ios/ipa/nonstop.ipa \
+  --app 1:127473148279:ios:1fe527d213701a6dc2c172 \
+  --release-notes "v1.0.5+<N>: description"
+# Fastlane (if Ruby/CocoaPods are working):
+# cd ios && fastlane firebase_internal build_number:<N> notes:"description"
+# cd android && fastlane firebase_internal build_number:<N> notes:"description"
 ```
 
 ## Architecture Overview
