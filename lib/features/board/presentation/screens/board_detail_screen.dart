@@ -271,7 +271,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           spacing: 16,
           children: [
             _buildStatItem(Icons.visibility_outlined, '${post.viewCount}'),
-            _buildStatItem(Icons.favorite_border, '${post.likeCount}'),
             _buildStatItem(Icons.chat_bubble_outline, '${post.commentCount}'),
           ],
         ),
@@ -353,7 +352,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               icon: post.isLiked
                   ? Icons.favorite_rounded
                   : Icons.favorite_border_rounded,
-              label: l10n.like,
+              label: post.likeCount > 0
+                  ? '${l10n.like} ${post.likeCount}'
+                  : l10n.like,
               color: post.isLiked ? AppColors.primary : null,
               isActive: post.isLiked,
               onTap: () =>
@@ -509,6 +510,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               comment: reply,
               isReply: true,
               parentNickname: parentNickname,
+              onReply: () {
+                setState(() => _replyingToId = comment.id);
+                _commentFocusNode.requestFocus();
+              },
               onLike: () => notifier.toggleCommentLike(reply.id),
               onEdit: () => _showEditCommentDialog(reply, notifier),
               onDelete: () => _showDeleteCommentDialog(reply.id, notifier),
@@ -1070,7 +1075,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                               );
                           _commentController.clear();
                           setState(() => _replyingToId = null);
-                          _commentFocusNode.unfocus();
                         },
                         child: const Center(
                           child: Icon(
@@ -1468,7 +1472,7 @@ class _CommentStatsRow extends StatelessWidget {
               ),
             ),
           ),
-          if (!isReply) ...[
+          if (onReply != null) ...[
             const SizedBox(width: 12),
             InkWell(
               onTap: onReply,
