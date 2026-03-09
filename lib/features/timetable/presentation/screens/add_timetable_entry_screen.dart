@@ -878,12 +878,15 @@ class _AddTimetableEntryScreenState
                   color: AppColors.primary,
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: AppTypography.labelSmall.copyWith(
-                    color: context.textSecondaryColor,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
+                Flexible(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelSmall.copyWith(
+                      color: context.textSecondaryColor,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ],
