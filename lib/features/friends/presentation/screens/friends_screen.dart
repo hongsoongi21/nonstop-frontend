@@ -14,6 +14,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
+import '../../../chat/domain/entities/chat_room.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../providers/friend_management_provider.dart';
 import '../../domain/entities/friend.dart';
@@ -860,6 +861,21 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     final userId = int.tryParse(friend.id);
     if (userId == null) return;
 
+    // Fast path: check if 1:1 room already exists locally
+    final existingRooms = ref.read(chatListProvider).rooms;
+    final existingRoom = existingRooms
+        .where((r) =>
+            r.type == ChatRoomType.oneToOne &&
+            r.memberIds != null &&
+            r.memberIds!.contains(userId))
+        .firstOrNull;
+
+    if (existingRoom != null) {
+      context.go(Routes.chatRoomPath(existingRoom.id.toString()));
+      return;
+    }
+
+    // Slow path: create or find room via API
     setState(() => _isStartingChat = true);
 
     final newRoom = await ref.read(chatListProvider.notifier).createOneToOneRoom(userId);
@@ -868,10 +884,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
       setState(() => _isStartingChat = false);
 
       if (newRoom != null) {
-        // Defer navigation to next frame to avoid Navigator lock
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            // Use 'go' instead of 'push' to update the bottom navigation tab to Chat
             context.go(Routes.chatRoomPath(newRoom.id.toString()));
           }
         });
