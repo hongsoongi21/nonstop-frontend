@@ -1,71 +1,93 @@
 import 'package:flutter/material.dart';
 
-/// Application color palette - "Samarkand Modern" Design System
-/// Inspired by Uzbekistan's iconic blue tiles mixed with modern university energy
+/// Application color palette - "Nonstop Modern" Design System
+/// Centered around the new Brand Color (6E89F8) with expanded 12-step grayscale
 class AppColors {
   // ═══════════════════════════════════════════════════════════════════════════
-  // BRAND COLORS - Samarkand Blue Spectrum
+  // BRAND COLORS - Primary Palette (#6E89F8)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Primary - Deep Samarkand Blue (main brand color)
-  static const Color primary = Color(0xFF1E4D7B);
+  /// Primary - New Brand Color (6E89F8)
+  static const Color primary = Color(0xFF6E89F8);
+  
+  /// Primary Palette (50-950) - Derived from provided hex codes
+  static const Color primary50 = Color(0xFFEBECFF);
+  static const Color primary100 = Color(0xFFDCDDFE);
+  static const Color primary200 = Color(0xFF81A9FF); // at100
+  static const Color primary300 = Color(0xFF7FABE3); // sl100
+  static const Color primary400 = Color(0xFF7190FF); // mlFat
+  static const Color primary500 = Color(0xFF6E89F8); // Base (slMiddle)
+  static const Color primary600 = Color(0xFF7C7EFC); // gl500
+  static const Color primary700 = Color(0xFF6A5DFB); // gl600
+  static const Color primary800 = Color(0xFF2F5BF9); // at500
+  static const Color primary900 = Color(0xFF0046A5); // slHigh
+  static const Color primary950 = Color(0xFF092E97); // pbf500
 
-  /// Primary variants
-  static const Color primaryLight = Color(0xFF3A7CA5);
-  static const Color primaryDark = Color(0xFF0D2E4D);
-  static const Color primarySoft = Color(0xFF5C99C5);
+  // Legacy Mapping for compatibility with existing widgets
+  static const Color primaryLight = primary300;
+  static const Color primaryDark = primary800;
+  static const Color primarySoft = primary100;
 
-  /// Secondary - Warm Gold (Uzbek textile accent)
-  static const Color secondary = Color(0xFFD4A853);
-  static const Color secondaryLight = Color(0xFFE8C97D);
-  static const Color secondaryDark = Color(0xFFB08A3A);
+  /// Secondary - Purple Accent (#BB8FF9)
+  static const Color secondary = Color(0xFFBB8FF9);
+  static const Color secondaryLight = Color(0xFFDCDDFE);
+  static const Color secondaryDark = Color(0xFF8A86FF);
 
-  /// Tertiary - Turquoise Tile (classic Uzbek architecture)
-  static const Color tertiary = Color(0xFF0891B2);
-  static const Color tertiaryLight = Color(0xFF22D3EE);
-  static const Color tertiaryDark = Color(0xFF0E7490);
-
-  /// Accent - Coral Energy (youth & vibrancy)
-  static const Color accent = Color(0xFFEF6461);
-  static const Color accentLight = Color(0xFFFF8A87);
-  static const Color accentDark = Color(0xFFCC4A47);
+  /// Tertiary - Soft Lavender (#8A86FF)
+  static const Color tertiary = Color(0xFF8A86FF);
+  static const Color tertiaryLight = Color(0xFFEBECFF);
+  static const Color tertiaryDark = Color(0xFF6A5DFB);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // SURFACE COLORS
+  // NEUTRAL COLORS (Expanded 12-step Grey Scale from HealthNYou)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Light mode surfaces
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF1F5F9);
-  static const Color surfaceElevated = Color(0xFFFFFFFF);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color grey05 = Color(0xFFF8F8F8);
+  static const Color grey10 = Color(0xFFF3F3F7);
+  static const Color grey40 = Color(0xFFECECF0);
+  static const Color grey50 = Color(0xFFE5E5EA);
+  static const Color grey100 = Color(0xFFD1D1D6);
+  static const Color grey200 = Color(0xFFC7C7CC);
+  static const Color grey300 = Color(0xFFAEAEB2);
+  static const Color grey400 = Color(0xFF8E8E93);
+  static const Color grey500 = Color(0xFF636366);
+  static const Color grey600 = Color(0xFF49484B);
+  static const Color grey700 = Color(0xFF3A3A3C);
+  static const Color grey800 = Color(0xFF2C2D2E);
+  static const Color grey900 = Color(0xFF1C1C1E);
+  static const Color black = Color(0xFF000000);
 
-  /// Card & container backgrounds
-  static const Color cardBackground = Color(0xFFFFFFFF);
-  static const Color cardBackgroundAlt = Color(0xFFFCFDFE);
+  // Semantic Mapping for surfaces
+  static const Color background = grey05;
+  static const Color surface = white;
+  static const Color surfaceVariant = grey10;
+  static const Color surfaceElevated = white;
 
-  /// Dark mode card backgrounds
-  static const Color cardBackgroundDark = Color(0xFF1E293B);
-  static const Color cardBackgroundAltDark = Color(0xFF253347);
+  // Legacy Surface Aliases
+  static const Color cardBackground = white;
+  static const Color cardBackgroundAlt = grey05;
+  static const Color surfaceSecondary = grey10;
 
-  /// Dark mode surfaces
+  // Dark mode surfaces (kept for basic compatibility)
   static const Color backgroundDark = Color(0xFF0F172A);
   static const Color surfaceDark = Color(0xFF1E293B);
   static const Color surfaceVariantDark = Color(0xFF334155);
   static const Color surfaceElevatedDark = Color(0xFF1E293B);
+  static const Color cardBackgroundDark = Color(0xFF1E293B);
+  static const Color cardBackgroundAltDark = Color(0xFF253347);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // TEXT COLORS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Light mode text
-  static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF475569);
-  static const Color textTertiary = Color(0xFF94A3B8);
-  static const Color textHint = Color(0xFFCBD5E1);
-  static const Color textOnPrimary = Color(0xFFFFFFFF);
-  static const Color textOnSecondary = Color(0xFF0F172A);
-  static const Color textOnAccent = Color(0xFFFFFFFF);
+  static const Color textPrimary = grey900;
+  static const Color textSecondary = grey500;
+  static const Color textTertiary = grey300;
+  static const Color textHint = grey100;
+  static const Color textOnPrimary = white;
+  static const Color textOnSecondary = grey900;
+  static const Color textOnAccent = white;
 
   /// Dark mode text
   static const Color textPrimaryDark = Color(0xFFF8FAFC);
@@ -74,233 +96,146 @@ class AppColors {
   static const Color textHintDark = Color(0xFF475569);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // STATUS COLORS
+  // STATUS & ACCENT COLORS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const Color success = Color(0xFF10B981);
-  static const Color successLight = Color(0xFFD1FAE5);
-  static const Color successDark = Color(0xFF059669);
+  // Accent (Coral / Energy) - Re-adding for compatibility
+  static const Color accent = Color(0xFFEF6461);
+  static const Color accentLight = Color(0xFFFF8A87);
+  static const Color accentDark = Color(0xFFCC4A47);
 
-  static const Color error = Color(0xFFEF4444);
-  static const Color errorLight = Color(0xFFFEE2E2);
-  static const Color errorDark = Color(0xFFDC2626);
+  // Success (Green)
+  static const Color success = Color(0xFF51C639);
+  static const Color successLight = Color(0xFFCEF9B2);
+  static const Color successDark = Color(0xFF1E8E1C);
 
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color warningLight = Color(0xFFFEF3C7);
-  static const Color warningDark = Color(0xFFD97706);
+  // Error (Red)
+  static const Color error = Color(0xFFFF334B);
+  static const Color errorLight = Color(0xFFFCC5CB);
+  static const Color errorDark = Color(0xFFC9162B);
 
-  static const Color info = Color(0xFF3B82F6);
-  static const Color infoLight = Color(0xFFDBEAFE);
-  static const Color infoDark = Color(0xFF2563EB);
+  // Warning (Orange/Yellow)
+  static const Color warning = Color(0xFFFF6F36);
+  static const Color warningLight = Color(0xFFFFCFBF);
+  static const Color warningDark = Color(0xFFC43100);
+
+  // Info (Blue)
+  static const Color info = Color(0xFF2F5BF9);
+  static const Color infoLight = Color(0xFFABC3FE);
+  static const Color infoDark = Color(0xFF0E2290);
+
+  /// Dark mode status colors
+  static const Color successDarkTheme = Color(0xFF35AA29);
+  static const Color errorDarkTheme = Color(0xFFE5172F);
+  static const Color warningDarkTheme = Color(0xFFFF5E1F);
+  static const Color infoDarkTheme = Color(0xFF2245D6);
+
+  // Legacy University Colors
+  static const Color universityRed = accent;
+  static const Color universityGreen = success;
+  static const Color universityPurple = Color(0xFF8B5CF6);
+  static const Color universityOrange = warning;
 
   // ═══════════════════════════════════════════════════════════════════════════
   // BORDER & DIVIDER COLORS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const Color border = Color(0xFFE2E8F0);
-  static const Color borderLight = Color(0xFFF1F5F9);
-  static const Color borderFocused = Color(0xFF1E4D7B);
-  static const Color divider = Color(0xFFE2E8F0);
+  static const Color border = grey50;
+  static const Color borderLight = grey40;
+  static const Color borderFocused = primary;
+  static const Color divider = grey40;
 
+  // Dark mode borders
   static const Color borderDark = Color(0xFF334155);
   static const Color borderLightDark = Color(0xFF475569);
-  static const Color borderFocusedDark = Color(0xFF3A7CA5);
+  static const Color borderFocusedDark = primary;
   static const Color dividerDark = Color(0xFF334155);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // SHADOW & OVERLAY COLORS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  static const Color shadow = Color(0x0A0F172A);
-  static const Color shadowMedium = Color(0x1A0F172A);
-  static const Color shadowStrong = Color(0x2A0F172A);
-  static const Color overlay = Color(0x800F172A);
-  static const Color ripple = Color(0x1A1E4D7B);
-
-  /// Dark mode shadows
+  static const Color shadow = Color(0x0A000000);
+  static const Color shadowMedium = Color(0x1A000000);
+  static const Color shadowStrong = Color(0x2A000000);
   static const Color shadowDark = Color(0x40000000);
-  static const Color shadowMediumDark = Color(0x60000000);
-  static const Color overlayDark = Color(0xCC000000);
+  static const Color overlay = Color(0x80000000);
+  static const Color ripple = Color(0x1A6E89F8);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // GRADIENTS - Samarkand Inspired
+  // GRADIENTS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Main brand gradient (Samarkand sky to sea)
+  /// Main brand gradient
   static const List<Color> primaryGradient = [
-    Color(0xFF1E4D7B),
-    Color(0xFF0891B2),
+    primary,
+    Color(0xFF8196F9),
   ];
 
-  /// Warm sunset gradient (Uzbek desert)
-  static const List<Color> sunsetGradient = [
-    Color(0xFFD4A853),
-    Color(0xFFEF6461),
-  ];
-
-  /// Cool sky gradient (Central Asian sky)
-  static const List<Color> skyGradient = [
-    Color(0xFF3A7CA5),
-    Color(0xFF22D3EE),
-  ];
-
-  /// Background gradient (subtle)
-  static const List<Color> backgroundGradient = [
-    Color(0xFFF8FAFC),
-    Color(0xFFF1F5F9),
-  ];
-
-  /// Dark background gradient
-  static const List<Color> backgroundGradientDark = [
-    Color(0xFF0F172A),
-    Color(0xFF1E293B),
-  ];
-
-  /// Premium/accent gradient
-  static const List<Color> accentGradient = [
-    Color(0xFFEF6461),
-    Color(0xFFD4A853),
-  ];
-
-  /// Legacy support
   static const List<Color> brandGradient = primaryGradient;
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // LEGACY ALIASES (for backward compatibility)
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /// Legacy university colors - now mapped to new palette
-  static const Color universityRed = accent;
-  static const Color universityGreen = success;
-  static const Color universityPurple = Color(0xFF8B5CF6);
-  static const Color universityOrange = warning;
-
-  /// Legacy surface colors
-  static const Color surfaceSecondary = surfaceVariant;
-  static const Color backgroundGradientStart = Color(0xFFF8FAFC);
-  static const Color backgroundGradientEnd = Color(0xFFF1F5F9);
-
-  /// Legacy gradient
-  static const List<Color> universityGradient = accentGradient;
-  static const List<Color> successGradient = [success, Color(0xFF34D399)];
+  static const List<Color> backgroundGradient = [grey05, white];
+  static const List<Color> backgroundGradientDark = [backgroundDark, surfaceDark];
 
   // ═══════════════════════════════════════════════════════════════════════════
   // FEATURE-SPECIFIC COLORS
   // ═══════════════════════════════════════════════════════════════════════════
 
   /// Board categories
-  static const Color boardFree = Color(0xFF0891B2); // Turquoise
-  static const Color boardSecret = Color(0xFF8B5CF6); // Purple
-  static const Color boardQuestion = Color(0xFF3B82F6); // Blue
-  static const Color boardMarket = Color(0xFFD4A853); // Gold
+  static const Color boardFree = primary;
+  static const Color boardSecret = secondary;
+  static const Color boardQuestion = info;
+  static const Color boardMarket = Color(0xFF7E94E0);
 
   /// Timetable
-  static const Color timetableToday = Color(0xFF1E4D7B);
-  static const Color timetableWeekend = Color(0xFF94A3B8);
-  static const Color timetablePast = Color(0xFFCBD5E1);
-  static const Color timetableConflict = Color(0xFFEF4444);
-
-  /// Chat
-  static const Color chatOnline = Color(0xFF10B981);
-  static const Color chatOffline = Color(0xFF94A3B8);
-  static const Color chatTyping = Color(0xFFD4A853);
-  static const Color messageBubbleSent = Color(0xFF1E4D7B);
-  static const Color messageBubbleReceived = Color(0xFFF1F5F9);
+  static const Color chatOnline = Color(0xFF51C639); // success
+  static const Color chatOffline = grey300;
+  static const Color chatTyping = Color(0xFFFFC402); // yellow500
+  static const Color messageBubbleSent = primary;
+  static const Color messageBubbleReceived = grey10;
   static const Color messageBubbleReceivedDark = Color(0xFF334155);
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // GLASSMORPHISM COLORS
-  // ═══════════════════════════════════════════════════════════════════════════
+  /// Glassmorphism
+  static const Color glassBackground = Color(0x33FFFFFF);
+  static const Color glassBorder = Color(0x4DFFFFFF);
+  static const Color glassBackgroundDark = Color(0x33000000);
+  static const Color glassBorderDark = Color(0x4D000000);
 
-  /// Light mode glass
-  static const Color glassBackground = Color(0xFFFFFFFF);
-  static const Color glassBorder = Color(0xFFFFFFFF);
-
-  /// Dark mode glass
-  static const Color glassBackgroundDark = Color(0xFF1E293B);
-  static const Color glassBorderDark = Color(0xFF475569);
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // AUTH FIELD COLORS
-  // ═══════════════════════════════════════════════════════════════════════════
-
-  /// Light mode auth field
+  /// Auth Fields
   static const Color authFieldBackground = Color(0xFFE9F0FE);
-  static const Color authFieldBorder = Color(0xFFFFFFFF);
-  static const Color authFieldText = Color(0xFF0F172A);
-  static const Color authFieldHint = Color(0xFF64748B);
-
-  /// Dark mode auth field
   static const Color authFieldBackgroundDark = Color(0xFF1E293B);
+  static const Color authFieldBorder = white;
   static const Color authFieldBorderDark = Color(0xFF475569);
-  static const Color authFieldTextDark = Color(0xFFF8FAFC);
-  static const Color authFieldHintDark = Color(0xFF94A3B8);
+  static const Color authFieldText = grey900;
+  static const Color authFieldTextDark = white;
+  static const Color authFieldHint = grey100;
+  static const Color authFieldHintDark = grey300;
 
   /// Social
   static const Color google = Color(0xFFDB4437);
   static const Color facebook = Color(0xFF4267B2);
-  static const Color twitter = Color(0xFF1DA1F2);
-  static const Color github = Color(0xFF333333);
+  static const Color apple = Color(0xFF000000);
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // COURSE/CATEGORY COLORS (Vibrant palette for timetable)
-  // ═══════════════════════════════════════════════════════════════════════════
-
+  /// Timetable / Course Colors (Rich Palette)
   static const List<Color> courseColors = [
-    Color(0xFF1E4D7B), // Samarkand Blue
-    Color(0xFF0891B2), // Turquoise
-    Color(0xFFD4A853), // Gold
-    Color(0xFFEF6461), // Coral
-    Color(0xFF8B5CF6), // Purple
-    Color(0xFF10B981), // Emerald
-    Color(0xFFF59E0B), // Amber
-    Color(0xFFEC4899), // Pink
-    Color(0xFF3B82F6), // Sky Blue
-    Color(0xFF14B8A6), // Teal
-    Color(0xFF6366F1), // Indigo
-    Color(0xFFF97316), // Orange
+    primary,
+    secondary,
+    tertiary,
+    Color(0xFF7FABE3),
+    Color(0xFF7E94E0),
+    Color(0xFF7C7EFC),
+    Color(0xFF6A5DFB),
+    Color(0xFF2F5BF9),
   ];
 
   // ═══════════════════════════════════════════════════════════════════════════
   // UTILITY METHODS
   // ═══════════════════════════════════════════════════════════════════════════
 
-  /// Get color by string name
-  static Color fromString(String colorName) {
-    switch (colorName.toLowerCase()) {
-      case 'primary':
-        return primary;
-      case 'secondary':
-        return secondary;
-      case 'tertiary':
-        return tertiary;
-      case 'accent':
-        return accent;
-      case 'success':
-        return success;
-      case 'error':
-        return error;
-      case 'warning':
-        return warning;
-      case 'info':
-        return info;
-      default:
-        return primary;
-    }
-  }
-
-  /// Check if color is dark (for text contrast)
   static bool isDark(Color color) {
     return color.computeLuminance() < 0.5;
   }
 
-  /// Get contrasting text color for background
   static Color getContrastingTextColor(Color backgroundColor) {
     return isDark(backgroundColor) ? Colors.white : textPrimary;
-  }
-
-  /// Get color with opacity
-  static Color withOpacity(Color color, double opacity) {
-    return color.withValues(alpha: opacity);
   }
 }
