@@ -381,9 +381,9 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.backgroundGradient,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.authGradient,
           ),
         ),
         child: SafeArea(

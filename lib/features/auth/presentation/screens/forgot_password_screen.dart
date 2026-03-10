@@ -210,12 +210,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen>
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [
-              Color(0xFFE0DBF8),
-              Color(0xFFDEF4EB),
-            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.authGradient,
           ),
         ),
         child: SafeArea(

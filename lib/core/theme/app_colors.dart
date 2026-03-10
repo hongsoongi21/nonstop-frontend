@@ -169,8 +169,11 @@ class AppColors {
   /// Main brand gradient
   static const List<Color> primaryGradient = [
     primary,
-    Color(0xFF8196F9),
+    secondary,
   ];
+
+  /// Login & Auth background gradient
+  static const List<Color> authGradient = primaryGradient;
 
   static const List<Color> brandGradient = primaryGradient;
   static const List<Color> backgroundGradient = [grey05, white];

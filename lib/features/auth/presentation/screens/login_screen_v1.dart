@@ -394,9 +394,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: AppColors.primaryGradient,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: AppColors.authGradient,
           ),
         ),
         child: SafeArea(
@@ -566,11 +566,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                                       child: Container(
                                       height: 56.h,
                                       decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                          colors: AppColors.primaryGradient,
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                        ),
+                                        color: AppColors.primary,
                                         borderRadius:
                                             BorderRadius.circular(16.r),
                                         boxShadow: [
