@@ -28,8 +28,8 @@ class AppColors {
   static const Color primaryDark = primary800;
   static const Color primarySoft = primary100;
 
-  /// Secondary - Purple Accent (#BB8FF9)
-  static const Color secondary = Color(0xFFBB8FF9);
+  /// Secondary - Soft Blue (#7FABE3)
+  static const Color secondary = Color(0xFF7FABE3);
   static const Color secondaryLight = Color(0xFFDCDDFE);
   static const Color secondaryDark = Color(0xFF8A86FF);
 
