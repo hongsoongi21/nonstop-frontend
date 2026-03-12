@@ -99,19 +99,24 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
   Future<void> toggleLike() async {
     if (state.post == null) return;
 
+    // Optimistic update: update UI immediately
+    final previousPost = state.post!;
+    final isLiked = !previousPost.isLiked;
+    final updatedPost = previousPost.copyWith(
+      isLiked: isLiked,
+      likeCount: isLiked
+          ? previousPost.likeCount + 1
+          : previousPost.likeCount - 1,
+    );
+    state = state.copyWith(post: updatedPost);
+    _ref.read(boardProvider.notifier).updateLocalPost(updatedPost);
+
+    // Then call server; revert on failure
     final result = await _repository.togglePostLike(_postId);
-    result.fold((error) => state = state.copyWith(error: error), (_) {
-      final currentPost = state.post!;
-      final isLiked = !currentPost.isLiked;
-      final updatedPost = currentPost.copyWith(
-        isLiked: isLiked,
-        likeCount: isLiked
-            ? currentPost.likeCount + 1
-            : currentPost.likeCount - 1,
-      );
-      state = state.copyWith(post: updatedPost);
-      _ref.read(boardProvider.notifier).updateLocalPost(updatedPost);
-    });
+    result.fold((error) {
+      state = state.copyWith(post: previousPost, error: error);
+      _ref.read(boardProvider.notifier).updateLocalPost(previousPost);
+    }, (_) {});
   }
 
   Future<void> deletePost() async {
@@ -143,35 +148,38 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
   }
 
   Future<void> toggleCommentLike(int commentId) async {
+    // Optimistic update: update UI immediately
+    final previousComments = state.comments;
+    final updatedComments = state.comments.map((c) {
+      if (c.id == commentId) {
+        final isLiked = !c.isLiked;
+        return c.copyWith(
+          isLiked: isLiked,
+          likeCount: isLiked ? c.likeCount + 1 : c.likeCount - 1,
+        );
+      }
+      if (c.replies.isNotEmpty) {
+        final updatedReplies = c.replies.map((r) {
+          if (r.id == commentId) {
+            final isLiked = !r.isLiked;
+            return r.copyWith(
+              isLiked: isLiked,
+              likeCount: isLiked ? r.likeCount + 1 : r.likeCount - 1,
+            );
+          }
+          return r;
+        }).toList();
+        return c.copyWith(replies: updatedReplies);
+      }
+      return c;
+    }).toList();
+    state = state.copyWith(comments: updatedComments);
+
+    // Then call server; revert on failure
     final result = await _repository.toggleCommentLike(commentId);
-    result.fold((error) => state = state.copyWith(error: error), (_) {
-      // Optimistic update for comment like
-      final updatedComments = state.comments.map((c) {
-        if (c.id == commentId) {
-          final isLiked = !c.isLiked;
-          return c.copyWith(
-            isLiked: isLiked,
-            likeCount: isLiked ? c.likeCount + 1 : c.likeCount - 1,
-          );
-        }
-        // Check replies
-        if (c.replies.isNotEmpty) {
-          final updatedReplies = c.replies.map((r) {
-            if (r.id == commentId) {
-              final isLiked = !r.isLiked;
-              return r.copyWith(
-                isLiked: isLiked,
-                likeCount: isLiked ? r.likeCount + 1 : r.likeCount - 1,
-              );
-            }
-            return r;
-          }).toList();
-          return c.copyWith(replies: updatedReplies);
-        }
-        return c;
-      }).toList();
-      state = state.copyWith(comments: updatedComments);
-    });
+    result.fold((error) {
+      state = state.copyWith(comments: previousComments, error: error);
+    }, (_) {});
   }
 
   Future<void> deleteComment(int commentId) async {

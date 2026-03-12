@@ -14,6 +14,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_states.dart';
 import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/glass_container.dart';
+import '../../../chat/domain/entities/chat_room.dart';
 import '../../../chat/presentation/providers/chat_provider.dart';
 import '../providers/friend_management_provider.dart';
 import '../../domain/entities/friend.dart';
@@ -35,6 +36,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) setState(() {});
+    });
     // Load friends and requests on init
     Future.microtask(() {
       ref.read(friendManagementProvider.notifier).loadFriends();
@@ -122,7 +126,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 ),
               ),
 
-              // Tabs
+              // Tabs — icon-based pills (language-independent, no overflow)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: GlassContainer(
@@ -130,145 +134,38 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                   borderRadius: BorderRadius.circular(16),
                   opacity: 0.3,
                   blur: 20,
-                  child: TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    indicator: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    labelColor: AppColors.textOnPrimary,
-                    unselectedLabelColor: context.textSecondaryColor,
-                    labelStyle: AppTypography.button.copyWith(
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
-                    unselectedLabelStyle: AppTypography.button.copyWith(
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: -0.2,
-                    ),
-                    tabs: [
-                      Semantics(
-                        identifier: 'friends_tab_friends',
-                        child: Tab(
-                          height: 44,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(l10n.friendsTitle),
-                              if (friends.isNotEmpty) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: context.textSecondaryColor.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    '${friends.length}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+                  child: Row(
+                    children: [
+                      _buildTabPill(
+                        index: 0,
+                        icon: Icons.people_alt_rounded,
+                        label: l10n.friendsTitle,
+                        count: friends.length,
+                        semanticsId: 'friends_tab_friends',
                       ),
-                      Semantics(
-                        identifier: 'friends_tab_received',
-                        child: Tab(
-                          height: 44,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(l10n.requests),
-                              if (requests.isNotEmpty) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 7,
-                                    vertical: 3,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.error,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.error.withValues(alpha: 0.4),
-                                        blurRadius: 6,
-                                        spreadRadius: 1,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    '${requests.length}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+                      const SizedBox(width: 6),
+                      _buildTabPill(
+                        index: 1,
+                        icon: Icons.move_to_inbox_rounded,
+                        label: l10n.requests,
+                        count: requests.length,
+                        isAlert: requests.isNotEmpty,
+                        semanticsId: 'friends_tab_received',
                       ),
-                      Semantics(
-                        identifier: 'friends_tab_sent',
-                        child: Tab(
-                          height: 44,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(l10n.sentRequests),
-                              if (sentRequests.isNotEmpty) ...[
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: context.textSecondaryColor.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    '${sentRequests.length}',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
+                      const SizedBox(width: 6),
+                      _buildTabPill(
+                        index: 2,
+                        icon: Icons.send_rounded,
+                        label: l10n.sentRequests,
+                        count: sentRequests.length,
+                        semanticsId: 'friends_tab_sent',
                       ),
-                      Semantics(
-                        identifier: 'friends_tab_search',
-                        child: Tab(
-                          height: 44,
-                          child: Text(l10n.search),
-                        ),
+                      const SizedBox(width: 6),
+                      _buildTabPill(
+                        index: 3,
+                        icon: Icons.search_rounded,
+                        label: l10n.search,
+                        semanticsId: 'friends_tab_search',
                       ),
                     ],
                   ),
@@ -294,6 +191,99 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabPill({
+    required int index,
+    required IconData icon,
+    required String label,
+    required String semanticsId,
+    int count = 0,
+    bool isAlert = false,
+  }) {
+    final isSelected = _tabController.index == index;
+
+    return Expanded(
+      child: Semantics(
+        identifier: semanticsId,
+        child: Tooltip(
+          message: label,
+          child: GestureDetector(
+            onTap: () => _tabController.animateTo(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutCubic,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: isSelected
+                        ? AppColors.textOnPrimary
+                        : context.textSecondaryColor,
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      right: 8,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isAlert
+                              ? AppColors.error
+                              : isSelected
+                                  ? Colors.white.withValues(alpha: 0.25)
+                                  : context.textSecondaryColor
+                                      .withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: isAlert
+                              ? [
+                                  BoxShadow(
+                                    color:
+                                        AppColors.error.withValues(alpha: 0.4),
+                                    blurRadius: 6,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            color: isAlert || isSelected
+                                ? Colors.white
+                                : context.textSecondaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -860,6 +850,21 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     final userId = int.tryParse(friend.id);
     if (userId == null) return;
 
+    // Fast path: check if 1:1 room already exists locally
+    final existingRooms = ref.read(chatListProvider).rooms;
+    final existingRoom = existingRooms
+        .where((r) =>
+            r.type == ChatRoomType.oneToOne &&
+            r.memberIds != null &&
+            r.memberIds!.contains(userId))
+        .firstOrNull;
+
+    if (existingRoom != null) {
+      context.go(Routes.chatRoomPath(existingRoom.id.toString()), extra: existingRoom.name ?? friend.nickname);
+      return;
+    }
+
+    // Slow path: create or find room via API
     setState(() => _isStartingChat = true);
 
     final newRoom = await ref.read(chatListProvider.notifier).createOneToOneRoom(userId);
@@ -868,11 +873,9 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
       setState(() => _isStartingChat = false);
 
       if (newRoom != null) {
-        // Defer navigation to next frame to avoid Navigator lock
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            // Use 'go' instead of 'push' to update the bottom navigation tab to Chat
-            context.go(Routes.chatRoomPath(newRoom.id.toString()));
+            context.go(Routes.chatRoomPath(newRoom.id.toString()), extra: newRoom.name ?? friend.nickname);
           }
         });
       } else {
@@ -1296,7 +1299,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
     if (confirmed == true) {
       final success = await ref
           .read(friendManagementProvider.notifier)
-          .deleteFriend(friend.id);
+          .deleteFriend(friend.relationshipId ?? friend.id);
       if (success && mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(

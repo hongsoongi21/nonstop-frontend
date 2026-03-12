@@ -176,21 +176,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                _buildActionButtons(context, post, postId),
-                const SizedBox(height: 8),
-                Container(
-                  height: 1,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        context.dividerColor.withValues(alpha: 0.4),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
                 _buildCommentsSection(context, comments, postId),
               ],
             ),
@@ -267,12 +252,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           ),
         ),
         const SizedBox(height: 20),
-        Wrap(
-          spacing: 16,
+        Row(
           children: [
             _buildStatItem(Icons.visibility_outlined, '${post.viewCount}'),
-            _buildStatItem(Icons.favorite_border, '${post.likeCount}'),
-            _buildStatItem(Icons.chat_bubble_outline, '${post.commentCount}'),
+            const SizedBox(width: 12),
+            _buildLikeChip(post),
           ],
         ),
       ],
@@ -294,6 +278,58 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildLikeChip(PostEntity post) {
+    final postId = post.id;
+    final isLiked = post.isLiked;
+    return Semantics(
+      identifier: 'board_detail_like_btn',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () =>
+              ref.read(postDetailProvider(postId).notifier).toggleLike(),
+          borderRadius: BorderRadius.circular(20),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isLiked
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : context.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isLiked
+                    ? AppColors.primary.withValues(alpha: 0.3)
+                    : context.dividerColor.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  size: 16,
+                  color: isLiked ? AppColors.primary : context.textTertiaryColor,
+                ),
+                if (post.likeCount > 0) ...[
+                  const SizedBox(width: 4),
+                  Text(
+                    '${post.likeCount}',
+                    style: AppTypography.caption.copyWith(
+                      color: isLiked ? AppColors.primary : context.textTertiaryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -323,44 +359,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           fontWeight: FontWeight.w600,
           letterSpacing: 0.2,
         ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(
-    BuildContext context,
-    PostEntity post,
-    int postId,
-  ) {
-    final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _ActionButton(
-            icon: Icons.chat_bubble_outline_rounded,
-            label: l10n.comment,
-            onTap: () {
-              setState(() => _replyingToId = null);
-              _commentFocusNode.requestFocus();
-            },
-          ),
-          const SizedBox(width: 24),
-          Semantics(
-            identifier: 'board_detail_like_btn',
-            child: _ActionButton(
-              icon: post.isLiked
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-              label: l10n.like,
-              color: post.isLiked ? AppColors.primary : null,
-              isActive: post.isLiked,
-              onTap: () =>
-                  ref.read(postDetailProvider(postId).notifier).toggleLike(),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -485,11 +483,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   if (comment.writerId != null) {
                     final room = await ref
                         .read(chatListProvider.notifier)
-                        .createOneToOneRoom(comment.writerId!, roomName: comment.isWriterAnonymous ? '익명' : null);
+                        .createOneToOneRoom(comment.writerId!);
                     if (room != null && mounted) {
                       GoRouter.of(context).push(
                         '${Routes.chat}/${room.id}',
-                        extra: room.name,
+                        extra: comment.isWriterAnonymous ? '익명' : room.name,
                       );
                     }
                   }
@@ -509,6 +507,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               comment: reply,
               isReply: true,
               parentNickname: parentNickname,
+              onReply: () {
+                setState(() => _replyingToId = comment.id);
+                _commentFocusNode.requestFocus();
+              },
               onLike: () => notifier.toggleCommentLike(reply.id),
               onEdit: () => _showEditCommentDialog(reply, notifier),
               onDelete: () => _showDeleteCommentDialog(reply.id, notifier),
@@ -545,11 +547,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       if (reply.writerId != null) {
                         final room = await ref
                             .read(chatListProvider.notifier)
-                            .createOneToOneRoom(reply.writerId!, roomName: reply.isWriterAnonymous ? '익명' : null);
+                            .createOneToOneRoom(reply.writerId!);
                         if (room != null && mounted) {
                           GoRouter.of(context).push(
                             '${Routes.chat}/${room.id}',
-                            extra: room.name,
+                            extra: reply.isWriterAnonymous ? '익명' : room.name,
                           );
                         }
                       }
@@ -736,14 +738,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 if (post.writerId != null) {
                   final room = await ref
                       .read(chatListProvider.notifier)
-                      .createOneToOneRoom(
-                        post.writerId!,
-                        roomName: post.isWriterAnonymous ? '익명' : null,
-                      );
+                      .createOneToOneRoom(post.writerId!);
                   if (room != null && mounted) {
                     GoRouter.of(context).push(
                       '${Routes.chat}/${room.id}',
-                      extra: room.name,
+                      extra: post.isWriterAnonymous ? '익명' : room.name,
                     );
                   }
                 }
@@ -1070,7 +1069,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                               );
                           _commentController.clear();
                           setState(() => _replyingToId = null);
-                          _commentFocusNode.unfocus();
                         },
                         child: const Center(
                           child: Icon(
@@ -1084,49 +1082,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                 ),
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final Color? color;
-  final bool isActive;
-
-  const _ActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.color,
-    this.isActive = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final effectiveColor = color ?? context.textSecondaryColor;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 20, color: effectiveColor),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: AppTypography.body2.copyWith(
-                color: effectiveColor,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-              ),
             ),
           ],
         ),
@@ -1468,7 +1423,7 @@ class _CommentStatsRow extends StatelessWidget {
               ),
             ),
           ),
-          if (!isReply) ...[
+          if (onReply != null) ...[
             const SizedBox(width: 12),
             InkWell(
               onTap: onReply,

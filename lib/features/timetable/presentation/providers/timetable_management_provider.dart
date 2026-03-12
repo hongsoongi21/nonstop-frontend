@@ -381,15 +381,22 @@ class TimetableManagementNotifier
   }
 
   /// Load everything with "Smart Defaults" logic
-  /// - Loads semesters and finding current one via backend flag
-  /// - Loads user's timetables
+  /// - Loads semesters and user's timetables
+  /// - Determines current semester from local date (not DB isCurrent flag)
   /// - Auto-creates or auto-selects the appropriate timetable
   Future<void> initializeTimetable() async {
     debugPrint('[TIMETABLE] initializeTimetable started');
     state = state.copyWith(isLoading: true, clearError: true);
 
-    // 1. Load Semesters
-    final semResult = await _repository.getSemesters();
+    // 1. Load Semesters + Timetables in parallel
+    final results = await Future.wait([
+      _repository.getSemesters(),
+      _repository.getMyTimetables(),
+    ]);
+
+    final semResult = results[0] as dynamic;
+    final ttResult = results[1] as dynamic;
+
     if (semResult.isLeft()) {
       debugPrint('[TIMETABLE] ERROR: Semesters loading failed');
       state = state.copyWith(
@@ -399,68 +406,44 @@ class TimetableManagementNotifier
       return;
     }
 
-    final semesters = semResult.getOrElse((_) => []);
-    debugPrint('[TIMETABLE] Loaded ${semesters.length} semesters');
-
-    // 2. Find "Current" Semester using backend flag
-    // If multiple are marked current (shouldn't happen), take first.
-    // If none, fallback to first in list.
-    final currentSemester =
-        semesters.where((s) => s.isCurrent).firstOrNull ??
-        semesters.firstOrNull;
-    debugPrint('[TIMETABLE] Current semester: ${currentSemester?.id}');
-
-    // 3. Load User Timetables
-    final ttResult = await _repository.getMyTimetables();
-    final timetables = ttResult.getOrElse((_) => []);
-    debugPrint('[TIMETABLE] Loaded ${timetables.length} timetables');
+    final semesters = semResult.getOrElse((_) => <Semester>[]) as List<Semester>;
+    final timetables = ttResult.getOrElse((_) => <Timetable>[]) as List<Timetable>;
+    debugPrint('[TIMETABLE] Loaded ${semesters.length} semesters, ${timetables.length} timetables');
 
     state = state.copyWith(semesters: semesters, myTimetables: timetables);
 
-    // 4. Auto-Setup Logic
-    if (currentSemester != null) {
-      final currentTimetables = timetables
-          .where((t) => t.semesterId == currentSemester.id)
-          .toList();
-      debugPrint('[TIMETABLE] Timetables for current semester: ${currentTimetables.length}');
-
-      if (currentTimetables.isEmpty) {
-        // Automatically create a default one if none exists for current semester
-        debugPrint('[TIMETABLE] Creating new timetable for semester ${currentSemester.id}, year: ${currentSemester.year}, type: ${currentSemester.type}');
-        final created = await createTimetable(
-          year: currentSemester.year,
-          semesterType: currentSemester.type,
-          title: 'Asosiy jadval',
-        );
-        debugPrint('[TIMETABLE] Timetable created: $created, selectedTimetableId: ${state.selectedTimetableId}');
-      } else if (state.selectedTimetableId == null) {
-        // Auto-select "Asosiy jadval" first, otherwise fallback to first
-        final defaultTt = currentTimetables.firstWhere(
-          (t) => t.title == 'Asosiy jadval',
-          orElse: () => currentTimetables.first,
-        );
-        debugPrint('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
-        await selectTimetable(defaultTt.id);
-      }
-    } else if (timetables.isNotEmpty && state.selectedTimetableId == null) {
-      // Fallback: just select any existing timetable
-      debugPrint('[TIMETABLE] Fallback: selecting first timetable: ${timetables.first.id}');
-      await selectTimetable(timetables.first.id);
+    // 2. Determine current semester from local date
+    final now = DateTime.now();
+    final currentYear = now.month <= 2 ? now.year - 1 : now.year;
+    final SemesterType currentType;
+    if (now.month >= 3 && now.month <= 8) {
+      currentType = SemesterType.first;
     } else {
-      // No semesters exist yet - determine current academic semester and create timetable
-      debugPrint('[TIMETABLE] No semesters found. Auto-creating current semester timetable.');
-      final now = DateTime.now();
-      final autoYear = now.month <= 2 ? now.year - 1 : now.year;
-      final SemesterType autoType;
-      if (now.month >= 3 && now.month <= 8) {
-        autoType = SemesterType.first;
-      } else {
-        autoType = SemesterType.second;
-      }
-      debugPrint('[TIMETABLE] Auto-creating timetable for year=$autoYear, type=$autoType');
+      currentType = SemesterType.second;
+    }
+    debugPrint('[TIMETABLE] Current semester: year=$currentYear, type=$currentType');
+
+    // 3. Filter timetables by year + semesterType (not by semesterId/isCurrent)
+    final currentTimetables = timetables
+        .where((t) => t.year == currentYear && t.semesterType == currentType)
+        .toList();
+    debugPrint('[TIMETABLE] Timetables for current semester: ${currentTimetables.length}');
+
+    // 4. Auto-Setup Logic
+    if (currentTimetables.isNotEmpty) {
+      // Select "Asosiy jadval" first, otherwise fallback to first
+      final defaultTt = currentTimetables.firstWhere(
+        (t) => t.title == 'Asosiy jadval',
+        orElse: () => currentTimetables.first,
+      );
+      debugPrint('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
+      await selectTimetable(defaultTt.id);
+    } else {
+      // No timetable for current semester - auto-create "Asosiy jadval"
+      debugPrint('[TIMETABLE] Auto-creating timetable for year=$currentYear, type=$currentType');
       await createTimetable(
-        year: autoYear,
-        semesterType: autoType,
+        year: currentYear,
+        semesterType: currentType,
         title: 'Asosiy jadval',
       );
     }

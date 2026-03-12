@@ -289,7 +289,7 @@ class ChatApiImpl implements ChatApi {
       return ChatRoom(
         id: roomId,
         type: ChatRoomType.oneToOne,
-        name: room['name'] as String? ?? targetNickname,
+        name: targetNickname ?? room['name'] as String?,
         unreadCount: 0,
         memberIds: [currentUserId, targetUserId],
         updatedAt: parseUtcDateTime(room['updated_at'] as String),
