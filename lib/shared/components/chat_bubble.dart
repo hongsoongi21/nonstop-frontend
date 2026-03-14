@@ -402,23 +402,6 @@ class ConversationListItem extends StatelessWidget {
                           ),
                         ),
                 ),
-                if (conversation.otherParticipant.isOnline)
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: AppColors.chatOnline,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.surface,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
 

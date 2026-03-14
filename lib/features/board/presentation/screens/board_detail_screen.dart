@@ -866,56 +866,91 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   ) {
     final contentController = TextEditingController(text: comment.content);
     final l10n = AppLocalizations.of(context);
+    var isLoading = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.editComment),
-        content: TextField(
-          controller: contentController,
-          decoration: InputDecoration(labelText: l10n.content),
-          maxLines: 2,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.editComment),
+          content: TextField(
+            controller: contentController,
+            decoration: InputDecoration(labelText: l10n.content),
+            maxLines: 2,
+            enabled: !isLoading,
+          ),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setDialogState(() => isLoading = true);
+                      await notifier.updateComment(
+                        comment.id,
+                        contentController.text,
+                        isAnonymous: comment.isWriterAnonymous,
+                      );
+                      if (context.mounted) Navigator.pop(context);
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.save),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              notifier.updateComment(comment.id, contentController.text);
-              Navigator.pop(context);
-            },
-            child: Text(l10n.save),
-          ),
-        ],
       ),
     );
   }
 
   void _showDeleteCommentDialog(int commentId, PostDetailNotifier notifier) {
     final l10n = AppLocalizations.of(context);
+    var isLoading = false;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteComment),
-        content: Text(l10n.confirmDeleteComment),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              notifier.deleteComment(commentId);
-              Navigator.pop(context);
-            },
-            child: Text(
-              l10n.deleteComment,
-              style: const TextStyle(color: AppColors.error),
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.deleteComment),
+          content: Text(l10n.confirmDeleteComment),
+          actions: [
+            TextButton(
+              onPressed: isLoading ? null : () => Navigator.pop(context),
+              child: Text(l10n.cancel),
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: isLoading
+                  ? null
+                  : () async {
+                      setDialogState(() => isLoading = true);
+                      await notifier.deleteComment(commentId);
+                      if (context.mounted) Navigator.pop(context);
+                    },
+              child: isLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.error,
+                      ),
+                    )
+                  : Text(
+                      l10n.deleteComment,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1130,7 +1165,7 @@ class _CommentItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(12, 10, 6, 12),
                   decoration: BoxDecoration(
                     color: context.surfaceVariantColor.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
@@ -1143,7 +1178,6 @@ class _CommentItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
                             child: Row(
@@ -1161,7 +1195,6 @@ class _CommentItem extends StatelessWidget {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                // 대댓글인 경우 부모 댓글 멘션 표시
                                 if (isReply && parentNickname != null) ...[
                                   const SizedBox(width: 6),
                                   Icon(
@@ -1192,12 +1225,14 @@ class _CommentItem extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        comment.content,
-                        style: AppTypography.body2.copyWith(
-                          color: context.textPrimaryColor,
-                          height: 1.5,
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: Text(
+                          comment.content,
+                          style: AppTypography.body2.copyWith(
+                            color: context.textPrimaryColor,
+                            height: 1.5,
+                          ),
                         ),
                       ),
                     ],
@@ -1302,6 +1337,8 @@ class _CommentMenu extends StatelessWidget {
         color: context.textTertiaryColor,
       ),
       padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+      iconSize: 18,
       offset: const Offset(0, 30),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onSelected: (value) {

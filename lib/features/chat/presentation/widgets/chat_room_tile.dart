@@ -107,25 +107,6 @@ class ChatRoomTile extends StatelessWidget {
           ),
         ),
 
-        // Online indicator - positioned at bottom-left of avatar
-        if (!isGroup)
-          Positioned(
-            left: 0,
-            bottom: 0,
-            child: Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                color: AppColors.chatOnline,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isDarkMode ? AppColors.backgroundDark : AppColors.background,
-                  width: 2.5,
-                ),
-              ),
-            ),
-          ),
-
         // Group indicator
         if (isGroup)
           Positioned(

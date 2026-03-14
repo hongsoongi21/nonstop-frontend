@@ -69,23 +69,6 @@ class UserProfileCard extends StatelessWidget {
                             ),
                           ),
                   ),
-                  if (user.isOnline)
-                    Positioned(
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        width: 16,
-                        height: 16,
-                        decoration: BoxDecoration(
-                          color: AppColors.chatOnline,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: context.surfaceColor,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
 
@@ -223,23 +206,6 @@ class UserListItem extends StatelessWidget {
                     ),
                   ),
           ),
-          if (user.isOnline)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: AppColors.chatOnline,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: context.surfaceColor,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
       title: Text(

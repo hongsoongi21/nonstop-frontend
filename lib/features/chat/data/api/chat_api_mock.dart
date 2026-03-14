@@ -128,6 +128,12 @@ class ChatApiMock implements ChatApi {
   }
 
   @override
+  Future<Map<int, int>> getReadStatuses(int roomId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return {};
+  }
+
+  @override
   Future<String> uploadChatImage(int roomId, String localFilePath) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return 'https://example.com/mock-image.jpg';

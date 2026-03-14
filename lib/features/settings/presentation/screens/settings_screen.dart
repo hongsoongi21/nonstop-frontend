@@ -29,6 +29,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return scaffold.AppScaffold(
       title: AppLocalizations.of(context)!.settings,
+      padding: EdgeInsets.zero,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -95,7 +96,7 @@ class SettingsScreen extends ConsumerWidget {
     final notifier = ref.read(profileProvider.notifier);
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(AppSpacing.md),
+      padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

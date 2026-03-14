@@ -177,7 +177,22 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> _initialize() async {
     await loadHistory();
+    await _loadInitialReadStatuses();
     markMessagesAsRead();
+  }
+
+  Future<void> _loadInitialReadStatuses() async {
+    final result = await _repository.getReadStatuses(roomId);
+    result.fold(
+      (_) {},
+      (statuses) {
+        if (statuses.isNotEmpty) {
+          state = state.copyWith(
+            readStatusByUser: {...state.readStatusByUser, ...statuses},
+          );
+        }
+      },
+    );
   }
 
   Future<void> loadHistory() async {
@@ -205,8 +220,11 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   }
 
   void _subscribeToReadReceipts() {
+    final myUserId = _ref.read(currentUserIdProvider);
     _readReceiptSubscription =
         _repository.subscribeToReadReceipts(roomId).listen((receipt) {
+      // Ignore own read receipts — only track other users' read status
+      if (receipt.userId == myUserId) return;
       state = state.copyWith(
         readStatusByUser: {
           ...state.readStatusByUser,

@@ -96,23 +96,27 @@ class ProfileApiImpl implements ProfileApi {
         updateData['university_id'] = profile.universityId;
       }
       if (profile.major != null && profile.major!.isNotEmpty) {
-        // Look up or create major in majors table
-        final existingMajor = await _supabase
-            .from('majors')
-            .select('id')
-            .eq('name', profile.major!)
-            .maybeSingle();
-
-        if (existingMajor != null) {
-          updateData['major_id'] = existingMajor['id'];
-        } else {
-          // Create new major entry
-          final newMajor = await _supabase
+        // Try to look up or create major in majors table
+        // May fail if table doesn't exist or RLS blocks access — skip gracefully
+        try {
+          final existingMajor = await _supabase
               .from('majors')
-              .insert({'name': profile.major!})
               .select('id')
-              .single();
-          updateData['major_id'] = newMajor['id'];
+              .eq('name', profile.major!)
+              .maybeSingle();
+
+          if (existingMajor != null) {
+            updateData['major_id'] = existingMajor['id'];
+          } else {
+            final newMajor = await _supabase
+                .from('majors')
+                .insert({'name': profile.major!})
+                .select('id')
+                .single();
+            updateData['major_id'] = newMajor['id'];
+          }
+        } catch (_) {
+          // majors table missing or RLS blocks — skip major, save rest of profile
         }
       }
 

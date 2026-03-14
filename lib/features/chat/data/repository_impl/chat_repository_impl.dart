@@ -200,6 +200,16 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
+  Future<Either<Failure, Map<int, int>>> getReadStatuses(int roomId) async {
+    try {
+      final result = await _api.getReadStatuses(roomId);
+      return Right(result);
+    } catch (e) {
+      return Left(Failure.server(message: e.toString(), statusCode: 500));
+    }
+  }
+
+  @override
   Stream<ReadReceipt> subscribeToReadReceipts(int roomId) {
     if (_readReceiptStreams.containsKey(roomId)) {
       return _readReceiptStreams[roomId]!.stream;

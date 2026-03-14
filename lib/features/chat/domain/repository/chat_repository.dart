@@ -43,6 +43,9 @@ abstract class ChatRepository {
     required List<int> userIds,
   });
 
+  /// Get current read statuses for all members in a room (excluding self)
+  Future<Either<Failure, Map<int, int>>> getReadStatuses(int roomId);
+
   /// Subscribe to read receipt updates for a room
   Stream<ReadReceipt> subscribeToReadReceipts(int roomId);
 

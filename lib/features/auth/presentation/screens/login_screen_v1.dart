@@ -399,55 +399,60 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
             colors: AppColors.authGradient,
           ),
         ),
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 24.h,
-              left: 16.w,
-              right: 16.w,
-              bottom: 24.h,
-            ),
-            child: SingleChildScrollView(
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: SlideTransition(
-                  position: _slideAnimation,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(height: 40.h),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final topPad = MediaQuery.of(context).padding.top + 16.h;
+            final bottomPad = MediaQuery.of(context).padding.bottom + 16.h;
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                top: topPad,
+                left: 16.w,
+                right: 16.w,
+                bottom: bottomPad,
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - topPad - bottomPad,
+                ),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
 
-                        // Login form container
-                        FadeTransition(
-                          opacity: _staggeredAnimation2,
-                          child: Container(
-                            width: 343.w,
-                            decoration: BoxDecoration(
-                              color: context.surfaceColor,
-                              borderRadius: BorderRadius.circular(32.r),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.shadowStrong,
-                                  offset: Offset(0, 12.h),
-                                  blurRadius: 32.r,
-                                  spreadRadius: -4.r,
-                                ),
-                                BoxShadow(
-                                  color: AppColors.primaryDark
-                                      .withValues(alpha: 0.1),
-                                  offset: Offset(0, 4.h),
-                                  blurRadius: 16.r,
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 28.w,
-                                vertical: 40.h,
+                      // Login form container
+                      FadeTransition(
+                        opacity: _staggeredAnimation2,
+                        child: Container(
+                          width: 343.w,
+                          decoration: BoxDecoration(
+                            color: context.surfaceColor,
+                            borderRadius: BorderRadius.circular(32.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.shadowStrong,
+                                offset: Offset(0, 12.h),
+                                blurRadius: 32.r,
+                                spreadRadius: -4.r,
                               ),
-                              child: Form(
+                              BoxShadow(
+                                color: AppColors.primaryDark
+                                    .withValues(alpha: 0.1),
+                                offset: Offset(0, 4.h),
+                                blurRadius: 16.r,
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(
+                              28.w, 40.h, 28.w, 24.h,
+                            ),
+                            child: Form(
                                 key: _formKey,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
@@ -844,7 +849,8 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
                 ),
               ),
             ),
-          ),
+          );
+          },
         ),
       ),
     );

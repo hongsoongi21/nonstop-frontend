@@ -16,6 +16,7 @@ abstract class ChatApi {
   Future<void> kickFromGroup(int roomId, int userId);
   Future<List<int>> getGroupMembers(int roomId);
   Future<void> markAsRead(int roomId, int messageId);
+  Future<Map<int, int>> getReadStatuses(int roomId);
   Future<String> uploadChatImage(int roomId, String localFilePath);
 
   /// Send a message and return the created ChatMessage
@@ -419,6 +420,25 @@ class ChatApiImpl implements ChatApi {
         .update({'last_read_message_id': messageId})
         .eq('room_id', roomId)
         .eq('user_id', currentUserId);
+  }
+
+  @override
+  Future<Map<int, int>> getReadStatuses(int roomId) async {
+    final currentUserId = await _getCurrentUserId();
+    final data = await _supabase
+        .from('chat_room_members')
+        .select('user_id, last_read_message_id')
+        .eq('room_id', roomId)
+        .neq('user_id', currentUserId);
+
+    final map = <int, int>{};
+    for (final row in data as List) {
+      final lastRead = row['last_read_message_id'];
+      if (lastRead != null) {
+        map[row['user_id'] as int] = lastRead as int;
+      }
+    }
+    return map;
   }
 
   @override

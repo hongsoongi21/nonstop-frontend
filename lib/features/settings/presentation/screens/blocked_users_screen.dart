@@ -39,6 +39,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
 
     return scaffold.AppScaffold(
       title: l10n.blockedUsers,
+      padding: EdgeInsets.zero,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -152,7 +153,7 @@ class _BlockedUsersScreenState extends ConsumerState<BlockedUsersScreen> {
         await ref.read(blockedUsersProvider.future);
       },
       child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.md),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
         itemCount: users.length,
         separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.sm),
         itemBuilder: (context, index) {

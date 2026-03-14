@@ -197,8 +197,8 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
     }
   }
 
-  Future<void> updateComment(int commentId, String content) async {
-    final result = await _repository.updateComment(commentId, content: content);
+  Future<void> updateComment(int commentId, String content, {bool isAnonymous = false}) async {
+    final result = await _repository.updateComment(commentId, content: content, isAnonymous: isAnonymous);
     if (result.isLeft()) {
       result.fold(
         (error) => state = state.copyWith(error: error),

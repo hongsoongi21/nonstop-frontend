@@ -110,7 +110,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           : Form(
               key: _formKey,
               child: SingleChildScrollView(
-                padding: EdgeInsets.all(AppSpacing.md),
+                padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
