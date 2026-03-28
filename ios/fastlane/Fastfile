@@ -1,5 +1,12 @@
 default_platform(:ios)
 
+# App Store Connect API Key 설정
+ASC_API_KEY = app_store_connect_api_key(
+  key_id: "9M5K2RF732",
+  issuer_id: "5c73d830-bb60-4a1d-b94b-df36f51dd094",
+  key_filepath: File.join(__dir__, "keys", "AuthKey_9M5K2RF732.p8"),
+)
+
 platform :ios do
   desc "Build release IPA"
   lane :build_release do |options|
@@ -46,6 +53,7 @@ platform :ios do
     ipa = File.join(project_root, "build", "ios", "ipa", "nonstop.ipa")
 
     upload_to_testflight(
+      api_key: ASC_API_KEY,
       ipa: ipa,
       skip_waiting_for_build_processing: true,
       skip_submission: true,
@@ -66,6 +74,7 @@ platform :ios do
     ipa = File.join(project_root, "build", "ios", "ipa", "nonstop.ipa")
 
     upload_to_app_store(
+      api_key: ASC_API_KEY,
       ipa: ipa,
       skip_metadata: false,
       skip_screenshots: false,
@@ -80,6 +89,7 @@ platform :ios do
   desc "Upload metadata only (no build)"
   lane :upload_metadata do
     deliver(
+      api_key: ASC_API_KEY,
       skip_binary_upload: true,
       skip_metadata: false,
       skip_screenshots: false,
@@ -92,6 +102,7 @@ platform :ios do
   desc "Download current metadata from App Store"
   lane :download_metadata do
     deliver(
+      api_key: ASC_API_KEY,
       app_identifier: "uz.merge4.nonstop",
       skip_binary_upload: true,
       skip_metadata: false,

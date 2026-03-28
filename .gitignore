@@ -62,6 +62,7 @@ android/fastlane/report.xml
 android/fastlane/README.md
 ios/fastlane/report.xml
 ios/fastlane/README.md
+ios/fastlane/keys/
 **/fastlane/.env*
 
 # Android signing
