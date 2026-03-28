@@ -1492,5 +1492,17 @@
   "alreadyRequested": "Already requested",
   "@alreadyRequested": {
     "description": "Error message when friend request already sent"
+  },
+  "legal": "Legal",
+  "@legal": {
+    "description": "Legal section header in settings"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy link title"
+  },
+  "termsOfService": "Terms of Service",
+  "@termsOfService": {
+    "description": "Terms of service link title"
   }
 }

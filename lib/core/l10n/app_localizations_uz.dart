@@ -81,7 +81,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get chatLoadError => 'Suhbatlarni yuklashda xatolik';
 
   @override
-  String get searchChats => 'Search chats...';
+  String get searchChats => 'Suhbatlarni qidirish...';
 
   @override
   String get newChat => 'Yangi suhbat';
@@ -305,100 +305,102 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get board => 'Board';
+  String get board => 'Taxta';
 
   @override
-  String get write => 'Write';
+  String get write => 'Yozish';
 
   @override
-  String get searchPosts => 'Search posts...';
+  String get searchPosts => 'Postlarni qidirish...';
 
   @override
-  String get pleaseSelectBoardFirst => 'Please select a board first';
+  String get pleaseSelectBoardFirst => 'Iltimos, avval taxtani tanlang';
 
   @override
   String noPostsInBoard(String boardName) {
-    return 'No posts in $boardName yet';
+    return '$boardName da hali postlar yo\'q';
   }
 
   @override
-  String get beFirstToPost => 'Be the first to start a conversation!';
+  String get beFirstToPost => 'Birinchi bo\'lib suhbatni boshlang!';
 
   @override
-  String get createFirstPost => 'Create First Post';
+  String get createFirstPost => 'Birinchi post yaratish';
 
   @override
-  String get student => 'Student';
+  String get student => 'Talaba';
 
   @override
-  String get post => 'Post';
+  String get post => 'Joylash';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Tahrirlash';
 
   @override
   String get delete => 'O\'chirish';
 
   @override
-  String get anonymous => 'Anonymous';
+  String get anonymous => 'Anonim';
 
   @override
-  String get replyingToComment => 'Replying to comment';
+  String get replyingToComment => 'Sharhga javob';
 
   @override
-  String get noCommentsYet => 'No comments yet';
+  String get noCommentsYet => 'Hali sharhlar yo\'q';
 
   @override
-  String get beFirstToComment => 'Be the first to share your thoughts';
+  String get beFirstToComment =>
+      'Fikrlaringizni birinchi bo\'lib baham ko\'ring';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => 'Sharh yozing...';
 
   @override
-  String get postAnonymously => 'Post Anonymously';
+  String get postAnonymously => 'Anonim joylashtirish';
 
   @override
-  String get comment => 'Comment';
+  String get comment => 'Sharh';
 
   @override
-  String get like => 'Like';
+  String get like => 'Yoqdi';
 
   @override
-  String get reply => 'Reply';
+  String get reply => 'Javob';
 
   @override
-  String get createPost => 'Create Post';
+  String get createPost => 'Post yaratish';
 
   @override
   String get noBoardsAvailable =>
-      'No boards available. Please select a community first.';
+      'Mavjud taxtalar yo\'q. Iltimos, avval jamoatni tanlang.';
 
   @override
-  String get writeClearTitle => 'Write a clear, engaging title...';
+  String get writeClearTitle => 'Aniq va qiziqarli sarlavha yozing...';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => 'Sarlavha kiriting';
 
   @override
-  String get titleTooShort => 'Title is too short';
+  String get titleTooShort => 'Sarlavha juda qisqa';
 
   @override
-  String get shareYourThoughts => 'Share your thoughts...';
+  String get shareYourThoughts => 'Fikrlaringizni baham ko\'ring...';
 
   @override
-  String get pleaseEnterContent => 'Please enter some content';
+  String get pleaseEnterContent => 'Tarkibni kiriting';
 
   @override
-  String get pleaseSelectBoard => 'Please select a board';
+  String get pleaseSelectBoard => 'Taxtani tanlang';
 
   @override
-  String get hideIdentity => 'Hide your identity from others';
+  String get hideIdentity => 'Kimligingizni boshqalardan yashirish';
 
   @override
-  String get secretPost => 'Secret Post';
+  String get secretPost => 'Maxfiy post';
 
   @override
-  String get onlyVisibleToAuthorized => 'Only visible to authorized users';
+  String get onlyVisibleToAuthorized =>
+      'Faqat vakolatli foydalanuvchilarga ko\'rinadi';
 
   @override
   String get login => 'Kirish';
@@ -1130,4 +1132,13 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get alreadyRequested => 'Allaqachon so\'rov yuborilgan';
+
+  @override
+  String get legal => 'Huquqiy ma\'lumot';
+
+  @override
+  String get privacyPolicy => 'Maxfiylik siyosati';
+
+  @override
+  String get termsOfService => 'Foydalanish shartlari';
 }

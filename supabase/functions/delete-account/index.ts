@@ -31,7 +31,7 @@ serve(async (req) => {
     // Use service_role client for admin operations
     const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Get app user id
+    // Get app user id (BIGSERIAL id, not auth UUID)
     const { data: appUser } = await adminClient
       .from("users")
       .select("id")
@@ -45,26 +45,130 @@ serve(async (req) => {
       });
     }
 
-    // Soft delete in public.users
+    const userId = appUser.id;
+
+    // ---------------------------------------------------------------------------
+    // Step 1: Soft delete in public.users
+    // Nulls PII fields so the row remains for referential integrity
+    // ---------------------------------------------------------------------------
     await adminClient
       .from("users")
       .update({
         is_active: false,
         deleted_at: new Date().toISOString(),
-        nickname: `deleted_${appUser.id}`,
+        nickname: `deleted_${userId}`,
         email: null,
         profile_image_url: null,
         introduction: null,
       })
-      .eq("id", appUser.id);
+      .eq("id", userId);
 
-    // Deactivate device tokens
-    await adminClient
-      .from("device_tokens")
-      .update({ is_active: false })
-      .eq("user_id", appUser.id);
+    // ---------------------------------------------------------------------------
+    // Step 2: Deactivate device tokens to stop push notifications
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("device_tokens")
+        .update({ is_active: false })
+        .eq("user_id", userId);
+    } catch (err) {
+      console.error("Failed to deactivate device_tokens:", err);
+    }
 
-    // Hard delete from auth.users (requires service_role)
+    // ---------------------------------------------------------------------------
+    // Step 3: Anonymize posts — set user_id to NULL so posts remain but
+    // are no longer attributed to the deleted account
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("posts")
+        .update({ user_id: null })
+        .eq("user_id", userId);
+    } catch (err) {
+      console.error("Failed to anonymize posts:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 4: Anonymize comments — same as posts, keeps discussion intact
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("comments")
+        .update({ user_id: null })
+        .eq("user_id", userId);
+    } catch (err) {
+      console.error("Failed to anonymize comments:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 5: Remove from all chat rooms by setting left_at = now()
+    // Only affects rooms the user hasn't already left
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("chat_room_members")
+        .update({ left_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .is("left_at", null);
+    } catch (err) {
+      console.error("Failed to remove from chat_room_members:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 6: Delete friend relationships (accepted friendships)
+    // The friends table uses sender_id / receiver_id columns
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("friends")
+        .delete()
+        .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`);
+    } catch (err) {
+      console.error("Failed to delete friends:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 7: Delete reports made by this user
+    // Uses reporter_id column in the reports table
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("reports")
+        .delete()
+        .eq("reporter_id", userId);
+    } catch (err) {
+      console.error("Failed to delete reports:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 8: Delete policy agreements
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("user_policy_agreements")
+        .delete()
+        .eq("user_id", userId);
+    } catch (err) {
+      console.error("Failed to delete user_policy_agreements:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 9: Delete blocked_users entries
+    // The table is user_blocks, with blocker_id and blocked_id columns
+    // ---------------------------------------------------------------------------
+    try {
+      await adminClient
+        .from("user_blocks")
+        .delete()
+        .or(`blocker_id.eq.${userId},blocked_id.eq.${userId}`);
+    } catch (err) {
+      console.error("Failed to delete user_blocks:", err);
+    }
+
+    // ---------------------------------------------------------------------------
+    // Step 10: Hard delete from auth.users (requires service_role)
+    // Must be last — once this runs the auth identity is gone
+    // ---------------------------------------------------------------------------
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
     if (deleteError) {
       console.error("Failed to delete auth user:", deleteError);

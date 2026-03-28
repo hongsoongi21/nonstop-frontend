@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nonstop/core/errors/failures.dart';
 import 'package:nonstop/core/utils/date_utils.dart';
+import 'package:nonstop/core/utils/logger.dart';
 import 'package:nonstop/features/chat/data/api/chat_api.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_room.dart';
@@ -83,7 +83,7 @@ class ChatRepositoryImpl implements ChatRepository {
               final message = _mapRealtimeToMessage(newRecord, roomId);
               controller.add(message);
             } catch (e) {
-              debugPrint('Error parsing realtime chat message: $e');
+              AppLogger.e('Error parsing realtime chat message', e);
             }
           },
         )
@@ -243,7 +243,7 @@ class ChatRepositoryImpl implements ChatRepository {
                 ));
               }
             } catch (e) {
-              debugPrint('Error parsing read receipt: $e');
+              AppLogger.e('Error parsing read receipt', e);
             }
           },
         )

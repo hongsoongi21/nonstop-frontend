@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/logger.dart';
 import '../../data/dto/semester_dto.dart';
 import '../../data/repository_impl/timetable_repository_impl.dart';
 import '../../domain/entities/day_of_week.dart';
@@ -144,32 +144,32 @@ class TimetableManagementNotifier
 
     // Auto-select the new timetable (must await to ensure state is set)
     await selectTimetable(newTimetable.id);
-    debugPrint('[TIMETABLE] createTimetable completed. selectedTimetableId: ${state.selectedTimetableId}');
+    AppLogger.d('[TIMETABLE] createTimetable completed. selectedTimetableId: ${state.selectedTimetableId}');
     return true;
   }
 
   /// Select and load a specific timetable with its entries
   Future<void> selectTimetable(int timetableId) async {
-    debugPrint('[TIMETABLE] selectTimetable called with id: $timetableId');
+    AppLogger.d('[TIMETABLE] selectTimetable called with id: $timetableId');
     state = state.copyWith(
       isLoading: true,
       clearError: true,
       selectedTimetableId: timetableId,
     );
-    debugPrint('[TIMETABLE] selectedTimetableId set to: ${state.selectedTimetableId}');
+    AppLogger.d('[TIMETABLE] selectedTimetableId set to: ${state.selectedTimetableId}');
 
     final result = await _repository.getTimetableDetail(timetableId);
 
     result.fold(
       (failure) {
-        debugPrint('[TIMETABLE] ERROR: Failed to load timetable details');
+        AppLogger.w('[TIMETABLE] ERROR: Failed to load timetable details');
         state = state.copyWith(
           isLoading: false,
           error: 'Failed to load timetable details',
         );
       },
       (detail) {
-        debugPrint('[TIMETABLE] Timetable detail loaded successfully');
+        AppLogger.d('[TIMETABLE] Timetable detail loaded successfully');
         state = state.copyWith(isLoading: false, selectedTimetable: detail);
       },
     );
@@ -257,17 +257,17 @@ class TimetableManagementNotifier
     String? color,
     int? credit,
   }) async {
-    debugPrint('[TIMETABLE] addEntry called. selectedTimetableId: ${state.selectedTimetableId}');
+    AppLogger.d('[TIMETABLE] addEntry called. selectedTimetableId: ${state.selectedTimetableId}');
 
     // If no timetable selected, try to initialize first
     if (state.selectedTimetableId == null) {
-      debugPrint('[TIMETABLE] No timetable selected, calling initializeTimetable...');
+      AppLogger.d('[TIMETABLE] No timetable selected, calling initializeTimetable...');
       await initializeTimetable();
-      debugPrint('[TIMETABLE] After initialization, selectedTimetableId: ${state.selectedTimetableId}');
+      AppLogger.d('[TIMETABLE] After initialization, selectedTimetableId: ${state.selectedTimetableId}');
 
       // If still no timetable after initialization, return error
       if (state.selectedTimetableId == null) {
-        debugPrint('[TIMETABLE] ERROR: Still no timetable after initialization');
+        AppLogger.w('[TIMETABLE] ERROR: Still no timetable after initialization');
         // Keep the existing error if set (e.g., "No semesters available")
         // or set a generic one
         if (state.error == null) {
@@ -385,7 +385,7 @@ class TimetableManagementNotifier
   /// - Determines current semester from local date (not DB isCurrent flag)
   /// - Auto-creates or auto-selects the appropriate timetable
   Future<void> initializeTimetable() async {
-    debugPrint('[TIMETABLE] initializeTimetable started');
+    AppLogger.d('[TIMETABLE] initializeTimetable started');
     state = state.copyWith(isLoading: true, clearError: true);
 
     // 1. Load Semesters + Timetables in parallel
@@ -398,7 +398,7 @@ class TimetableManagementNotifier
     final ttResult = results[1] as dynamic;
 
     if (semResult.isLeft()) {
-      debugPrint('[TIMETABLE] ERROR: Semesters loading failed');
+      AppLogger.w('[TIMETABLE] ERROR: Semesters loading failed');
       state = state.copyWith(
         isLoading: false,
         error: 'Semesters loading failed',
@@ -408,7 +408,7 @@ class TimetableManagementNotifier
 
     final semesters = semResult.getOrElse((_) => <Semester>[]) as List<Semester>;
     final timetables = ttResult.getOrElse((_) => <Timetable>[]) as List<Timetable>;
-    debugPrint('[TIMETABLE] Loaded ${semesters.length} semesters, ${timetables.length} timetables');
+    AppLogger.d('[TIMETABLE] Loaded ${semesters.length} semesters, ${timetables.length} timetables');
 
     state = state.copyWith(semesters: semesters, myTimetables: timetables);
 
@@ -421,13 +421,13 @@ class TimetableManagementNotifier
     } else {
       currentType = SemesterType.second;
     }
-    debugPrint('[TIMETABLE] Current semester: year=$currentYear, type=$currentType');
+    AppLogger.d('[TIMETABLE] Current semester: year=$currentYear, type=$currentType');
 
     // 3. Filter timetables by year + semesterType (not by semesterId/isCurrent)
     final currentTimetables = timetables
         .where((t) => t.year == currentYear && t.semesterType == currentType)
         .toList();
-    debugPrint('[TIMETABLE] Timetables for current semester: ${currentTimetables.length}');
+    AppLogger.d('[TIMETABLE] Timetables for current semester: ${currentTimetables.length}');
 
     // 4. Auto-Setup Logic
     if (currentTimetables.isNotEmpty) {
@@ -436,11 +436,11 @@ class TimetableManagementNotifier
         (t) => t.title == 'Asosiy jadval',
         orElse: () => currentTimetables.first,
       );
-      debugPrint('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
+      AppLogger.d('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
       await selectTimetable(defaultTt.id);
     } else {
       // No timetable for current semester - auto-create "Asosiy jadval"
-      debugPrint('[TIMETABLE] Auto-creating timetable for year=$currentYear, type=$currentType');
+      AppLogger.d('[TIMETABLE] Auto-creating timetable for year=$currentYear, type=$currentType');
       await createTimetable(
         year: currentYear,
         semesterType: currentType,
@@ -448,7 +448,7 @@ class TimetableManagementNotifier
       );
     }
 
-    debugPrint('[TIMETABLE] initializeTimetable finished. selectedTimetableId: ${state.selectedTimetableId}');
+    AppLogger.d('[TIMETABLE] initializeTimetable finished. selectedTimetableId: ${state.selectedTimetableId}');
     if (state.isLoading) {
       state = state.copyWith(isLoading: false);
     }

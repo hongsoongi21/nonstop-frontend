@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/routes.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -13,6 +14,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
 import '../../../../shared/components/main_scaffold.dart' as scaffold;
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/policy_provider.dart';
 import '../../../profile/domain/entities/user_settings.dart';
 import '../../../profile/presentation/providers/profile_provider.dart';
 
@@ -232,6 +234,13 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ],
           ),
+
+          SizedBox(height: AppSpacing.xl),
+
+          // Legal Section
+          _buildSectionHeader(AppLocalizations.of(context)!.legal),
+          SizedBox(height: AppSpacing.sm),
+          _buildLegalSection(context, ref),
 
           SizedBox(height: AppSpacing.xl),
 
@@ -853,6 +862,90 @@ class SettingsScreen extends ConsumerWidget {
         indent: AppSpacing.md + 40 + AppSpacing.md, // Align with text
       ),
     );
+  }
+
+  Widget _buildLegalSection(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final policiesAsync = ref.watch(policiesProvider);
+
+    return _buildSettingsCard(
+      children: policiesAsync.when(
+        data: (policies) {
+          if (policies.isEmpty) {
+            return [
+              _buildNavigationTile(
+                context: context,
+                icon: Icons.privacy_tip_outlined,
+                title: l10n.privacyPolicy,
+                onTap: () => _launchUrl('https://nonstop.app/privacy'),
+              ),
+              _buildDivider(),
+              _buildNavigationTile(
+                context: context,
+                icon: Icons.description_outlined,
+                title: l10n.termsOfService,
+                onTap: () => _launchUrl('https://nonstop.app/terms'),
+              ),
+            ];
+          }
+          final tiles = <Widget>[];
+          for (var i = 0; i < policies.length; i++) {
+            final policy = policies[i];
+            tiles.add(
+              _buildNavigationTile(
+                context: context,
+                icon: policy.type == 'PRIVACY_POLICY'
+                    ? Icons.privacy_tip_outlined
+                    : Icons.description_outlined,
+                title: policy.title,
+                onTap: () => _launchUrl(policy.url),
+              ),
+            );
+            if (i < policies.length - 1) {
+              tiles.add(_buildDivider());
+            }
+          }
+          return tiles;
+        },
+        loading: () => [
+          _buildNavigationTile(
+            context: context,
+            icon: Icons.privacy_tip_outlined,
+            title: l10n.privacyPolicy,
+            onTap: () => _launchUrl('https://nonstop.app/privacy'),
+          ),
+          _buildDivider(),
+          _buildNavigationTile(
+            context: context,
+            icon: Icons.description_outlined,
+            title: l10n.termsOfService,
+            onTap: () => _launchUrl('https://nonstop.app/terms'),
+          ),
+        ],
+        error: (_, __) => [
+          _buildNavigationTile(
+            context: context,
+            icon: Icons.privacy_tip_outlined,
+            title: l10n.privacyPolicy,
+            onTap: () => _launchUrl('https://nonstop.app/privacy'),
+          ),
+          _buildDivider(),
+          _buildNavigationTile(
+            context: context,
+            icon: Icons.description_outlined,
+            title: l10n.termsOfService,
+            onTap: () => _launchUrl('https://nonstop.app/terms'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Widget _buildVersionInfo(WidgetRef ref) {

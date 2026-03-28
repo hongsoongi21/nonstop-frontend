@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../utils/logger.dart';
+
 /// 앱 생명주기 이벤트를 관리하는 서비스
 class AppLifecycleService extends WidgetsBindingObserver {
   final List<VoidCallback> _resumeCallbacks = [];
@@ -20,7 +22,7 @@ class AppLifecycleService extends WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      debugPrint('[LIFECYCLE] 🔄 App resumed, executing callbacks...');
+      AppLogger.d('[LIFECYCLE] App resumed, executing callbacks...');
       for (final callback in _resumeCallbacks) {
         callback();
       }
@@ -30,14 +32,14 @@ class AppLifecycleService extends WidgetsBindingObserver {
   /// 서비스 초기화 (WidgetsBinding에 observer 등록)
   void initialize() {
     WidgetsBinding.instance.addObserver(this);
-    debugPrint('[LIFECYCLE] ✅ Service initialized');
+    AppLogger.d('[LIFECYCLE] Service initialized');
   }
 
   /// 서비스 정리
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _resumeCallbacks.clear();
-    debugPrint('[LIFECYCLE] 🧹 Service disposed');
+    AppLogger.d('[LIFECYCLE] Service disposed');
   }
 }
 

@@ -85,6 +85,7 @@
   "@chatLoadError": {
     "description": "Error message when chat list fails to load"
   },
+  "searchChats": "Поиск чатов...",
   "newChat": "Новый чат",
   "@newChat": {
     "description": "Title for new chat sheet"
@@ -1066,6 +1067,36 @@
   "@noPostsYet": {
     "description": "No posts message"
   },
+  "board": "Форум",
+  "write": "Написать",
+  "searchPosts": "Поиск постов...",
+  "pleaseSelectBoardFirst": "Пожалуйста, сначала выберите доску",
+  "noPostsInBoard": "В {boardName} пока нет постов",
+  "beFirstToPost": "Будьте первым, кто начнёт разговор!",
+  "createFirstPost": "Создать первый пост",
+  "student": "Студент",
+  "post": "Опубликовать",
+  "edit": "Изменить",
+  "anonymous": "Аноним",
+  "replyingToComment": "Ответ на комментарий",
+  "noCommentsYet": "Пока нет комментариев",
+  "beFirstToComment": "Поделитесь своим мнением первым",
+  "writeComment": "Написать комментарий...",
+  "postAnonymously": "Опубликовать анонимно",
+  "comment": "Комментарий",
+  "like": "Нравится",
+  "reply": "Ответить",
+  "createPost": "Создать пост",
+  "noBoardsAvailable": "Нет доступных досок. Пожалуйста, сначала выберите сообщество.",
+  "writeClearTitle": "Напишите чёткий и интересный заголовок...",
+  "pleaseEnterTitle": "Введите заголовок",
+  "titleTooShort": "Заголовок слишком короткий",
+  "shareYourThoughts": "Поделитесь своими мыслями...",
+  "pleaseEnterContent": "Введите содержание",
+  "pleaseSelectBoard": "Выберите доску",
+  "hideIdentity": "Скрыть вашу личность от других",
+  "secretPost": "Секретный пост",
+  "onlyVisibleToAuthorized": "Видно только авторизованным пользователям",
   "confirmNewPassword": "Подтвердите новый пароль",
   "@confirmNewPassword": {
     "description": "Confirm new password field label"
@@ -1318,5 +1349,17 @@
   "alreadyRequested": "Запрос уже отправлен",
   "@alreadyRequested": {
     "description": "Error message when friend request already sent"
+  },
+  "legal": "Правовая информация",
+  "@legal": {
+    "description": "Legal section header in settings"
+  },
+  "privacyPolicy": "Политика конфиденциальности",
+  "@privacyPolicy": {
+    "description": "Privacy policy link title"
+  },
+  "termsOfService": "Условия использования",
+  "@termsOfService": {
+    "description": "Terms of service link title"
   }
 }

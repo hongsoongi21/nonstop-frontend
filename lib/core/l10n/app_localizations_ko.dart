@@ -293,100 +293,99 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get board => 'Board';
+  String get board => '게시판';
 
   @override
-  String get write => 'Write';
+  String get write => '작성';
 
   @override
-  String get searchPosts => 'Search posts...';
+  String get searchPosts => '게시물 검색...';
 
   @override
-  String get pleaseSelectBoardFirst => 'Please select a board first';
+  String get pleaseSelectBoardFirst => '먼저 게시판을 선택해주세요';
 
   @override
   String noPostsInBoard(String boardName) {
-    return 'No posts in $boardName yet';
+    return '$boardName에 게시물이 없습니다';
   }
 
   @override
-  String get beFirstToPost => 'Be the first to start a conversation!';
+  String get beFirstToPost => '첫 번째로 대화를 시작해보세요!';
 
   @override
-  String get createFirstPost => 'Create First Post';
+  String get createFirstPost => '첫 게시물 작성';
 
   @override
-  String get student => 'Student';
+  String get student => '학생';
 
   @override
-  String get post => 'Post';
+  String get post => '게시';
 
   @override
-  String get edit => 'Edit';
+  String get edit => '수정';
 
   @override
   String get delete => '삭제';
 
   @override
-  String get anonymous => 'Anonymous';
+  String get anonymous => '익명';
 
   @override
-  String get replyingToComment => 'Replying to comment';
+  String get replyingToComment => '댓글에 답글 달기';
 
   @override
-  String get noCommentsYet => 'No comments yet';
+  String get noCommentsYet => '아직 댓글이 없습니다';
 
   @override
-  String get beFirstToComment => 'Be the first to share your thoughts';
+  String get beFirstToComment => '첫 번째로 의견을 남겨보세요';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => '댓글 작성...';
 
   @override
-  String get postAnonymously => 'Post Anonymously';
+  String get postAnonymously => '익명으로 게시';
 
   @override
-  String get comment => 'Comment';
+  String get comment => '댓글';
 
   @override
-  String get like => 'Like';
+  String get like => '좋아요';
 
   @override
-  String get reply => 'Reply';
+  String get reply => '답글';
 
   @override
-  String get createPost => 'Create Post';
+  String get createPost => '게시물 작성';
 
   @override
-  String get noBoardsAvailable =>
-      'No boards available. Please select a community first.';
+  String get noBoardsAvailable => '이용 가능한 게시판이 없습니다. 먼저 커뮤니티를 선택해주세요.';
 
   @override
-  String get writeClearTitle => 'Write a clear, engaging title...';
+  String get writeClearTitle => '명확하고 흥미로운 제목을 작성하세요...';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => '제목을 입력해주세요';
 
   @override
-  String get titleTooShort => 'Title is too short';
+  String get titleTooShort => '제목이 너무 짧습니다';
 
   @override
-  String get shareYourThoughts => 'Share your thoughts...';
+  String get shareYourThoughts => '생각을 공유해보세요...';
 
   @override
-  String get pleaseEnterContent => 'Please enter some content';
+  String get pleaseEnterContent => '내용을 입력해주세요';
 
   @override
-  String get pleaseSelectBoard => 'Please select a board';
+  String get pleaseSelectBoard => '게시판을 선택해주세요';
 
   @override
-  String get hideIdentity => 'Hide your identity from others';
+  String get hideIdentity => '다른 사람에게 신원을 숨깁니다';
 
   @override
-  String get secretPost => 'Secret Post';
+  String get secretPost => '비밀 게시물';
 
   @override
-  String get onlyVisibleToAuthorized => 'Only visible to authorized users';
+  String get onlyVisibleToAuthorized => '인증된 사용자에게만 공개됩니다';
 
   @override
   String get login => '로그인';
@@ -1103,4 +1102,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get alreadyRequested => '이미 요청한 상대방입니다';
+
+  @override
+  String get legal => '법적 고지';
+
+  @override
+  String get privacyPolicy => '개인정보처리방침';
+
+  @override
+  String get termsOfService => '이용약관';
 }

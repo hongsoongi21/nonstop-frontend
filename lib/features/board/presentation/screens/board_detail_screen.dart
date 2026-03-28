@@ -71,7 +71,13 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final postId = int.parse(widget.boardId);
+    final postId = int.tryParse(widget.boardId);
+    if (postId == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(child: Text(AppLocalizations.of(context)!.errorOccurred)),
+      );
+    }
     final detailState = ref.watch(postDetailProvider(postId));
     final post = detailState.post;
     final comments = detailState.comments;

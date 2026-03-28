@@ -1118,4 +1118,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alreadyRequested => 'Already requested';
+
+  @override
+  String get legal => 'Legal';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get termsOfService => 'Terms of Service';
 }

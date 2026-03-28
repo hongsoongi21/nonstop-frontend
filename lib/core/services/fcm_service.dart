@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,11 +9,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../constants/routes.dart';
 import '../router/app_router.dart';
 import '../supabase/supabase_provider.dart';
+import '../utils/logger.dart';
 
 /// Background message handler - must be top-level function
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('Background message received: ${message.messageId}');
+  AppLogger.d('Background message received: ${message.messageId}');
 }
 
 /// FCM Service for handling push notifications
@@ -69,7 +69,7 @@ class FcmService {
       sound: true,
     );
 
-    debugPrint('FCM Permission status: ${settings.authorizationStatus}');
+    AppLogger.d('FCM Permission status: ${settings.authorizationStatus}');
   }
 
   /// Initialize local notifications for foreground display
@@ -111,19 +111,19 @@ class FcmService {
   Future<void> _getToken() async {
     try {
       _fcmToken = await _messaging.getToken();
-      debugPrint('FCM Token: $_fcmToken');
+      AppLogger.d('FCM Token: $_fcmToken');
 
       if (_fcmToken != null) {
         await _registerTokenWithBackend(_fcmToken!);
       }
     } catch (e) {
-      debugPrint('Error getting FCM token: $e');
+      AppLogger.e('Error getting FCM token', e);
     }
   }
 
   /// Handle token refresh
   void _onTokenRefresh(String token) {
-    debugPrint('FCM Token refreshed: $token');
+    AppLogger.d('FCM Token refreshed: $token');
     _fcmToken = token;
     _registerTokenWithBackend(token);
   }
@@ -154,15 +154,15 @@ class FcmService {
         },
         onConflict: 'token',
       );
-      debugPrint('FCM token registered with backend');
+      AppLogger.d('FCM token registered with backend');
     } catch (e) {
-      debugPrint('Error registering FCM token: $e');
+      AppLogger.e('Error registering FCM token', e);
     }
   }
 
   /// Handle foreground message
   void _handleForegroundMessage(RemoteMessage message) {
-    debugPrint('Foreground message: ${message.notification?.title}');
+    AppLogger.d('Foreground message: ${message.notification?.title}');
 
     final notification = message.notification;
     if (notification != null) {
@@ -207,13 +207,13 @@ class FcmService {
 
   /// Handle notification tap when app is in background
   void _handleMessageOpenedApp(RemoteMessage message) {
-    debugPrint('Message opened app: ${message.data}');
+    AppLogger.d('Message opened app: ${message.data}');
     _navigateToNotification(message.data);
   }
 
   /// Handle local notification tap
   void _onNotificationTapped(NotificationResponse response) {
-    debugPrint('Notification tapped: ${response.payload}');
+    AppLogger.d('Notification tapped: ${response.payload}');
     if (response.payload == null) return;
 
     try {
@@ -221,7 +221,7 @@ class FcmService {
       final data = jsonDecode(response.payload!) as Map<String, dynamic>;
       _navigateToNotification(data);
     } catch (e) {
-      debugPrint('Error parsing notification payload: $e');
+      AppLogger.e('Error parsing notification payload', e);
     }
   }
 
@@ -233,11 +233,11 @@ class FcmService {
       final id = data['id'] as String?;
 
       if (type == null) {
-        debugPrint('Notification type is null, cannot navigate');
+        AppLogger.w('Notification type is null, cannot navigate');
         return;
       }
 
-      debugPrint('Navigating: type=$type, id=$id');
+      AppLogger.d('Navigating: type=$type, id=$id');
 
       switch (type) {
         case 'chat':
@@ -271,11 +271,10 @@ class FcmService {
 
         default:
           router.push(Routes.notifications);
-          debugPrint(
-              'Unknown notification type: $type, navigating to notifications screen');
+          AppLogger.w('Unknown notification type: $type, navigating to notifications screen');
       }
     } catch (e) {
-      debugPrint('Error navigating from notification: $e');
+      AppLogger.e('Error navigating from notification', e);
     }
   }
 
@@ -284,9 +283,9 @@ class FcmService {
     try {
       await _messaging.deleteToken();
       _fcmToken = null;
-      debugPrint('FCM token deleted');
+      AppLogger.d('FCM token deleted');
     } catch (e) {
-      debugPrint('Error deleting FCM token: $e');
+      AppLogger.e('Error deleting FCM token', e);
     }
   }
 }

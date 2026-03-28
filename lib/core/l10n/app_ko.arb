@@ -381,6 +381,36 @@
   "@noPostsYet": {
     "description": "No posts message"
   },
+  "board": "게시판",
+  "write": "작성",
+  "searchPosts": "게시물 검색...",
+  "pleaseSelectBoardFirst": "먼저 게시판을 선택해주세요",
+  "noPostsInBoard": "{boardName}에 게시물이 없습니다",
+  "beFirstToPost": "첫 번째로 대화를 시작해보세요!",
+  "createFirstPost": "첫 게시물 작성",
+  "student": "학생",
+  "post": "게시",
+  "edit": "수정",
+  "anonymous": "익명",
+  "replyingToComment": "댓글에 답글 달기",
+  "noCommentsYet": "아직 댓글이 없습니다",
+  "beFirstToComment": "첫 번째로 의견을 남겨보세요",
+  "writeComment": "댓글 작성...",
+  "postAnonymously": "익명으로 게시",
+  "comment": "댓글",
+  "like": "좋아요",
+  "reply": "답글",
+  "createPost": "게시물 작성",
+  "noBoardsAvailable": "이용 가능한 게시판이 없습니다. 먼저 커뮤니티를 선택해주세요.",
+  "writeClearTitle": "명확하고 흥미로운 제목을 작성하세요...",
+  "pleaseEnterTitle": "제목을 입력해주세요",
+  "titleTooShort": "제목이 너무 짧습니다",
+  "shareYourThoughts": "생각을 공유해보세요...",
+  "pleaseEnterContent": "내용을 입력해주세요",
+  "pleaseSelectBoard": "게시판을 선택해주세요",
+  "hideIdentity": "다른 사람에게 신원을 숨깁니다",
+  "secretPost": "비밀 게시물",
+  "onlyVisibleToAuthorized": "인증된 사용자에게만 공개됩니다",
   "login": "로그인",
   "@login": {
     "description": "login label/message"
@@ -1014,5 +1044,17 @@
   "alreadyRequested": "이미 요청한 상대방입니다",
   "@alreadyRequested": {
     "description": "Error message when friend request already sent"
+  },
+  "legal": "법적 고지",
+  "@legal": {
+    "description": "Legal section header in settings"
+  },
+  "privacyPolicy": "개인정보처리방침",
+  "@privacyPolicy": {
+    "description": "Privacy policy link title"
+  },
+  "termsOfService": "이용약관",
+  "@termsOfService": {
+    "description": "Terms of service link title"
   }
 }

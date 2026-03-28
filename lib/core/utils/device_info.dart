@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
+
+import 'logger.dart';
 
 /// Device information utility
 class DeviceInfo {
@@ -22,7 +23,7 @@ class DeviceInfo {
         _deviceInfo = await _deviceInfoPlugin.linuxInfo;
       }
     } catch (e) {
-      debugPrint('Failed to get device info: $e');
+      AppLogger.e('Failed to get device info', e);
     }
   }
 

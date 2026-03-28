@@ -85,6 +85,7 @@
   "@chatLoadError": {
     "description": "Error message when chat list fails to load"
   },
+  "searchChats": "Suhbatlarni qidirish...",
   "newChat": "Yangi suhbat",
   "@newChat": {
     "description": "Title for new chat sheet"
@@ -709,6 +710,36 @@
   "@noPostsYet": {
     "description": "No posts message"
   },
+  "board": "Taxta",
+  "write": "Yozish",
+  "searchPosts": "Postlarni qidirish...",
+  "pleaseSelectBoardFirst": "Iltimos, avval taxtani tanlang",
+  "noPostsInBoard": "{boardName} da hali postlar yo'q",
+  "beFirstToPost": "Birinchi bo'lib suhbatni boshlang!",
+  "createFirstPost": "Birinchi post yaratish",
+  "student": "Talaba",
+  "post": "Joylash",
+  "edit": "Tahrirlash",
+  "anonymous": "Anonim",
+  "replyingToComment": "Sharhga javob",
+  "noCommentsYet": "Hali sharhlar yo'q",
+  "beFirstToComment": "Fikrlaringizni birinchi bo'lib baham ko'ring",
+  "writeComment": "Sharh yozing...",
+  "postAnonymously": "Anonim joylashtirish",
+  "comment": "Sharh",
+  "like": "Yoqdi",
+  "reply": "Javob",
+  "createPost": "Post yaratish",
+  "noBoardsAvailable": "Mavjud taxtalar yo'q. Iltimos, avval jamoatni tanlang.",
+  "writeClearTitle": "Aniq va qiziqarli sarlavha yozing...",
+  "pleaseEnterTitle": "Sarlavha kiriting",
+  "titleTooShort": "Sarlavha juda qisqa",
+  "shareYourThoughts": "Fikrlaringizni baham ko'ring...",
+  "pleaseEnterContent": "Tarkibni kiriting",
+  "pleaseSelectBoard": "Taxtani tanlang",
+  "hideIdentity": "Kimligingizni boshqalardan yashirish",
+  "secretPost": "Maxfiy post",
+  "onlyVisibleToAuthorized": "Faqat vakolatli foydalanuvchilarga ko'rinadi",
   "friendsTitle": "Do'stlar",
   "@friendsTitle": {
     "description": "Friends screen title"
@@ -1010,5 +1041,17 @@
   "alreadyRequested": "Allaqachon so'rov yuborilgan",
   "@alreadyRequested": {
     "description": "Error message when friend request already sent"
+  },
+  "legal": "Huquqiy ma'lumot",
+  "@legal": {
+    "description": "Legal section header in settings"
+  },
+  "privacyPolicy": "Maxfiylik siyosati",
+  "@privacyPolicy": {
+    "description": "Privacy policy link title"
+  },
+  "termsOfService": "Foydalanish shartlari",
+  "@termsOfService": {
+    "description": "Terms of service link title"
   }
 }

@@ -14,6 +14,7 @@ import '../../../../core/constants/routes.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/logger.dart';
 import '../../data/dto/auth_response_dto.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_auth_text_field.dart';
@@ -138,20 +139,20 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
     final authNotifier = ref.read(authProvider.notifier);
 
     try {
-      debugPrint('[GOOGLE_LOGIN] Step 1: Initializing Google Sign-In...');
+      AppLogger.d('[GOOGLE_LOGIN] Step 1: Initializing Google Sign-In...');
       await _initGoogleSignIn();
 
-      debugPrint('[GOOGLE_LOGIN] Step 2: Calling authenticate()...');
+      AppLogger.d('[GOOGLE_LOGIN] Step 2: Calling authenticate()...');
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
-      debugPrint('[GOOGLE_LOGIN] Step 3: Got Google user: ${googleUser.email}');
+      AppLogger.d('[GOOGLE_LOGIN] Step 3: Got Google user: ${googleUser.email}');
 
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final googleIdToken = googleAuth.idToken;
-      debugPrint('[GOOGLE_LOGIN] Step 4: Google ID Token: ${googleIdToken != null ? "EXISTS (${googleIdToken.length} chars)" : "NULL"}');
+      AppLogger.d('[GOOGLE_LOGIN] Step 4: Google ID Token: ${googleIdToken != null ? "EXISTS (${googleIdToken.length} chars)" : "NULL"}');
 
       if (googleIdToken == null) {
-        debugPrint('[GOOGLE_LOGIN] ERROR: Google ID Token is null! serverClientId may be misconfigured.');
+        AppLogger.w('[GOOGLE_LOGIN] ERROR: Google ID Token is null! serverClientId may be misconfigured.');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -183,9 +184,9 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
             );
             accessToken = auth.accessToken;
           }
-          debugPrint('[GOOGLE_LOGIN] Step 4b: Got accessToken from authorizationClient');
+          AppLogger.d('[GOOGLE_LOGIN] Step 4b: Got accessToken from authorizationClient');
         } catch (e) {
-          debugPrint('[GOOGLE_LOGIN] WARNING: authorizationClient failed: $e');
+          AppLogger.w('[GOOGLE_LOGIN] WARNING: authorizationClient failed: $e');
           // On iOS without accessToken, Supabase cannot verify the nonce.
           // Show error and abort.
           if (mounted) {
@@ -207,25 +208,25 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
           );
           accessToken = clientAuth?.accessToken;
         } catch (e) {
-          debugPrint('[GOOGLE_LOGIN] Android accessToken not available: $e');
+          AppLogger.d('[GOOGLE_LOGIN] Android accessToken not available: $e');
         }
       }
 
-      debugPrint('[GOOGLE_LOGIN] Step 5: Calling Supabase signInWithGoogle... (accessToken: ${accessToken != null ? "YES" : "NO"})');
+      AppLogger.d('[GOOGLE_LOGIN] Step 5: Calling Supabase signInWithGoogle... (accessToken: ${accessToken != null ? "YES" : "NO"})');
       await authNotifier.signInWithGoogle(googleIdToken, accessToken: accessToken);
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        debugPrint('[GOOGLE_LOGIN] Step 6: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+        AppLogger.d('[GOOGLE_LOGIN] Step 6: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
 
         if (authState.hasPendingOAuthSignup) {
-          debugPrint('[GOOGLE_LOGIN] New user, redirecting to signup...');
+          AppLogger.d('[GOOGLE_LOGIN] New user, redirecting to signup...');
           GoRouter.of(context).go(Routes.register, extra: authState.pendingOAuthSignup);
         } else if (authState.isAuthenticated && !authState.hasError) {
-          debugPrint('[GOOGLE_LOGIN] Login successful!');
+          AppLogger.d('[GOOGLE_LOGIN] Login successful!');
           _showWelcomeSnackbar(authState.user?.nickname);
         } else if (authState.hasError) {
-          debugPrint('[GOOGLE_LOGIN] ERROR from Supabase: ${authState.failure?.message}');
+          AppLogger.w('[GOOGLE_LOGIN] ERROR from Supabase: ${authState.failure?.message}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(authState.failure?.message ?? AppLocalizations.of(context)!.googleSignInFailed('')),
@@ -236,7 +237,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         }
       }
     } on GoogleSignInException catch (e) {
-      debugPrint('[GOOGLE_LOGIN] GoogleSignInException: ${e.code} - ${e.description}');
+      AppLogger.w('[GOOGLE_LOGIN] GoogleSignInException: ${e.code} - ${e.description}');
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -247,8 +248,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         );
       }
     } catch (error, stackTrace) {
-      debugPrint('[GOOGLE_LOGIN] Exception: $error');
-      debugPrint('[GOOGLE_LOGIN] StackTrace: $stackTrace');
+      AppLogger.e('[GOOGLE_LOGIN] Exception: $error', error, stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -290,12 +290,12 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
     final authNotifier = ref.read(authProvider.notifier);
 
     try {
-      debugPrint('[APPLE_LOGIN] Step 1: Generating nonce...');
+      AppLogger.d('[APPLE_LOGIN] Step 1: Generating nonce...');
       // Generate nonce for security
       final rawNonce = _generateNonce();
       final nonce = _sha256ofString(rawNonce);
 
-      debugPrint('[APPLE_LOGIN] Step 2: Requesting Apple credential...');
+      AppLogger.d('[APPLE_LOGIN] Step 2: Requesting Apple credential...');
       // Request Apple Sign In
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -304,20 +304,20 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         ],
         nonce: nonce,
       );
-      debugPrint('[APPLE_LOGIN] Step 3: Got Apple credential, identityToken: ${appleCredential.identityToken != null ? "EXISTS" : "NULL"}');
+      AppLogger.d('[APPLE_LOGIN] Step 3: Got Apple credential, identityToken: ${appleCredential.identityToken != null ? "EXISTS" : "NULL"}');
 
       final appleIdToken = appleCredential.identityToken;
       if (appleIdToken == null) {
-        debugPrint('[APPLE_LOGIN] ERROR: Apple Identity Token is null!');
+        AppLogger.w('[APPLE_LOGIN] ERROR: Apple Identity Token is null!');
         return;
       }
 
       // Get user name from Apple (only provided on first sign in)
       final firstName = appleCredential.givenName;
       final lastName = appleCredential.familyName;
-      debugPrint('[APPLE_LOGIN] Step 4: Name: $firstName $lastName');
+      AppLogger.d('[APPLE_LOGIN] Step 4: Name: $firstName $lastName');
 
-      debugPrint('[APPLE_LOGIN] Step 5: Calling Supabase signInWithApple...');
+      AppLogger.d('[APPLE_LOGIN] Step 5: Calling Supabase signInWithApple...');
       // Pass Apple Identity Token + rawNonce to Supabase for nonce verification
       await authNotifier.signInWithApple(
         idToken: appleIdToken,
@@ -329,20 +329,20 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
 
       if (mounted) {
         final authState = ref.read(authProvider);
-        debugPrint('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
+        AppLogger.d('[APPLE_LOGIN] Step 9: Auth state - isAuthenticated: ${authState.isAuthenticated}, hasError: ${authState.hasError}, hasPendingOAuthSignup: ${authState.hasPendingOAuthSignup}');
 
         if (authState.hasPendingOAuthSignup) {
           // 신규 사용자: 회원가입 화면으로 이동
-          debugPrint('[APPLE_LOGIN] Step 10: New user, redirecting to signup...');
+          AppLogger.d('[APPLE_LOGIN] Step 10: New user, redirecting to signup...');
           GoRouter.of(context).go(Routes.register, extra: authState.pendingOAuthSignup);
         } else if (authState.isAuthenticated && !authState.hasError) {
-          debugPrint('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
+          AppLogger.d('[APPLE_LOGIN] Step 10: Login successful, router will redirect...');
           _showWelcomeSnackbar(authState.user?.nickname);
           // 라우터가 자동으로 board로 리다이렉트합니다
         }
       }
     } on SignInWithAppleAuthorizationException catch (e) {
-      debugPrint('[APPLE_LOGIN] SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
+      AppLogger.w('[APPLE_LOGIN] SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
       // User cancelled the sign-in
       if (e.code == AuthorizationErrorCode.canceled) return;
       if (mounted) {
@@ -351,8 +351,7 @@ class _LoginScreenV1State extends ConsumerState<LoginScreenV1>
         );
       }
     } catch (error, stackTrace) {
-      debugPrint('[APPLE_LOGIN] Exception: $error');
-      debugPrint('[APPLE_LOGIN] StackTrace: $stackTrace');
+      AppLogger.e('[APPLE_LOGIN] Exception: $error', error, stackTrace);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.appleSignInFailed(error.toString()))),

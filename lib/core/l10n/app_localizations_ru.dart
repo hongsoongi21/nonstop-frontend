@@ -80,7 +80,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chatLoadError => 'Не удалось загрузить чаты';
 
   @override
-  String get searchChats => 'Search chats...';
+  String get searchChats => 'Поиск чатов...';
 
   @override
   String get newChat => 'Новый чат';
@@ -302,100 +302,101 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get board => 'Board';
+  String get board => 'Форум';
 
   @override
-  String get write => 'Write';
+  String get write => 'Написать';
 
   @override
-  String get searchPosts => 'Search posts...';
+  String get searchPosts => 'Поиск постов...';
 
   @override
-  String get pleaseSelectBoardFirst => 'Please select a board first';
+  String get pleaseSelectBoardFirst => 'Пожалуйста, сначала выберите доску';
 
   @override
   String noPostsInBoard(String boardName) {
-    return 'No posts in $boardName yet';
+    return 'В $boardName пока нет постов';
   }
 
   @override
-  String get beFirstToPost => 'Be the first to start a conversation!';
+  String get beFirstToPost => 'Будьте первым, кто начнёт разговор!';
 
   @override
-  String get createFirstPost => 'Create First Post';
+  String get createFirstPost => 'Создать первый пост';
 
   @override
-  String get student => 'Student';
+  String get student => 'Студент';
 
   @override
-  String get post => 'Post';
+  String get post => 'Опубликовать';
 
   @override
-  String get edit => 'Edit';
+  String get edit => 'Изменить';
 
   @override
   String get delete => 'Удалить';
 
   @override
-  String get anonymous => 'Anonymous';
+  String get anonymous => 'Аноним';
 
   @override
-  String get replyingToComment => 'Replying to comment';
+  String get replyingToComment => 'Ответ на комментарий';
 
   @override
-  String get noCommentsYet => 'No comments yet';
+  String get noCommentsYet => 'Пока нет комментариев';
 
   @override
-  String get beFirstToComment => 'Be the first to share your thoughts';
+  String get beFirstToComment => 'Поделитесь своим мнением первым';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => 'Написать комментарий...';
 
   @override
-  String get postAnonymously => 'Post Anonymously';
+  String get postAnonymously => 'Опубликовать анонимно';
 
   @override
-  String get comment => 'Comment';
+  String get comment => 'Комментарий';
 
   @override
-  String get like => 'Like';
+  String get like => 'Нравится';
 
   @override
-  String get reply => 'Reply';
+  String get reply => 'Ответить';
 
   @override
-  String get createPost => 'Create Post';
+  String get createPost => 'Создать пост';
 
   @override
   String get noBoardsAvailable =>
-      'No boards available. Please select a community first.';
+      'Нет доступных досок. Пожалуйста, сначала выберите сообщество.';
 
   @override
-  String get writeClearTitle => 'Write a clear, engaging title...';
+  String get writeClearTitle => 'Напишите чёткий и интересный заголовок...';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => 'Введите заголовок';
 
   @override
-  String get titleTooShort => 'Title is too short';
+  String get titleTooShort => 'Заголовок слишком короткий';
 
   @override
-  String get shareYourThoughts => 'Share your thoughts...';
+  String get shareYourThoughts => 'Поделитесь своими мыслями...';
 
   @override
-  String get pleaseEnterContent => 'Please enter some content';
+  String get pleaseEnterContent => 'Введите содержание';
 
   @override
-  String get pleaseSelectBoard => 'Please select a board';
+  String get pleaseSelectBoard => 'Выберите доску';
 
   @override
-  String get hideIdentity => 'Hide your identity from others';
+  String get hideIdentity => 'Скрыть вашу личность от других';
 
   @override
-  String get secretPost => 'Secret Post';
+  String get secretPost => 'Секретный пост';
 
   @override
-  String get onlyVisibleToAuthorized => 'Only visible to authorized users';
+  String get onlyVisibleToAuthorized =>
+      'Видно только авторизованным пользователям';
 
   @override
   String get login => 'Войти';
@@ -1124,4 +1125,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get alreadyRequested => 'Запрос уже отправлен';
+
+  @override
+  String get legal => 'Правовая информация';
+
+  @override
+  String get privacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get termsOfService => 'Условия использования';
 }

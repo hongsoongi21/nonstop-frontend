@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/errors/failures.dart';
+import '../../../../core/utils/logger.dart';
 import '../../../../core/services/fcm_service.dart';
 import '../../data/api/auth_api.dart';
 import '../../data/api/auth_api_impl.dart';
@@ -146,13 +146,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// 앱 구동 시 로컬 저장소의 토큰을 확인하여 자동 로그인 정보를 가져옵니다.
   Future<void> _initializeAuth() async {
-    debugPrint('[AUTH] 🔄 Initializing authentication...');
+    AppLogger.d('[AUTH] Initializing authentication...');
     state = state.copyWith(isLoading: true);
     final result = await _authRepository.getCurrentUser();
     result.fold(
       (failure) {
         // 토큰이 없거나 만료된 경우
-        debugPrint('[AUTH] ❌ Auth initialization failed: ${failure.message}');
+        AppLogger.w('[AUTH] Auth initialization failed: ${failure.message}');
         state = state.copyWith(
           isLoading: false,
           isInitialized: true,
@@ -161,9 +161,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       },
       (user) {
         if (user != null) {
-          debugPrint('[AUTH] ✅ Auth initialized successfully for user: ${user.email}');
+          AppLogger.d('[AUTH] Auth initialized successfully for user: ${user.email}');
         } else {
-          debugPrint('[AUTH] ℹ️ Auth initialized with no user (logged out)');
+          AppLogger.d('[AUTH] Auth initialized with no user (logged out)');
         }
         state = state.copyWith(
           isLoading: false,
@@ -181,9 +181,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _initializeFcm() async {
     try {
       await _fcmService.initialize();
-      debugPrint('FCM initialized successfully');
+      AppLogger.d('FCM initialized successfully');
     } catch (e) {
-      debugPrint('FCM initialization failed: $e');
+      AppLogger.w('FCM initialization failed: $e');
     }
   }
 
@@ -396,7 +396,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _fcmService.unregisterToken();
     } catch (e) {
-      debugPrint('FCM unregister failed: $e');
+      AppLogger.w('FCM unregister failed: $e');
     }
     await _authRepository.signOut();
     // isInitialized: true를 유지해야 라우터가 로그인 화면으로 리다이렉트함
@@ -440,18 +440,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // 로딩 중이거나 OAuth 회원가입 대기 중이면 간섭하지 않음
     // (Google/Apple 로그인 흐름 중에 앱이 resume될 때 상태가 리셋되는 것을 방지)
     if (state.isLoading || state.hasPendingOAuthSignup) {
-      debugPrint('[AUTH] ⏭️ Skipping refresh - auth operation in progress');
+      AppLogger.d('[AUTH] Skipping refresh - auth operation in progress');
       return;
     }
 
     // 이미 인증된 상태라면 불필요한 state 변경 없이 백그라운드에서 확인만 합니다.
     if (state.isAuthenticated) {
-      debugPrint('[AUTH] 🔄 Refreshing auth state (already authenticated, silent check)...');
+      AppLogger.d('[AUTH] Refreshing auth state (already authenticated, silent check)...');
       final result = await _authRepository.getCurrentUser();
       result.fold(
         (failure) {
           // 토큰이 만료되었거나 유효하지 않으면 로그아웃 처리
-          debugPrint('[AUTH] ⚠️ Token invalid during refresh: ${failure.message}');
+          AppLogger.w('[AUTH] Token invalid during refresh: ${failure.message}');
           state = state.copyWith(
             isLoading: false,
             isInitialized: true,
@@ -461,16 +461,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
         (user) {
           // 토큰이 유효하면 사용자 정보만 업데이트 (변경이 있는 경우에만)
           if (user != null && user.id != state.user?.id) {
-            debugPrint('[AUTH] ✅ User info updated during refresh');
+            AppLogger.d('[AUTH] User info updated during refresh');
             state = state.copyWith(user: user);
           } else {
-            debugPrint('[AUTH] ✅ Auth state still valid');
+            AppLogger.d('[AUTH] Auth state still valid');
           }
         },
       );
     } else if (state.isInitialized) {
       // 이미 초기화가 완료된 상태에서는 재초기화하지 않음
-      debugPrint('[AUTH] ⏭️ Skipping refresh - already initialized');
+      AppLogger.d('[AUTH] Skipping refresh - already initialized');
     } else {
       // 초기화가 안 된 상태에서만 초기화 로직 실행
       await _initializeAuth();

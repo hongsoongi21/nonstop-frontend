@@ -81,3 +81,8 @@ android/app/*.keystore
 
 # Maestro E2E test reports
 .maestro/reports/
+
+# Environment variables
+.env
+.env.*
+!.env.example

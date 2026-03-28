@@ -2237,6 +2237,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already requested'**
   String get alreadyRequested;
+
+  /// Legal section header in settings
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legal;
+
+  /// Privacy policy link title
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// Terms of service link title
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
 }
 
 class _AppLocalizationsDelegate
