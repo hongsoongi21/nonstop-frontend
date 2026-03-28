@@ -1,73 +1,11 @@
-import 'dart:io' show Platform;
-
-import 'package:flutter/foundation.dart' show kIsWeb, kReleaseMode;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 
 /// Environment configuration
 /// Loads environment variables via `--dart-define` (compile-time).
 class EnvConfig {
-  static const String _apiBaseUrlKey = 'API_BASE_URL';
-  static const String _wsBaseUrlKey = 'WS_BASE_URL';
   static const String _environmentKey = 'ENVIRONMENT';
   static const String _googleServerClientIdKey = 'GOOGLE_SERVER_CLIENT_ID';
-
-  /// When running a physical Android device over USB with `adb reverse`,
-  /// use localhost from the device to reach the host machine.
-  ///
-  /// Run:
-  /// - `adb reverse tcp:28080 tcp:28080`
-  /// - `flutter run --dart-define=USE_ADB_REVERSE=true`
-  static bool get _useAdbReverse =>
-      const bool.fromEnvironment('USE_ADB_REVERSE', defaultValue: false);
-
-  // Default values for development
-  static const String _defaultApiBaseUrl = 'http://20.2.136.12:28080';
-  static const String _defaultWsBaseUrl = 'ws://20.2.136.12:28080/ws/v1/chat';
   static const String _defaultEnvironment = 'development';
-
-  static String get _localApiBaseUrl {
-    if (kIsWeb) return 'http://20.2.136.12:28080';
-    if (Platform.isAndroid) {
-      // Emulator uses 10.0.2.2, physical device should use adb reverse + localhost.
-      return _useAdbReverse
-          ? 'http://20.2.136.12:28080'
-          : 'http://20.2.136.12:28080';
-    }
-    return 'http://20.2.136.12:28080';
-  }
-
-  static String get _localWsBaseUrl {
-    if (kIsWeb) return 'ws://20.2.136.12:28080/ws/v1/chat';
-    if (Platform.isAndroid) {
-      return _useAdbReverse
-          ? 'ws://20.2.136.12:28080/ws/v1/chat'
-          : 'ws://20.2.136.12:28080/ws/v1/chat';
-    }
-    return 'ws://20.2.136.12:28080/ws/v1/chat';
-  }
-
-  /// API base URL
-  static String get apiBaseUrl {
-    final value = const String.fromEnvironment(
-      _apiBaseUrlKey,
-      defaultValue: _defaultApiBaseUrl,
-    );
-    if (!kReleaseMode && value == _defaultApiBaseUrl) {
-      return _localApiBaseUrl;
-    }
-    return value;
-  }
-
-  /// WebSocket base URL
-  static String get wsBaseUrl {
-    final value = const String.fromEnvironment(
-      _wsBaseUrlKey,
-      defaultValue: _defaultWsBaseUrl,
-    );
-    if (!kReleaseMode && value == _defaultWsBaseUrl) {
-      return _localWsBaseUrl;
-    }
-    return value;
-  }
 
   /// Current environment (staging, production, development)
   static String get environment {
@@ -78,7 +16,7 @@ class EnvConfig {
   }
 
   /// Check if running in production
-  static bool get isProduction => environment == 'production';
+  static bool get isProduction => environment == 'production' || kReleaseMode;
 
   /// Check if running in staging
   static bool get isStaging => environment == 'staging';
