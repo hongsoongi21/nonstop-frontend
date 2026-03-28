@@ -5,14 +5,9 @@
     <key>method</key>
     <string>app-store</string>
     <key>teamID</key>
-    <string>$(TEAM_ID)</string>
+    <string>K9GHVQMJGJ</string>
     <key>signingStyle</key>
-    <string>manual</string>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>uz.merge4.nonstop</key>
-        <string>match AppStore uz.merge4.nonstop</string>
-    </dict>
+    <string>automatic</string>
     <key>uploadSymbols</key>
     <true/>
 </dict>
