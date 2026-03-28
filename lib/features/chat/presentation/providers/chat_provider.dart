@@ -103,6 +103,26 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
     return createdRoom;
   }
 
+  /// 특정 채팅방의 unreadCount를 0으로 초기화 (읽음 처리 후 즉시 배지 갱신)
+  void clearUnreadCount(int roomId) {
+    final updatedRooms = state.rooms.map((r) {
+      if (r.id == roomId && r.unreadCount != 0) {
+        return ChatRoom(
+          id: r.id,
+          type: r.type,
+          name: r.name,
+          unreadCount: 0,
+          lastMessage: r.lastMessage,
+          memberIds: r.memberIds,
+          updatedAt: r.updatedAt,
+          imageUrl: r.imageUrl,
+        );
+      }
+      return r;
+    }).toList();
+    state = ChatListState(isLoading: false, rooms: updatedRooms);
+  }
+
   /// 채팅방 목록에서 특정 방 제거 (나가기 성공 후 호출)
   void removeRoom(int roomId) {
     state = ChatListState(
@@ -178,7 +198,7 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
   Future<void> _initialize() async {
     await loadHistory();
     await _loadInitialReadStatuses();
-    markMessagesAsRead();
+    await markMessagesAsRead();
   }
 
   Future<void> _loadInitialReadStatuses() async {
@@ -236,8 +256,20 @@ class ChatRoomNotifier extends StateNotifier<ChatRoomState> {
 
   Future<void> markMessagesAsRead() async {
     if (state.messages.isEmpty) return;
-    final lastMessageId = state.messages.first.id;
-    await _repository.markAsRead(roomId: roomId, messageId: lastMessageId);
+    // optimistic 메시지(전송 중/실패)는 DB에 없으므로 건너뛰고 실제 메시지 ID 사용
+    final realMessages = state.messages.where(
+      (m) => !m.isSending && !m.hasError,
+    );
+    if (realMessages.isEmpty) return;
+    final lastMessageId = realMessages.first.id;
+    final result = await _repository.markAsRead(roomId: roomId, messageId: lastMessageId);
+    result.fold(
+      (_) {},
+      (_) {
+        // 읽음 처리 성공 시 채팅 목록의 배지를 즉시 초기화
+        _ref.read(chatListProvider.notifier).clearUnreadCount(roomId);
+      },
+    );
   }
 
   void _handleIncomingMessage(ChatMessage message) {

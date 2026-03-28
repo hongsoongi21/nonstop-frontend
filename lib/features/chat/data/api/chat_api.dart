@@ -86,20 +86,22 @@ class ChatApiImpl implements ChatApi {
         lastMessages[roomId] = msgs.first;
       }
 
-      // Unread count
+      // Unread count (본인이 보낸 메시지는 제외)
       final lastReadId = lastReadMap[roomId];
       if (lastReadId != null) {
         final unread = await _supabase
             .from('messages')
             .select('id')
             .eq('chat_room_id', roomId)
+            .neq('sender_id', currentUserId)
             .gt('id', lastReadId);
         unreadCounts[roomId] = (unread as List).length;
       } else {
         final all = await _supabase
             .from('messages')
             .select('id')
-            .eq('chat_room_id', roomId);
+            .eq('chat_room_id', roomId)
+            .neq('sender_id', currentUserId);
         unreadCounts[roomId] = (all as List).length;
       }
     }));
@@ -475,11 +477,18 @@ class ChatApiImpl implements ChatApi {
         .select()
         .single();
 
-    // Update room's updated_at
-    await _supabase
-        .from('chat_rooms')
-        .update({'updated_at': DateTime.now().toIso8601String()})
-        .eq('id', roomId);
+    // Update room's updated_at and mark sender's read position
+    await Future.wait([
+      _supabase
+          .from('chat_rooms')
+          .update({'updated_at': DateTime.now().toIso8601String()})
+          .eq('id', roomId),
+      _supabase
+          .from('chat_room_members')
+          .update({'last_read_message_id': data['id']})
+          .eq('room_id', roomId)
+          .eq('user_id', currentUserId),
+    ]);
 
     return _mapToMessage(data);
   }
