@@ -24,6 +24,9 @@
 -keep class sun.misc.Unsafe { *; }
 -keep class com.google.gson.** { *; }
 
+# Google Play Core (deferred components)
+-dontwarn com.google.android.play.core.**
+
 # Prevent stripping of native methods
 -keepclasseswithmembernames class * {
     native <methods>;
