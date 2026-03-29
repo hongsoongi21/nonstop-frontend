@@ -4,7 +4,7 @@ default_platform(:ios)
 ASC_API_KEY = app_store_connect_api_key(
   key_id: "9M5K2RF732",
   issuer_id: "5c73d830-bb60-4a1d-b94b-df36f51dd094",
-  key_filepath: File.join(__dir__, "keys", "AuthKey_9M5K2RF732.p8"),
+  key_filepath: File.expand_path("keys/AuthKey_9M5K2RF732.p8", __dir__),
 )
 
 platform :ios do
