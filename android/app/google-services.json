@@ -46,6 +46,14 @@
           }
         },
         {
+          "client_id": "127473148279-okdv5fefnlum22o779kf7dctfnbh18e5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.merge4.nonstop",
+            "certificate_hash": "4425b17628215e94fbf2b316c4484c85f80cea19"
+          }
+        },
+        {
           "client_id": "127473148279-sa5hnb576mfoceltmfg0d5ih76tegi95.apps.googleusercontent.com",
           "client_type": 3
         }
