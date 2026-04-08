@@ -1463,5 +1463,15 @@
   "uploading": "Загрузка...",
   "@uploading": {
     "description": "Status text while uploading an image"
+  },
+  "anonymousRoomWithCount": "Аноним ({count})",
+  "@anonymousRoomWithCount": {
+    "description": "Label for the Nth anonymous chat room in the chat list",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
   }
 }

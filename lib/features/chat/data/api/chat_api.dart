@@ -153,18 +153,24 @@ class ChatApiImpl implements ChatApi {
         lastMessage = _mapToMessage(lastMsg);
       }
 
+      final isAnonymous = (room['is_anonymous'] as bool?) ?? false;
       return ChatRoom(
         id: roomId,
         type: room['type'] == 'GROUP'
             ? ChatRoomType.group
             : ChatRoomType.oneToOne,
-        name: room['name'] as String? ?? _resolveOneToOneName(room, membersByRoom, nicknameMap, currentUserId),
+        name: isAnonymous
+            ? (room['name'] as String?)
+            : (room['name'] as String? ??
+                _resolveOneToOneName(
+                    room, membersByRoom, nicknameMap, currentUserId)),
         unreadCount: unreadCounts[roomId] ?? 0,
         lastMessage: lastMessage,
         memberIds: membersByRoom[roomId],
         updatedAt: room['updated_at'] != null
             ? parseUtcDateTime(room['updated_at'] as String)
             : null,
+        isAnonymous: isAnonymous,
       );
     }).toList()
       ..sort((a, b) {
@@ -289,13 +295,17 @@ class ChatApiImpl implements ChatApi {
           .eq('id', roomId)
           .single();
 
+      final isAnonymous = (room['is_anonymous'] as bool?) ?? false;
       return ChatRoom(
         id: roomId,
         type: ChatRoomType.oneToOne,
-        name: targetNickname ?? room['name'] as String?,
+        name: isAnonymous
+            ? (room['name'] as String?)
+            : (targetNickname ?? room['name'] as String?),
         unreadCount: 0,
         memberIds: [currentUserId, targetUserId],
         updatedAt: parseUtcDateTime(room['updated_at'] as String),
+        isAnonymous: isAnonymous,
       );
     }
 
@@ -334,6 +344,7 @@ class ChatApiImpl implements ChatApi {
       unreadCount: 0,
       memberIds: [currentUserId, targetUserId],
       updatedAt: parseUtcDateTime(roomData['updated_at'] as String),
+      isAnonymous: (roomData['is_anonymous'] as bool?) ?? false,
     );
   }
 
@@ -372,6 +383,7 @@ class ChatApiImpl implements ChatApi {
       unreadCount: 0,
       memberIds: [currentUserId, ...userIds.where((uid) => uid != currentUserId)],
       updatedAt: parseUtcDateTime(roomData['updated_at'] as String),
+      isAnonymous: (roomData['is_anonymous'] as bool?) ?? false,
     );
   }
 

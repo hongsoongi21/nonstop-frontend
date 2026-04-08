@@ -34,7 +34,14 @@ class ChatRoomTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap ?? () => context.push('${Routes.chat}/${room.id}', extra: room.name),
+        onTap: onTap ??
+            () {
+              final l10n = AppLocalizations.of(context)!;
+              final extraName = room.isAnonymous
+                  ? (room.name ?? l10n.anonymous)
+                  : room.name;
+              context.push('${Routes.chat}/${room.id}', extra: extraName);
+            },
         splashColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)
             .withValues(alpha: 0.08),
         highlightColor: (isDarkMode ? AppColors.primaryLight : AppColors.primary)
@@ -61,15 +68,18 @@ class ChatRoomTile extends StatelessWidget {
   Widget _buildAvatar(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final isGroup = room.type == ChatRoomType.group;
-    final displayName = room.name ?? AppLocalizations.of(context)!.chat;
+    final l10n = AppLocalizations.of(context)!;
+    final displayName =
+        room.name ?? (room.isAnonymous ? l10n.anonymous : l10n.chat);
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
 
     // Determine avatar image URL
     final imageUrl = room.imageUrl;
-    final hasImage = imageUrl != null && imageUrl.isNotEmpty;
+    final hasImage = imageUrl != null && imageUrl.isNotEmpty && !room.isAnonymous;
 
     // Avatar colors based on name hash for consistency
-    final avatarColor = _getAvatarColor(displayName);
+    final avatarColor =
+        room.isAnonymous ? const Color(0xFF6B7280) : _getAvatarColor(displayName);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -89,22 +99,25 @@ class ChatRoomTile extends StatelessWidget {
             ),
           ),
           child: ClipOval(
-            child: hasImage
-                ? CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => _buildInitialAvatar(
-                      initial,
-                      avatarColor,
-                      isDarkMode,
-                    ),
-                    errorWidget: (context, url, error) => _buildInitialAvatar(
-                      initial,
-                      avatarColor,
-                      isDarkMode,
-                    ),
-                  )
-                : _buildInitialAvatar(initial, avatarColor, isDarkMode),
+            child: room.isAnonymous
+                ? _buildAnonymousAvatar(avatarColor, isDarkMode)
+                : (hasImage
+                    ? CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => _buildInitialAvatar(
+                          initial,
+                          avatarColor,
+                          isDarkMode,
+                        ),
+                        errorWidget: (context, url, error) =>
+                            _buildInitialAvatar(
+                          initial,
+                          avatarColor,
+                          isDarkMode,
+                        ),
+                      )
+                    : _buildInitialAvatar(initial, avatarColor, isDarkMode)),
           ),
         ),
 
@@ -135,6 +148,19 @@ class ChatRoomTile extends StatelessWidget {
     );
   }
 
+  Widget _buildAnonymousAvatar(Color color, bool isDarkMode) {
+    return Container(
+      color: color.withValues(alpha: isDarkMode ? 0.2 : 0.12),
+      child: Center(
+        child: Icon(
+          Icons.visibility_off,
+          color: color,
+          size: 24,
+        ),
+      ),
+    );
+  }
+
   Widget _buildInitialAvatar(String initial, Color color, bool isDarkMode) {
     return Container(
       color: color.withValues(alpha: isDarkMode ? 0.2 : 0.12),
@@ -153,7 +179,9 @@ class ChatRoomTile extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, bool hasUnread) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final displayName = room.name ?? AppLocalizations.of(context)!.chat;
+    final l10n = AppLocalizations.of(context)!;
+    final displayName =
+        room.name ?? (room.isAnonymous ? l10n.anonymous : l10n.chat);
     final hasLastMessage = room.lastMessage != null;
     final lastMessageContent = hasLastMessage
         ? _formatLastMessage(room.lastMessage!)

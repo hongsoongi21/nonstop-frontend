@@ -1214,4 +1214,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get uploading => 'Yuklanmoqda...';
+
+  @override
+  String anonymousRoomWithCount(int count) {
+    return 'Anonim ($count)';
+  }
 }

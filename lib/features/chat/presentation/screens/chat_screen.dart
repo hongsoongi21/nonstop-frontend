@@ -448,23 +448,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   List<ChatRoom> _numberAnonymousRooms(List<ChatRoom> rooms) {
+    final l10n = AppLocalizations.of(context);
     int anonymousCount = 0;
     final result = <ChatRoom>[];
     for (final room in rooms) {
-      if (room.name == '익명') {
+      if (room.isAnonymous) {
         anonymousCount++;
         if (anonymousCount == 1) {
-          result.add(room);
+          // First anonymous room: clear the name so UI falls back to l10n.anonymous.
+          result.add(room.copyWith(name: null));
         } else {
-          result.add(ChatRoom(
-            id: room.id,
-            type: room.type,
-            name: '익명($anonymousCount)',
-            unreadCount: room.unreadCount,
-            lastMessage: room.lastMessage,
-            memberIds: room.memberIds,
-            updatedAt: room.updatedAt,
-            imageUrl: room.imageUrl,
+          result.add(room.copyWith(
+            name: l10n.anonymousRoomWithCount(anonymousCount),
           ));
         }
       } else {

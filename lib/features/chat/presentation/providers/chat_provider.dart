@@ -107,16 +107,7 @@ class ChatListNotifier extends StateNotifier<ChatListState> {
   void clearUnreadCount(int roomId) {
     final updatedRooms = state.rooms.map((r) {
       if (r.id == roomId && r.unreadCount != 0) {
-        return ChatRoom(
-          id: r.id,
-          type: r.type,
-          name: r.name,
-          unreadCount: 0,
-          lastMessage: r.lastMessage,
-          memberIds: r.memberIds,
-          updatedAt: r.updatedAt,
-          imageUrl: r.imageUrl,
-        );
+        return r.copyWith(unreadCount: 0);
       }
       return r;
     }).toList();

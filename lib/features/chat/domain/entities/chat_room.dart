@@ -1,30 +1,26 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
+
+part 'chat_room.freezed.dart';
 
 enum ChatRoomType {
   oneToOne,
   group,
 }
 
-class ChatRoom {
-  final int id;
-  final ChatRoomType type;
-  final String? name;
-  final int unreadCount;
-  final ChatMessage? lastMessage;
-  final List<int>? memberIds;
-  final DateTime? updatedAt;
-  final String? imageUrl;
-
-  const ChatRoom({
-    required this.id,
-    required this.type,
-    this.name,
-    required this.unreadCount,
-    this.lastMessage,
-    this.memberIds,
-    this.updatedAt,
-    this.imageUrl,
-  });
+@freezed
+class ChatRoom with _$ChatRoom {
+  const factory ChatRoom({
+    required int id,
+    required ChatRoomType type,
+    String? name,
+    required int unreadCount,
+    ChatMessage? lastMessage,
+    List<int>? memberIds,
+    DateTime? updatedAt,
+    String? imageUrl,
+    @Default(false) bool isAnonymous,
+  }) = _ChatRoom;
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     // Handle lastMessage - backend sends flat fields instead of nested object
@@ -58,6 +54,7 @@ class ChatRoom {
               ? DateTime.parse(json['lastMessageSentAt'] as String)
               : null),
       imageUrl: json['imageUrl'] as String?,
+      isAnonymous: (json['isAnonymous'] ?? json['is_anonymous'] ?? false) as bool,
     );
   }
 }

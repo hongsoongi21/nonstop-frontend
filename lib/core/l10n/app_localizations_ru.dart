@@ -1208,4 +1208,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get uploading => 'Загрузка...';
+
+  @override
+  String anonymousRoomWithCount(int count) {
+    return 'Аноним ($count)';
+  }
 }

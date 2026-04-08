@@ -2393,6 +2393,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Uploading...'**
   String get uploading;
+
+  /// Label for the Nth anonymous chat room in the chat list
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous ({count})'**
+  String anonymousRoomWithCount(int count);
 }
 
 class _AppLocalizationsDelegate

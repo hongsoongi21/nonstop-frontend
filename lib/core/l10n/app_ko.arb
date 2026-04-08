@@ -1158,5 +1158,15 @@
   "uploading": "업로드 중...",
   "@uploading": {
     "description": "Status text while uploading an image"
+  },
+  "anonymousRoomWithCount": "익명({count})",
+  "@anonymousRoomWithCount": {
+    "description": "Label for the Nth anonymous chat room in the chat list",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
   }
 }

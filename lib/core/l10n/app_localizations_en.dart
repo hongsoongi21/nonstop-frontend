@@ -1200,4 +1200,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploading => 'Uploading...';
+
+  @override
+  String anonymousRoomWithCount(int count) {
+    return 'Anonymous ($count)';
+  }
 }

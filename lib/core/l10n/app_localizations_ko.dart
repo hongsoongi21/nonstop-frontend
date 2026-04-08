@@ -1184,4 +1184,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get uploading => '업로드 중...';
+
+  @override
+  String anonymousRoomWithCount(int count) {
+    return '익명($count)';
+  }
 }
