@@ -1504,5 +1504,107 @@
   "termsOfService": "Terms of Service",
   "@termsOfService": {
     "description": "Terms of service link title"
+  },
+  "policyTermsOfService": "Terms of Service",
+  "@policyTermsOfService": {
+    "description": "Policy checkbox label for terms of service"
+  },
+  "policyPrivacyPolicy": "Privacy Policy",
+  "@policyPrivacyPolicy": {
+    "description": "Policy checkbox label for privacy policy"
+  },
+  "policyMarketing": "Marketing Communications",
+  "@policyMarketing": {
+    "description": "Policy checkbox label for marketing communications"
+  },
+  "policyUnknown": "Policy",
+  "@policyUnknown": {
+    "description": "Fallback label for unknown policy types"
+  },
+  "academicYear": "Academic Year",
+  "@academicYear": {
+    "description": "Label for academic year selector"
+  },
+  "attachImage": "Attach image",
+  "@attachImage": {
+    "description": "Tooltip for image attachment button"
+  },
+  "boardNameRequired": "Board name is required",
+  "@boardNameRequired": {
+    "description": "Validation message when board name is empty"
+  },
+  "chatAction": "Chat",
+  "@chatAction": {
+    "description": "Button label to start chatting"
+  },
+  "confirmDeleteTimetable": "Delete \"{name}\"?",
+  "@confirmDeleteTimetable": {
+    "description": "Confirmation message for deleting a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "continueText": "Continue",
+  "@continueText": {
+    "description": "Button label to continue"
+  },
+  "coursesImportedFromTimetable": "Courses imported from timetable",
+  "@coursesImportedFromTimetable": {
+    "description": "Snackbar message after importing courses from timetable"
+  },
+  "createButton": "Create",
+  "@createButton": {
+    "description": "Button label to create a new item"
+  },
+  "createTimetable": "Create New Timetable",
+  "@createTimetable": {
+    "description": "Title for create timetable dialog"
+  },
+  "deleteTimetable": "Delete Timetable",
+  "@deleteTimetable": {
+    "description": "Title for delete timetable confirmation dialog"
+  },
+  "enterSchoolEmail": "Please enter your school email",
+  "@enterSchoolEmail": {
+    "description": "Validation message when school email field is empty"
+  },
+  "errorLoadingPolicies": "Failed to load policies",
+  "@errorLoadingPolicies": {
+    "description": "Error message when policies fail to load"
+  },
+  "majorSubject": "Major Subject",
+  "@majorSubject": {
+    "description": "Checkbox label for major subject in GPA calculator"
+  },
+  "noMessagesYet": "No messages yet",
+  "@noMessagesYet": {
+    "description": "Placeholder text when chat room has no messages"
+  },
+  "noSentRequests": "No sent requests",
+  "@noSentRequests": {
+    "description": "Empty state message for sent friend requests"
+  },
+  "noUniversitiesFound": "No universities found",
+  "@noUniversitiesFound": {
+    "description": "Message when university search returns no results"
+  },
+  "timetableCreated": "Timetable \"{name}\" created",
+  "@timetableCreated": {
+    "description": "Success message after creating a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timetableName": "Timetable Name",
+  "@timetableName": {
+    "description": "Label for timetable name field"
+  },
+  "uploading": "Uploading...",
+  "@uploading": {
+    "description": "Status text while uploading an image"
   }
 }

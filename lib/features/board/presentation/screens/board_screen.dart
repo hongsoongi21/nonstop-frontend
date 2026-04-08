@@ -912,8 +912,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
               final name = nameController.text.trim();
               if (name.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Board name is required'),
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.boardNameRequired),
                     behavior: SnackBarBehavior.floating,
                   ),
                 );

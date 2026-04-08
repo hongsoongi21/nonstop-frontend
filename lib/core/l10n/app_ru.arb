@@ -1361,5 +1361,107 @@
   "termsOfService": "Условия использования",
   "@termsOfService": {
     "description": "Terms of service link title"
+  },
+  "policyTermsOfService": "Условия использования",
+  "@policyTermsOfService": {
+    "description": "Policy checkbox label for terms of service"
+  },
+  "policyPrivacyPolicy": "Политика конфиденциальности",
+  "@policyPrivacyPolicy": {
+    "description": "Policy checkbox label for privacy policy"
+  },
+  "policyMarketing": "Маркетинговые уведомления",
+  "@policyMarketing": {
+    "description": "Policy checkbox label for marketing communications"
+  },
+  "policyUnknown": "Политика",
+  "@policyUnknown": {
+    "description": "Fallback label for unknown policy types"
+  },
+  "academicYear": "Учебный год",
+  "@academicYear": {
+    "description": "Label for academic year selector"
+  },
+  "attachImage": "Прикрепить изображение",
+  "@attachImage": {
+    "description": "Tooltip for image attachment button"
+  },
+  "boardNameRequired": "Введите название доски",
+  "@boardNameRequired": {
+    "description": "Validation message when board name is empty"
+  },
+  "chatAction": "Чат",
+  "@chatAction": {
+    "description": "Button label to start chatting"
+  },
+  "confirmDeleteTimetable": "Удалить \"{name}\"?",
+  "@confirmDeleteTimetable": {
+    "description": "Confirmation message for deleting a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "continueText": "Продолжить",
+  "@continueText": {
+    "description": "Button label to continue"
+  },
+  "coursesImportedFromTimetable": "Курсы импортированы из расписания",
+  "@coursesImportedFromTimetable": {
+    "description": "Snackbar message after importing courses from timetable"
+  },
+  "createButton": "Создать",
+  "@createButton": {
+    "description": "Button label to create a new item"
+  },
+  "createTimetable": "Создать новое расписание",
+  "@createTimetable": {
+    "description": "Title for create timetable dialog"
+  },
+  "deleteTimetable": "Удалить расписание",
+  "@deleteTimetable": {
+    "description": "Title for delete timetable confirmation dialog"
+  },
+  "enterSchoolEmail": "Введите электронную почту университета",
+  "@enterSchoolEmail": {
+    "description": "Validation message when school email field is empty"
+  },
+  "errorLoadingPolicies": "Не удалось загрузить политики",
+  "@errorLoadingPolicies": {
+    "description": "Error message when policies fail to load"
+  },
+  "majorSubject": "Профильный предмет",
+  "@majorSubject": {
+    "description": "Checkbox label for major subject in GPA calculator"
+  },
+  "noMessagesYet": "Сообщений пока нет",
+  "@noMessagesYet": {
+    "description": "Placeholder text when chat room has no messages"
+  },
+  "noSentRequests": "Нет отправленных запросов",
+  "@noSentRequests": {
+    "description": "Empty state message for sent friend requests"
+  },
+  "noUniversitiesFound": "Университеты не найдены",
+  "@noUniversitiesFound": {
+    "description": "Message when university search returns no results"
+  },
+  "timetableCreated": "Расписание \"{name}\" создано",
+  "@timetableCreated": {
+    "description": "Success message after creating a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timetableName": "Название расписания",
+  "@timetableName": {
+    "description": "Label for timetable name field"
+  },
+  "uploading": "Загрузка...",
+  "@uploading": {
+    "description": "Status text while uploading an image"
   }
 }

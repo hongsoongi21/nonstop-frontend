@@ -474,7 +474,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            error ?? '친구 요청을 보냈습니다',
+                            error ?? AppLocalizations.of(context)!.friendRequestSent,
                           ),
                           backgroundColor:
                               error == null ? AppColors.success : AppColors.error,
@@ -493,7 +493,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     if (room != null && mounted) {
                       GoRouter.of(context).push(
                         '${Routes.chat}/${room.id}',
-                        extra: comment.isWriterAnonymous ? '익명' : room.name,
+                        extra: comment.isWriterAnonymous ? AppLocalizations.of(context)!.anonymous : room.name,
                       );
                     }
                   }
@@ -538,7 +538,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                error ?? '친구 요청을 보냈습니다',
+                                error ?? AppLocalizations.of(context)!.friendRequestSent,
                               ),
                               backgroundColor:
                                   error == null ? AppColors.success : AppColors.error,
@@ -557,7 +557,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                         if (room != null && mounted) {
                           GoRouter.of(context).push(
                             '${Routes.chat}/${room.id}',
-                            extra: reply.isWriterAnonymous ? '익명' : room.name,
+                            extra: reply.isWriterAnonymous ? AppLocalizations.of(context)!.anonymous : room.name,
                           );
                         }
                       }
@@ -732,7 +732,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          error ?? '친구 요청을 보냈습니다',
+                          error ?? l10n.friendRequestSent,
                         ),
                         backgroundColor:
                             error == null ? AppColors.success : AppColors.error,
@@ -748,7 +748,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   if (room != null && mounted) {
                     GoRouter.of(context).push(
                       '${Routes.chat}/${room.id}',
-                      extra: post.isWriterAnonymous ? '익명' : room.name,
+                      extra: post.isWriterAnonymous ? l10n.anonymous : room.name,
                     );
                   }
                 }
@@ -756,24 +756,24 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             },
             itemBuilder: (context) => [
               if (!post.isWriterAnonymous)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'add_friend',
                   child: Row(
                     children: [
-                      Icon(Icons.person_add_outlined, size: 20),
-                      SizedBox(width: 8),
-                      Text('친구 추가'),
+                      const Icon(Icons.person_add_outlined, size: 20),
+                      const SizedBox(width: 8),
+                      Text(l10n.addFriend),
                     ],
                   ),
                 ),
               if (_writerAllowChat)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'start_chat',
                   child: Row(
                     children: [
-                      Icon(Icons.chat_bubble_outline, size: 20),
-                      SizedBox(width: 8),
-                      Text('채팅하기'),
+                      const Icon(Icons.chat_bubble_outline, size: 20),
+                      const SizedBox(width: 8),
+                      Text(l10n.chatAction),
                     ],
                   ),
                 ),
@@ -1373,23 +1373,23 @@ class _CommentMenu extends StatelessWidget {
             ]
           : [
               if (!isWriterAnonymous)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'add_friend',
                   child: Row(
                     children: [
-                      Icon(Icons.person_add_outlined, size: 20),
-                      SizedBox(width: 8),
-                      Text('친구 추가'),
+                      const Icon(Icons.person_add_outlined, size: 20),
+                      const SizedBox(width: 8),
+                      Text(l10n.addFriend),
                     ],
                   ),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'start_chat',
                 child: Row(
                   children: [
-                    Icon(Icons.chat_bubble_outline, size: 20),
-                    SizedBox(width: 8),
-                    Text('채팅하기'),
+                    const Icon(Icons.chat_bubble_outline, size: 20),
+                    const SizedBox(width: 8),
+                    Text(l10n.chatAction),
                   ],
                 ),
               ),

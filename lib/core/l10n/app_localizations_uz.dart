@@ -1141,4 +1141,77 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get termsOfService => 'Foydalanish shartlari';
+
+  @override
+  String get policyTermsOfService => 'Foydalanish shartlari';
+
+  @override
+  String get policyPrivacyPolicy => 'Maxfiylik siyosati';
+
+  @override
+  String get policyMarketing => 'Marketing xabarlari';
+
+  @override
+  String get policyUnknown => 'Siyosat';
+
+  @override
+  String get academicYear => 'O\'quv yili';
+
+  @override
+  String get attachImage => 'Rasm biriktirish';
+
+  @override
+  String get boardNameRequired => 'Kengash nomini kiriting';
+
+  @override
+  String get chatAction => 'Chat';
+
+  @override
+  String confirmDeleteTimetable(String name) {
+    return '\"$name\"ni o\'chirishni xohlaysizmi?';
+  }
+
+  @override
+  String get continueText => 'Davom etish';
+
+  @override
+  String get coursesImportedFromTimetable => 'Dars jadvali kurslar yuklandi';
+
+  @override
+  String get createButton => 'Yaratish';
+
+  @override
+  String get createTimetable => 'Yangi dars jadvali yaratish';
+
+  @override
+  String get deleteTimetable => 'Dars jadvalini o\'chirish';
+
+  @override
+  String get enterSchoolEmail => 'Universitet elektron pochtangizni kiriting';
+
+  @override
+  String get errorLoadingPolicies => 'Siyosatlarni yuklab bo\'lmadi';
+
+  @override
+  String get majorSubject => 'Ixtisoslik fani';
+
+  @override
+  String get noMessagesYet => 'Hali xabarlar yo\'q';
+
+  @override
+  String get noSentRequests => 'Yuborilgan so\'rovlar yo\'q';
+
+  @override
+  String get noUniversitiesFound => 'Universitetlar topilmadi';
+
+  @override
+  String timetableCreated(String name) {
+    return '\"$name\" dars jadvali yaratildi';
+  }
+
+  @override
+  String get timetableName => 'Dars jadvali nomi';
+
+  @override
+  String get uploading => 'Yuklanmoqda...';
 }

@@ -1134,4 +1134,78 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get termsOfService => 'Условия использования';
+
+  @override
+  String get policyTermsOfService => 'Условия использования';
+
+  @override
+  String get policyPrivacyPolicy => 'Политика конфиденциальности';
+
+  @override
+  String get policyMarketing => 'Маркетинговые уведомления';
+
+  @override
+  String get policyUnknown => 'Политика';
+
+  @override
+  String get academicYear => 'Учебный год';
+
+  @override
+  String get attachImage => 'Прикрепить изображение';
+
+  @override
+  String get boardNameRequired => 'Введите название доски';
+
+  @override
+  String get chatAction => 'Чат';
+
+  @override
+  String confirmDeleteTimetable(String name) {
+    return 'Удалить \"$name\"?';
+  }
+
+  @override
+  String get continueText => 'Продолжить';
+
+  @override
+  String get coursesImportedFromTimetable =>
+      'Курсы импортированы из расписания';
+
+  @override
+  String get createButton => 'Создать';
+
+  @override
+  String get createTimetable => 'Создать новое расписание';
+
+  @override
+  String get deleteTimetable => 'Удалить расписание';
+
+  @override
+  String get enterSchoolEmail => 'Введите электронную почту университета';
+
+  @override
+  String get errorLoadingPolicies => 'Не удалось загрузить политики';
+
+  @override
+  String get majorSubject => 'Профильный предмет';
+
+  @override
+  String get noMessagesYet => 'Сообщений пока нет';
+
+  @override
+  String get noSentRequests => 'Нет отправленных запросов';
+
+  @override
+  String get noUniversitiesFound => 'Университеты не найдены';
+
+  @override
+  String timetableCreated(String name) {
+    return 'Расписание \"$name\" создано';
+  }
+
+  @override
+  String get timetableName => 'Название расписания';
+
+  @override
+  String get uploading => 'Загрузка...';
 }

@@ -1053,5 +1053,107 @@
   "termsOfService": "Foydalanish shartlari",
   "@termsOfService": {
     "description": "Terms of service link title"
+  },
+  "policyTermsOfService": "Foydalanish shartlari",
+  "@policyTermsOfService": {
+    "description": "Policy checkbox label for terms of service"
+  },
+  "policyPrivacyPolicy": "Maxfiylik siyosati",
+  "@policyPrivacyPolicy": {
+    "description": "Policy checkbox label for privacy policy"
+  },
+  "policyMarketing": "Marketing xabarlari",
+  "@policyMarketing": {
+    "description": "Policy checkbox label for marketing communications"
+  },
+  "policyUnknown": "Siyosat",
+  "@policyUnknown": {
+    "description": "Fallback label for unknown policy types"
+  },
+  "academicYear": "O'quv yili",
+  "@academicYear": {
+    "description": "Label for academic year selector"
+  },
+  "attachImage": "Rasm biriktirish",
+  "@attachImage": {
+    "description": "Tooltip for image attachment button"
+  },
+  "boardNameRequired": "Kengash nomini kiriting",
+  "@boardNameRequired": {
+    "description": "Validation message when board name is empty"
+  },
+  "chatAction": "Chat",
+  "@chatAction": {
+    "description": "Button label to start chatting"
+  },
+  "confirmDeleteTimetable": "\"{name}\"ni o'chirishni xohlaysizmi?",
+  "@confirmDeleteTimetable": {
+    "description": "Confirmation message for deleting a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "continueText": "Davom etish",
+  "@continueText": {
+    "description": "Button label to continue"
+  },
+  "coursesImportedFromTimetable": "Dars jadvali kurslar yuklandi",
+  "@coursesImportedFromTimetable": {
+    "description": "Snackbar message after importing courses from timetable"
+  },
+  "createButton": "Yaratish",
+  "@createButton": {
+    "description": "Button label to create a new item"
+  },
+  "createTimetable": "Yangi dars jadvali yaratish",
+  "@createTimetable": {
+    "description": "Title for create timetable dialog"
+  },
+  "deleteTimetable": "Dars jadvalini o'chirish",
+  "@deleteTimetable": {
+    "description": "Title for delete timetable confirmation dialog"
+  },
+  "enterSchoolEmail": "Universitet elektron pochtangizni kiriting",
+  "@enterSchoolEmail": {
+    "description": "Validation message when school email field is empty"
+  },
+  "errorLoadingPolicies": "Siyosatlarni yuklab bo'lmadi",
+  "@errorLoadingPolicies": {
+    "description": "Error message when policies fail to load"
+  },
+  "majorSubject": "Ixtisoslik fani",
+  "@majorSubject": {
+    "description": "Checkbox label for major subject in GPA calculator"
+  },
+  "noMessagesYet": "Hali xabarlar yo'q",
+  "@noMessagesYet": {
+    "description": "Placeholder text when chat room has no messages"
+  },
+  "noSentRequests": "Yuborilgan so'rovlar yo'q",
+  "@noSentRequests": {
+    "description": "Empty state message for sent friend requests"
+  },
+  "noUniversitiesFound": "Universitetlar topilmadi",
+  "@noUniversitiesFound": {
+    "description": "Message when university search returns no results"
+  },
+  "timetableCreated": "\"{name}\" dars jadvali yaratildi",
+  "@timetableCreated": {
+    "description": "Success message after creating a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timetableName": "Dars jadvali nomi",
+  "@timetableName": {
+    "description": "Label for timetable name field"
+  },
+  "uploading": "Yuklanmoqda...",
+  "@uploading": {
+    "description": "Status text while uploading an image"
   }
 }

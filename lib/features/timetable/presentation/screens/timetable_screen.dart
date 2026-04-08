@@ -455,9 +455,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                         final confirm = await showDialog<bool>(
                                           context: context,
                                           builder: (ctx) => AlertDialog(
-                                            title: const Text('시간표 삭제'),
+                                            title: Text(l10n.deleteTimetable),
                                             content: Text(
-                                              '"${tt.title ?? l10n.untitledTimetable}"을(를) 삭제하시겠습니까?',
+                                              l10n.confirmDeleteTimetable(tt.title ?? l10n.untitledTimetable),
                                             ),
                                             actions: [
                                               TextButton(
@@ -592,9 +592,9 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              title: const Text(
-                '새 시간표 만들기',
-                style: TextStyle(fontWeight: FontWeight.w700),
+              title: Text(
+                l10n.createTimetable,
+                style: const TextStyle(fontWeight: FontWeight.w700),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -602,7 +602,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                 children: [
                   // Year selector
                   Text(
-                    '학년도',
+                    l10n.academicYear,
                     style: AppTypography.caption.copyWith(
                       color: isDark ? Colors.white60 : AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -635,7 +635,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                   const SizedBox(height: 16),
                   // Semester type selector
                   Text(
-                    '학기',
+                    l10n.semester,
                     style: AppTypography.caption.copyWith(
                       color: isDark ? Colors.white60 : AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -668,7 +668,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                   const SizedBox(height: 16),
                   // Title selector
                   Text(
-                    '시간표 이름',
+                    l10n.timetableName,
                     style: AppTypography.caption.copyWith(
                       color: isDark ? Colors.white60 : AppColors.textSecondary,
                       fontWeight: FontWeight.w600,
@@ -717,7 +717,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content:
-                              Text('"$selectedTitle" 시간표가 생성되었습니다'),
+                              Text(l10n.timetableCreated(selectedTitle)),
                           backgroundColor: AppColors.success,
                         ),
                       );
@@ -730,7 +730,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('만들기'),
+                  child: Text(l10n.createButton),
                 ),
               ],
             );

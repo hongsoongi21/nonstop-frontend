@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/extensions/context_extensions.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_spacing.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
@@ -58,7 +59,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                   [];
               notifier.importCourses(entries);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Courses imported from timetable')),
+                SnackBar(content: Text(AppLocalizations.of(context)!.coursesImportedFromTimetable)),
               );
             },
           ),
@@ -76,7 +77,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('Cancel'),
+                      child: Text(AppLocalizations.of(context)!.cancel),
                     ),
                     TextButton(
                       onPressed: () {
@@ -119,7 +120,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
                     TextButton.icon(
                       onPressed: () => _showAddCourseDialog(context, ref),
                       icon: Icon(Icons.add, size: 16),
-                      label: Text('Add Course'),
+                      label: Text(AppLocalizations.of(context)!.addCourse),
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size(0, 0),
@@ -524,7 +525,7 @@ class _GpaCalculatorScreenState extends ConsumerState<GpaCalculatorScreen> {
               ),
               SizedBox(height: 16),
               CheckboxListTile(
-                title: Text('Major Subject'),
+                title: Text(AppLocalizations.of(context)!.majorSubject),
                 value: isMajor,
                 onChanged: (v) => setState(() => isMajor = v!),
                 contentPadding: EdgeInsets.zero,

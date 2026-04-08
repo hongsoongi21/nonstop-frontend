@@ -539,7 +539,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen>
             _buildEmptyState(
               icon: Icons.send_outlined,
               title: l10n.sentRequests,
-              subtitle: '보낸 요청이 없습니다',
+              subtitle: l10n.noSentRequests,
             ),
           ],
         ),

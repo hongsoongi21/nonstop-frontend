@@ -11,7 +11,7 @@ Handles all authentication flows for the Nonstop app, including email/password l
 |------|-------------|
 | `presentation/providers/auth_provider.dart` | Core `AuthNotifier` / `AuthState` + convenience providers (`currentUserProvider`, `isAuthenticatedProvider`, `isAuthInitializedProvider`) |
 | `presentation/screens/login_screen_v1.dart` | Login UI with email/password form, Google Sign-In, and Apple Sign-In buttons |
-| `presentation/screens/signup_screen.dart` | Registration screen with university/major selection and policy agreement |
+| `presentation/screens/signup_screen_v1.dart` | Registration screen with university/major selection and policy agreement (active version) |
 | `presentation/screens/email_verification_screen.dart` | Email OTP verification flow |
 | `presentation/screens/forgot_password_screen.dart` | Password reset flow |
 | `presentation/screens/onboarding_screen.dart` | First-run onboarding |

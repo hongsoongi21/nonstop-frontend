@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nonstop/core/constants/routes.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
@@ -60,7 +61,7 @@ class ChatRoomTile extends StatelessWidget {
   Widget _buildAvatar(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final isGroup = room.type == ChatRoomType.group;
-    final displayName = room.name ?? '채팅';
+    final displayName = room.name ?? AppLocalizations.of(context)!.chat;
     final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
 
     // Determine avatar image URL
@@ -152,7 +153,7 @@ class ChatRoomTile extends StatelessWidget {
 
   Widget _buildContent(BuildContext context, bool hasUnread) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final displayName = room.name ?? '채팅';
+    final displayName = room.name ?? AppLocalizations.of(context)!.chat;
     final hasLastMessage = room.lastMessage != null;
     final lastMessageContent = hasLastMessage
         ? _formatLastMessage(room.lastMessage!)
@@ -198,7 +199,7 @@ class ChatRoomTile extends StatelessWidget {
           )
         else
           Text(
-            '아직 메시지가 없습니다',
+            AppLocalizations.of(context)!.noMessagesYet,
             style: AppTypography.body2.copyWith(
               color: textHintColor,
               fontSize: 14,

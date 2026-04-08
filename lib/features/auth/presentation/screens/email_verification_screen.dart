@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
   const EmailVerificationScreen({super.key});
@@ -7,7 +8,7 @@ class EmailVerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Email Verification')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.emailVerification)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -29,7 +30,7 @@ class EmailVerificationScreen extends StatelessWidget {
               onPressed: () {
                 context.go('/onboarding');
               },
-              child: const Text('Verify'),
+              child: Text(AppLocalizations.of(context)!.verify),
             ),
           ],
         ),

@@ -1111,4 +1111,77 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get termsOfService => '이용약관';
+
+  @override
+  String get policyTermsOfService => '서비스 이용약관';
+
+  @override
+  String get policyPrivacyPolicy => '개인정보 처리방침';
+
+  @override
+  String get policyMarketing => '마케팅 정보 수신 동의';
+
+  @override
+  String get policyUnknown => '정책';
+
+  @override
+  String get academicYear => '학년도';
+
+  @override
+  String get attachImage => '이미지 첨부';
+
+  @override
+  String get boardNameRequired => '게시판 이름을 입력해주세요';
+
+  @override
+  String get chatAction => '채팅하기';
+
+  @override
+  String confirmDeleteTimetable(String name) {
+    return '\"$name\"을(를) 삭제하시겠습니까?';
+  }
+
+  @override
+  String get continueText => '계속';
+
+  @override
+  String get coursesImportedFromTimetable => '시간표에서 과목을 가져왔습니다';
+
+  @override
+  String get createButton => '만들기';
+
+  @override
+  String get createTimetable => '새 시간표 만들기';
+
+  @override
+  String get deleteTimetable => '시간표 삭제';
+
+  @override
+  String get enterSchoolEmail => '학교 이메일을 입력해주세요';
+
+  @override
+  String get errorLoadingPolicies => '정책을 불러오지 못했습니다';
+
+  @override
+  String get majorSubject => '전공 과목';
+
+  @override
+  String get noMessagesYet => '아직 메시지가 없습니다';
+
+  @override
+  String get noSentRequests => '보낸 요청이 없습니다';
+
+  @override
+  String get noUniversitiesFound => '대학교를 찾을 수 없습니다';
+
+  @override
+  String timetableCreated(String name) {
+    return '\"$name\" 시간표가 생성되었습니다';
+  }
+
+  @override
+  String get timetableName => '시간표 이름';
+
+  @override
+  String get uploading => '업로드 중...';
 }

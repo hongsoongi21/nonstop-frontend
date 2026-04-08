@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/shared/components/main_scaffold.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -43,7 +44,7 @@ class OnboardingScreen extends StatelessWidget {
               onPressed: () {
                 context.go('/home');
               },
-              child: const Text('Continue'),
+              child: Text(AppLocalizations.of(context)!.continueText),
             ),
           ],
         ),

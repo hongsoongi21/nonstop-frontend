@@ -1127,4 +1127,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termsOfService => 'Terms of Service';
+
+  @override
+  String get policyTermsOfService => 'Terms of Service';
+
+  @override
+  String get policyPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get policyMarketing => 'Marketing Communications';
+
+  @override
+  String get policyUnknown => 'Policy';
+
+  @override
+  String get academicYear => 'Academic Year';
+
+  @override
+  String get attachImage => 'Attach image';
+
+  @override
+  String get boardNameRequired => 'Board name is required';
+
+  @override
+  String get chatAction => 'Chat';
+
+  @override
+  String confirmDeleteTimetable(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get continueText => 'Continue';
+
+  @override
+  String get coursesImportedFromTimetable => 'Courses imported from timetable';
+
+  @override
+  String get createButton => 'Create';
+
+  @override
+  String get createTimetable => 'Create New Timetable';
+
+  @override
+  String get deleteTimetable => 'Delete Timetable';
+
+  @override
+  String get enterSchoolEmail => 'Please enter your school email';
+
+  @override
+  String get errorLoadingPolicies => 'Failed to load policies';
+
+  @override
+  String get majorSubject => 'Major Subject';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get noSentRequests => 'No sent requests';
+
+  @override
+  String get noUniversitiesFound => 'No universities found';
+
+  @override
+  String timetableCreated(String name) {
+    return 'Timetable \"$name\" created';
+  }
+
+  @override
+  String get timetableName => 'Timetable Name';
+
+  @override
+  String get uploading => 'Uploading...';
 }

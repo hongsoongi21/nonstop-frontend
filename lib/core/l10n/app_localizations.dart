@@ -2255,6 +2255,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of Service'**
   String get termsOfService;
+
+  /// Policy checkbox label for terms of service
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get policyTermsOfService;
+
+  /// Policy checkbox label for privacy policy
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get policyPrivacyPolicy;
+
+  /// Policy checkbox label for marketing communications
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing Communications'**
+  String get policyMarketing;
+
+  /// Fallback label for unknown policy types
+  ///
+  /// In en, this message translates to:
+  /// **'Policy'**
+  String get policyUnknown;
+
+  /// Label for academic year selector
+  ///
+  /// In en, this message translates to:
+  /// **'Academic Year'**
+  String get academicYear;
+
+  /// Tooltip for image attachment button
+  ///
+  /// In en, this message translates to:
+  /// **'Attach image'**
+  String get attachImage;
+
+  /// Validation message when board name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Board name is required'**
+  String get boardNameRequired;
+
+  /// Button label to start chatting
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatAction;
+
+  /// Confirmation message for deleting a timetable
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String confirmDeleteTimetable(String name);
+
+  /// Button label to continue
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueText;
+
+  /// Snackbar message after importing courses from timetable
+  ///
+  /// In en, this message translates to:
+  /// **'Courses imported from timetable'**
+  String get coursesImportedFromTimetable;
+
+  /// Button label to create a new item
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get createButton;
+
+  /// Title for create timetable dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Timetable'**
+  String get createTimetable;
+
+  /// Title for delete timetable confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Timetable'**
+  String get deleteTimetable;
+
+  /// Validation message when school email field is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your school email'**
+  String get enterSchoolEmail;
+
+  /// Error message when policies fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load policies'**
+  String get errorLoadingPolicies;
+
+  /// Checkbox label for major subject in GPA calculator
+  ///
+  /// In en, this message translates to:
+  /// **'Major Subject'**
+  String get majorSubject;
+
+  /// Placeholder text when chat room has no messages
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get noMessagesYet;
+
+  /// Empty state message for sent friend requests
+  ///
+  /// In en, this message translates to:
+  /// **'No sent requests'**
+  String get noSentRequests;
+
+  /// Message when university search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'No universities found'**
+  String get noUniversitiesFound;
+
+  /// Success message after creating a timetable
+  ///
+  /// In en, this message translates to:
+  /// **'Timetable \"{name}\" created'**
+  String timetableCreated(String name);
+
+  /// Label for timetable name field
+  ///
+  /// In en, this message translates to:
+  /// **'Timetable Name'**
+  String get timetableName;
+
+  /// Status text while uploading an image
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get uploading;
 }
 
 class _AppLocalizationsDelegate

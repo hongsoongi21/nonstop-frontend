@@ -735,7 +735,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                   Icon(Icons.school_outlined, color: context.textHintColor, size: AppSpacing.iconMd.sp),
                   SizedBox(width: AppSpacing.sm.w),
                   Text(
-                    'No universities found',
+                    AppLocalizations.of(context).noUniversitiesFound,
                     style: AppTypography.body2.copyWith(color: context.textHintColor),
                   ),
                 ],
@@ -885,6 +885,20 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
     }
   }
 
+  String _localizedPolicyTitle(Policy policy) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (policy.type) {
+      case 'TERMS_OF_SERVICE':
+        return l10n.policyTermsOfService;
+      case 'PRIVACY_POLICY':
+        return l10n.policyPrivacyPolicy;
+      case 'MARKETING':
+        return l10n.policyMarketing;
+      default:
+        return policy.title;
+    }
+  }
+
   Widget _buildPolicyAgreementSection(AsyncValue<List<Policy>> policiesAsync) {
     return Container(
       width: 275.w,
@@ -956,7 +970,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
                   child: _buildPolicyCheckbox(
                     value: _agreedPolicyIds.contains(policy.id),
                     onChanged: (value) => _handlePolicyToggle(policy.id, value ?? false),
-                    label: policy.title,
+                    label: _localizedPolicyTitle(policy),
                     isRequired: policy.isMandatory,
                     onViewPolicy: () => _handleViewPolicy(policy.url),
                   ),
@@ -966,7 +980,7 @@ class _SignupScreenV1State extends ConsumerState<SignupScreenV1> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => Center(child: Text(AppLocalizations.of(context).errorLoadingPolicies)),
       ),
     );
   }

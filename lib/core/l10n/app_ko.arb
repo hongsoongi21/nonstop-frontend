@@ -1056,5 +1056,107 @@
   "termsOfService": "이용약관",
   "@termsOfService": {
     "description": "Terms of service link title"
+  },
+  "policyTermsOfService": "서비스 이용약관",
+  "@policyTermsOfService": {
+    "description": "Policy checkbox label for terms of service"
+  },
+  "policyPrivacyPolicy": "개인정보 처리방침",
+  "@policyPrivacyPolicy": {
+    "description": "Policy checkbox label for privacy policy"
+  },
+  "policyMarketing": "마케팅 정보 수신 동의",
+  "@policyMarketing": {
+    "description": "Policy checkbox label for marketing communications"
+  },
+  "policyUnknown": "정책",
+  "@policyUnknown": {
+    "description": "Fallback label for unknown policy types"
+  },
+  "academicYear": "학년도",
+  "@academicYear": {
+    "description": "Label for academic year selector"
+  },
+  "attachImage": "이미지 첨부",
+  "@attachImage": {
+    "description": "Tooltip for image attachment button"
+  },
+  "boardNameRequired": "게시판 이름을 입력해주세요",
+  "@boardNameRequired": {
+    "description": "Validation message when board name is empty"
+  },
+  "chatAction": "채팅하기",
+  "@chatAction": {
+    "description": "Button label to start chatting"
+  },
+  "confirmDeleteTimetable": "\"{name}\"을(를) 삭제하시겠습니까?",
+  "@confirmDeleteTimetable": {
+    "description": "Confirmation message for deleting a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "continueText": "계속",
+  "@continueText": {
+    "description": "Button label to continue"
+  },
+  "coursesImportedFromTimetable": "시간표에서 과목을 가져왔습니다",
+  "@coursesImportedFromTimetable": {
+    "description": "Snackbar message after importing courses from timetable"
+  },
+  "createButton": "만들기",
+  "@createButton": {
+    "description": "Button label to create a new item"
+  },
+  "createTimetable": "새 시간표 만들기",
+  "@createTimetable": {
+    "description": "Title for create timetable dialog"
+  },
+  "deleteTimetable": "시간표 삭제",
+  "@deleteTimetable": {
+    "description": "Title for delete timetable confirmation dialog"
+  },
+  "enterSchoolEmail": "학교 이메일을 입력해주세요",
+  "@enterSchoolEmail": {
+    "description": "Validation message when school email field is empty"
+  },
+  "errorLoadingPolicies": "정책을 불러오지 못했습니다",
+  "@errorLoadingPolicies": {
+    "description": "Error message when policies fail to load"
+  },
+  "majorSubject": "전공 과목",
+  "@majorSubject": {
+    "description": "Checkbox label for major subject in GPA calculator"
+  },
+  "noMessagesYet": "아직 메시지가 없습니다",
+  "@noMessagesYet": {
+    "description": "Placeholder text when chat room has no messages"
+  },
+  "noSentRequests": "보낸 요청이 없습니다",
+  "@noSentRequests": {
+    "description": "Empty state message for sent friend requests"
+  },
+  "noUniversitiesFound": "대학교를 찾을 수 없습니다",
+  "@noUniversitiesFound": {
+    "description": "Message when university search returns no results"
+  },
+  "timetableCreated": "\"{name}\" 시간표가 생성되었습니다",
+  "@timetableCreated": {
+    "description": "Success message after creating a timetable",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "timetableName": "시간표 이름",
+  "@timetableName": {
+    "description": "Label for timetable name field"
+  },
+  "uploading": "업로드 중...",
+  "@uploading": {
+    "description": "Status text while uploading an image"
   }
 }

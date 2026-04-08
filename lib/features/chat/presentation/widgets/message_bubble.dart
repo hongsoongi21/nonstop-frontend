@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
@@ -469,7 +470,7 @@ class MessageBubble extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  '업로드 중...',
+                                  AppLocalizations.of(context)!.uploading,
                                   style: AppTypography.caption.copyWith(
                                     color: Colors.white,
                                     fontSize: 12,
