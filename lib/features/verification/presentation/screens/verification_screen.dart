@@ -12,6 +12,8 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
+import '../../data/api/verification_api_impl.dart';
+import '../../data/dto/verification_dto.dart';
 
 /// University verification screen with student ID and email verification tabs
 class VerificationScreen extends ConsumerStatefulWidget {
@@ -144,32 +146,44 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter your school email'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.enterSchoolEmail),
           backgroundColor: AppColors.warning,
         ),
       );
       return;
     }
 
-    // TODO: Implement API call to send verification code
-    await Future.delayed(const Duration(seconds: 1));
+    final api = ref.read(verificationApiProvider);
+    final result = await api.requestEmailVerification(
+      request: EmailVerificationRequestDto(email: email),
+    );
 
-    setState(() {
-      _codeSent = true;
-      _remainingSeconds = 300;
-    });
+    if (!mounted) return;
 
-    _startCountdown();
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.codeSent),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    }
+    result.fold(
+      (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.message),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      },
+      (_) {
+        setState(() {
+          _codeSent = true;
+          _remainingSeconds = 300;
+        });
+        _startCountdown();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.codeSent),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      },
+    );
   }
 
   void _startCountdown() {
@@ -200,21 +214,36 @@ class _VerificationScreenState extends ConsumerState<VerificationScreen>
       return;
     }
 
-    // TODO: Implement API call to verify code
-    await Future.delayed(const Duration(seconds: 1));
+    final email = _emailController.text.trim();
+    final api = ref.read(verificationApiProvider);
+    final result = await api.confirmEmailVerification(
+      request: EmailVerificationConfirmDto(email: email, code: code),
+    );
 
-    setState(() {
-      _emailStatus = VerificationStatus.approved;
-    });
+    if (!mounted) return;
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.verificationSuccess),
-          backgroundColor: AppColors.success,
-        ),
-      );
-    }
+    result.fold(
+      (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.message),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      },
+      (_) {
+        _countdownTimer?.cancel();
+        setState(() {
+          _emailStatus = VerificationStatus.approved;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.verificationSuccess),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      },
+    );
   }
 
   String _formatTime(int seconds) {

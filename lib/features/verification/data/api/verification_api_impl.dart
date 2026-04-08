@@ -99,8 +99,17 @@ class VerificationApiImpl implements VerificationApi {
         return left(const ApiException('해당 대학교의 이메일 도메인이 아닙니다.'));
       }
 
-      // Send OTP to university email via Supabase Auth
-      await _supabase.auth.signInWithOtp(email: request.email);
+      // Send verification code via Resend edge function
+      final response = await _supabase.functions.invoke(
+        'send-verification-email',
+        body: {'email': request.email},
+      );
+      if (response.status != 200) {
+        final data = response.data as Map<String, dynamic>?;
+        return left(ApiException(
+          data?['error'] as String? ?? '인증 코드 발송에 실패했습니다.',
+        ));
+      }
 
       return right(null);
     } catch (e) {
@@ -115,7 +124,26 @@ class VerificationApiImpl implements VerificationApi {
     try {
       final currentUserId = await _getCurrentUserId();
 
-      // Mark user as verified
+      // Idempotency: if already verified, return success immediately
+      final userData = await _supabase
+          .from('users')
+          .select('is_verified')
+          .eq('id', currentUserId)
+          .single();
+      if (userData['is_verified'] == true) {
+        return right(null);
+      }
+
+      // Verify the code via edge function
+      final response = await _supabase.functions.invoke(
+        'verify-email-code',
+        body: {'email': request.email, 'code': request.code},
+      );
+      if (response.status != 200) {
+        return left(const ApiException('유효하지 않거나 만료된 인증 코드입니다.'));
+      }
+
+      // Code verified — update user record
       await _supabase.from('users').update({
         'is_verified': true,
         'verification_method': 'EMAIL_DOMAIN',

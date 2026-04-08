@@ -25,10 +25,10 @@ class EmailVerificationRequestDto with _$EmailVerificationRequestDto {
 }
 
 /// Request DTO for email verification confirmation
-/// Note: Backend only requires 'code', not 'email'
 @freezed
 class EmailVerificationConfirmDto with _$EmailVerificationConfirmDto {
   const factory EmailVerificationConfirmDto({
+    required String email,
     required String code,
   }) = _EmailVerificationConfirmDto;
 
