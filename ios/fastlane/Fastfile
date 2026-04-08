@@ -60,6 +60,24 @@ platform :ios do
     )
   end
 
+  desc "Upload already-built IPA to App Store (binary only, no metadata)"
+  lane :production_upload do
+    project_root = File.expand_path("../..", __dir__)
+    ipa = File.join(project_root, "build", "ios", "ipa", "nonstop.ipa")
+
+    upload_to_app_store(
+      api_key: ASC_API_KEY,
+      ipa: ipa,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false,
+      ignore_language_directory_validation: true,
+      force: true,
+    )
+  end
+
   desc "Deploy to App Store (Production) with metadata"
   lane :production do |options|
     build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M")
