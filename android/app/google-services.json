@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "127473148279-070u88eshl9bbh244vn841k2o0rdtjp4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.merge4.nonstop",
+            "certificate_hash": "0790af130e620bae236514539529074c857a7fd6"
+          }
+        },
+        {
           "client_id": "127473148279-3srgnam94vb71097udjuvm2cothvuda7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -27,6 +35,14 @@
           "android_info": {
             "package_name": "uz.merge4.nonstop",
             "certificate_hash": "3cad17d0ffac98d29f510f8c9a3c1c7273128aa5"
+          }
+        },
+        {
+          "client_id": "127473148279-l6uu6kf71s1fad4va5d57f35elrgf2j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "uz.merge4.nonstop",
+            "certificate_hash": "b65119508d2f018705a728e4dcc13e831eed9fea"
           }
         },
         {
