@@ -19,6 +19,7 @@ abstract class TimetableRepository {
     required SemesterType semesterType,
     String? title,
     bool isPublic = false,
+    TimetableKind kind = TimetableKind.backup,
   });
   Future<Either<Failure, TimetableDetail>> getTimetableDetail(int id);
   Future<Either<Failure, Timetable>> updateTimetable({

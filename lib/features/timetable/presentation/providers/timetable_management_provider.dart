@@ -113,6 +113,7 @@ class TimetableManagementNotifier
     required SemesterType semesterType,
     String? title,
     bool isPublic = false,
+    TimetableKind kind = TimetableKind.backup,
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
 
@@ -121,6 +122,7 @@ class TimetableManagementNotifier
       semesterType: semesterType,
       title: title,
       isPublic: isPublic,
+      kind: kind,
     );
 
     if (result.isLeft()) {
@@ -431,20 +433,20 @@ class TimetableManagementNotifier
 
     // 4. Auto-Setup Logic
     if (currentTimetables.isNotEmpty) {
-      // Select "Asosiy jadval" first, otherwise fallback to first
+      // Prefer the `main` timetable, otherwise fallback to the first entry.
       final defaultTt = currentTimetables.firstWhere(
-        (t) => t.title == 'Asosiy jadval',
+        (t) => t.kind == TimetableKind.main,
         orElse: () => currentTimetables.first,
       );
       AppLogger.d('[TIMETABLE] Selecting existing timetable: ${defaultTt.id}');
       await selectTimetable(defaultTt.id);
     } else {
-      // No timetable for current semester - auto-create "Asosiy jadval"
-      AppLogger.d('[TIMETABLE] Auto-creating timetable for year=$currentYear, type=$currentType');
+      // No timetable for current semester - auto-create the main timetable.
+      AppLogger.d('[TIMETABLE] Auto-creating main timetable for year=$currentYear, type=$currentType');
       await createTimetable(
         year: currentYear,
         semesterType: currentType,
-        title: 'Asosiy jadval',
+        kind: TimetableKind.main,
       );
     }
 

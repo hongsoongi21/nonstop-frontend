@@ -1216,6 +1216,17 @@ class AppLocalizationsUz extends AppLocalizations {
   String get uploading => 'Yuklanmoqda...';
 
   @override
+  String get mainTimetable => 'Asosiy';
+
+  @override
+  String get backupTimetable => 'Zaxira';
+
+  @override
+  String backupTimetableWithNumber(int n) {
+    return 'Zaxira $n';
+  }
+
+  @override
   String anonymousRoomWithCount(int count) {
     return 'Anonim ($count)';
   }

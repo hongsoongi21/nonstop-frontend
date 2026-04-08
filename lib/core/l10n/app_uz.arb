@@ -1156,6 +1156,23 @@
   "@uploading": {
     "description": "Status text while uploading an image"
   },
+  "mainTimetable": "Asosiy",
+  "@mainTimetable": {
+    "description": "Label for the main timetable kind"
+  },
+  "backupTimetable": "Zaxira",
+  "@backupTimetable": {
+    "description": "Label for a backup timetable kind"
+  },
+  "backupTimetableWithNumber": "Zaxira {n}",
+  "@backupTimetableWithNumber": {
+    "description": "Label for a backup timetable with an index number",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "anonymousRoomWithCount": "Anonim ({count})",
   "@anonymousRoomWithCount": {
     "description": "Label for the Nth anonymous chat room in the chat list",

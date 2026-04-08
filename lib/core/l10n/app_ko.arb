@@ -1159,6 +1159,23 @@
   "@uploading": {
     "description": "Status text while uploading an image"
   },
+  "mainTimetable": "주 시간표",
+  "@mainTimetable": {
+    "description": "Label for the main timetable kind"
+  },
+  "backupTimetable": "예비",
+  "@backupTimetable": {
+    "description": "Label for a backup timetable kind"
+  },
+  "backupTimetableWithNumber": "예비 {n}",
+  "@backupTimetableWithNumber": {
+    "description": "Label for a backup timetable with an index number",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "anonymousRoomWithCount": "익명({count})",
   "@anonymousRoomWithCount": {
     "description": "Label for the Nth anonymous chat room in the chat list",

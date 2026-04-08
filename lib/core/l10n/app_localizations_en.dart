@@ -1202,6 +1202,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploading => 'Uploading...';
 
   @override
+  String get mainTimetable => 'Main';
+
+  @override
+  String get backupTimetable => 'Backup';
+
+  @override
+  String backupTimetableWithNumber(int n) {
+    return 'Backup $n';
+  }
+
+  @override
   String anonymousRoomWithCount(int count) {
     return 'Anonymous ($count)';
   }

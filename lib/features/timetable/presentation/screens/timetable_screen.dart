@@ -14,6 +14,8 @@ import '../providers/gpa_provider.dart';
 import '../widgets/weekly_time_grid.dart';
 import '../../data/dto/semester_dto.dart';
 import '../../domain/entities/semester.dart';
+import '../../domain/entities/timetable.dart';
+import '../widgets/timetable_display.dart';
 
 /// Main timetable screen with calendar views
 class TimetableScreen extends ConsumerStatefulWidget {
@@ -101,7 +103,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(
-                                        currentTimetable?.title ?? l10n.timetable,
+                                        currentTimetable?.displayLabel(l10n) ?? l10n.timetable,
                                         style: AppTypography.headline2.copyWith(
                                           color: context.textPrimaryColor,
                                           fontWeight: FontWeight.w800,
@@ -325,10 +327,10 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
           final selectedId = currentState.selectedTimetableId;
 
           // Group timetables by semester (year-type)
-          final grouped = <String, List<dynamic>>{};
+          final grouped = <String, List<Timetable>>{};
           for (final tt in timetables) {
             final key = '${tt.year}-${tt.semesterType.name}';
-            grouped.putIfAbsent(key, () => []).add(tt);
+            grouped.putIfAbsent(key, () => <Timetable>[]).add(tt);
           }
 
           return GlassContainer(
@@ -434,7 +436,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                 size: 22,
                               ),
                               title: Text(
-                                tt.title ?? l10n.untitledTimetable,
+                                tt.displayLabel(l10n),
                                 style: AppTypography.body1.copyWith(
                                   fontWeight: isSelected
                                       ? FontWeight.w700
@@ -457,7 +459,7 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                                           builder: (ctx) => AlertDialog(
                                             title: Text(l10n.deleteTimetable),
                                             content: Text(
-                                              l10n.confirmDeleteTimetable(tt.title ?? l10n.untitledTimetable),
+                                              l10n.confirmDeleteTimetable(tt.displayLabel(l10n)),
                                             ),
                                             actions: [
                                               TextButton(
@@ -543,26 +545,21 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
             ? SemesterType.first
             : SemesterType.second;
 
-    // Count existing preliminary timetables for auto-numbering
+    // Determine initial kind: main if no main exists yet for the semester.
     final existingTimetables = state.myTimetables
         .where((tt) => tt.year == selectedYear && tt.semesterType == selectedType)
         .toList();
-    final prelimCount = existingTimetables
-        .where((tt) => tt.title?.startsWith('예비') == true)
-        .length;
-
-    // Default title
     final hasMain =
-        existingTimetables.any((tt) => tt.title == 'Asosiy jadval');
-    String selectedTitle =
-        hasMain ? '예비${prelimCount + 1}' : 'Asosiy jadval';
+        existingTimetables.any((tt) => tt.kind == TimetableKind.main);
+    TimetableKind selectedKind =
+        hasMain ? TimetableKind.backup : TimetableKind.main;
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            // Recalculate when semester changes
+            // Recalculate options when the semester selection changes.
             final semTimetables = state.myTimetables
                 .where(
                   (tt) =>
@@ -571,19 +568,28 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                 )
                 .toList();
             final semHasMain =
-                semTimetables.any((tt) => tt.title == 'Asosiy jadval');
-            final semPrelimCount = semTimetables
-                .where((tt) => tt.title?.startsWith('예비') == true)
+                semTimetables.any((tt) => tt.kind == TimetableKind.main);
+            final semBackupCount = semTimetables
+                .where((tt) => tt.kind == TimetableKind.backup)
                 .length;
 
-            final titleOptions = <String>[
-              if (!semHasMain) 'Asosiy jadval',
-              '예비${semPrelimCount + 1}',
+            final kindOptions = <TimetableKind>[
+              if (!semHasMain) TimetableKind.main,
+              TimetableKind.backup,
             ];
 
-            // Ensure selected title is valid
-            if (!titleOptions.contains(selectedTitle)) {
-              selectedTitle = titleOptions.first;
+            // Ensure the selected kind is still valid for this semester.
+            if (!kindOptions.contains(selectedKind)) {
+              selectedKind = kindOptions.first;
+            }
+
+            String labelForKind(TimetableKind kind) {
+              switch (kind) {
+                case TimetableKind.main:
+                  return l10n.mainTimetable;
+                case TimetableKind.backup:
+                  return l10n.backupTimetableWithNumber(semBackupCount + 1);
+              }
             }
 
             return AlertDialog(
@@ -675,24 +681,24 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  ...titleOptions.map(
-                    (title) => InkWell(
-                      onTap: () => setDialogState(() => selectedTitle = title),
+                  ...kindOptions.map(
+                    (kind) => InkWell(
+                      onTap: () => setDialogState(() => selectedKind = kind),
                       borderRadius: BorderRadius.circular(8),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Row(
                           children: [
-                            Radio<String>(
-                              value: title,
-                              groupValue: selectedTitle,
+                            Radio<TimetableKind>(
+                              value: kind,
+                              groupValue: selectedKind,
                               onChanged: (v) =>
-                                  setDialogState(() => selectedTitle = v!),
+                                  setDialogState(() => selectedKind = v!),
                               activeColor: AppColors.primary,
                               materialTapTargetSize:
                                   MaterialTapTargetSize.shrinkWrap,
                             ),
-                            Text(title, style: AppTypography.body1),
+                            Text(labelForKind(kind), style: AppTypography.body1),
                           ],
                         ),
                       ),
@@ -707,17 +713,17 @@ class _TimetableScreenState extends ConsumerState<TimetableScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
+                    final createdLabel = labelForKind(selectedKind);
                     Navigator.pop(context);
                     final success = await notifier.createTimetable(
                       year: selectedYear,
                       semesterType: selectedType,
-                      title: selectedTitle,
+                      kind: selectedKind,
                     );
                     if (success && context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content:
-                              Text(l10n.timetableCreated(selectedTitle)),
+                          content: Text(l10n.timetableCreated(createdLabel)),
                           backgroundColor: AppColors.success,
                         ),
                       );

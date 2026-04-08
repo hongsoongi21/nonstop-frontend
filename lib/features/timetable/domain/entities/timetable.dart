@@ -5,6 +5,9 @@ import '../../data/dto/timetable_dto.dart';
 import 'day_of_week.dart';
 import 'semester.dart';
 import 'timetable_entry.dart';
+import 'timetable_kind.dart';
+
+export 'timetable_kind.dart';
 
 part 'timetable.freezed.dart';
 
@@ -19,6 +22,7 @@ class Timetable with _$Timetable {
     required SemesterType semesterType,
     String? title,
     required bool isPublic,
+    required TimetableKind kind,
   }) = _Timetable;
 
   const Timetable._();
@@ -32,6 +36,7 @@ class Timetable with _$Timetable {
       semesterType: dto.semesterType,
       title: dto.title,
       isPublic: dto.isPublic,
+      kind: TimetableKind.fromWire(dto.timetableKind),
     );
   }
 
@@ -55,6 +60,7 @@ class TimetableDetail with _$TimetableDetail {
     required SemesterType semesterType,
     String? title,
     required bool isPublic,
+    required TimetableKind kind,
     required List<TimetableEntry> entries,
   }) = _TimetableDetail;
 
@@ -69,6 +75,7 @@ class TimetableDetail with _$TimetableDetail {
       semesterType: dto.semesterType,
       title: dto.title,
       isPublic: dto.isPublic,
+      kind: TimetableKind.fromWire(dto.timetableKind),
       entries: dto.entries.map((e) => TimetableEntry.fromDto(e)).toList(),
     );
   }
@@ -102,3 +109,4 @@ class TimetableDetail with _$TimetableDetail {
     return false;
   }
 }
+

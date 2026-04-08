@@ -1210,6 +1210,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get uploading => 'Загрузка...';
 
   @override
+  String get mainTimetable => 'Основное';
+
+  @override
+  String get backupTimetable => 'Запасное';
+
+  @override
+  String backupTimetableWithNumber(int n) {
+    return 'Запасное $n';
+  }
+
+  @override
   String anonymousRoomWithCount(int count) {
     return 'Аноним ($count)';
   }

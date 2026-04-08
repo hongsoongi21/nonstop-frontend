@@ -1464,6 +1464,23 @@
   "@uploading": {
     "description": "Status text while uploading an image"
   },
+  "mainTimetable": "Основное",
+  "@mainTimetable": {
+    "description": "Label for the main timetable kind"
+  },
+  "backupTimetable": "Запасное",
+  "@backupTimetable": {
+    "description": "Label for a backup timetable kind"
+  },
+  "backupTimetableWithNumber": "Запасное {n}",
+  "@backupTimetableWithNumber": {
+    "description": "Label for a backup timetable with an index number",
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
   "anonymousRoomWithCount": "Аноним ({count})",
   "@anonymousRoomWithCount": {
     "description": "Label for the Nth anonymous chat room in the chat list",

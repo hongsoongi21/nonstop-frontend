@@ -1186,6 +1186,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get uploading => '업로드 중...';
 
   @override
+  String get mainTimetable => '주 시간표';
+
+  @override
+  String get backupTimetable => '예비';
+
+  @override
+  String backupTimetableWithNumber(int n) {
+    return '예비 $n';
+  }
+
+  @override
   String anonymousRoomWithCount(int count) {
     return '익명($count)';
   }

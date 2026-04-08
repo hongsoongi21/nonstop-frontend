@@ -2394,6 +2394,24 @@ abstract class AppLocalizations {
   /// **'Uploading...'**
   String get uploading;
 
+  /// Label for the main timetable kind
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get mainTimetable;
+
+  /// Label for a backup timetable kind
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupTimetable;
+
+  /// Label for a backup timetable with an index number
+  ///
+  /// In en, this message translates to:
+  /// **'Backup {n}'**
+  String backupTimetableWithNumber(int n);
+
   /// Label for the Nth anonymous chat room in the chat list
   ///
   /// In en, this message translates to:

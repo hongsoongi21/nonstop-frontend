@@ -23,6 +23,7 @@ mixin _$Timetable {
   SemesterType get semesterType => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   bool get isPublic => throw _privateConstructorUsedError;
+  TimetableKind get kind => throw _privateConstructorUsedError;
 
   /// Create a copy of Timetable
   /// with the given fields replaced by the non-null parameter values.
@@ -43,6 +44,7 @@ abstract class $TimetableCopyWith<$Res> {
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    TimetableKind kind,
   });
 }
 
@@ -67,6 +69,7 @@ class _$TimetableCopyWithImpl<$Res, $Val extends Timetable>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? kind = null,
   }) {
     return _then(
       _value.copyWith(
@@ -94,6 +97,10 @@ class _$TimetableCopyWithImpl<$Res, $Val extends Timetable>
                 ? _value.isPublic
                 : isPublic // ignore: cast_nullable_to_non_nullable
                       as bool,
+            kind: null == kind
+                ? _value.kind
+                : kind // ignore: cast_nullable_to_non_nullable
+                      as TimetableKind,
           )
           as $Val,
     );
@@ -116,6 +123,7 @@ abstract class _$$TimetableImplCopyWith<$Res>
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    TimetableKind kind,
   });
 }
 
@@ -139,6 +147,7 @@ class __$$TimetableImplCopyWithImpl<$Res>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? kind = null,
   }) {
     return _then(
       _$TimetableImpl(
@@ -166,6 +175,10 @@ class __$$TimetableImplCopyWithImpl<$Res>
             ? _value.isPublic
             : isPublic // ignore: cast_nullable_to_non_nullable
                   as bool,
+        kind: null == kind
+            ? _value.kind
+            : kind // ignore: cast_nullable_to_non_nullable
+                  as TimetableKind,
       ),
     );
   }
@@ -181,6 +194,7 @@ class _$TimetableImpl extends _Timetable {
     required this.semesterType,
     this.title,
     required this.isPublic,
+    required this.kind,
   }) : super._();
 
   @override
@@ -195,10 +209,12 @@ class _$TimetableImpl extends _Timetable {
   final String? title;
   @override
   final bool isPublic;
+  @override
+  final TimetableKind kind;
 
   @override
   String toString() {
-    return 'Timetable(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic)';
+    return 'Timetable(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, kind: $kind)';
   }
 
   @override
@@ -214,7 +230,8 @@ class _$TimetableImpl extends _Timetable {
                 other.semesterType == semesterType) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
-                other.isPublic == isPublic));
+                other.isPublic == isPublic) &&
+            (identical(other.kind, kind) || other.kind == kind));
   }
 
   @override
@@ -226,6 +243,7 @@ class _$TimetableImpl extends _Timetable {
     semesterType,
     title,
     isPublic,
+    kind,
   );
 
   /// Create a copy of Timetable
@@ -245,6 +263,7 @@ abstract class _Timetable extends Timetable {
     required final SemesterType semesterType,
     final String? title,
     required final bool isPublic,
+    required final TimetableKind kind,
   }) = _$TimetableImpl;
   const _Timetable._() : super._();
 
@@ -260,6 +279,8 @@ abstract class _Timetable extends Timetable {
   String? get title;
   @override
   bool get isPublic;
+  @override
+  TimetableKind get kind;
 
   /// Create a copy of Timetable
   /// with the given fields replaced by the non-null parameter values.
@@ -277,6 +298,7 @@ mixin _$TimetableDetail {
   SemesterType get semesterType => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   bool get isPublic => throw _privateConstructorUsedError;
+  TimetableKind get kind => throw _privateConstructorUsedError;
   List<TimetableEntry> get entries => throw _privateConstructorUsedError;
 
   /// Create a copy of TimetableDetail
@@ -300,6 +322,7 @@ abstract class $TimetableDetailCopyWith<$Res> {
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    TimetableKind kind,
     List<TimetableEntry> entries,
   });
 }
@@ -325,6 +348,7 @@ class _$TimetableDetailCopyWithImpl<$Res, $Val extends TimetableDetail>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? kind = null,
     Object? entries = null,
   }) {
     return _then(
@@ -353,6 +377,10 @@ class _$TimetableDetailCopyWithImpl<$Res, $Val extends TimetableDetail>
                 ? _value.isPublic
                 : isPublic // ignore: cast_nullable_to_non_nullable
                       as bool,
+            kind: null == kind
+                ? _value.kind
+                : kind // ignore: cast_nullable_to_non_nullable
+                      as TimetableKind,
             entries: null == entries
                 ? _value.entries
                 : entries // ignore: cast_nullable_to_non_nullable
@@ -379,6 +407,7 @@ abstract class _$$TimetableDetailImplCopyWith<$Res>
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    TimetableKind kind,
     List<TimetableEntry> entries,
   });
 }
@@ -403,6 +432,7 @@ class __$$TimetableDetailImplCopyWithImpl<$Res>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? kind = null,
     Object? entries = null,
   }) {
     return _then(
@@ -431,6 +461,10 @@ class __$$TimetableDetailImplCopyWithImpl<$Res>
             ? _value.isPublic
             : isPublic // ignore: cast_nullable_to_non_nullable
                   as bool,
+        kind: null == kind
+            ? _value.kind
+            : kind // ignore: cast_nullable_to_non_nullable
+                  as TimetableKind,
         entries: null == entries
             ? _value._entries
             : entries // ignore: cast_nullable_to_non_nullable
@@ -450,6 +484,7 @@ class _$TimetableDetailImpl extends _TimetableDetail {
     required this.semesterType,
     this.title,
     required this.isPublic,
+    required this.kind,
     required final List<TimetableEntry> entries,
   }) : _entries = entries,
        super._();
@@ -466,6 +501,8 @@ class _$TimetableDetailImpl extends _TimetableDetail {
   final String? title;
   @override
   final bool isPublic;
+  @override
+  final TimetableKind kind;
   final List<TimetableEntry> _entries;
   @override
   List<TimetableEntry> get entries {
@@ -476,7 +513,7 @@ class _$TimetableDetailImpl extends _TimetableDetail {
 
   @override
   String toString() {
-    return 'TimetableDetail(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, entries: $entries)';
+    return 'TimetableDetail(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, kind: $kind, entries: $entries)';
   }
 
   @override
@@ -493,6 +530,7 @@ class _$TimetableDetailImpl extends _TimetableDetail {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
                 other.isPublic == isPublic) &&
+            (identical(other.kind, kind) || other.kind == kind) &&
             const DeepCollectionEquality().equals(other._entries, _entries));
   }
 
@@ -505,6 +543,7 @@ class _$TimetableDetailImpl extends _TimetableDetail {
     semesterType,
     title,
     isPublic,
+    kind,
     const DeepCollectionEquality().hash(_entries),
   );
 
@@ -528,6 +567,7 @@ abstract class _TimetableDetail extends TimetableDetail {
     required final SemesterType semesterType,
     final String? title,
     required final bool isPublic,
+    required final TimetableKind kind,
     required final List<TimetableEntry> entries,
   }) = _$TimetableDetailImpl;
   const _TimetableDetail._() : super._();
@@ -544,6 +584,8 @@ abstract class _TimetableDetail extends TimetableDetail {
   String? get title;
   @override
   bool get isPublic;
+  @override
+  TimetableKind get kind;
   @override
   List<TimetableEntry> get entries;
 

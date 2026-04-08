@@ -45,12 +45,14 @@ class TimetableRepositoryImpl implements TimetableRepository {
     required SemesterType semesterType,
     String? title,
     bool isPublic = false,
+    TimetableKind kind = TimetableKind.backup,
   }) async {
     final request = TimetableRequestDto(
       year: year,
       semesterType: semesterType,
       title: title,
       isPublic: isPublic,
+      timetableKind: kind.wireValue,
     );
     final result = await _api.createTimetable(request);
     return result.match(

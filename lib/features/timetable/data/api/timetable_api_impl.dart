@@ -174,6 +174,7 @@ class TimetableApiImpl implements TimetableApi {
             'semester_id': semesterId,
             'title': request.title,
             'is_public': request.isPublic ?? false,
+            'timetable_kind': request.timetableKind ?? 'backup',
           })
           .select('*, semesters(year, type)')
           .single();
@@ -210,6 +211,9 @@ class TimetableApiImpl implements TimetableApi {
       final updateData = <String, dynamic>{};
       if (request.title != null) updateData['title'] = request.title;
       if (request.isPublic != null) updateData['is_public'] = request.isPublic;
+      if (request.timetableKind != null) {
+        updateData['timetable_kind'] = request.timetableKind;
+      }
 
       final result = await _supabase
           .from('time_tables')
@@ -379,6 +383,7 @@ class TimetableApiImpl implements TimetableApi {
           _parseSemesterType(semesterData?['type'] as String? ?? 'FIRST'),
       title: json['title'] as String?,
       isPublic: json['is_public'] as bool? ?? false,
+      timetableKind: json['timetable_kind'] as String? ?? 'backup',
     );
   }
 
@@ -394,6 +399,7 @@ class TimetableApiImpl implements TimetableApi {
           _parseSemesterType(semesterData?['type'] as String? ?? 'FIRST'),
       title: json['title'] as String?,
       isPublic: json['is_public'] as bool? ?? false,
+      timetableKind: json['timetable_kind'] as String? ?? 'backup',
       entries: entriesData
           .map((e) => _mapToEntryDto(e as Map<String, dynamic>))
           .toList(),

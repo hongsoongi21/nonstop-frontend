@@ -14,6 +14,7 @@ _$TimetableDtoImpl _$$TimetableDtoImplFromJson(Map<String, dynamic> json) =>
       semesterType: $enumDecode(_$SemesterTypeEnumMap, json['semesterType']),
       title: json['title'] as String?,
       isPublic: json['isPublic'] as bool,
+      timetableKind: json['timetable_kind'] as String? ?? 'backup',
     );
 
 Map<String, dynamic> _$$TimetableDtoImplToJson(_$TimetableDtoImpl instance) =>
@@ -24,6 +25,7 @@ Map<String, dynamic> _$$TimetableDtoImplToJson(_$TimetableDtoImpl instance) =>
       'semesterType': _$SemesterTypeEnumMap[instance.semesterType]!,
       'title': instance.title,
       'isPublic': instance.isPublic,
+      'timetable_kind': instance.timetableKind,
     };
 
 const _$SemesterTypeEnumMap = {
@@ -42,6 +44,7 @@ _$TimetableDetailDtoImpl _$$TimetableDetailDtoImplFromJson(
   semesterType: $enumDecode(_$SemesterTypeEnumMap, json['semesterType']),
   title: json['title'] as String?,
   isPublic: json['isPublic'] as bool,
+  timetableKind: json['timetable_kind'] as String? ?? 'backup',
   entries: (json['entries'] as List<dynamic>)
       .map((e) => TimetableEntryDto.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -56,6 +59,7 @@ Map<String, dynamic> _$$TimetableDetailDtoImplToJson(
   'semesterType': _$SemesterTypeEnumMap[instance.semesterType]!,
   'title': instance.title,
   'isPublic': instance.isPublic,
+  'timetable_kind': instance.timetableKind,
   'entries': instance.entries,
 };
 
@@ -66,6 +70,7 @@ _$TimetableRequestDtoImpl _$$TimetableRequestDtoImplFromJson(
   semesterType: _semesterTypeFromJson(json['semesterType'] as String?),
   title: json['title'] as String?,
   isPublic: json['isPublic'] as bool?,
+  timetableKind: json['timetableKind'] as String?,
 );
 
 Map<String, dynamic> _$$TimetableRequestDtoImplToJson(
@@ -75,4 +80,5 @@ Map<String, dynamic> _$$TimetableRequestDtoImplToJson(
   'semesterType': _semesterTypeToJson(instance.semesterType),
   'title': instance.title,
   'isPublic': instance.isPublic,
+  'timetableKind': instance.timetableKind,
 };

@@ -27,6 +27,8 @@ mixin _$TimetableDto {
   SemesterType get semesterType => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   bool get isPublic => throw _privateConstructorUsedError;
+  @JsonKey(name: 'timetable_kind')
+  String get timetableKind => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -52,6 +54,7 @@ abstract class $TimetableDtoCopyWith<$Res> {
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    @JsonKey(name: 'timetable_kind') String timetableKind,
   });
 }
 
@@ -76,6 +79,7 @@ class _$TimetableDtoCopyWithImpl<$Res, $Val extends TimetableDto>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? timetableKind = null,
   }) {
     return _then(
       _value.copyWith(
@@ -103,6 +107,10 @@ class _$TimetableDtoCopyWithImpl<$Res, $Val extends TimetableDto>
                 ? _value.isPublic
                 : isPublic // ignore: cast_nullable_to_non_nullable
                       as bool,
+            timetableKind: null == timetableKind
+                ? _value.timetableKind
+                : timetableKind // ignore: cast_nullable_to_non_nullable
+                      as String,
           )
           as $Val,
     );
@@ -125,6 +133,7 @@ abstract class _$$TimetableDtoImplCopyWith<$Res>
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    @JsonKey(name: 'timetable_kind') String timetableKind,
   });
 }
 
@@ -148,6 +157,7 @@ class __$$TimetableDtoImplCopyWithImpl<$Res>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? timetableKind = null,
   }) {
     return _then(
       _$TimetableDtoImpl(
@@ -175,6 +185,10 @@ class __$$TimetableDtoImplCopyWithImpl<$Res>
             ? _value.isPublic
             : isPublic // ignore: cast_nullable_to_non_nullable
                   as bool,
+        timetableKind: null == timetableKind
+            ? _value.timetableKind
+            : timetableKind // ignore: cast_nullable_to_non_nullable
+                  as String,
       ),
     );
   }
@@ -190,6 +204,7 @@ class _$TimetableDtoImpl implements _TimetableDto {
     required this.semesterType,
     this.title,
     required this.isPublic,
+    @JsonKey(name: 'timetable_kind') this.timetableKind = 'backup',
   });
 
   factory _$TimetableDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -207,10 +222,13 @@ class _$TimetableDtoImpl implements _TimetableDto {
   final String? title;
   @override
   final bool isPublic;
+  @override
+  @JsonKey(name: 'timetable_kind')
+  final String timetableKind;
 
   @override
   String toString() {
-    return 'TimetableDto(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic)';
+    return 'TimetableDto(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, timetableKind: $timetableKind)';
   }
 
   @override
@@ -226,7 +244,9 @@ class _$TimetableDtoImpl implements _TimetableDto {
                 other.semesterType == semesterType) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
-                other.isPublic == isPublic));
+                other.isPublic == isPublic) &&
+            (identical(other.timetableKind, timetableKind) ||
+                other.timetableKind == timetableKind));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -239,6 +259,7 @@ class _$TimetableDtoImpl implements _TimetableDto {
     semesterType,
     title,
     isPublic,
+    timetableKind,
   );
 
   /// Create a copy of TimetableDto
@@ -263,6 +284,7 @@ abstract class _TimetableDto implements TimetableDto {
     required final SemesterType semesterType,
     final String? title,
     required final bool isPublic,
+    @JsonKey(name: 'timetable_kind') final String timetableKind,
   }) = _$TimetableDtoImpl;
 
   factory _TimetableDto.fromJson(Map<String, dynamic> json) =
@@ -280,6 +302,9 @@ abstract class _TimetableDto implements TimetableDto {
   String? get title;
   @override
   bool get isPublic;
+  @override
+  @JsonKey(name: 'timetable_kind')
+  String get timetableKind;
 
   /// Create a copy of TimetableDto
   /// with the given fields replaced by the non-null parameter values.
@@ -301,6 +326,8 @@ mixin _$TimetableDetailDto {
   SemesterType get semesterType => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   bool get isPublic => throw _privateConstructorUsedError;
+  @JsonKey(name: 'timetable_kind')
+  String get timetableKind => throw _privateConstructorUsedError;
   List<TimetableEntryDto> get entries => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableDetailDto to a JSON map.
@@ -327,6 +354,7 @@ abstract class $TimetableDetailDtoCopyWith<$Res> {
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    @JsonKey(name: 'timetable_kind') String timetableKind,
     List<TimetableEntryDto> entries,
   });
 }
@@ -352,6 +380,7 @@ class _$TimetableDetailDtoCopyWithImpl<$Res, $Val extends TimetableDetailDto>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? timetableKind = null,
     Object? entries = null,
   }) {
     return _then(
@@ -380,6 +409,10 @@ class _$TimetableDetailDtoCopyWithImpl<$Res, $Val extends TimetableDetailDto>
                 ? _value.isPublic
                 : isPublic // ignore: cast_nullable_to_non_nullable
                       as bool,
+            timetableKind: null == timetableKind
+                ? _value.timetableKind
+                : timetableKind // ignore: cast_nullable_to_non_nullable
+                      as String,
             entries: null == entries
                 ? _value.entries
                 : entries // ignore: cast_nullable_to_non_nullable
@@ -406,6 +439,7 @@ abstract class _$$TimetableDetailDtoImplCopyWith<$Res>
     SemesterType semesterType,
     String? title,
     bool isPublic,
+    @JsonKey(name: 'timetable_kind') String timetableKind,
     List<TimetableEntryDto> entries,
   });
 }
@@ -430,6 +464,7 @@ class __$$TimetableDetailDtoImplCopyWithImpl<$Res>
     Object? semesterType = null,
     Object? title = freezed,
     Object? isPublic = null,
+    Object? timetableKind = null,
     Object? entries = null,
   }) {
     return _then(
@@ -458,6 +493,10 @@ class __$$TimetableDetailDtoImplCopyWithImpl<$Res>
             ? _value.isPublic
             : isPublic // ignore: cast_nullable_to_non_nullable
                   as bool,
+        timetableKind: null == timetableKind
+            ? _value.timetableKind
+            : timetableKind // ignore: cast_nullable_to_non_nullable
+                  as String,
         entries: null == entries
             ? _value._entries
             : entries // ignore: cast_nullable_to_non_nullable
@@ -477,6 +516,7 @@ class _$TimetableDetailDtoImpl implements _TimetableDetailDto {
     required this.semesterType,
     this.title,
     required this.isPublic,
+    @JsonKey(name: 'timetable_kind') this.timetableKind = 'backup',
     required final List<TimetableEntryDto> entries,
   }) : _entries = entries;
 
@@ -495,6 +535,9 @@ class _$TimetableDetailDtoImpl implements _TimetableDetailDto {
   final String? title;
   @override
   final bool isPublic;
+  @override
+  @JsonKey(name: 'timetable_kind')
+  final String timetableKind;
   final List<TimetableEntryDto> _entries;
   @override
   List<TimetableEntryDto> get entries {
@@ -505,7 +548,7 @@ class _$TimetableDetailDtoImpl implements _TimetableDetailDto {
 
   @override
   String toString() {
-    return 'TimetableDetailDto(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, entries: $entries)';
+    return 'TimetableDetailDto(id: $id, semesterId: $semesterId, year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, timetableKind: $timetableKind, entries: $entries)';
   }
 
   @override
@@ -522,6 +565,8 @@ class _$TimetableDetailDtoImpl implements _TimetableDetailDto {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
                 other.isPublic == isPublic) &&
+            (identical(other.timetableKind, timetableKind) ||
+                other.timetableKind == timetableKind) &&
             const DeepCollectionEquality().equals(other._entries, _entries));
   }
 
@@ -535,6 +580,7 @@ class _$TimetableDetailDtoImpl implements _TimetableDetailDto {
     semesterType,
     title,
     isPublic,
+    timetableKind,
     const DeepCollectionEquality().hash(_entries),
   );
 
@@ -563,6 +609,7 @@ abstract class _TimetableDetailDto implements TimetableDetailDto {
     required final SemesterType semesterType,
     final String? title,
     required final bool isPublic,
+    @JsonKey(name: 'timetable_kind') final String timetableKind,
     required final List<TimetableEntryDto> entries,
   }) = _$TimetableDetailDtoImpl;
 
@@ -581,6 +628,9 @@ abstract class _TimetableDetailDto implements TimetableDetailDto {
   String? get title;
   @override
   bool get isPublic;
+  @override
+  @JsonKey(name: 'timetable_kind')
+  String get timetableKind;
   @override
   List<TimetableEntryDto> get entries;
 
@@ -603,6 +653,7 @@ mixin _$TimetableRequestDto {
   SemesterType? get semesterType => throw _privateConstructorUsedError; // Required for create (FIRST, SECOND, SUMMER, WINTER)
   String? get title => throw _privateConstructorUsedError;
   bool? get isPublic => throw _privateConstructorUsedError;
+  String? get timetableKind => throw _privateConstructorUsedError;
 
   /// Serializes this TimetableRequestDto to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -627,6 +678,7 @@ abstract class $TimetableRequestDtoCopyWith<$Res> {
     SemesterType? semesterType,
     String? title,
     bool? isPublic,
+    String? timetableKind,
   });
 }
 
@@ -649,6 +701,7 @@ class _$TimetableRequestDtoCopyWithImpl<$Res, $Val extends TimetableRequestDto>
     Object? semesterType = freezed,
     Object? title = freezed,
     Object? isPublic = freezed,
+    Object? timetableKind = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -668,6 +721,10 @@ class _$TimetableRequestDtoCopyWithImpl<$Res, $Val extends TimetableRequestDto>
                 ? _value.isPublic
                 : isPublic // ignore: cast_nullable_to_non_nullable
                       as bool?,
+            timetableKind: freezed == timetableKind
+                ? _value.timetableKind
+                : timetableKind // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -689,6 +746,7 @@ abstract class _$$TimetableRequestDtoImplCopyWith<$Res>
     SemesterType? semesterType,
     String? title,
     bool? isPublic,
+    String? timetableKind,
   });
 }
 
@@ -710,6 +768,7 @@ class __$$TimetableRequestDtoImplCopyWithImpl<$Res>
     Object? semesterType = freezed,
     Object? title = freezed,
     Object? isPublic = freezed,
+    Object? timetableKind = freezed,
   }) {
     return _then(
       _$TimetableRequestDtoImpl(
@@ -729,6 +788,10 @@ class __$$TimetableRequestDtoImplCopyWithImpl<$Res>
             ? _value.isPublic
             : isPublic // ignore: cast_nullable_to_non_nullable
                   as bool?,
+        timetableKind: freezed == timetableKind
+            ? _value.timetableKind
+            : timetableKind // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -743,6 +806,7 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
     this.semesterType,
     this.title,
     this.isPublic,
+    this.timetableKind,
   });
 
   factory _$TimetableRequestDtoImpl.fromJson(Map<String, dynamic> json) =>
@@ -759,10 +823,12 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
   final String? title;
   @override
   final bool? isPublic;
+  @override
+  final String? timetableKind;
 
   @override
   String toString() {
-    return 'TimetableRequestDto(year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic)';
+    return 'TimetableRequestDto(year: $year, semesterType: $semesterType, title: $title, isPublic: $isPublic, timetableKind: $timetableKind)';
   }
 
   @override
@@ -775,13 +841,21 @@ class _$TimetableRequestDtoImpl implements _TimetableRequestDto {
                 other.semesterType == semesterType) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isPublic, isPublic) ||
-                other.isPublic == isPublic));
+                other.isPublic == isPublic) &&
+            (identical(other.timetableKind, timetableKind) ||
+                other.timetableKind == timetableKind));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, year, semesterType, title, isPublic);
+  int get hashCode => Object.hash(
+    runtimeType,
+    year,
+    semesterType,
+    title,
+    isPublic,
+    timetableKind,
+  );
 
   /// Create a copy of TimetableRequestDto
   /// with the given fields replaced by the non-null parameter values.
@@ -807,6 +881,7 @@ abstract class _TimetableRequestDto implements TimetableRequestDto {
     final SemesterType? semesterType,
     final String? title,
     final bool? isPublic,
+    final String? timetableKind,
   }) = _$TimetableRequestDtoImpl;
 
   factory _TimetableRequestDto.fromJson(Map<String, dynamic> json) =
@@ -821,6 +896,8 @@ abstract class _TimetableRequestDto implements TimetableRequestDto {
   String? get title;
   @override
   bool? get isPublic;
+  @override
+  String? get timetableKind;
 
   /// Create a copy of TimetableRequestDto
   /// with the given fields replaced by the non-null parameter values.

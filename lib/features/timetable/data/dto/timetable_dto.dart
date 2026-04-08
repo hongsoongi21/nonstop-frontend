@@ -17,6 +17,7 @@ class TimetableDto with _$TimetableDto {
     required SemesterType semesterType,
     String? title,
     required bool isPublic,
+    @JsonKey(name: 'timetable_kind') @Default('backup') String timetableKind,
   }) = _TimetableDto;
 
   factory TimetableDto.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +35,7 @@ class TimetableDetailDto with _$TimetableDetailDto {
     required SemesterType semesterType,
     String? title,
     required bool isPublic,
+    @JsonKey(name: 'timetable_kind') @Default('backup') String timetableKind,
     required List<TimetableEntryDto> entries,
   }) = _TimetableDetailDto;
 
@@ -51,6 +53,7 @@ class TimetableRequestDto with _$TimetableRequestDto {
     SemesterType? semesterType, // Required for create (FIRST, SECOND, SUMMER, WINTER)
     String? title,
     bool? isPublic,
+    String? timetableKind,
   }) = _TimetableRequestDto;
 
   factory TimetableRequestDto.fromJson(Map<String, dynamic> json) =>
