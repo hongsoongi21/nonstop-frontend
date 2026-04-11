@@ -1200,4 +1200,32 @@ class AppLocalizationsKo extends AppLocalizations {
   String anonymousRoomWithCount(int count) {
     return '익명($count)';
   }
+
+  @override
+  String get boardFree => '자유게시판';
+
+  @override
+  String get boardAnonymous => '비밀게시판';
+
+  @override
+  String get boardInfo => '정보게시판';
+
+  @override
+  String get boardQna => 'Q&A';
+
+  @override
+  String get boardNotice => '공지사항';
+
+  @override
+  String boardCreatedSuccess(String name) {
+    return '게시판 \"$name\"이(가) 생성되었습니다!';
+  }
+
+  @override
+  String get globalCommunity => '커뮤니티';
+
+  @override
+  String postToBoard(String boardName) {
+    return '$boardName에 글쓰기';
+  }
 }

@@ -1216,4 +1216,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String anonymousRoomWithCount(int count) {
     return 'Anonymous ($count)';
   }
+
+  @override
+  String get boardFree => 'Free Board';
+
+  @override
+  String get boardAnonymous => 'Anonymous Board';
+
+  @override
+  String get boardInfo => 'Info Board';
+
+  @override
+  String get boardQna => 'Q&A';
+
+  @override
+  String get boardNotice => 'Announcements';
+
+  @override
+  String boardCreatedSuccess(String name) {
+    return 'Board \"$name\" created successfully!';
+  }
+
+  @override
+  String get globalCommunity => 'Community';
+
+  @override
+  String postToBoard(String boardName) {
+    return 'Post to $boardName';
+  }
 }

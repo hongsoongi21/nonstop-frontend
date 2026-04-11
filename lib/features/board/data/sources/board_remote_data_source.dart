@@ -71,6 +71,7 @@ class BoardRemoteDataSource {
               description: json['description'] as String?,
               type: _parseBoardType(json['type'] as String),
               isSecret: json['is_secret'] as bool? ?? false,
+              slug: json['slug'] as String?,
               createdAt: parseUtcDateTime(json['created_at'] as String),
             ))
         .toList();
@@ -98,6 +99,7 @@ class BoardRemoteDataSource {
       description: result['description'] as String?,
       type: _parseBoardType(result['type'] as String),
       isSecret: result['is_secret'] as bool? ?? false,
+      slug: result['slug'] as String?,
       createdAt: parseUtcDateTime(result['created_at'] as String),
     );
   }

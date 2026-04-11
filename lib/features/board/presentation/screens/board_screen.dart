@@ -20,6 +20,7 @@ import '../../domain/entities/community.entity.dart';
 import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/board.entity.dart';
 import '../../../../core/utils/date_utils.dart';
+import '../widgets/board_display.dart';
 
 /// Filter options for board posts
 enum BoardFilter { latest, trending, mostCommented }
@@ -130,7 +131,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
 
                   // === BOARD CHIPS (smaller, subtle) ===
                   if (boards.isNotEmpty)
-                    _buildBoardChips(context, boards, selectedBoard, isDark),
+                    _buildBoardChips(context, boards, selectedBoard, isDark, l10n: l10n),
 
                   // === FILTER PILLS ===
                   _buildFilterPills(context, isDark, l10n),
@@ -146,7 +147,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                       child: isLoading && posts.isEmpty
                           ? _buildSkeletonList()
                           : filteredPosts.isEmpty
-                              ? _buildEmptyState(context, selectedBoard?.name ?? l10n.board)
+                              ? _buildEmptyState(context, selectedBoard?.displayName(l10n) ?? l10n.board)
                               : _buildPostsList(context, filteredPosts, isDark, l10n),
                     ),
                   ),
@@ -219,7 +220,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   children: [
                     Flexible(
                       child: Text(
-                        selectedCommunity?.name ?? l10n.selectCommunity,
+                        (selectedCommunity?.isGlobal == true ? l10n.globalCommunity : selectedCommunity?.name) ?? l10n.selectCommunity,
                         style: AppTypography.headline3.copyWith(
                           fontWeight: FontWeight.w700,
                           color: isDark ? Colors.white : AppColors.textPrimary,
@@ -434,8 +435,9 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     BuildContext context,
     List boards,
     dynamic selectedBoard,
-    bool isDark,
-  ) {
+    bool isDark, {
+    required AppLocalizations l10n,
+  }) {
     return Container(
       height: 36,
       margin: const EdgeInsets.only(bottom: 8),
@@ -474,7 +476,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   ),
                 ),
                 child: Text(
-                  board.name,
+                  board.displayName(l10n),
                   style: AppTypography.caption.copyWith(
                     color: isSelected
                         ? AppColors.primary
@@ -710,7 +712,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                   icon: Icons.edit_outlined,
                   title: 'Write Post',
                   subtitle: selectedBoard != null
-                      ? 'Post to ${selectedBoard.name}'
+                      ? l10n.postToBoard(selectedBoard.displayName(l10n))
                       : l10n.pleaseSelectBoardFirst,
                   enabled: selectedBoard != null,
                   onTap: () {
@@ -952,7 +954,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                 (board) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Board "${board.name}" created successfully!'),
+                      content: Text(l10n.boardCreatedSuccess(board.name)),
                       behavior: SnackBarBehavior.floating,
                       backgroundColor: AppColors.success,
                     ),
@@ -1108,7 +1110,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          c.name,
+                          c.isGlobal ? l10n.globalCommunity : c.name,
                           style: AppTypography.body1.copyWith(
                             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                             color: isSelected

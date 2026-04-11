@@ -26,6 +26,7 @@ mixin _$Board {
   String? get description => throw _privateConstructorUsedError;
   BoardType get type => throw _privateConstructorUsedError;
   bool get isSecret => throw _privateConstructorUsedError;
+  String? get slug => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this Board to a JSON map.
@@ -48,6 +49,7 @@ abstract class $BoardCopyWith<$Res> {
     String? description,
     BoardType type,
     bool isSecret,
+    String? slug,
     DateTime createdAt,
   });
 }
@@ -72,6 +74,7 @@ class _$BoardCopyWithImpl<$Res, $Val extends Board>
     Object? description = freezed,
     Object? type = null,
     Object? isSecret = null,
+    Object? slug = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -96,6 +99,10 @@ class _$BoardCopyWithImpl<$Res, $Val extends Board>
                 ? _value.isSecret
                 : isSecret // ignore: cast_nullable_to_non_nullable
                       as bool,
+            slug: freezed == slug
+                ? _value.slug
+                : slug // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -120,6 +127,7 @@ abstract class _$$BoardImplCopyWith<$Res> implements $BoardCopyWith<$Res> {
     String? description,
     BoardType type,
     bool isSecret,
+    String? slug,
     DateTime createdAt,
   });
 }
@@ -143,6 +151,7 @@ class __$$BoardImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? type = null,
     Object? isSecret = null,
+    Object? slug = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -167,6 +176,10 @@ class __$$BoardImplCopyWithImpl<$Res>
             ? _value.isSecret
             : isSecret // ignore: cast_nullable_to_non_nullable
                   as bool,
+        slug: freezed == slug
+            ? _value.slug
+            : slug // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -185,6 +198,7 @@ class _$BoardImpl implements _Board {
     this.description,
     required this.type,
     this.isSecret = false,
+    this.slug,
     required this.createdAt,
   });
 
@@ -203,11 +217,13 @@ class _$BoardImpl implements _Board {
   @JsonKey()
   final bool isSecret;
   @override
+  final String? slug;
+  @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'Board(id: $id, name: $name, description: $description, type: $type, isSecret: $isSecret, createdAt: $createdAt)';
+    return 'Board(id: $id, name: $name, description: $description, type: $type, isSecret: $isSecret, slug: $slug, createdAt: $createdAt)';
   }
 
   @override
@@ -222,6 +238,7 @@ class _$BoardImpl implements _Board {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.isSecret, isSecret) ||
                 other.isSecret == isSecret) &&
+            (identical(other.slug, slug) || other.slug == slug) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -235,6 +252,7 @@ class _$BoardImpl implements _Board {
     description,
     type,
     isSecret,
+    slug,
     createdAt,
   );
 
@@ -259,6 +277,7 @@ abstract class _Board implements Board {
     final String? description,
     required final BoardType type,
     final bool isSecret,
+    final String? slug,
     required final DateTime createdAt,
   }) = _$BoardImpl;
 
@@ -274,6 +293,8 @@ abstract class _Board implements Board {
   BoardType get type;
   @override
   bool get isSecret;
+  @override
+  String? get slug;
   @override
   DateTime get createdAt;
 

@@ -13,6 +13,7 @@ import '../../../../shared/components/main_scaffold.dart';
 import '../providers/board_provider.dart';
 import '../../data/repositories/board_repository_impl.dart';
 import '../../domain/entities/board.entity.dart';
+import '../widgets/board_display.dart';
 
 class CreatePostScreen extends ConsumerStatefulWidget {
   const CreatePostScreen({super.key});
@@ -318,7 +319,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen>
               children: boards.map((board) {
                 final isSelected = board.id == _selectedBoard?.id;
                 return FilterChip(
-                  label: Text(board.name),
+                  label: Text(board.displayName(l10n)),
                   selected: isSelected,
                   onSelected: (selected) {
                     if (selected) {

@@ -1230,4 +1230,32 @@ class AppLocalizationsUz extends AppLocalizations {
   String anonymousRoomWithCount(int count) {
     return 'Anonim ($count)';
   }
+
+  @override
+  String get boardFree => 'Erkin forum';
+
+  @override
+  String get boardAnonymous => 'Anonim forum';
+
+  @override
+  String get boardInfo => 'Ma\'lumot';
+
+  @override
+  String get boardQna => 'Savol-javob';
+
+  @override
+  String get boardNotice => 'E\'lonlar';
+
+  @override
+  String boardCreatedSuccess(String name) {
+    return '\"$name\" forumi yaratildi!';
+  }
+
+  @override
+  String get globalCommunity => 'Jamoa';
+
+  @override
+  String postToBoard(String boardName) {
+    return '${boardName}ga yozish';
+  }
 }
