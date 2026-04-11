@@ -1182,5 +1182,29 @@
         "example": "2"
       }
     }
+  },
+  "boardFree": "Erkin forum",
+  "boardAnonymous": "Anonim forum",
+  "boardInfo": "Ma'lumot",
+  "boardQna": "Savol-javob",
+  "boardNotice": "E'lonlar",
+  "boardCreatedSuccess": "\"{name}\" forumi yaratildi!",
+  "@boardCreatedSuccess": {
+    "description": "Snackbar message after creating a board",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "globalCommunity": "Jamoa",
+  "postToBoard": "{boardName}ga yozish",
+  "@postToBoard": {
+    "description": "Subtitle for write post option showing target board",
+    "placeholders": {
+      "boardName": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -22,6 +22,7 @@ class Board with _$Board {
     String? description,
     required BoardType type,
     @Default(false) bool isSecret,
+    String? slug,
     required DateTime createdAt,
   }) = _Board;
 

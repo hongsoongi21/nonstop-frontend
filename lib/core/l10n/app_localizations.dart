@@ -2417,6 +2417,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anonymous ({count})'**
   String anonymousRoomWithCount(int count);
+
+  /// No description provided for @boardFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Board'**
+  String get boardFree;
+
+  /// No description provided for @boardAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous Board'**
+  String get boardAnonymous;
+
+  /// No description provided for @boardInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Info Board'**
+  String get boardInfo;
+
+  /// No description provided for @boardQna.
+  ///
+  /// In en, this message translates to:
+  /// **'Q&A'**
+  String get boardQna;
+
+  /// No description provided for @boardNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements'**
+  String get boardNotice;
+
+  /// Snackbar message after creating a board
+  ///
+  /// In en, this message translates to:
+  /// **'Board \"{name}\" created successfully!'**
+  String boardCreatedSuccess(String name);
+
+  /// No description provided for @globalCommunity.
+  ///
+  /// In en, this message translates to:
+  /// **'Community'**
+  String get globalCommunity;
+
+  /// Subtitle for write post option showing target board
+  ///
+  /// In en, this message translates to:
+  /// **'Post to {boardName}'**
+  String postToBoard(String boardName);
 }
 
 class _AppLocalizationsDelegate

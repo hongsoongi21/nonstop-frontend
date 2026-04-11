@@ -12,6 +12,7 @@ _$BoardImpl _$$BoardImplFromJson(Map<String, dynamic> json) => _$BoardImpl(
   description: json['description'] as String?,
   type: $enumDecode(_$BoardTypeEnumMap, json['type']),
   isSecret: json['isSecret'] as bool? ?? false,
+  slug: json['slug'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
 );
 
@@ -22,6 +23,7 @@ Map<String, dynamic> _$$BoardImplToJson(_$BoardImpl instance) =>
       'description': instance.description,
       'type': _$BoardTypeEnumMap[instance.type]!,
       'isSecret': instance.isSecret,
+      'slug': instance.slug,
       'createdAt': instance.createdAt.toIso8601String(),
     };
 

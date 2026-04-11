@@ -1633,5 +1633,29 @@
         "example": "2"
       }
     }
+  },
+  "boardFree": "Free Board",
+  "boardAnonymous": "Anonymous Board",
+  "boardInfo": "Info Board",
+  "boardQna": "Q&A",
+  "boardNotice": "Announcements",
+  "boardCreatedSuccess": "Board \"{name}\" created successfully!",
+  "@boardCreatedSuccess": {
+    "description": "Snackbar message after creating a board",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "globalCommunity": "Community",
+  "postToBoard": "Post to {boardName}",
+  "@postToBoard": {
+    "description": "Subtitle for write post option showing target board",
+    "placeholders": {
+      "boardName": {
+        "type": "String"
+      }
+    }
   }
 }

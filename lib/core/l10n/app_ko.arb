@@ -1185,5 +1185,29 @@
         "example": "2"
       }
     }
+  },
+  "boardFree": "자유게시판",
+  "boardAnonymous": "비밀게시판",
+  "boardInfo": "정보게시판",
+  "boardQna": "Q&A",
+  "boardNotice": "공지사항",
+  "boardCreatedSuccess": "게시판 \"{name}\"이(가) 생성되었습니다!",
+  "@boardCreatedSuccess": {
+    "description": "Snackbar message after creating a board",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "globalCommunity": "커뮤니티",
+  "postToBoard": "{boardName}에 글쓰기",
+  "@postToBoard": {
+    "description": "Subtitle for write post option showing target board",
+    "placeholders": {
+      "boardName": {
+        "type": "String"
+      }
+    }
   }
 }

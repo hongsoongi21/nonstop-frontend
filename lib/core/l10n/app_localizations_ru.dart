@@ -1224,4 +1224,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String anonymousRoomWithCount(int count) {
     return 'Аноним ($count)';
   }
+
+  @override
+  String get boardFree => 'Свободная доска';
+
+  @override
+  String get boardAnonymous => 'Анонимная доска';
+
+  @override
+  String get boardInfo => 'Информация';
+
+  @override
+  String get boardQna => 'Вопросы и ответы';
+
+  @override
+  String get boardNotice => 'Объявления';
+
+  @override
+  String boardCreatedSuccess(String name) {
+    return 'Доска «$name» создана!';
+  }
+
+  @override
+  String get globalCommunity => 'Сообщество';
+
+  @override
+  String postToBoard(String boardName) {
+    return 'Написать в $boardName';
+  }
 }
