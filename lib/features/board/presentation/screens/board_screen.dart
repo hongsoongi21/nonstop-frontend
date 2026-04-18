@@ -433,8 +433,8 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildBoardChips(
     BuildContext context,
-    List boards,
-    dynamic selectedBoard,
+    List<Board> boards,
+    Board? selectedBoard,
     bool isDark, {
     required AppLocalizations l10n,
   }) {
@@ -647,7 +647,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildFloatingWriteButton(
     BuildContext context,
-    dynamic selectedBoard,
+    Board? selectedBoard,
     Community? selectedCommunity,
     AppLocalizations l10n,
   ) {
@@ -679,7 +679,7 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
     );
   }
 
-  void _showWriteOptions(BuildContext context, dynamic selectedBoard, Community? selectedCommunity, AppLocalizations l10n) {
+  void _showWriteOptions(BuildContext context, Board? selectedBoard, Community? selectedCommunity, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     showModalBottomSheet(
