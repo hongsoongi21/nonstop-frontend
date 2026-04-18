@@ -2,7 +2,7 @@ name: nonstop
 description: "Nonstop - University community app for timetable, chat, boards, and friends."
 publish_to: "none"
 
-version: 1.0.7+40
+version: 1.0.8+41
 
 environment:
   sdk: ^3.10.1
