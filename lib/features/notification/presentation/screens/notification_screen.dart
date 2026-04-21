@@ -282,7 +282,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen>
         break;
       case NotificationType.friendRequest:
       case NotificationType.friendAccept:
-        context.go(Routes.friends);
+        GoRouter.of(context).push(Routes.friends);
         break;
       case NotificationType.announcement:
         break;
