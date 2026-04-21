@@ -1244,4 +1244,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String postToBoard(String boardName) {
     return 'Post to $boardName';
   }
+
+  @override
+  String get homeTabLabel => 'Home';
+
+  @override
+  String get homeAppBarTitle => 'Home';
+
+  @override
+  String get homeNoticeSectionTitle => 'Notices';
+
+  @override
+  String get homeNoticeEmpty => 'No notices available';
+
+  @override
+  String homeNoticeMore(int count) {
+    return '+$count more';
+  }
+
+  @override
+  String get homeTodayTitle => 'Today\'s Classes';
+
+  @override
+  String get homeTodayEmpty => 'No classes today';
+
+  @override
+  String get homeTodayEmptyCta => 'No classes today. Have a great day!';
+
+  @override
+  String get homeTodayCreateTimetable => 'Create timetable';
+
+  @override
+  String get homePopularTitle => 'Popular Boards Now';
+
+  @override
+  String get homePopularMore => 'More >';
+
+  @override
+  String get homePopularEmpty => 'No posts yet';
+
+  @override
+  String get homePopularBoardNoPost => 'No posts in this board';
 }

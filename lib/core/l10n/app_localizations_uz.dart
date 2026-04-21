@@ -1258,4 +1258,45 @@ class AppLocalizationsUz extends AppLocalizations {
   String postToBoard(String boardName) {
     return '${boardName}ga yozish';
   }
+
+  @override
+  String get homeTabLabel => 'Bosh sahifa';
+
+  @override
+  String get homeAppBarTitle => 'Bosh sahifa';
+
+  @override
+  String get homeNoticeSectionTitle => 'E\'lonlar';
+
+  @override
+  String get homeNoticeEmpty => 'E\'lonlar yo\'q';
+
+  @override
+  String homeNoticeMore(int count) {
+    return 'Yana +$count';
+  }
+
+  @override
+  String get homeTodayTitle => 'Bugungi darslar';
+
+  @override
+  String get homeTodayEmpty => 'Bugun darslar yo\'q';
+
+  @override
+  String get homeTodayEmptyCta => 'Bugun darslar yo\'q. Yaxshi kun tilaymiz!';
+
+  @override
+  String get homeTodayCreateTimetable => 'Jadval yaratish';
+
+  @override
+  String get homePopularTitle => 'Mashhur doskalar';
+
+  @override
+  String get homePopularMore => 'Koʻproq >';
+
+  @override
+  String get homePopularEmpty => 'Postlar yo\'q';
+
+  @override
+  String get homePopularBoardNoPost => 'Bu doskada postlar yo\'q';
 }

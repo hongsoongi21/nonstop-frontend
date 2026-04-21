@@ -1206,5 +1206,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "homeTabLabel": "Bosh sahifa",
+  "homeAppBarTitle": "Bosh sahifa",
+  "homeNoticeSectionTitle": "E'lonlar",
+  "homeNoticeEmpty": "E'lonlar yo'q",
+  "homeNoticeMore": "Yana +{count}",
+  "@homeNoticeMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayTitle": "Bugungi darslar",
+  "homeTodayEmpty": "Bugun darslar yo'q",
+  "homeTodayEmptyCta": "Bugun darslar yo'q. Yaxshi kun tilaymiz!",
+  "homeTodayCreateTimetable": "Jadval yaratish",
+  "homePopularTitle": "Mashhur doskalar",
+  "homePopularMore": "Koʻproq >",
+  "homePopularEmpty": "Postlar yo'q",
+  "homePopularBoardNoPost": "Bu doskada postlar yo'q"
 }

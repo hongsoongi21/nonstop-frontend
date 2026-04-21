@@ -2465,6 +2465,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Post to {boardName}'**
   String postToBoard(String boardName);
+
+  /// Bottom nav label for Home tab
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTabLabel;
+
+  /// AppBar title on Home screen
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeAppBarTitle;
+
+  /// Section title for notices
+  ///
+  /// In en, this message translates to:
+  /// **'Notices'**
+  String get homeNoticeSectionTitle;
+
+  /// Empty state message for notices
+  ///
+  /// In en, this message translates to:
+  /// **'No notices available'**
+  String get homeNoticeEmpty;
+
+  /// More notices count label
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} more'**
+  String homeNoticeMore(int count);
+
+  /// Section title for today's timetable
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Classes'**
+  String get homeTodayTitle;
+
+  /// Empty state when timetable exists but no classes today
+  ///
+  /// In en, this message translates to:
+  /// **'No classes today'**
+  String get homeTodayEmpty;
+
+  /// Empty state with CTA when no timetable exists
+  ///
+  /// In en, this message translates to:
+  /// **'No classes today. Have a great day!'**
+  String get homeTodayEmptyCta;
+
+  /// Button to navigate to timetable creation
+  ///
+  /// In en, this message translates to:
+  /// **'Create timetable'**
+  String get homeTodayCreateTimetable;
+
+  /// Section title for popular boards
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Boards Now'**
+  String get homePopularTitle;
+
+  /// More button for popular boards section
+  ///
+  /// In en, this message translates to:
+  /// **'More >'**
+  String get homePopularMore;
+
+  /// Empty state for popular boards section
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet'**
+  String get homePopularEmpty;
+
+  /// Empty state for a board row with no posts
+  ///
+  /// In en, this message translates to:
+  /// **'No posts in this board'**
+  String get homePopularBoardNoPost;
 }
 
 class _AppLocalizationsDelegate

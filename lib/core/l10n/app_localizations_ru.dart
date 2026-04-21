@@ -1252,4 +1252,45 @@ class AppLocalizationsRu extends AppLocalizations {
   String postToBoard(String boardName) {
     return 'Написать в $boardName';
   }
+
+  @override
+  String get homeTabLabel => 'Главная';
+
+  @override
+  String get homeAppBarTitle => 'Главная';
+
+  @override
+  String get homeNoticeSectionTitle => 'Объявления';
+
+  @override
+  String get homeNoticeEmpty => 'Нет объявлений';
+
+  @override
+  String homeNoticeMore(int count) {
+    return '+$count ещё';
+  }
+
+  @override
+  String get homeTodayTitle => 'Сегодняшние занятия';
+
+  @override
+  String get homeTodayEmpty => 'Сегодня нет занятий';
+
+  @override
+  String get homeTodayEmptyCta => 'Сегодня нет занятий. Хорошего дня!';
+
+  @override
+  String get homeTodayCreateTimetable => 'Создать расписание';
+
+  @override
+  String get homePopularTitle => 'Популярные доски';
+
+  @override
+  String get homePopularMore => 'Ещё >';
+
+  @override
+  String get homePopularEmpty => 'Нет постов';
+
+  @override
+  String get homePopularBoardNoPost => 'Нет постов в этой доске';
 }
