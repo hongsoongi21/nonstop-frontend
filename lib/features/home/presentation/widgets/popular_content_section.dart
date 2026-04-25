@@ -8,6 +8,10 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/popular_board_item.dart';
 
+/// Renders the "popular boards" section. Uses a `Table` so the badge
+/// column auto-sizes to the longest board name in this batch
+/// (`IntrinsicColumnWidth`) — body text columns line up across all rows
+/// regardless of locale or label length, with no hard-coded widths.
 class PopularContentSection extends StatelessWidget {
   final List<PopularBoardItem> popularBoards;
 
@@ -22,7 +26,6 @@ class PopularContentSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 섹션 헤더
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -39,7 +42,6 @@ class PopularContentSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          // 본문
           _buildContent(context),
         ],
       ),
@@ -71,109 +73,149 @@ class PopularContentSection extends StatelessWidget {
 
     return Card(
       color: AppColors.surface,
+      clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       ),
-      child: Column(
-        children: List.generate(items.length, (index) {
-          final board = items[index];
-          final isLast = index == items.length - 1;
-          return Column(
-            children: [
-              _PopularBoardRow(board: board),
-              if (!isLast)
-                const Divider(
-                  height: 1,
-                  thickness: 0.5,
-                  indent: AppSpacing.md,
-                  endIndent: AppSpacing.md,
-                  color: AppColors.divider,
-                ),
-            ],
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _PopularBoardRow extends StatelessWidget {
-  final PopularBoardItem board;
-
-  const _PopularBoardRow({required this.board});
-
-  @override
-  Widget build(BuildContext context) {
-    final topPost = board.topPost;
-
-    final row = Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Table(
+        columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth(),
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: [
-          // 게시판 명 뱃지
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.sm,
-              vertical: AppSpacing.xxs,
+          for (int i = 0; i < items.length; i++)
+            _buildRow(
+              context,
+              items[i],
+              isLast: i == items.length - 1,
             ),
-            decoration: BoxDecoration(
-              color: AppColors.primary50,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-            ),
-            child: Text(
-              board.boardName,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          // 게시글 정보
-          Expanded(
-            child: topPost == null
-                ? Text(
-                    AppLocalizations.of(context)!.homePopularBoardNoPost,
-                    style: AppTypography.body2.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        topPost.title ?? '(제목 없음)',
-                        style: AppTypography.body2.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '💬${topPost.commentCount} · ❤️${topPost.likeCount}',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
         ],
       ),
     );
+  }
 
-    if (topPost == null) return row;
+  TableRow _buildRow(
+    BuildContext context,
+    PopularBoardItem board, {
+    required bool isLast,
+  }) {
+    final topPost = board.topPost;
+    final l10n = AppLocalizations.of(context)!;
 
-    return InkWell(
-      onTap: () => GoRouter.of(context).push(
-        Routes.boardDetailPath(topPost.id.toString()),
+    final divider = isLast
+        ? const Border()
+        : const Border(
+            bottom: BorderSide(color: AppColors.divider, width: 0.5),
+          );
+
+    // Badge cell — wrapped in a Container so the divider line spans the
+    // full row width (badge + body cells share the same bottom border).
+    final badgeCell = _Cell(
+      onTap: topPost == null
+          ? null
+          : () => GoRouter.of(context).push(
+                Routes.boardDetailPath(topPost.id.toString()),
+              ),
+      border: divider,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.xs,
+        AppSpacing.sm,
       ),
-      child: row,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.xxs,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.primary50,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+        ),
+        child: Text(
+          board.boardName,
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTypography.caption.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
+
+    final bodyCell = _Cell(
+      onTap: topPost == null
+          ? null
+          : () => GoRouter.of(context).push(
+                Routes.boardDetailPath(topPost.id.toString()),
+              ),
+      border: divider,
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xs,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm,
+      ),
+      child: topPost == null
+          ? Text(
+              l10n.homePopularBoardNoPost,
+              style: AppTypography.body2.copyWith(
+                color: AppColors.textTertiary,
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  topPost.title ?? '(제목 없음)',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.body2.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '💬${topPost.commentCount} · ❤️${topPost.likeCount}',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+    );
+
+    return TableRow(children: [badgeCell, bodyCell]);
+  }
+}
+
+/// Single table cell with optional row-spanning ripple
+/// (`TableRowInkWell` makes taps register across the entire `TableRow`,
+/// not just one cell, so badge + body act as a single hit target).
+class _Cell extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets padding;
+  final Border border;
+  final VoidCallback? onTap;
+
+  const _Cell({
+    required this.child,
+    required this.padding,
+    required this.border,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Container(
+      decoration: BoxDecoration(border: border),
+      child: Padding(padding: padding, child: child),
+    );
+    if (onTap == null) return content;
+    return TableRowInkWell(onTap: onTap, child: content);
   }
 }
