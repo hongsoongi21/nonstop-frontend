@@ -1293,4 +1293,23 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homePopularBoardNoPost => 'Нет постов в этой доске';
+
+  @override
+  String get homeTodayInProgress => 'Идёт';
+
+  @override
+  String homeTodayMinutesLeft(int count) {
+    return 'осталось $count мин';
+  }
+
+  @override
+  String get homeTodayUpcoming => 'Скоро начнётся';
+
+  @override
+  String homeTodayMinutesUntil(int count) {
+    return 'через $count мин';
+  }
+
+  @override
+  String get homeTodayEnded => 'Завершено';
 }

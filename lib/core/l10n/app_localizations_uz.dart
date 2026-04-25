@@ -1299,4 +1299,23 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get homePopularBoardNoPost => 'Bu doskada postlar yo\'q';
+
+  @override
+  String get homeTodayInProgress => 'Davom etmoqda';
+
+  @override
+  String homeTodayMinutesLeft(int count) {
+    return '$count daqiqa qoldi';
+  }
+
+  @override
+  String get homeTodayUpcoming => 'Tez orada';
+
+  @override
+  String homeTodayMinutesUntil(int count) {
+    return '$count daqiqadan keyin';
+  }
+
+  @override
+  String get homeTodayEnded => 'Tugadi';
 }
