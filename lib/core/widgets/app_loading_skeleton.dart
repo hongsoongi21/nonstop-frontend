@@ -170,62 +170,80 @@ class SkeletonLayouts {
     );
   }
 
-  /// Post skeleton (for social feeds)
+  /// Post list-item skeleton.
+  ///
+  /// Mirrors `_buildMinimalPostCard` in `board_screen.dart`:
+  ///   title (2 lines, the second one short) → content preview (1 line)
+  ///   → meta row (timeAgo + 3 small stats).
+  /// Intentionally has no avatar, no card outline, no action buttons —
+  /// the real card is a flat list item, so a card-shaped skeleton would
+  /// cause a visible layout shift on first paint.
   static Widget post({EdgeInsetsGeometry? padding}) {
-    return Builder(
-      builder: (context) => Container(
-        margin: padding ?? EdgeInsets.all(AppSpacing.md),
-        padding: EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: context.surfaceColor,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          border: Border.all(color: context.borderColor),
-        ),
+    return Padding(
+      padding: padding ?? const EdgeInsets.symmetric(vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header (avatar + name)
-          Row(
-            children: [
-              const AppLoadingSkeleton.circle(size: 40),
-              SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppLoadingSkeleton.text(width: 120, fontSize: 16),
-                    SizedBox(height: AppSpacing.xs),
-                    const AppLoadingSkeleton.text(width: 80, fontSize: 12),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: AppSpacing.md),
-
-          // Content lines
-          const AppLoadingSkeleton.text(fontSize: 14),
-          SizedBox(height: AppSpacing.sm),
+          // Title line 1 (full width)
+          const AppLoadingSkeleton.text(fontSize: 16),
+          const SizedBox(height: 6),
+          // Title line 2 (shorter — typical wrap)
+          const AppLoadingSkeleton.text(width: 220, fontSize: 16),
+          const SizedBox(height: 6),
+          // Content preview (1 line, slightly shorter)
           const AppLoadingSkeleton.text(width: 280, fontSize: 14),
-          SizedBox(height: AppSpacing.sm),
-          const AppLoadingSkeleton.text(width: 200, fontSize: 14),
-
-          SizedBox(height: AppSpacing.md),
-
-          // Action buttons
+          const SizedBox(height: 14),
+          // Meta row: timeAgo + view + like + comment
           Row(
-            children: [
-              const AppLoadingSkeleton(width: 80, height: 32),
-              SizedBox(width: AppSpacing.md),
-              const AppLoadingSkeleton(width: 80, height: 32),
-              SizedBox(width: AppSpacing.md),
-              const AppLoadingSkeleton(width: 80, height: 32),
+            children: const [
+              AppLoadingSkeleton.text(width: 52, fontSize: 12),
+              SizedBox(width: 12),
+              AppLoadingSkeleton.text(width: 28, fontSize: 12),
+              SizedBox(width: 12),
+              AppLoadingSkeleton.text(width: 28, fontSize: 12),
+              SizedBox(width: 12),
+              AppLoadingSkeleton.text(width: 28, fontSize: 12),
             ],
           ),
         ],
       ),
-      ),
+    );
+  }
+
+  /// Chat-room message-history skeleton.
+  ///
+  /// Renders alternating left/right bubbles approximating
+  /// `MessageBubble` layout (avatar + bubble for incoming, right-aligned
+  /// bubble for outgoing). Bubble widths are jittered so the placeholder
+  /// doesn't read as a single-column block.
+  static Widget chatMessages({int count = 6}) {
+    const widths = <double>[180, 110, 220, 90, 160, 140];
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+      itemCount: count,
+      itemBuilder: (context, index) {
+        final isMe = index.isOdd;
+        final width = widths[index % widths.length];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            mainAxisAlignment:
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (!isMe) ...[
+                const AppLoadingSkeleton.circle(size: 32),
+                const SizedBox(width: 8),
+              ],
+              AppLoadingSkeleton(
+                width: width,
+                height: 36,
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

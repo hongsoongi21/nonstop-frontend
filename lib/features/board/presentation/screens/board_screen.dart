@@ -979,13 +979,17 @@ class _BoardScreenState extends ConsumerState<BoardScreen> {
   // SKELETON LOADING
   // ═══════════════════════════════════════════════════════════════════════════
   Widget _buildSkeletonList() {
-    return ListView.builder(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ListView.separated(
       padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, 120),
       itemCount: 6,
-      itemBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: SkeletonLayouts.post(),
+      separatorBuilder: (context, index) => Divider(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.06)
+            : Colors.black.withValues(alpha: 0.06),
+        height: 1,
       ),
+      itemBuilder: (context, index) => SkeletonLayouts.post(),
     );
   }
 

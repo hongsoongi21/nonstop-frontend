@@ -13,6 +13,7 @@ import '../../domain/entities/board.entity.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../providers/post_detail_provider.dart';
 import '../providers/board_provider.dart';
+import '../widgets/post_detail_skeleton.dart';
 import '../../../../shared/components/report_dialog.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../features/chat/presentation/providers/chat_provider.dart';
@@ -85,7 +86,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     final error = detailState.error;
 
     if (isLoading && post == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        appBar: AppBar(),
+        body: const PostDetailSkeleton(),
+      );
     }
 
     if (post == null) {
@@ -95,7 +99,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           body: Center(child: Text(error)),
         );
       }
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        appBar: AppBar(),
+        body: const PostDetailSkeleton(),
+      );
     }
 
     if (!post.isMine && !_hasFetchedPermission) {
