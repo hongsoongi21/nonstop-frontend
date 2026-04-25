@@ -1269,4 +1269,23 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get homePopularBoardNoPost => '작성된 게시글이 없습니다';
+
+  @override
+  String get homeTodayInProgress => '진행 중';
+
+  @override
+  String homeTodayMinutesLeft(int count) {
+    return '$count분 남음';
+  }
+
+  @override
+  String get homeTodayUpcoming => '곧 시작';
+
+  @override
+  String homeTodayMinutesUntil(int count) {
+    return '$count분 후';
+  }
+
+  @override
+  String get homeTodayEnded => '종료';
 }

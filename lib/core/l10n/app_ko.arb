@@ -1229,5 +1229,10 @@
   "homePopularTitle": "지금 인기 있는 게시판",
   "homePopularMore": "더보기 >",
   "homePopularEmpty": "작성된 게시글이 없습니다",
-  "homePopularBoardNoPost": "작성된 게시글이 없습니다"
+  "homePopularBoardNoPost": "작성된 게시글이 없습니다",
+  "homeTodayInProgress": "진행 중",
+  "homeTodayMinutesLeft": "{count}분 남음",
+  "homeTodayUpcoming": "곧 시작",
+  "homeTodayMinutesUntil": "{count}분 후",
+  "homeTodayEnded": "종료"
 }

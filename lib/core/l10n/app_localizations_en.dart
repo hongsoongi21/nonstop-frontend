@@ -1285,4 +1285,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homePopularBoardNoPost => 'No posts in this board';
+
+  @override
+  String get homeTodayInProgress => 'In progress';
+
+  @override
+  String homeTodayMinutesLeft(int count) {
+    return '${count}m left';
+  }
+
+  @override
+  String get homeTodayUpcoming => 'Starting soon';
+
+  @override
+  String homeTodayMinutesUntil(int count) {
+    return 'in ${count}m';
+  }
+
+  @override
+  String get homeTodayEnded => 'Ended';
 }

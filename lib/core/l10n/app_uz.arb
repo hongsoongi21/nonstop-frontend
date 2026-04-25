@@ -1226,5 +1226,10 @@
   "homePopularTitle": "Mashhur doskalar",
   "homePopularMore": "Koʻproq >",
   "homePopularEmpty": "Postlar yo'q",
-  "homePopularBoardNoPost": "Bu doskada postlar yo'q"
+  "homePopularBoardNoPost": "Bu doskada postlar yo'q",
+  "homeTodayInProgress": "Davom etmoqda",
+  "homeTodayMinutesLeft": "{count} daqiqa qoldi",
+  "homeTodayUpcoming": "Tez orada",
+  "homeTodayMinutesUntil": "{count} daqiqadan keyin",
+  "homeTodayEnded": "Tugadi"
 }

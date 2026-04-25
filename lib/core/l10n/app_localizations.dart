@@ -2543,6 +2543,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No posts in this board'**
   String get homePopularBoardNoPost;
+
+  /// Badge label when a class is currently happening
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get homeTodayInProgress;
+
+  /// Minutes remaining in an in-progress class
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m left'**
+  String homeTodayMinutesLeft(int count);
+
+  /// Badge label when a class is about to start (within 5 min)
+  ///
+  /// In en, this message translates to:
+  /// **'Starting soon'**
+  String get homeTodayUpcoming;
+
+  /// Minutes until an upcoming class begins
+  ///
+  /// In en, this message translates to:
+  /// **'in {count}m'**
+  String homeTodayMinutesUntil(int count);
+
+  /// Badge label when a class has already ended
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get homeTodayEnded;
 }
 
 class _AppLocalizationsDelegate

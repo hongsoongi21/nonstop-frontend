@@ -1714,5 +1714,27 @@
   "homePopularBoardNoPost": "No posts in this board",
   "@homePopularBoardNoPost": {
     "description": "Empty state for a board row with no posts"
+  },
+  "homeTodayInProgress": "In progress",
+  "@homeTodayInProgress": {
+    "description": "Badge label when a class is currently happening"
+  },
+  "homeTodayMinutesLeft": "{count}m left",
+  "@homeTodayMinutesLeft": {
+    "description": "Minutes remaining in an in-progress class",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeTodayUpcoming": "Starting soon",
+  "@homeTodayUpcoming": {
+    "description": "Badge label when a class is about to start (within 5 min)"
+  },
+  "homeTodayMinutesUntil": "in {count}m",
+  "@homeTodayMinutesUntil": {
+    "description": "Minutes until an upcoming class begins",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "homeTodayEnded": "Ended",
+  "@homeTodayEnded": {
+    "description": "Badge label when a class has already ended"
   }
 }

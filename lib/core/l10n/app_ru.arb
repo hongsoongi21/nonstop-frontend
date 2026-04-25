@@ -1534,5 +1534,10 @@
   "homePopularTitle": "Популярные доски",
   "homePopularMore": "Ещё >",
   "homePopularEmpty": "Нет постов",
-  "homePopularBoardNoPost": "Нет постов в этой доске"
+  "homePopularBoardNoPost": "Нет постов в этой доске",
+  "homeTodayInProgress": "Идёт",
+  "homeTodayMinutesLeft": "осталось {count} мин",
+  "homeTodayUpcoming": "Скоро начнётся",
+  "homeTodayMinutesUntil": "через {count} мин",
+  "homeTodayEnded": "Завершено"
 }
