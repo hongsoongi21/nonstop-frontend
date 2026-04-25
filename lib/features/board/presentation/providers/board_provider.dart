@@ -6,6 +6,7 @@ import '../../domain/entities/post.entity.dart';
 import '../../data/repositories/board_repository_impl.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/domain/entities/user.dart';
+import '../../../home/presentation/providers/home_dashboard_provider.dart';
 import 'post_detail_provider.dart';
 
 /// State for board interactions
@@ -237,6 +238,9 @@ class BoardNotifier extends StateNotifier<BoardState> {
       state = state.copyWith(posts: updatedPosts);
       // Sync like state to detail view if it's currently loaded
       _ref.invalidate(postDetailProvider(postId));
+      // Same reason as in PostDetailNotifier.toggleLike: keep the home
+      // dashboard's popular-boards likeCount fresh.
+      _ref.invalidate(homeDashboardProvider);
     });
   }
 

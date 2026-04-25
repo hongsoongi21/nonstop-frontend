@@ -5,9 +5,17 @@ import 'home_providers.dart';
 
 /// Home dashboard provider.
 ///
-/// Not `autoDispose` because the in-memory 5-minute TTL cache
-/// (PRD §4.2) must survive tab switches. The notifier state is
-/// retained for the app lifetime; `refresh()` bypasses the cache.
+/// Not `autoDispose` because the in-memory TTL cache must survive tab
+/// switches. The notifier state is retained for the app lifetime;
+/// `refresh()` bypasses the cache, and `ref.invalidate(...)` from
+/// elsewhere (e.g. the like-toggle action) forces a re-fetch on next
+/// watch so the popular boards' likeCount stays in sync with the
+/// post-detail screen.
+///
+/// PRD §4.2 originally specified a 5-minute TTL, but that was visibly
+/// stale against likeCount/commentCount changes initiated outside the
+/// home tab. 1 minute keeps the dashboard responsive while still
+/// avoiding a network round-trip on every tab switch.
 final homeDashboardProvider =
     AsyncNotifierProvider<HomeDashboardNotifier, HomeDashboard>(
   HomeDashboardNotifier.new,
@@ -17,7 +25,7 @@ class HomeDashboardNotifier extends AsyncNotifier<HomeDashboard> {
   DateTime? _lastFetchedAt;
   HomeDashboard? _cached;
 
-  static const _cacheDuration = Duration(minutes: 5);
+  static const _cacheDuration = Duration(minutes: 1);
 
   @override
   Future<HomeDashboard> build() async {
