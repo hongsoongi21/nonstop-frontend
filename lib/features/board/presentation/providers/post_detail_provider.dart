@@ -3,6 +3,7 @@ import '../../domain/entities/post.entity.dart';
 import '../../domain/entities/comment.entity.dart';
 import '../../domain/repository/board_repository.dart';
 import '../../data/repositories/board_repository_impl.dart';
+import '../../../home/presentation/providers/home_dashboard_provider.dart';
 import 'board_provider.dart';
 
 class PostDetailState {
@@ -116,7 +117,12 @@ class PostDetailNotifier extends StateNotifier<PostDetailState> {
     result.fold((error) {
       state = state.copyWith(post: previousPost, error: error);
       _ref.read(boardProvider.notifier).updateLocalPost(previousPost);
-    }, (_) {});
+    }, (_) {
+      // Force the home dashboard's popular-boards likeCount to re-fetch
+      // on next watch — otherwise its 1-min cache could show a stale
+      // count that disagrees with this screen until the TTL expires.
+      _ref.invalidate(homeDashboardProvider);
+    });
   }
 
   Future<void> deletePost() async {
