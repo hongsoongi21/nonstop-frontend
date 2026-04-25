@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../providers/home_dashboard_provider.dart';
 import '../widgets/home_notice_banner.dart';
+import '../widgets/home_skeleton.dart';
 import '../widgets/today_timetable_section.dart';
 import '../widgets/popular_content_section.dart';
 
@@ -28,7 +29,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () => ref.read(homeDashboardProvider.notifier).refresh(),
         child: dashboardAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const HomeSkeleton(),
           error: (error, stack) => SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: SizedBox(
