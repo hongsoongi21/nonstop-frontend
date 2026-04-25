@@ -1209,5 +1209,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "homeTabLabel": "홈",
+  "homeAppBarTitle": "홈",
+  "homeNoticeSectionTitle": "공지사항",
+  "homeNoticeEmpty": "현재 등록된 공지사항이 없습니다",
+  "homeNoticeMore": "+{count}건",
+  "@homeNoticeMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayTitle": "오늘의 시간표",
+  "homeTodayEmpty": "오늘은 수업이 없습니다",
+  "homeTodayEmptyCta": "오늘은 수업이 없습니다. 즐거운 하루 되세요!",
+  "homeTodayCreateTimetable": "시간표 만들러 가기",
+  "homePopularTitle": "지금 인기 있는 게시판",
+  "homePopularMore": "더보기 >",
+  "homePopularEmpty": "작성된 게시글이 없습니다",
+  "homePopularBoardNoPost": "작성된 게시글이 없습니다"
 }

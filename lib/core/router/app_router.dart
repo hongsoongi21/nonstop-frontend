@@ -8,7 +8,7 @@ import 'package:nonstop/features/auth/presentation/screens/login_screen_v1.dart'
 import 'package:nonstop/features/auth/presentation/screens/signup_screen_v1.dart';
 import 'package:nonstop/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:nonstop/features/auth/presentation/screens/onboarding_screen.dart';
-import 'package:nonstop/features/auth/presentation/screens/home_screen.dart';
+import 'package:nonstop/features/home/presentation/screens/home_screen.dart' as home_feature;
 import 'package:nonstop/features/board/presentation/screens/board_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/create_post_screen.dart';
 import 'package:nonstop/features/board/presentation/screens/board_detail_screen.dart';
@@ -40,7 +40,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final analyticsService = ref.watch(analyticsServiceProvider);
 
   return GoRouter(
-    initialLocation: isAuthenticated ? Routes.board : Routes.login,
+    initialLocation: isAuthenticated ? Routes.home : Routes.login,
     observers: [analyticsService.observer],
     redirect: (context, state) {
       final path = state.uri.path;
@@ -67,9 +67,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         return Routes.login;
       }
 
-      // 이미 인증된 상태에서 인증 페이지(로그인/회원가입)에 접근하면 게시판으로 리다이렉트
+      // 이미 인증된 상태에서 인증 페이지(로그인/회원가입)에 접근하면 홈으로 리다이렉트
       if (isAuthenticated && isAuthPage) {
-        return Routes.board;
+        return Routes.home;
       }
 
       return null;
@@ -105,6 +105,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           return MainScaffold(navigationShell: navigationShell);
         },
         branches: [
+          // Home
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Routes.home,
+                builder: (context, state) => const home_feature.HomeScreen(),
+              ),
+            ],
+          ),
+
           // Board
           StatefulShellBranch(
             routes: [
@@ -173,16 +183,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
-          // Friends
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: Routes.friends,
-                builder: (context, state) => const FriendsScreen(),
-              ),
-            ],
-          ),
-
           // Profile
           StatefulShellBranch(
             routes: [
@@ -197,8 +197,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // Hidden/Standalone Routes
       GoRoute(
-        path: Routes.home,
-        builder: (context, state) => const HomeScreen(),
+        path: Routes.friends,
+        builder: (context, state) => const FriendsScreen(),
       ),
       GoRoute(
         path: Routes.editProfile,

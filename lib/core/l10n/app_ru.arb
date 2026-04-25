@@ -1514,5 +1514,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "homeTabLabel": "Главная",
+  "homeAppBarTitle": "Главная",
+  "homeNoticeSectionTitle": "Объявления",
+  "homeNoticeEmpty": "Нет объявлений",
+  "homeNoticeMore": "+{count} ещё",
+  "@homeNoticeMore": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayTitle": "Сегодняшние занятия",
+  "homeTodayEmpty": "Сегодня нет занятий",
+  "homeTodayEmptyCta": "Сегодня нет занятий. Хорошего дня!",
+  "homeTodayCreateTimetable": "Создать расписание",
+  "homePopularTitle": "Популярные доски",
+  "homePopularMore": "Ещё >",
+  "homePopularEmpty": "Нет постов",
+  "homePopularBoardNoPost": "Нет постов в этой доске"
 }

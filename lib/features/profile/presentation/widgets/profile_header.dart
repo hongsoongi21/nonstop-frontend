@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/routes.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/l10n/app_localizations.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -76,6 +78,29 @@ class ProfileHeader extends StatelessWidget {
                       ),
                       Row(
                         children: [
+                          // Friends entry
+                          Semantics(
+                            identifier: 'profile_friends_entry',
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: IconButton(
+                                onPressed: () => GoRouter.of(context).push(Routes.friends),
+                                icon: const Icon(Icons.person_add_outlined),
+                                color: Colors.white,
+                                iconSize: 22,
+                                padding: const EdgeInsets.all(8),
+                                constraints: const BoxConstraints(),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: AppSpacing.sm),
                           // Notification with badge
                           Stack(
                             clipBehavior: Clip.none,

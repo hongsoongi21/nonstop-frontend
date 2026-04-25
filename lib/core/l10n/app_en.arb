@@ -1657,5 +1657,62 @@
         "type": "String"
       }
     }
+  },
+  "homeTabLabel": "Home",
+  "@homeTabLabel": {
+    "description": "Bottom nav label for Home tab"
+  },
+  "homeAppBarTitle": "Home",
+  "@homeAppBarTitle": {
+    "description": "AppBar title on Home screen"
+  },
+  "homeNoticeSectionTitle": "Notices",
+  "@homeNoticeSectionTitle": {
+    "description": "Section title for notices"
+  },
+  "homeNoticeEmpty": "No notices available",
+  "@homeNoticeEmpty": {
+    "description": "Empty state message for notices"
+  },
+  "homeNoticeMore": "+{count} more",
+  "@homeNoticeMore": {
+    "description": "More notices count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeTodayTitle": "Today's Classes",
+  "@homeTodayTitle": {
+    "description": "Section title for today's timetable"
+  },
+  "homeTodayEmpty": "No classes today",
+  "@homeTodayEmpty": {
+    "description": "Empty state when timetable exists but no classes today"
+  },
+  "homeTodayEmptyCta": "No classes today. Have a great day!",
+  "@homeTodayEmptyCta": {
+    "description": "Empty state with CTA when no timetable exists"
+  },
+  "homeTodayCreateTimetable": "Create timetable",
+  "@homeTodayCreateTimetable": {
+    "description": "Button to navigate to timetable creation"
+  },
+  "homePopularTitle": "Popular Boards Now",
+  "@homePopularTitle": {
+    "description": "Section title for popular boards"
+  },
+  "homePopularMore": "More >",
+  "@homePopularMore": {
+    "description": "More button for popular boards section"
+  },
+  "homePopularEmpty": "No posts yet",
+  "@homePopularEmpty": {
+    "description": "Empty state for popular boards section"
+  },
+  "homePopularBoardNoPost": "No posts in this board",
+  "@homePopularBoardNoPost": {
+    "description": "Empty state for a board row with no posts"
   }
 }

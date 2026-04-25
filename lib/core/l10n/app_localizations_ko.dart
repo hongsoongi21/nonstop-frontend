@@ -1228,4 +1228,45 @@ class AppLocalizationsKo extends AppLocalizations {
   String postToBoard(String boardName) {
     return '$boardName에 글쓰기';
   }
+
+  @override
+  String get homeTabLabel => '홈';
+
+  @override
+  String get homeAppBarTitle => '홈';
+
+  @override
+  String get homeNoticeSectionTitle => '공지사항';
+
+  @override
+  String get homeNoticeEmpty => '현재 등록된 공지사항이 없습니다';
+
+  @override
+  String homeNoticeMore(int count) {
+    return '+$count건';
+  }
+
+  @override
+  String get homeTodayTitle => '오늘의 시간표';
+
+  @override
+  String get homeTodayEmpty => '오늘은 수업이 없습니다';
+
+  @override
+  String get homeTodayEmptyCta => '오늘은 수업이 없습니다. 즐거운 하루 되세요!';
+
+  @override
+  String get homeTodayCreateTimetable => '시간표 만들러 가기';
+
+  @override
+  String get homePopularTitle => '지금 인기 있는 게시판';
+
+  @override
+  String get homePopularMore => '더보기 >';
+
+  @override
+  String get homePopularEmpty => '작성된 게시글이 없습니다';
+
+  @override
+  String get homePopularBoardNoPost => '작성된 게시글이 없습니다';
 }
