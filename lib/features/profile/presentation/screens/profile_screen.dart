@@ -9,6 +9,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_loading_indicator.dart';
+import '../../../../core/widgets/app_loading_skeleton.dart';
 import '../../../../shared/components/main_scaffold.dart' as scaffold;
 import '../../../auth/presentation/providers/university_provider.dart';
 import '../../../board/domain/entities/post.entity.dart';
@@ -38,7 +39,7 @@ class ProfileScreen extends ConsumerWidget {
           color: context.backgroundColor,
         ),
         child: isLoading && !isLoaded
-            ? const Center(child: AppLoadingIndicator())
+            ? SkeletonLayouts.profile()
             : error != null
                 ? _buildErrorView(context, ref, error)
                 : isLoaded

@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nonstop/core/l10n/app_localizations.dart';
 import 'package:nonstop/core/theme/app_colors.dart';
 import 'package:nonstop/core/theme/app_typography.dart';
+import 'package:nonstop/core/widgets/app_loading_skeleton.dart';
 import 'package:nonstop/features/chat/domain/entities/chat_message.dart';
 import 'package:nonstop/features/chat/presentation/providers/chat_provider.dart';
 import 'package:nonstop/features/chat/presentation/screens/fullscreen_image_viewer.dart';
@@ -274,29 +275,7 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
 
   Widget _buildMessageList(ChatRoomState state, int? currentUserId) {
     if (state.isLoading && state.messages.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: CircularProgressIndicator(
-                strokeWidth: 3,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Loading messages...',
-              style: AppTypography.body2.copyWith(
-                color: context.textSecondaryColor,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      );
+      return SkeletonLayouts.chatMessages();
     }
 
     return ListView.builder(
